@@ -1,8 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
-import com.hindsight.king_of_castrop_rauxel.utils.Generatable;
-import com.hindsight.king_of_castrop_rauxel.utils.Visitable;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.utils;
+package com.hindsight.king_of_castrop_rauxel.location;
 
 public interface Generatable {
   void generate();

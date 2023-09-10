@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
-import com.hindsight.king_of_castrop_rauxel.player.Player;
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
 
 public class NewGame {
 

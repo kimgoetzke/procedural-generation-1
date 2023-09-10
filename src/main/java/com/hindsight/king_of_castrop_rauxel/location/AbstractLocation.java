@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
-import com.hindsight.king_of_castrop_rauxel.utils.Visitor;
+import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import java.util.*;
 import lombok.Getter;
 import lombok.Setter;

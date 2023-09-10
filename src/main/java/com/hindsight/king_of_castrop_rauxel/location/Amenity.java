@@ -9,16 +9,16 @@ import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true, exclude = {"settlementSize", "settlementName"})
+@ToString(
+    callSuper = true,
+    exclude = {"settlement"})
 public class Amenity extends AbstractAmenity {
 
-  private final Size settlementSize;
-  private final String settlementName;
+  private final AbstractSettlement settlement;
 
-  public Amenity(AmenityType type, Size settlementSize, String settlementName) {
+  public Amenity(AmenityType type, AbstractSettlement settlement) {
     this.type = type;
-    this.settlementSize = settlementSize;
-    this.settlementName = settlementName;
+    this.settlement = settlement;
     generate();
     logResult();
   }
@@ -26,17 +26,22 @@ public class Amenity extends AbstractAmenity {
   @Override
   public void generate() {
     this.name =
-      settlementName == null
-        ? BasicStringGenerator.generate(type, this.getClass())
-        : BasicStringGenerator.generate(type, settlementSize, settlementName, this.getClass());
+        settlement == null
+            ? BasicStringGenerator.locationNameFrom(type, this.getClass())
+            : BasicStringGenerator.locationNameFrom(
+                type,
+                settlement.size,
+                settlement.getName(),
+                settlement.getInhabitants(),
+                this.getClass());
   }
 
   @Override
   public void generate(String parentName) {
     this.name =
-      parentName == null
-        ? BasicStringGenerator.generate(this.getClass())
-        : BasicStringGenerator.generate(parentName, this.getClass());
+        parentName == null
+            ? BasicStringGenerator.locationNameFrom(this.getClass())
+            : BasicStringGenerator.locationNameFrom(parentName, this.getClass());
   }
 
   @Override

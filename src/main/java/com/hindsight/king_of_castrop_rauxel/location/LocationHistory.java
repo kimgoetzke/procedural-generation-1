@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.utils.Visitor;
+import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 
 import java.time.Instant;
 import java.util.List;

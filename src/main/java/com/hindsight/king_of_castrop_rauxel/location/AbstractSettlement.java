@@ -2,9 +2,11 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
 
-import com.hindsight.king_of_castrop_rauxel.player.Player;
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import java.util.*;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -15,7 +17,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   protected Size size;
   protected Player loyalTo;
-  protected int inhabitants;
+  @Getter protected List<Npc> inhabitants = new ArrayList<>();
   protected List<Neighbour> neighbours = new ArrayList<>();
   protected List<AbstractAmenity> amenities = new ArrayList<>();
 
@@ -28,7 +30,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
         + ", loyalTo="
         + loyalTo
         + ", inhabitants="
-        + inhabitants
+        + inhabitants.size()
         + ", neighbours="
         + neighbours.size()
         + ", amenities="
@@ -41,7 +43,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
         .formatted(
             name,
             size,
-            inhabitants,
+            inhabitants.size(),
             amenities.size(),
             neighbours.size(),
             loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());

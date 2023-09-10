@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
+import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.settings.LocationComponent;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicStringGenerator;
 import java.util.stream.IntStream;
@@ -22,15 +23,20 @@ public class Settlement extends AbstractSettlement {
   public void generate() {
     log.info("Generating settlement...");
     generateFoundation();
+    generateInhabitants();
     generateAmenities();
     generatePlayerActions();
   }
 
   private void generateFoundation() {
     size = LocationComponent.randomSize();
-    name = BasicStringGenerator.generate(this.getClass());
+    name = BasicStringGenerator.locationNameFrom(this.getClass());
+  }
+
+  private void generateInhabitants() {
     var bounds = getSettlementConfigurations().get(size).getInhabitants();
-    inhabitants = random.nextInt(bounds.getMaxInclusive() - bounds.getMinInclusive() + 1);
+    var inhabitantCount = random.nextInt(bounds.getMaxInclusive() - bounds.getMinInclusive()) + 1;
+    IntStream.range(0, inhabitantCount).forEach(i -> inhabitants.add(new Inhabitant()));
   }
 
   private void generateAmenities() {
@@ -44,7 +50,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addAmenity(AmenityType type) {
-    var amenity = new Amenity(type, size, name);
+    var amenity = new Amenity(type, this);
     if (amenities.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       amenities.add(amenity);
     } else {

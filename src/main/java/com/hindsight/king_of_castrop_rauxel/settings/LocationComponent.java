@@ -49,10 +49,16 @@ public class LocationComponent {
     xl.amenities = new EnumMap<>(AmenityType.class);
 
     xs.amenities.put(AmenityType.ENTRANCE, new Bounds(0, 0));
-    s.amenities.put(AmenityType.ENTRANCE, new Bounds(0, 2));
+    s.amenities.put(AmenityType.ENTRANCE, new Bounds(0, 1));
     m.amenities.put(AmenityType.ENTRANCE, new Bounds(2, 4));
     l.amenities.put(AmenityType.ENTRANCE, new Bounds(1, 1));
     xl.amenities.put(AmenityType.ENTRANCE, new Bounds(4, 8));
+
+    xs.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
+    s.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
+    m.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
+    l.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
+    xl.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
 
     xs.amenities.put(AmenityType.SHOP, new Bounds(0, 1));
     s.amenities.put(AmenityType.SHOP, new Bounds(1, 3));
