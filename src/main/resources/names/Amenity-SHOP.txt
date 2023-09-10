@@ -1,0 +1,8 @@
+Metalworking Forge
+Textile Workshop
+Carpentry Shop
+Jewelry Studio
+Potter's Workshop
+%P's Potter
+Armourer
+Armourer of %P

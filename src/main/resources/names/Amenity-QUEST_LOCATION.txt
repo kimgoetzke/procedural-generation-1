@@ -1,0 +1,19 @@
+Palace
+Royal Residence
+Cathedral
+Church
+Temple
+Granaries
+Public Bath
+Council Hall
+Public Oven
+Guardhouse
+City Mint
+City Maintenance Depot
+Market Authority Building
+Record Archive
+Tax Collector's Office
+Council Chamber
+Courthouse
+City Hall
+-SQUARE
