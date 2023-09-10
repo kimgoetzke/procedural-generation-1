@@ -21,14 +21,14 @@ public class Settlement extends AbstractSettlement {
   @Override
   public void generate() {
     log.info("Generating settlement...");
-    size = LocationComponent.randomSize();
-    name = BasicStringGenerator.generate(this.getClass());
-    generateInhabitants();
+    generateFoundation();
     generateAmenities();
     generatePlayerActions();
   }
 
-  private void generateInhabitants() {
+  private void generateFoundation() {
+    size = LocationComponent.randomSize();
+    name = BasicStringGenerator.generate(this.getClass());
     var bounds = getSettlementConfigurations().get(size).getInhabitants();
     inhabitants = random.nextInt(bounds.getMaxInclusive() - bounds.getMinInclusive() + 1);
   }
@@ -44,7 +44,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addAmenity(AmenityType type) {
-    var amenity = new Amenity(type, name);
+    var amenity = new Amenity(type, size, name);
     if (amenities.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       amenities.add(amenity);
     } else {

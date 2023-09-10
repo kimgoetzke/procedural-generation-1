@@ -24,6 +24,7 @@ public class LocationComponent {
 
   public enum AmenityType {
     ENTRANCE,
+    MAIN_SQUARE,
     SHOP,
     QUEST_LOCATION,
   }
@@ -47,9 +48,9 @@ public class LocationComponent {
     l.amenities = new EnumMap<>(AmenityType.class);
     xl.amenities = new EnumMap<>(AmenityType.class);
 
-    xs.amenities.put(AmenityType.ENTRANCE, new Bounds(1, 1));
-    s.amenities.put(AmenityType.ENTRANCE, new Bounds(1, 2));
-    m.amenities.put(AmenityType.ENTRANCE, new Bounds(1, 1));
+    xs.amenities.put(AmenityType.ENTRANCE, new Bounds(0, 0));
+    s.amenities.put(AmenityType.ENTRANCE, new Bounds(0, 2));
+    m.amenities.put(AmenityType.ENTRANCE, new Bounds(2, 4));
     l.amenities.put(AmenityType.ENTRANCE, new Bounds(1, 1));
     xl.amenities.put(AmenityType.ENTRANCE, new Bounds(4, 8));
 
@@ -60,9 +61,9 @@ public class LocationComponent {
     xl.amenities.put(AmenityType.SHOP, new Bounds(8, 14));
 
     xs.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(0, 2));
-    s.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(0, 2));
-    m.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(0, 2));
-    l.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(0, 2));
+    s.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(2, 5));
+    m.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(3, 8));
+    l.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(6, 12));
     xl.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(10, 20));
 
     settlementConfigurations.put(Size.XS, xs);

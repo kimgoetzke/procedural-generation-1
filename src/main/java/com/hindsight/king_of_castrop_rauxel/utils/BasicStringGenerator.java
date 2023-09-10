@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
@@ -28,20 +29,26 @@ public class BasicStringGenerator {
   public static final String PLACEHOLDER_OWNER_NAME = "%O";
 
   public static String generate(Class<?> clazz) {
-    return generate(null, null, clazz);
+    return generate(null, null, null, clazz);
   }
 
   public static String generate(AmenityType type, Class<?> clazz) {
-    return generate(type, null, clazz);
+    return generate(type, null, null, clazz);
   }
 
   public static String generate(String parentName, Class<?> clazz) {
-    return generate(null, parentName, clazz);
+    return generate(null, null, parentName, clazz);
   }
 
-  public static String generate(AmenityType type, String parentName, Class<?> clazz) {
+  public static String generate(Size parentSize, String parentName, Class<?> clazz) {
+    return generate(null, parentSize, parentName, clazz);
+  }
+
+  public static String generate(
+      AmenityType type, Size parentSize, String parentName, Class<?> clazz) {
     var typeName = type == null ? "" : HYPHEN + type.name();
-    var pathName = "%s%s".formatted(getClassName(clazz), typeName);
+    var sizeName = parentSize == null ? "" : HYPHEN + parentSize.name(); // TODO : Change to make it optional i.e. fallback to without it if nothing found
+    var pathName = "%s%s%s".formatted(getClassName(clazz), typeName, sizeName);
     log.debug("Generating string for path '{}'", pathName);
     List<String> words = new ArrayList<>();
 
@@ -65,7 +72,7 @@ public class BasicStringGenerator {
     }
 
     // Process and return words
-    processingNewWordPlaceholders(words, pathName);
+    processingNewWordPlaceholders(words, pathName, type);
     processParentNamePlaceholders(words, parentName);
     return String.join("", words);
   }
@@ -94,12 +101,14 @@ public class BasicStringGenerator {
     return words.get(randomIndex);
   }
 
-  private static void processingNewWordPlaceholders(List<String> words, String pathName) {
+  private static void processingNewWordPlaceholders(
+      List<String> words, String pathName, AmenityType type) {
     if (words.get(0).startsWith(HYPHEN)) {
       var result = readWordsFromFile(pathName + words.get(0));
       if (result.isEmpty()) {
         log.warn("No input files found for path '{}'", pathName + words.get(0));
-        words.set(0, NONDESCRIPT + pathName.toLowerCase());
+        var fallbackName = type != null ? type.name() : pathName;
+        words.set(0, NONDESCRIPT + fallbackName + " " + RandomStringUtils.randomNumeric(3));
       } else {
         var randomWord = getRandomWord(result).trim();
         log.info("Replacing '{}' with random word '{}'", words.get(0), randomWord);

@@ -9,23 +9,26 @@ import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"settlementSize", "settlementName"})
 public class Amenity extends AbstractAmenity {
 
-  public Amenity(String parentName) {
-    generate(parentName);
-    logResult();
-  }
+  private final Size settlementSize;
+  private final String settlementName;
 
-  public Amenity(AmenityType type, String parentName) {
+  public Amenity(AmenityType type, Size settlementSize, String settlementName) {
     this.type = type;
-    generate(type, parentName);
+    this.settlementSize = settlementSize;
+    this.settlementName = settlementName;
+    generate();
     logResult();
   }
 
   @Override
   public void generate() {
-    generate(null);
+    this.name =
+      settlementName == null
+        ? BasicStringGenerator.generate(type, this.getClass())
+        : BasicStringGenerator.generate(type, settlementSize, settlementName, this.getClass());
   }
 
   @Override
@@ -34,13 +37,6 @@ public class Amenity extends AbstractAmenity {
       parentName == null
         ? BasicStringGenerator.generate(this.getClass())
         : BasicStringGenerator.generate(parentName, this.getClass());
-  }
-
-  public void generate(AmenityType type, String parentName) {
-    this.name =
-      parentName == null
-        ? BasicStringGenerator.generate(type, this.getClass())
-        : BasicStringGenerator.generate(type, parentName, this.getClass());
   }
 
   @Override
