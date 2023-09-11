@@ -1,57 +1,59 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
-
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import java.util.*;
-
-import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
+import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
 public abstract class AbstractSettlement extends AbstractLocation {
 
-  protected final Random random = new Random(SeedComponent.SEED);
-
   protected Size size;
   protected Player loyalTo;
-  @Getter protected List<Npc> inhabitants = new ArrayList<>();
+  @Getter
+  protected List<Npc> inhabitants = new ArrayList<>();
   protected List<Location> neighbours = new ArrayList<>();
   protected List<AbstractAmenity> amenities = new ArrayList<>();
+
+  protected final StringGenerator stringGenerator;
+
+  protected AbstractSettlement(StringGenerator stringGenerator) {
+    super();
+    this.stringGenerator = stringGenerator;
+    stringGenerator.setRandom(random);
+  }
 
   @Override
   public String toString() {
     return "AbstractSettlement(super="
-        + super.toString()
-        + "), size="
-        + size
-        + ", loyalTo="
-        + loyalTo
-        + ", inhabitants="
-        + inhabitants.size()
-        + ", neighbours="
-        + neighbours.size()
-        + ", amenities="
-        + amenities.size();
+      + super.toString()
+      + "), size="
+      + size
+      + ", loyalTo="
+      + loyalTo
+      + ", inhabitants="
+      + inhabitants.size()
+      + ", neighbours="
+      + neighbours.size()
+      + ", amenities="
+      + amenities.size();
   }
 
   @Override
   public String getSummary() {
     return "%s [ Size: %s | Inhabitants: %d | Amenities: %s | Neighbours: %s | %s ]"
-        .formatted(
-            name,
-            size,
-            inhabitants.size(),
-            amenities.size(),
-            neighbours.size(),
-            loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
-  }
-
-  protected AbstractSettlement() {
-    super();
+      .formatted(
+        name,
+        size,
+        inhabitants.size(),
+        amenities.size(),
+        neighbours.size(),
+        loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
   }
 }

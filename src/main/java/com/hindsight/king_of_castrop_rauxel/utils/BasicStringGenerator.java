@@ -1,8 +1,12 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
-
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,17 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
 
 @Slf4j
-@UtilityClass
-public class BasicStringGenerator {
+@NoArgsConstructor
+public class BasicStringGenerator implements StringGenerator {
   private static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
-  private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
+  private static final String[] SUFFIXES = new String[]{"--start", SUFFIX_MIDDLE, "--end"};
   private static final String FILE_EXTENSION = ".txt";
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
@@ -29,32 +30,40 @@ public class BasicStringGenerator {
   private static final String PLACEHOLDER_OWNER_NAME = "%O";
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
-  private final Random random = new Random(SeedComponent.SEED);
+  private Random random;
 
-  public static String locationNameFrom(Class<?> clazz) {
+  public void setRandom(Random parentRandom) {
+    random = parentRandom;
+  }
+
+  @Override
+  public String locationNameFrom(Class<?> clazz) {
     return locationNameFrom(null, null, null, null, clazz);
   }
 
-  public static String locationNameFrom(AmenityType type, Class<?> clazz) {
+  @Override
+  public String locationNameFrom(AbstractAmenity.AmenityType type, Class<?> clazz) {
     return locationNameFrom(type, null, null, null, clazz);
   }
 
-  public static String locationNameFrom(String parentName, Class<?> clazz) {
+  @Override
+  public String locationNameFrom(String parentName, Class<?> clazz) {
     return locationNameFrom(null, null, parentName, null, clazz);
   }
 
-  public static String locationNameFrom(
-      AmenityType type, Size parentSize, String parentName, List<Npc> inhabitants, Class<?> clazz) {
+  @Override
+  public String locationNameFrom(
+    AbstractAmenity.AmenityType type, AbstractLocation.Size parentSize, String parentName, List<Npc> inhabitants, Class<?> clazz) {
     var withType = type == null ? "" : HYPHEN + type.name().toUpperCase();
     var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toUpperCase();
     var className = clazz.getSimpleName().toUpperCase();
     var pathNameWithTypeAndSize = "%s%s%s".formatted(className, withType, withSize);
     var pathNameWithTypeOnly = "%s%s".formatted(className, withType);
     log.debug(
-        "Attempting to generate string for class '{}' with '{}' or '{}'",
-        className,
-        pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
-        pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
+      "Attempting to generate string for class '{}' with '{}' or '{}'",
+      className,
+      pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
+      pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
     List<String> words = new ArrayList<>();
 
     loopThroughFilesWithSuffixes(words, pathNameWithTypeAndSize);
@@ -68,22 +77,25 @@ public class BasicStringGenerator {
     return String.join("", words);
   }
 
-  public static String firstNameFrom(Class<?> clazz) {
+  @Override
+  public String npcFirstNameFrom(Class<?> clazz) {
     return npcNameFrom(true, false, clazz);
   }
 
-  public static String lastNameFrom(Class<?> clazz) {
+  @Override
+  public String npcLastNameFrom(Class<?> clazz) {
     return npcNameFrom(false, true, clazz);
   }
 
-  public static String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
+  @Override
+  public String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
     var className = clazz.getSimpleName().toUpperCase();
     log.debug(
-        "Attempting to generate {} {} {} for class {}",
-        firstName && lastName ? "first and last name" : "",
-        firstName && !lastName ? "first name" : "",
-        !firstName && lastName ? "last name" : "",
-        className);
+      "Attempting to generate {} {} {} for class {}",
+      firstName && lastName ? "first and last name" : "",
+      firstName && !lastName ? "first name" : "",
+      !firstName && lastName ? "last name" : "",
+      className);
     List<String> words = new ArrayList<>();
 
     if (firstName) {
@@ -97,7 +109,7 @@ public class BasicStringGenerator {
     return String.join(" ", words).trim();
   }
 
-  private static void loopThroughFilesWithSuffixes(List<String> words, String pathName) {
+  private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {
     if (words.isEmpty()) {
       for (String suffix : SUFFIXES) {
         var result = readWordsFromFile(pathName + suffix);
@@ -108,7 +120,7 @@ public class BasicStringGenerator {
     }
   }
 
-  private static void loopThroughFilesWithoutSuffix(List<String> words, String pathName) {
+  private void loopThroughFilesWithoutSuffix(List<String> words, String pathName) {
     if (words.isEmpty()) {
       var result = readWordsFromFile(pathName);
       if (!result.isEmpty()) {
@@ -117,18 +129,18 @@ public class BasicStringGenerator {
     }
   }
 
-  private static void setFallbackStringIfListEmpty(List<String> words, String className) {
+  private void setFallbackStringIfListEmpty(List<String> words, String className) {
     if (words.isEmpty()) {
       log.warn("No input files found for class '{}'", className);
       words.add(className + " " + RandomStringUtils.randomNumeric(3));
     }
   }
 
-  private static List<String> readWordsFromFile(String fileName) {
+  private List<String> readWordsFromFile(String fileName) {
     InputStream inputStream =
-        BasicStringGenerator.class
-            .getClassLoader()
-            .getResourceAsStream(FOLDER + fileName + FILE_EXTENSION);
+      BasicStringGenerator.class
+        .getClassLoader()
+        .getResourceAsStream(FOLDER + fileName + FILE_EXTENSION);
     if (inputStream != null) {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
         return reader.lines().map(String::trim).toList();
@@ -139,13 +151,13 @@ public class BasicStringGenerator {
     return new ArrayList<>();
   }
 
-  private static String getRandomWord(List<String> words) {
+  private String getRandomWord(List<String> words) {
     int randomIndex = random.nextInt(words.size());
     return words.get(randomIndex);
   }
 
-  private static void processingFileNamePlaceholders(
-      List<String> words, String pathName, AmenityType type) {
+  private void processingFileNamePlaceholders(
+    List<String> words, String pathName, AmenityType type) {
     if (words.get(0).startsWith(HYPHEN)) {
       var result = readWordsFromFile(pathName + words.get(0));
       if (result.isEmpty()) {
@@ -160,8 +172,8 @@ public class BasicStringGenerator {
     }
   }
 
-  private static void processWordPlaceholders(
-      List<String> words, String parentName, List<Npc> inhabitants) {
+  private void processWordPlaceholders(
+    List<String> words, String parentName, List<Npc> inhabitants) {
     for (String word : words) {
       if (word.contains(PLACEHOLDER_PARENT_NAME) && parentName != null) {
         log.info("Replacing '{}' with class name '{}'", word, parentName);
@@ -173,15 +185,5 @@ public class BasicStringGenerator {
         words.set(words.indexOf(word), word.replace(PLACEHOLDER_OWNER_NAME, randomInhabitant));
       }
     }
-  }
-
-  public static String generatePlaceholder(String className) {
-    log.info("Using fallback generator is being used '{}'", className);
-    int length = 5;
-    boolean useLetters = true;
-    boolean useNumbers = false;
-    return "%s %s"
-        .formatted(
-            className, RandomStringUtils.random(length, useLetters, useNumbers).toUpperCase());
   }
 }

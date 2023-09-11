@@ -1,38 +1,30 @@
 package com.hindsight.king_of_castrop_rauxel.settings;
 
-import java.util.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Random;
+
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
 @Slf4j
 @Component
 public class LocationComponent {
 
-  private static final Random random = new Random(SeedComponent.SEED);
-
   @Getter
-  private static Map<Size, SettlementConfig> settlementConfigurations = new EnumMap<>(Size.class);
-
-  public enum Size {
-    XS,
-    S,
-    M,
-    L,
-    XL
-  }
-
-  public enum AmenityType {
-    ENTRANCE,
-    MAIN_SQUARE,
-    SHOP,
-    QUEST_LOCATION,
-  }
+  private static final Map<Size, SettlementConfig> settlementConfigs = new EnumMap<>(Size.class);
 
   public LocationComponent() {
     initialiseSettlementConfigurations();
   }
 
+  // TODO: Investigate why more amenities than allowed are created for current seed
   private void initialiseSettlementConfigurations() {
     SettlementConfig xs = new SettlementConfig();
     SettlementConfig s = new SettlementConfig();
@@ -76,24 +68,25 @@ public class LocationComponent {
     l.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(6, 12));
     xl.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(10, 20));
 
-    settlementConfigurations.put(Size.XS, xs);
-    settlementConfigurations.put(Size.S, s);
-    settlementConfigurations.put(Size.M, m);
-    settlementConfigurations.put(Size.L, l);
-    settlementConfigurations.put(Size.XL, xl);
+    settlementConfigs.put(Size.XS, xs);
+    settlementConfigs.put(Size.S, s);
+    settlementConfigs.put(Size.M, m);
+    settlementConfigs.put(Size.L, l);
+    settlementConfigs.put(Size.XL, xl);
+    log.info(settlementConfigs.toString());
   }
 
-  public static Size randomSize() {
+  public static Size randomSize(Random random) {
     // TODO: Allow for more fine-grained control of probabilities
     var randomNumber = random.nextInt(0, 100) / 10;
     Size size =
-        switch (Integer.toString(randomNumber)) {
-          case "1", "2", "3", "4" -> Size.XS;
-          case "5", "6" -> Size.S;
-          case "7", "8" -> Size.M;
-          case "9" -> Size.L;
-          default -> Size.XL;
-        };
+      switch (Integer.toString(randomNumber)) {
+        case "1", "2", "3", "4" -> Size.XS;
+        case "5", "6" -> Size.S;
+        case "7", "8" -> Size.M;
+        case "9" -> Size.L;
+        default -> Size.XL;
+      };
     log.info("Set size to {} (derived from {})", size, randomNumber);
     return size;
   }

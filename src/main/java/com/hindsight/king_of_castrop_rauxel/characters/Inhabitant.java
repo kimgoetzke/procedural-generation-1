@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.utils.BasicStringGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
 @Slf4j
-@ToString(exclude = {"firstName", "lastName"})
+@ToString(exclude = {"firstName", "lastName", "stringGenerator"})
 @EqualsAndHashCode
 public class Inhabitant implements Npc {
 
@@ -17,7 +17,10 @@ public class Inhabitant implements Npc {
   private String lastName;
   private String fullName;
 
-  public Inhabitant() {
+  private final StringGenerator stringGenerator;
+
+  public Inhabitant(StringGenerator stringGenerator) {
+    this.stringGenerator = stringGenerator;
     generate();
     logResult();
   }
@@ -50,8 +53,8 @@ public class Inhabitant implements Npc {
   @Override
   public void generate(String parentName) {
     id = UUID.randomUUID().toString();
-    firstName = BasicStringGenerator.firstNameFrom(Inhabitant.class);
-    lastName = BasicStringGenerator.lastNameFrom(Inhabitant.class);
+    firstName = stringGenerator.npcFirstNameFrom(Inhabitant.class);
+    lastName = stringGenerator.npcLastNameFrom(Inhabitant.class);
     fullName = firstName + " " + lastName;
   }
 

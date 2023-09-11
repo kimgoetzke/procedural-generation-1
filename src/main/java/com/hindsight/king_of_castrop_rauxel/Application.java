@@ -9,10 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Application {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-        var newGame = new NewGame();
-        newGame.start();
-    }
-
+  public static void main(String[] args) {
+    var context = SpringApplication.run(Application.class, args);
+    var newGame = context.getBean(NewGame.class);
+    newGame.start();
+  }
 }

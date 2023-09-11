@@ -1,20 +1,23 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
-
 import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
 import com.hindsight.king_of_castrop_rauxel.settings.LocationComponent;
-import com.hindsight.king_of_castrop_rauxel.utils.BasicStringGenerator;
-import java.util.stream.IntStream;
+import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.stream.IntStream;
+
 @Slf4j
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class Settlement extends AbstractSettlement {
 
-  public Settlement() {
+  public Settlement(StringGenerator stringGenerator) {
+    super(stringGenerator);
     generate();
     logResult();
   }
@@ -29,18 +32,18 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateFoundation() {
-    size = LocationComponent.randomSize();
-    name = BasicStringGenerator.locationNameFrom(this.getClass());
+    size = LocationComponent.randomSize(random);
+    name = stringGenerator.locationNameFrom(this.getClass());
   }
 
   private void generateInhabitants() {
-    var bounds = getSettlementConfigurations().get(size).getInhabitants();
+    var bounds = LocationComponent.getSettlementConfigs().get(size).getInhabitants();
     var inhabitantCount = random.nextInt(bounds.getMaxInclusive() - bounds.getMinInclusive()) + 1;
-    IntStream.range(0, inhabitantCount).forEach(i -> inhabitants.add(new Inhabitant()));
+    IntStream.range(0, inhabitantCount).forEach(i -> inhabitants.add(new Inhabitant(stringGenerator)));
   }
 
   private void generateAmenities() {
-    getSettlementConfigurations()
+    LocationComponent.getSettlementConfigs()
         .get(size)
         .getAmenities()
         .forEach(
