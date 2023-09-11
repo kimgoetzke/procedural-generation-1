@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocationComponent {
 
-  private static final Random random = new Random();
+  private static final Random random = new Random(SeedComponent.SEED);
 
   @Getter
   private static Map<Size, SettlementConfig> settlementConfigurations = new EnumMap<>(Size.class);
@@ -30,6 +30,10 @@ public class LocationComponent {
   }
 
   public LocationComponent() {
+    initialiseSettlementConfigurations();
+  }
+
+  private void initialiseSettlementConfigurations() {
     SettlementConfig xs = new SettlementConfig();
     SettlementConfig s = new SettlementConfig();
     SettlementConfig m = new SettlementConfig();
@@ -81,15 +85,17 @@ public class LocationComponent {
 
   public static Size randomSize() {
     // TODO: Allow for more fine-grained control of probabilities
-    var rand = random.nextInt(0, 100) / 10;
-    log.info("Random int: {}", rand);
-    return switch (Integer.toString(rand)) {
-      case "1", "2", "3", "4" -> Size.XS;
-      case "5", "6" -> Size.S;
-      case "7", "8" -> Size.M;
-      case "9" -> Size.L;
-      default -> Size.XL;
-    };
+    var randomNumber = random.nextInt(0, 100) / 10;
+    Size size =
+        switch (Integer.toString(randomNumber)) {
+          case "1", "2", "3", "4" -> Size.XS;
+          case "5", "6" -> Size.S;
+          case "7", "8" -> Size.M;
+          case "9" -> Size.L;
+          default -> Size.XL;
+        };
+    log.info("Set size to {} (derived from {})", size, randomNumber);
+    return size;
   }
 
   @Getter

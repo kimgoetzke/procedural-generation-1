@@ -1,8 +1,13 @@
 Metalworking Forge
+%O's Forge
 Textile Workshop
+%O's Textiles
 Carpentry Shop
+%O's Carpentry
 Jewelry Studio
+%O's Jewelries
 Potter's Workshop
 %P's Potter
 Armourer
+%O's Armour Shop
 Armourer of %P

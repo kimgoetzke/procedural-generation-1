@@ -5,9 +5,11 @@ import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
 import java.util.List;
 
 public interface Location extends Visitable, Generatable {
-  String getName();
-
   String getId();
+
+  long getSeed();
+
+  String getName();
 
   String getDescription();
 

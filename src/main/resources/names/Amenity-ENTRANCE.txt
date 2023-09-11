@@ -1,8 +1,8 @@
-Marketplace
-City Gates
--SQUARE
-Northern City Gates
-Southern City Gates
-Western City Gates
-Eastern City Gates
-Barricades
+Northern Gates
+Southern Gates
+Western Gates
+Eastern Gates
+Northern Barricades
+Southern Barricades
+Western Barricades
+Eastern Barricades

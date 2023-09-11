@@ -1,10 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
+import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
+import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
 @UtilityClass
@@ -22,13 +23,13 @@ public class BasicStringGenerator {
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
   private static final String FILE_EXTENSION = ".txt";
-  public static final String NONDESCRIPT = "Nondescript ";
-  private final Random random = new Random();
-  public static final String HYPHEN = "-";
-  public static final String PLACEHOLDER_PARENT_NAME = "%P";
-  public static final String PLACEHOLDER_OWNER_NAME = "%O";
-  public static final String FIRST_NAME = "FIRST_NAME";
-  public static final String LAST_NAME = "LAST_NAME";
+  private static final String NONDESCRIPT = "Nondescript ";
+  private static final String HYPHEN = "-";
+  private static final String PLACEHOLDER_PARENT_NAME = "%P";
+  private static final String PLACEHOLDER_OWNER_NAME = "%O";
+  private static final String FIRST_NAME = "FIRST_NAME";
+  private static final String LAST_NAME = "LAST_NAME";
+  private final Random random = new Random(SeedComponent.SEED);
 
   public static String locationNameFrom(Class<?> clazz) {
     return locationNameFrom(null, null, null, null, clazz);
