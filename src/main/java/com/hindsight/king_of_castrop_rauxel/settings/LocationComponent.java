@@ -24,7 +24,6 @@ public class LocationComponent {
     initialiseSettlementConfigurations();
   }
 
-  // TODO: Investigate why more amenities than allowed are created for current seed
   private void initialiseSettlementConfigurations() {
     SettlementConfig xs = new SettlementConfig();
     SettlementConfig s = new SettlementConfig();
@@ -102,7 +101,7 @@ public class LocationComponent {
   @Setter
   @AllArgsConstructor
   public static class Bounds {
-    private int minInclusive;
-    private int maxInclusive;
+    private int lowerIncl;
+    private int upperIncl;
   }
 }

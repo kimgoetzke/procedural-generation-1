@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(callSuper = true)
 public class Amenity extends AbstractAmenity {
 
-  public Amenity(AmenityType type, AbstractSettlement settlement) {
-    super(type, settlement);
+  public Amenity(AmenityType type, Npc npc, AbstractSettlement settlement) {
+    super(type, npc, settlement);
     generate();
     logResult();
   }
@@ -21,7 +22,7 @@ public class Amenity extends AbstractAmenity {
       this,
       settlement.size,
       settlement.getName(),
-      settlement.getInhabitants(),
+      npc,
       this.getClass());
   }
 

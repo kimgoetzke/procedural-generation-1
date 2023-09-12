@@ -1,12 +1,12 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
-
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import java.util.List;
-import java.util.Random;
 import org.apache.commons.lang3.RandomStringUtils;
+
+import java.util.Random;
+
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
 public interface StringGenerator {
   void setRandom(Random random);
@@ -18,7 +18,7 @@ public interface StringGenerator {
   String locationNameFrom(String parentName, Class<?> clazz);
 
   String locationNameFrom(
-    AbstractAmenity amenity, Size parentSize, String parentName, List<Npc> inhabitants, Class<?> clazz);
+    AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz);
 
   String npcFirstNameFrom(Class<?> clazz);
 

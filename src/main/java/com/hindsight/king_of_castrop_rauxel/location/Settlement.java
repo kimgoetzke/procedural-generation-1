@@ -38,22 +38,22 @@ public class Settlement extends AbstractSettlement {
 
   private void generateInhabitants() {
     var bounds = LocationComponent.getSettlementConfigs().get(size).getInhabitants();
-    var inhabitantCount = random.nextInt(bounds.getMaxInclusive() - bounds.getMinInclusive()) + 1;
+    var inhabitantCount = random.nextInt(bounds.getUpperIncl() - bounds.getLowerIncl() + 1) + bounds.getLowerIncl();
     IntStream.range(0, inhabitantCount)
-        .forEach(i -> inhabitants.add(new Inhabitant(stringGenerator)));
+      .forEach(i -> inhabitants.add(new Inhabitant(stringGenerator)));
   }
 
   private void generateAmenities() {
     var amenities = LocationComponent.getSettlementConfigs().get(size).getAmenities();
     for (var a : amenities.entrySet()) {
-      var amenityCount =
-          random.nextInt(a.getValue().getMaxInclusive() - a.getValue().getMinInclusive()) + 1;
+      var amenityCount = random.nextInt(a.getValue().getUpperIncl() - a.getValue().getLowerIncl() + 1) + a.getValue().getLowerIncl();
       IntStream.range(0, amenityCount).forEach(i -> addAmenity(a.getKey()));
     }
   }
 
   private void addAmenity(AmenityType type) {
-    var amenity = new Amenity(type, this);
+    var npc = inhabitants.stream().filter(i -> i.getHome() == null).findFirst().orElse(null);
+    var amenity = new Amenity(type, npc, this);
     if (amenities.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       amenities.add(amenity);
     } else {
@@ -64,11 +64,11 @@ public class Settlement extends AbstractSettlement {
   private void generatePlayerActions() {
     for (int i = 1; i <= amenities.size(); i++) {
       availableActions.add(
-          PlayerAction.builder()
-              .number(i)
-              .name("[%s] Go to %s".formatted(i, amenities.get(i - 1).getName()))
-              .location(amenities.get(i - 1))
-              .build());
+        PlayerAction.builder()
+          .number(i)
+          .name("[%s] Go to %s".formatted(i, amenities.get(i - 1).getName()))
+          .location(amenities.get(i - 1))
+          .build());
     }
   }
 
