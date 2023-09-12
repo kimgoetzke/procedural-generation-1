@@ -11,8 +11,7 @@ import java.util.Random;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SeedComponent {
 
-  @Getter
-  private static long seed = 1234L;
+  @Getter private static long seed = 1234L;
   private static Random random = new Random(seed);
 
   public static void setSeed(long seed) {
@@ -20,7 +19,11 @@ public class SeedComponent {
     random = new Random(seed);
   }
 
-  public static Random getSettlementInstance() {
+  /**
+   * This instance is used for the generation of nodes and edges. It is not used for the generation
+   * of settlements, their amenities and names, which is done through a new instance of Random.
+   */
+  public static Random getInstance() {
     return random;
   }
 }

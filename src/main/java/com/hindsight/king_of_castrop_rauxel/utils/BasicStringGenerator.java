@@ -2,7 +2,6 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
 
 @Slf4j
@@ -22,7 +22,7 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.Amen
 public class BasicStringGenerator implements StringGenerator {
   private static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
-  private static final String[] SUFFIXES = new String[]{"--start", SUFFIX_MIDDLE, "--end"};
+  private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
   private static final String FILE_EXTENSION = ".txt";
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
@@ -42,8 +42,8 @@ public class BasicStringGenerator implements StringGenerator {
   }
 
   @Override
-  public String locationNameFrom(AbstractAmenity.AmenityType type, Class<?> clazz) {
-    return locationNameFrom(type, null, null, null, clazz);
+  public String locationNameFrom(AbstractAmenity amenity, Class<?> clazz) {
+    return locationNameFrom(amenity, null, null, null, clazz);
   }
 
   @Override
@@ -53,17 +53,22 @@ public class BasicStringGenerator implements StringGenerator {
 
   @Override
   public String locationNameFrom(
-    AbstractAmenity.AmenityType type, AbstractLocation.Size parentSize, String parentName, List<Npc> inhabitants, Class<?> clazz) {
+      AbstractAmenity amenity,
+      Size parentSize,
+      String parentName,
+      List<Npc> inhabitants,
+      Class<?> clazz) {
+    var type = amenity == null ? null : amenity.getType();
     var withType = type == null ? "" : HYPHEN + type.name().toUpperCase();
     var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toUpperCase();
     var className = clazz.getSimpleName().toUpperCase();
     var pathNameWithTypeAndSize = "%s%s%s".formatted(className, withType, withSize);
     var pathNameWithTypeOnly = "%s%s".formatted(className, withType);
     log.debug(
-      "Attempting to generate string for class '{}' with '{}' or '{}'",
-      className,
-      pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
-      pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
+        "Attempting to generate string for class '{}' with '{}' or '{}'",
+        className,
+        pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
+        pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
     List<String> words = new ArrayList<>();
 
     loopThroughFilesWithSuffixes(words, pathNameWithTypeAndSize);
@@ -73,7 +78,7 @@ public class BasicStringGenerator implements StringGenerator {
     setFallbackStringIfListEmpty(words, className);
 
     processingFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
-    processWordPlaceholders(words, parentName, inhabitants);
+    processWordPlaceholders(words, parentName, inhabitants, amenity);
     return String.join("", words);
   }
 
@@ -91,11 +96,11 @@ public class BasicStringGenerator implements StringGenerator {
   public String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
     var className = clazz.getSimpleName().toUpperCase();
     log.debug(
-      "Attempting to generate {} {} {} for class {}",
-      firstName && lastName ? "first and last name" : "",
-      firstName && !lastName ? "first name" : "",
-      !firstName && lastName ? "last name" : "",
-      className);
+        "Attempting to generate {} {} {} for class {}",
+        firstName && lastName ? "first and last name" : "",
+        firstName && !lastName ? "first name" : "",
+        !firstName && lastName ? "last name" : "",
+        className);
     List<String> words = new ArrayList<>();
 
     if (firstName) {
@@ -138,9 +143,9 @@ public class BasicStringGenerator implements StringGenerator {
 
   private List<String> readWordsFromFile(String fileName) {
     InputStream inputStream =
-      BasicStringGenerator.class
-        .getClassLoader()
-        .getResourceAsStream(FOLDER + fileName + FILE_EXTENSION);
+        BasicStringGenerator.class
+            .getClassLoader()
+            .getResourceAsStream(FOLDER + fileName + FILE_EXTENSION);
     if (inputStream != null) {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
         return reader.lines().map(String::trim).toList();
@@ -157,7 +162,7 @@ public class BasicStringGenerator implements StringGenerator {
   }
 
   private void processingFileNamePlaceholders(
-    List<String> words, String pathName, AmenityType type) {
+      List<String> words, String pathName, AmenityType type) {
     if (words.get(0).startsWith(HYPHEN)) {
       var result = readWordsFromFile(pathName + words.get(0));
       if (result.isEmpty()) {
@@ -173,16 +178,37 @@ public class BasicStringGenerator implements StringGenerator {
   }
 
   private void processWordPlaceholders(
-    List<String> words, String parentName, List<Npc> inhabitants) {
+      List<String> words, String parentName, List<Npc> inhabitants, AbstractAmenity amenity) {
     for (String word : words) {
-      if (word.contains(PLACEHOLDER_PARENT_NAME) && parentName != null) {
-        log.info("Replacing '{}' with class name '{}'", word, parentName);
-        words.set(words.indexOf(word), word.replace(PLACEHOLDER_PARENT_NAME, parentName));
-      }
-      if (word.contains(PLACEHOLDER_OWNER_NAME) && parentName != null) {
-        var randomInhabitant = inhabitants.get(random.nextInt(inhabitants.size())).getFirstName();
-        log.info("Replacing '{}' with NPC name '{}'", word, randomInhabitant);
-        words.set(words.indexOf(word), word.replace(PLACEHOLDER_OWNER_NAME, randomInhabitant));
+      injectParentName(words, word, parentName);
+      injectInhabitantName(words, word, inhabitants, amenity);
+    }
+  }
+
+  private void injectParentName(List<String> words, String word, String parentName) {
+    if (word.contains(PLACEHOLDER_PARENT_NAME) && parentName != null) {
+      log.info("Injecting parent class name '{}' into '{}'", parentName, word);
+      words.set(words.indexOf(word), word.replace(PLACEHOLDER_PARENT_NAME, parentName));
+    }
+  }
+
+  private void injectInhabitantName(
+      List<String> words, String word, List<Npc> inhabitants, AbstractAmenity amenity) {
+    if (!word.contains(PLACEHOLDER_OWNER_NAME)) {
+      return;
+    }
+    var replacementWord = word;
+    while (replacementWord.contains(PLACEHOLDER_OWNER_NAME)) {
+      var randomInhabitant = inhabitants.get(random.nextInt(inhabitants.size()));
+      if (randomInhabitant.getHome() == null) {
+        replacementWord =
+            word.replaceFirst(PLACEHOLDER_OWNER_NAME, randomInhabitant.getFirstName());
+        log.info(
+            "Injecting inhabitant first name '{}' into '{}' - and setting inhabitant's home",
+            randomInhabitant.getFirstName(),
+            word);
+        randomInhabitant.setHome(amenity);
+        words.set(words.indexOf(word), replacementWord);
       }
     }
   }

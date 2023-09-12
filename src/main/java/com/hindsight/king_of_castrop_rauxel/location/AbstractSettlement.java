@@ -3,12 +3,11 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true)

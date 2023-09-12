@@ -39,17 +39,17 @@ public class Settlement extends AbstractSettlement {
   private void generateInhabitants() {
     var bounds = LocationComponent.getSettlementConfigs().get(size).getInhabitants();
     var inhabitantCount = random.nextInt(bounds.getMaxInclusive() - bounds.getMinInclusive()) + 1;
-    IntStream.range(0, inhabitantCount).forEach(i -> inhabitants.add(new Inhabitant(stringGenerator)));
+    IntStream.range(0, inhabitantCount)
+        .forEach(i -> inhabitants.add(new Inhabitant(stringGenerator)));
   }
 
   private void generateAmenities() {
-    LocationComponent.getSettlementConfigs()
-        .get(size)
-        .getAmenities()
-        .forEach(
-            (k, v) ->
-                IntStream.range(v.getMinInclusive(), v.getMaxInclusive() + 1)
-                    .forEach(i -> addAmenity(k)));
+    var amenities = LocationComponent.getSettlementConfigs().get(size).getAmenities();
+    for (var a : amenities.entrySet()) {
+      var amenityCount =
+          random.nextInt(a.getValue().getMaxInclusive() - a.getValue().getMinInclusive()) + 1;
+      IntStream.range(0, amenityCount).forEach(i -> addAmenity(a.getKey()));
+    }
   }
 
   private void addAmenity(AmenityType type) {

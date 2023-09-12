@@ -1,7 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
+import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,10 +15,11 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class Inhabitant implements Npc {
 
-  private String id;
-  private String firstName;
-  private String lastName;
-  private String fullName;
+  @Getter private String id;
+  @Getter private String firstName;
+  @Getter private String lastName;
+  @Getter private String fullName;
+  @Getter private AbstractAmenity home;
 
   private final StringGenerator stringGenerator;
 
@@ -31,18 +35,9 @@ public class Inhabitant implements Npc {
   }
 
   @Override
-  public String getFirstName() {
-    return firstName;
-  }
-
-  @Override
-  public String getLastName() {
-    return lastName;
-  }
-
-  @Override
-  public String getId() {
-    return id;
+  public void setHome(Location location) {
+    this.home = (AbstractAmenity) location;
+    log.info("Updated: {}", this);
   }
 
   @Override

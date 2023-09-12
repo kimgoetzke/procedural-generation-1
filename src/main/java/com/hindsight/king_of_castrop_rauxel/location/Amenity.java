@@ -18,7 +18,7 @@ public class Amenity extends AbstractAmenity {
   @Override
   public void generate() {
     this.name = settlement.stringGenerator.locationNameFrom(
-      type,
+      this,
       settlement.size,
       settlement.getName(),
       settlement.getInhabitants(),
