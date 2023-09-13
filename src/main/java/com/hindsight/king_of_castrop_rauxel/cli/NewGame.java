@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractSettlement;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.settings.LocationComponent;
@@ -23,7 +24,7 @@ import java.util.Random;
 public class NewGame {
 
   private final StringGenerator stringGenerator;
-  private final Graph map = new Graph(true, false);
+  private final Graph<AbstractSettlement> map = new Graph<>(true, false);
   private Player player;
 
   public void start() {
@@ -43,20 +44,9 @@ public class NewGame {
     return startLocation;
   }
 
-  private void logOutcome(long startTime) {
-    map.log();
-    log.info("#");
-    log.info("# Summary:");
-    log.info("# Generated {} settlements", map.getVertices().size());
-    log.info("# Generation took {} seconds", (System.currentTimeMillis() - startTime) / 1000);
-    log.info("# List of settlements generated:");
-    map.getVertices().forEach(vertex -> log.info("# -> " + vertex.getLocation().getSummary()));
-    log.info("#");
-  }
-
-  // TODO: Add neighbours to list of neighbours
   // TODO: Link other vertices to neighbours
-  private void generateNeighbours(Random random, Vertex previous, int distanceFromStart) {
+  private void generateNeighbours(
+      Random random, Vertex<AbstractSettlement> previous, int distanceFromStart) {
     var neighboursCount = LocationComponent.randomNeighboursCount(random);
     var neighbours = new ArrayList<Settlement>();
     var current = previous;
@@ -68,6 +58,8 @@ public class NewGame {
         neighbours.add(neighbour);
         current = map.addVertex(neighbour);
         map.addEdge(previous, current, distance);
+        previous.getLocation().addNeighbour(current.getLocation());
+        current.getLocation().addNeighbour(previous.getLocation());
         log.info(
             "Added {} as neighbour of {}", neighbour.getName(), previous.getLocation().getName());
       } else {
@@ -78,11 +70,18 @@ public class NewGame {
             LocationComponent.MAX_DISTANCE_FROM_START);
       }
     }
-    for (int i = 0; i < neighbours.size(); i++) {
-
-      log.info("Generating neighbours of {}", neighbours.get(i).getName());
+    for (Settlement neighbour : neighbours) {
+      log.info("Generating neighbours of {}", neighbour.getName());
       generateNeighbours(random, current, distanceFromStart + distance);
     }
+  }
+
+  private void logOutcome(long startTime) {
+    map.log();
+    log.info("Generation took {} seconds", (System.currentTimeMillis() - startTime) / 1000);
+    log.info("Generated {} settlements", map.getVertices().size());
+    log.info("List of settlements generated:");
+    map.getVertices().forEach(vertex -> log.info("-> " + vertex.getLocation().getSummary()));
   }
 
   private void play() {

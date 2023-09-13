@@ -9,21 +9,21 @@ import java.util.List;
 
 @Slf4j
 @Getter
-public class Vertex {
+public class Vertex<T extends Location> {
 
-  private final Location location;
+  private final T location;
   private final List<Edge> edges;
 
-  public Vertex(Location location) {
+  public Vertex(T location) {
     this.location = location;
     this.edges = new ArrayList<>();
   }
 
-  public void addEdge(Vertex endVertex, Integer weight) {
+  public void addEdge(Vertex<T> endVertex, Integer weight) {
     this.edges.add(new Edge(this, endVertex, weight));
   }
 
-  public void removeEdge(Vertex endVertex) {
+  public void removeEdge(Vertex<T> endVertex) {
     this.edges.removeIf(edge -> edge.end().equals(endVertex));
   }
 

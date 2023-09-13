@@ -15,9 +15,8 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   protected Size size;
   protected Player loyalTo;
-  @Getter
-  protected List<Npc> inhabitants = new ArrayList<>();
-  protected List<Location> neighbours = new ArrayList<>();
+  @Getter protected List<Npc> inhabitants = new ArrayList<>();
+  @Getter protected List<Location> neighbours = new ArrayList<>();
   protected List<AbstractAmenity> amenities = new ArrayList<>();
 
   protected final StringGenerator stringGenerator;
@@ -28,31 +27,35 @@ public abstract class AbstractSettlement extends AbstractLocation {
     stringGenerator.setRandom(random);
   }
 
+  public void addNeighbour(Location neighbour) {
+    neighbours.add(neighbour);
+  }
+
   @Override
   public String toString() {
     return "AbstractSettlement(super="
-      + super.toString()
-      + "), size="
-      + size
-      + ", loyalTo="
-      + loyalTo
-      + ", inhabitants="
-      + inhabitants.size()
-      + ", neighbours="
-      + neighbours.size()
-      + ", amenities="
-      + amenities.size();
+        + super.toString()
+        + "), size="
+        + size
+        + ", loyalTo="
+        + loyalTo
+        + ", inhabitants="
+        + inhabitants.size()
+        + ", neighbours="
+        + neighbours.size()
+        + ", amenities="
+        + amenities.size();
   }
 
   @Override
   public String getSummary() {
     return "%s [ Size: %s | Inhabitants: %d | Amenities: %s | Neighbours: %s | %s ]"
-      .formatted(
-        name,
-        size,
-        inhabitants.size(),
-        amenities.size(),
-        neighbours.size(),
-        loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
+        .formatted(
+            name,
+            size,
+            inhabitants.size(),
+            amenities.size(),
+            neighbours.size(),
+            loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
   }
 }
