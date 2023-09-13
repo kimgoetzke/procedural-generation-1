@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
 @Slf4j
-@ToString(exclude = {"firstName", "lastName", "stringGenerator", "home"})
+@ToString(exclude = {"id", "firstName", "lastName", "stringGenerator", "home"})
 @EqualsAndHashCode
 public class Inhabitant implements Npc {
 
@@ -37,7 +37,7 @@ public class Inhabitant implements Npc {
   @Override
   public void setHome(Location location) {
     this.home = (AbstractAmenity) location;
-    log.info("Updated: {}", this);
+    log.info("Set home of '{}' to: {}", this.fullName, location);
   }
 
   @Override

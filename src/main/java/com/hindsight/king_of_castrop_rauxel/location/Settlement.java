@@ -59,6 +59,8 @@ public class Settlement extends AbstractSettlement {
     if (amenities.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       amenities.add(amenity);
     } else {
+      amenity.getNpc().setHome(null);
+      log.info("Skipping duplicate amenity '{}' and generating alternative", amenity.getName());
       addAmenity(type);
     }
   }

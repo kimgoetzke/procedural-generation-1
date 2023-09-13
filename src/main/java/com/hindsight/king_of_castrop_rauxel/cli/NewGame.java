@@ -9,14 +9,13 @@ import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.settings.LocationComponent;
 import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import java.util.ArrayList;
+import java.util.Random;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 @Slf4j
 @Component
@@ -53,27 +52,39 @@ public class NewGame {
     var distance = 0;
     for (int i = 0; i < neighboursCount; i++) {
       distance = LocationComponent.randomSettlementDistance(random);
-      if (distanceFromStart + distance < LocationComponent.MAX_DISTANCE_FROM_START) {
-        var neighbour = new Settlement(stringGenerator);
-        neighbours.add(neighbour);
-        current = map.addVertex(neighbour);
-        map.addEdge(previous, current, distance);
-        previous.getLocation().addNeighbour(current.getLocation());
-        current.getLocation().addNeighbour(previous.getLocation());
-        log.info(
-            "Added {} as neighbour of {}", neighbour.getName(), previous.getLocation().getName());
-      } else {
-        log.info(
-            "Stopped because next neighbour of {} would be {} km away (max: {})",
-            previous.getLocation().getName(),
-            distanceFromStart + distance,
-            LocationComponent.MAX_DISTANCE_FROM_START);
-      }
+      current = createSettlement(previous, distanceFromStart, distance, current, neighbours);
     }
     for (Settlement neighbour : neighbours) {
       log.info("Generating neighbours of {}", neighbour.getName());
       generateNeighbours(random, current, distanceFromStart + distance);
     }
+  }
+
+  private Vertex<AbstractSettlement> createSettlement(
+      Vertex<AbstractSettlement> previous,
+      int distanceFromStart,
+      int distance,
+      Vertex<AbstractSettlement> current,
+      ArrayList<Settlement> neighbours) {
+    if (distanceFromStart + distance < LocationComponent.MAX_DISTANCE_FROM_START) {
+      var neighbour = new Settlement(stringGenerator);
+      current = map.addVertex(neighbour);
+      neighbours.add(neighbour);
+      map.addEdge(previous, current, distance);
+      current.getLocation().addNeighbour(previous.getLocation());
+      previous.getLocation().addNeighbour(current.getLocation());
+      log.info(
+          "Added {} as neighbour of {} and vice versa",
+          neighbour.getName(),
+          previous.getLocation().getName());
+    } else {
+      log.info(
+          "Stopped because next neighbour of {} would be {} km away (max: {})",
+          previous.getLocation().getName(),
+          distanceFromStart + distance,
+          LocationComponent.MAX_DISTANCE_FROM_START);
+    }
+    return current;
   }
 
   private void logOutcome(long startTime) {

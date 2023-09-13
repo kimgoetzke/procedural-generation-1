@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 
 @Slf4j
-@ToString(exclude = {"description", "visitors", "availableActions", "seed", "random"})
+@ToString(exclude = {"id", "seed", "description", "availableActions", "visitors", "random"})
 public abstract class AbstractLocation implements Location {
 
   @Getter protected final String id;

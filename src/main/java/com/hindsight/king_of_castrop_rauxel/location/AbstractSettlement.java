@@ -13,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(callSuper = true)
 public abstract class AbstractSettlement extends AbstractLocation {
 
+  protected final StringGenerator stringGenerator;
+
   protected Size size;
   protected Player loyalTo;
+  protected List<AbstractAmenity> amenities = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
   @Getter protected List<Location> neighbours = new ArrayList<>();
-  protected List<AbstractAmenity> amenities = new ArrayList<>();
-
-  protected final StringGenerator stringGenerator;
 
   protected AbstractSettlement(StringGenerator stringGenerator) {
     super();

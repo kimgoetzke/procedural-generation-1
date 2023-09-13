@@ -30,7 +30,7 @@ public class BasicStringGenerator implements StringGenerator {
   private static final String PLACEHOLDER_OWNER_NAME = "%O";
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
-  public static final String FALLBACK_INHABITANT = "A Stranger";
+  public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
   private Random random;
 
   public void setRandom(Random parentRandom) {
@@ -196,10 +196,9 @@ public class BasicStringGenerator implements StringGenerator {
       return;
     }
     if (inhabitant == null) {
-      words.set(
-          words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, FALLBACK_INHABITANT));
-      log.warn(
-          "Inhabitant was null when generating {}, using {} instead", word, FALLBACK_INHABITANT);
+      var fallbackName = getFallbackName(FALLBACK_INHABITANT);
+      words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, fallbackName));
+      log.warn("Inhabitant was null when generating {}, using {} instead", word, fallbackName);
       return;
     } else if (inhabitant.getHome() != amenity) {
       throw new IllegalStateException(
@@ -208,5 +207,13 @@ public class BasicStringGenerator implements StringGenerator {
     log.info("Injecting inhabitant first name '{}' into '{}'", inhabitant.getFirstName(), word);
     words.set(
         words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, inhabitant.getFirstName()));
+  }
+
+  private String getFallbackName(String fileName) {
+    var result = readWordsFromFile(fileName);
+    if (result.isEmpty()) {
+      throw new IllegalStateException("Failed to find fallback name in '%s'".formatted(fileName));
+    }
+    return getRandomWord(result);
   }
 }
