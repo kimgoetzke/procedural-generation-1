@@ -55,6 +55,6 @@ public class Inhabitant implements Npc {
 
   @Override
   public void logResult() {
-    log.info("Generated: {}", this);
+    log.debug("Generated: {}", this);
   }
 }

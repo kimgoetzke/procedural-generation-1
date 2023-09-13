@@ -82,19 +82,18 @@ public class LocationComponent {
 
   /**
    * Returns a random Size enum. Must be provided with a Random in order to ensure reproducibility.
-   * TODO: Allow for more fine-grained control of probabilities.
    */
   public static Size randomSize(Random random) {
-    var randomNumber = random.nextInt(0, 100) / 10;
+    var randomNumber = random.nextInt(0, 21);
     Size size =
-        switch (Integer.toString(randomNumber)) {
-          case "1", "2", "3", "4" -> Size.XS;
-          case "5", "6" -> Size.S;
-          case "7", "8" -> Size.M;
-          case "9" -> Size.L;
+        switch (randomNumber) {
+          case 0, 1, 2, 3, 4, 5 -> Size.XS;
+          case 6, 7, 8, 9, 10, 11, 12, 13, 14 -> Size.S;
+          case 15, 16, 17 -> Size.M;
+          case 18, 19 -> Size.L;
           default -> Size.XL;
         };
-    log.info("Set size to {} (derived from {})", size, randomNumber);
+    log.info("Set size to {}", size);
     return size;
   }
 
