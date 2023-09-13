@@ -2,6 +2,8 @@ package com.hindsight.king_of_castrop_rauxel.graphs;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.Getter;
 
 @Getter
@@ -16,8 +18,8 @@ public class Graph {
     this.isDirected = isDirected;
   }
 
-  public Vertex addVertex(String data) {
-    Vertex newVertex = new Vertex(data);
+  public Vertex addVertex(Location location) {
+    Vertex newVertex = new Vertex(location);
     this.vertices.add(newVertex);
     return newVertex;
   }
@@ -43,9 +45,9 @@ public class Graph {
     this.vertices.remove(vertex);
   }
 
-  public Vertex getVertexByValue(String name) {
+  public Vertex getVertexByValue(Location location) {
     for (Vertex vertex : this.vertices) {
-      if (vertex.getName().equals(name)) {
+      if (vertex.getLocation().equals(location)) {
         return vertex;
       }
     }

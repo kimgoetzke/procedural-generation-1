@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,11 +11,11 @@ import java.util.List;
 @Getter
 public class Vertex {
 
-  private final String name;
+  private final Location location;
   private final List<Edge> edges;
 
-  public Vertex(String name) {
-    this.name = name;
+  public Vertex(Location location) {
+    this.location = location;
     this.edges = new ArrayList<>();
   }
 
@@ -29,14 +30,14 @@ public class Vertex {
   public void log(boolean showWeight) {
     StringBuilder message = new StringBuilder();
     if (this.edges.isEmpty()) {
-      log.info(this.name + " -->");
+      log.info(this.location.getName() + " -->");
       return;
     }
     for (int i = 0; i < this.edges.size(); i++) {
       if (i == 0) {
-        message.append(this.edges.get(i).start().name).append(" -->  ");
+        message.append(this.edges.get(i).start().location.getName()).append(" -->  ");
       }
-      message.append(this.edges.get(i).end().name);
+      message.append(this.edges.get(i).end().location.getName());
       if (showWeight) {
         message.append(" (").append(this.edges.get(i).weight()).append(")");
       }

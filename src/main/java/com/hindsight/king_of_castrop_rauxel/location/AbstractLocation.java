@@ -20,13 +20,12 @@ public abstract class AbstractLocation implements Location {
   @Getter @Setter protected String description;
   @Getter protected List<PlayerAction> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
-
   protected Random random;
 
   protected AbstractLocation() {
     this.id = UUID.randomUUID().toString();
     this.seed = SeedComponent.getSeed();
-    this.random = new Random(seed);
+    this.random = SeedComponent.getInstance();
   }
 
   @Override

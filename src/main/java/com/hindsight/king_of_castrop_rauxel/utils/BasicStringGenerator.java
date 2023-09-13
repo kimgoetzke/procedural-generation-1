@@ -22,7 +22,7 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.Amen
 public class BasicStringGenerator implements StringGenerator {
   private static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
-  private static final String[] SUFFIXES = new String[]{"--start", SUFFIX_MIDDLE, "--end"};
+  private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
   private static final String FILE_EXTENSION = ".txt";
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
@@ -30,6 +30,7 @@ public class BasicStringGenerator implements StringGenerator {
   private static final String PLACEHOLDER_OWNER_NAME = "%O";
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
+  public static final String FALLBACK_INHABITANT = "A Stranger";
   private Random random;
 
   public void setRandom(Random parentRandom) {
@@ -53,11 +54,7 @@ public class BasicStringGenerator implements StringGenerator {
 
   @Override
   public String locationNameFrom(
-    AbstractAmenity amenity,
-    Size parentSize,
-    String parentName,
-    Npc inhabitant,
-    Class<?> clazz) {
+      AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz) {
     var type = amenity == null ? null : amenity.getType();
     var withType = type == null ? "" : HYPHEN + type.name().toUpperCase();
     var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toUpperCase();
@@ -65,10 +62,10 @@ public class BasicStringGenerator implements StringGenerator {
     var pathNameWithTypeAndSize = "%s%s%s".formatted(className, withType, withSize);
     var pathNameWithTypeOnly = "%s%s".formatted(className, withType);
     log.debug(
-      "Attempting to generate string for class '{}' with '{}' or '{}'",
-      className,
-      pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
-      pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
+        "Attempting to generate string for class '{}' with '{}' or '{}'",
+        className,
+        pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
+        pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
     List<String> words = new ArrayList<>();
 
     loopThroughFilesWithSuffixes(words, pathNameWithTypeAndSize);
@@ -96,11 +93,11 @@ public class BasicStringGenerator implements StringGenerator {
   public String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
     var className = clazz.getSimpleName().toUpperCase();
     log.debug(
-      "Attempting to generate {} {} {} for class {}",
-      firstName && lastName ? "first and last name" : "",
-      firstName && !lastName ? "first name" : "",
-      !firstName && lastName ? "last name" : "",
-      className);
+        "Attempting to generate {} {} {} for class {}",
+        firstName && lastName ? "first and last name" : "",
+        firstName && !lastName ? "first name" : "",
+        !firstName && lastName ? "last name" : "",
+        className);
     List<String> words = new ArrayList<>();
 
     if (firstName) {
@@ -143,9 +140,9 @@ public class BasicStringGenerator implements StringGenerator {
 
   private List<String> readWordsFromFile(String fileName) {
     InputStream inputStream =
-      BasicStringGenerator.class
-        .getClassLoader()
-        .getResourceAsStream(FOLDER + fileName + FILE_EXTENSION);
+        BasicStringGenerator.class
+            .getClassLoader()
+            .getResourceAsStream(FOLDER + fileName + FILE_EXTENSION);
     if (inputStream != null) {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
         return reader.lines().map(String::trim).toList();
@@ -162,7 +159,7 @@ public class BasicStringGenerator implements StringGenerator {
   }
 
   private void processingFileNamePlaceholders(
-    List<String> words, String pathName, AmenityType type) {
+      List<String> words, String pathName, AmenityType type) {
     if (words.get(0).startsWith(HYPHEN)) {
       var result = readWordsFromFile(pathName + words.get(0));
       if (result.isEmpty()) {
@@ -178,7 +175,7 @@ public class BasicStringGenerator implements StringGenerator {
   }
 
   private void processWordPlaceholders(
-    List<String> words, String parentName, Npc inhabitant, AbstractAmenity amenity) {
+      List<String> words, String parentName, Npc inhabitant, AbstractAmenity amenity) {
     for (String word : words) {
       injectParentName(words, word, parentName);
       injectInhabitantName(words, word, inhabitant, amenity);
@@ -192,20 +189,24 @@ public class BasicStringGenerator implements StringGenerator {
     }
   }
 
+  // TODO: Find a solution that doesn't require a fallback inhabitant name
   private void injectInhabitantName(
-    List<String> words, String word, Npc inhabitant, AbstractAmenity amenity) {
+      List<String> words, String word, Npc inhabitant, AbstractAmenity amenity) {
     if (!word.contains(PLACEHOLDER_OWNER_NAME)) {
       return;
     }
     if (inhabitant == null) {
-      words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, "A Stranger"));
-      throw new IllegalStateException("Inhabitant is null");
-    }
-    if (inhabitant.getHome() != amenity) {
+      words.set(
+          words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, FALLBACK_INHABITANT));
+      log.warn(
+          "Inhabitant was null when generating {}, using {} instead", word, FALLBACK_INHABITANT);
+      return;
+    } else if (inhabitant.getHome() != amenity) {
       throw new IllegalStateException(
-        "Inhabitant '" + inhabitant.getName() + "' already has a different home");
+          "Inhabitant '" + inhabitant.getName() + "' already has a different home");
     }
     log.info("Injecting inhabitant first name '{}' into '{}'", inhabitant.getFirstName(), word);
-    words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, inhabitant.getFirstName()));
+    words.set(
+        words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, inhabitant.getFirstName()));
   }
 }

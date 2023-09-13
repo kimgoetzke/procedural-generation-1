@@ -17,8 +17,13 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Siz
 @Component
 public class LocationComponent {
 
+  public static final int MAX_DISTANCE_FROM_START = 500;
+
   @Getter
   private static final Map<Size, SettlementConfig> settlementConfigs = new EnumMap<>(Size.class);
+
+  @Getter private static final Bounds settlementNeighbours = new Bounds(0, 4);
+  @Getter private static final Bounds settlementDistance = new Bounds(5, 500);
 
   public LocationComponent() {
     initialiseSettlementConfigurations();
@@ -91,6 +96,16 @@ public class LocationComponent {
         };
     log.info("Set size to {} (derived from {})", size, randomNumber);
     return size;
+  }
+
+  public static int randomNeighboursCount(Random random) {
+    return random.nextInt(settlementNeighbours.getUpper() - settlementNeighbours.getLower() + 1)
+        + settlementNeighbours.getLower();
+  }
+
+  public static int randomSettlementDistance(Random random) {
+    return random.nextInt(settlementDistance.getUpper() - settlementDistance.getLower() + 1)
+        + settlementDistance.getLower();
   }
 
   @Getter
