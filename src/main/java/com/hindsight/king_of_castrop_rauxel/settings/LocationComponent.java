@@ -75,17 +75,20 @@ public class LocationComponent {
     log.info(settlementConfigs.toString());
   }
 
+  /**
+   * Returns a random Size enum. Must be provided with a Random in order to ensure reproducibility.
+   * TODO: Allow for more fine-grained control of probabilities.
+   */
   public static Size randomSize(Random random) {
-    // TODO: Allow for more fine-grained control of probabilities
     var randomNumber = random.nextInt(0, 100) / 10;
     Size size =
-      switch (Integer.toString(randomNumber)) {
-        case "1", "2", "3", "4" -> Size.XS;
-        case "5", "6" -> Size.S;
-        case "7", "8" -> Size.M;
-        case "9" -> Size.L;
-        default -> Size.XL;
-      };
+        switch (Integer.toString(randomNumber)) {
+          case "1", "2", "3", "4" -> Size.XS;
+          case "5", "6" -> Size.S;
+          case "7", "8" -> Size.M;
+          case "9" -> Size.L;
+          default -> Size.XL;
+        };
     log.info("Set size to {} (derived from {})", size, randomNumber);
     return size;
   }
@@ -97,11 +100,12 @@ public class LocationComponent {
     private Map<AmenityType, Bounds> amenities;
   }
 
+  /** Inclusive bounds for random number generation. */
   @Getter
   @Setter
   @AllArgsConstructor
   public static class Bounds {
-    private int lowerIncl;
-    private int upperIncl;
+    private int lower;
+    private int upper;
   }
 }
