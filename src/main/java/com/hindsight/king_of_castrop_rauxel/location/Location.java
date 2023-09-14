@@ -16,7 +16,7 @@ public interface Location extends Visitable, Generatable {
 
   List<PlayerAction> getAvailableActions();
 
-  Pair<Float, Float> getCoordinates();
+  Pair<Integer, Integer> getCoordinates();
 
   String getSummary(); // TODO: Replace with objects so that it can be used via API
 }

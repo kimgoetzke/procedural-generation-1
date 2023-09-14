@@ -19,8 +19,8 @@ public abstract class AbstractLocation implements Location {
   @Getter protected final long seed;
   @Getter @Setter protected String name;
   @Getter @Setter protected String description;
-  protected float latitude;
-  protected float longitude;
+  protected int x;
+  protected int y;
   @Getter protected List<PlayerAction> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
@@ -47,13 +47,13 @@ public abstract class AbstractLocation implements Location {
   }
 
   @Override
-  public Pair<Float, Float> getCoordinates() {
-    return Pair.of(latitude, longitude);
+  public Pair<Integer, Integer> getCoordinates() {
+    return Pair.of(x, y);
   }
 
-  protected void setCoordinates(Pair<Float, Float> coordinates) {
-    this.latitude = coordinates.getFirst();
-    this.longitude = coordinates.getSecond();
+  protected void setCoordinates(Pair<Integer, Integer> coordinates) {
+    this.x = coordinates.getFirst();
+    this.y = coordinates.getSecond();
   }
 
   public enum Size {

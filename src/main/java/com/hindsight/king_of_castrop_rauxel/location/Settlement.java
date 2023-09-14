@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 @EqualsAndHashCode(callSuper = true)
 public class Settlement extends AbstractSettlement {
 
-  public Settlement(StringGenerator stringGenerator, Pair<Float, Float> coordinates) {
+  public Settlement(StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
     super(stringGenerator);
     setCoordinates(coordinates);
     generate();

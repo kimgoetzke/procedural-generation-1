@@ -2,15 +2,13 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractSettlement;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
-import com.hindsight.king_of_castrop_rauxel.settings.LocationComponent;
+import com.hindsight.king_of_castrop_rauxel.settings.Chunk;
+import com.hindsight.king_of_castrop_rauxel.settings.ChunkComponent;
 import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
-import java.util.ArrayList;
-import java.util.Random;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,71 +22,94 @@ import org.springframework.stereotype.Component;
 public class NewGame {
 
   private final StringGenerator stringGenerator;
-  private final Graph<AbstractSettlement> map = new Graph<>(true, false);
+
+  private Chunk plane;
+  private final Graph<AbstractLocation> map = new Graph<>(true, false);
   private Player player;
 
   public void start() {
     var name = "Player";
-    var startLocation = generateMap();
+    var startLocation = generateChunk(true);
     this.player = new Player(name, startLocation);
     play();
   }
 
-  private Settlement generateMap() {
+  private Settlement generateChunk(boolean hasStartLocation) {
     var startTime = System.currentTimeMillis();
     var random = SeedComponent.getInstance();
-    var startLocation = new Settlement(stringGenerator, Pair.of(0F, 0F));
-    var startVertex = map.addVertex(startLocation);
-    generateNeighbours(random, startVertex, 0);
+    plane = ChunkComponent.generateChunk(random);
+    Settlement startLocation = null;
+    if (hasStartLocation) {
+      startLocation = generateSettlement(stringGenerator, plane.getCenter());
+    }
+    generateSettlements();
     logOutcome(startTime);
     return startLocation;
   }
 
-  // TODO: Replace this by an algorithm that places random coordinates on a sphere
-  //  and then calculates the distance between them to determine the neighbours
-  private void generateNeighbours(
-      Random random, Vertex<AbstractSettlement> previous, int distanceFromStart) {
-    var neighboursCount = LocationComponent.randomNeighboursCount(random);
-    var neighbours = new ArrayList<Settlement>();
-    var current = previous;
-    var distance = 0;
-    for (int i = 0; i < neighboursCount; i++) {
-      distance = LocationComponent.randomSettlementDistance(random);
-      current = createSettlement(previous, distanceFromStart, distance, current, neighbours);
-    }
-    for (Settlement neighbour : neighbours) {
-      log.info("Generating neighbours of {}", neighbour.getName());
-      generateNeighbours(random, current, distanceFromStart + distance);
+  // TODO: Connect the settlements with each other based on distance
+  private void generateSettlements() {
+    var settlementsCount = plane.getDensity();
+    for (int i = 0; i < settlementsCount; i++) {
+      var coordinates = plane.getRandomCoordinates(Chunk.LocationType.SETTLEMENT);
+      var settlement = generateSettlement(stringGenerator, coordinates);
+      log.info("Added settlement: {}", settlement.getName());
     }
   }
 
-  private Vertex<AbstractSettlement> createSettlement(
-      Vertex<AbstractSettlement> previous,
-      int distanceFromStart,
-      int distance,
-      Vertex<AbstractSettlement> current,
-      ArrayList<Settlement> neighbours) {
-    if (distanceFromStart + distance < LocationComponent.MAX_DISTANCE_FROM_START) {
-      var coordinates = Pair.of(0F, 0F);
-      var neighbour = new Settlement(stringGenerator, coordinates);
-      current = map.addVertex(neighbour);
-      neighbours.add(neighbour);
-      map.addEdge(previous, current, distance);
-      current.getLocation().addNeighbour(previous.getLocation());
-      previous.getLocation().addNeighbour(current.getLocation());
-      log.info(
-          "Added {} as neighbour of {} and vice versa",
-          neighbour.getName(),
-          previous.getLocation().getName());
-    } else {
-      log.info(
-          "Stopped because next neighbour of {} would be {} km away (max: {})",
-          previous.getLocation().getName(),
-          distanceFromStart + distance,
-          LocationComponent.MAX_DISTANCE_FROM_START);
-    }
-    return current;
+  public Settlement generateSettlement(
+      StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
+    var settlement = new Settlement(stringGenerator, coordinates);
+    map.addVertex(settlement);
+    plane.place(coordinates.getFirst(), coordinates.getSecond(), Chunk.LocationType.SETTLEMENT);
+    return settlement;
   }
+
+  // TODO: Replace this by an algorithm that places random coordinates on a sphere
+  //  and then calculates the distance between them to determine the neighbours
+  //  private void generateNeighbours(
+  //      Random random, Vertex<AbstractSettlement> previous, int distanceFromStart) {
+  //    var neighboursCount = ChunkComponent.randomNeighboursCount(random);
+  //    var neighbours = new ArrayList<Settlement>();
+  //    var current = previous;
+  //    var distance = 0;
+  //    for (int i = 0; i < neighboursCount; i++) {
+  //      distance = ChunkComponent.randomSettlementDistance(random);
+  //      current = createSettlement(previous, distanceFromStart, distance, current, neighbours);
+  //    }
+  //    for (Settlement neighbour : neighbours) {
+  //      log.info("Generating neighbours of {}", neighbour.getName());
+  //      generateNeighbours(random, current, distanceFromStart + distance);
+  //    }
+  //  }
+  //
+  //  private Vertex<AbstractSettlement> createSettlement(
+  //      Vertex<AbstractSettlement> previous,
+  //      int distanceFromStart,
+  //      int distance,
+  //      Vertex<AbstractSettlement> current,
+  //      ArrayList<Settlement> neighbours) {
+  //    if (distanceFromStart + distance < ChunkComponent.MAX_DISTANCE_FROM_START) {
+  //      var coordinates = Pair.of(0F, 0F);
+  //      var neighbour = new Settlement(stringGenerator, coordinates);
+  //      current = map.addVertex(neighbour);
+  //      neighbours.add(neighbour);
+  //      map.addEdge(previous, current, distance);
+  //      current.getLocation().addNeighbour(previous.getLocation());
+  //      previous.getLocation().addNeighbour(current.getLocation());
+  //      log.info(
+  //          "Added {} as neighbour of {} and vice versa",
+  //          neighbour.getName(),
+  //          previous.getLocation().getName());
+  //    } else {
+  //      log.info(
+  //          "Stopped because next neighbour of {} would be {} km away (max: {})",
+  //          previous.getLocation().getName(),
+  //          distanceFromStart + distance,
+  //          ChunkComponent.MAX_DISTANCE_FROM_START);
+  //    }
+  //    return current;
+  //  }
 
   private void logOutcome(long startTime) {
     map.log();
