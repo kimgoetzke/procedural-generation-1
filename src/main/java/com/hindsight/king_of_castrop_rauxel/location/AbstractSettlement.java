@@ -5,12 +5,14 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public abstract class AbstractSettlement extends AbstractLocation {
 
   protected final StringGenerator stringGenerator;
@@ -20,7 +22,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
   protected int area;
   protected List<AbstractAmenity> amenities = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
-  @Getter protected List<Location> neighbours = new ArrayList<>();
+  @Getter protected Set<Location> neighbours = new java.util.HashSet<>();
 
   protected AbstractSettlement(StringGenerator stringGenerator) {
     super();

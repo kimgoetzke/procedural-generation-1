@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,10 +14,11 @@ import java.util.*;
 
 @Slf4j
 @ToString(exclude = {"id", "seed", "description", "availableActions", "visitors", "random"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractLocation implements Location {
 
-  @Getter protected final String id;
-  @Getter protected final long seed;
+  @EqualsAndHashCode.Include @Getter protected final String id;
+  @EqualsAndHashCode.Include @Getter protected final long seed;
   @Getter @Setter protected String name;
   @Getter @Setter protected String description;
   protected int x;

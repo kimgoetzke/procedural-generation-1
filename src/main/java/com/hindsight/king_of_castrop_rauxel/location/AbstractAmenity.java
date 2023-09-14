@@ -1,13 +1,15 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ToString(callSuper = true, exclude = {"settlement", "npc"})
 @Getter
+@ToString(callSuper = true, exclude = {"settlement", "npc"})
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public abstract class AbstractAmenity extends AbstractLocation {
 
   protected final AmenityType type;

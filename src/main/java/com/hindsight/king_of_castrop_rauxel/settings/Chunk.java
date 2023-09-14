@@ -30,7 +30,7 @@ public class Chunk {
   public Pair<Integer, Integer> getRandomCoordinates(LocationType type) {
     var x = -1;
     var y = -1;
-    while (!isValidPosition(x, y) || hasNeighborsWithinDistance(x, y)) {
+    while (!isValidPosition(x, y) || hasNeighbors(x, y, ChunkComponent.MIN_PLACEMENT_DISTANCE)) {
       x = random.nextInt(ChunkComponent.CHUNK_SIZE + 1);
       y = random.nextInt(ChunkComponent.CHUNK_SIZE + 1);
     }
@@ -48,9 +48,9 @@ public class Chunk {
     return x >= 0 && x < ChunkComponent.CHUNK_SIZE && y >= 0 && y < ChunkComponent.CHUNK_SIZE;
   }
 
-  public boolean hasNeighborsWithinDistance(int x, int y) {
-    for (int dx = -ChunkComponent.MIN_DISTANCE; dx <= ChunkComponent.MIN_DISTANCE; dx++) {
-      for (int dy = -ChunkComponent.MIN_DISTANCE; dy <= ChunkComponent.MIN_DISTANCE; dy++) {
+  public boolean hasNeighbors(int x, int y, int distance) {
+    for (int dx = -distance; dx <= distance; dx++) {
+      for (int dy = -distance; dy <= distance; dy++) {
         int neighborX = x + dx;
         int neighborY = y + dy;
         if (isValidPosition(neighborX, neighborY)
@@ -60,5 +60,12 @@ public class Chunk {
       }
     }
     return false;
+  }
+
+  public int calculateDistance(Pair<Integer, Integer> start, Pair<Integer, Integer> end) {
+    int deltaX = end.getFirst() - start.getFirst();
+    int deltaY = end.getSecond() - start.getSecond();
+    double distance = Math.sqrt((double) deltaX * deltaX + deltaY * deltaY);
+    return (int) Math.round(distance);
   }
 }

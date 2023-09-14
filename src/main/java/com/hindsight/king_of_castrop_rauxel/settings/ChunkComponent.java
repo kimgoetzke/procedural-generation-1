@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ChunkComponent {
   public static final int CHUNK_SIZE = 500;
-  public static final int MIN_DISTANCE = 5;
+  public static final int MIN_PLACEMENT_DISTANCE = 5;
+  public static final int MAX_NEIGHBOUR_DISTANCE = 100;
   private static final Bounds chunkDensity = new Bounds(5, 10);
 
   public static Chunk generateChunk(Random random) {

@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Settlement extends AbstractSettlement {
 
   public Settlement(StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {

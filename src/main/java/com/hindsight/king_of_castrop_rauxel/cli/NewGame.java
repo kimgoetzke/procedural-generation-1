@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Slf4j
 @Component
@@ -43,11 +46,70 @@ public class NewGame {
       startLocation = generateSettlement(stringGenerator, plane.getCenter());
     }
     generateSettlements();
+    connectCloseSettlements();
+    connectAtLeastOneSettlement();
     logOutcome(startTime);
     return startLocation;
   }
 
-  // TODO: Connect the settlements with each other based on distance
+  private void connectCloseSettlements() {
+    List<Vertex<AbstractLocation>> vertices = map.getVertices();
+    for (var ref : vertices) {
+      var refCoordinates = ref.getLocation().getCoordinates();
+      vertices.stream()
+          .filter(neighbour -> !ref.equals(neighbour))
+          .forEach(
+              neighbour -> {
+                var neighbourCoordinates = neighbour.getLocation().getCoordinates();
+                var distance = plane.calculateDistance(refCoordinates, neighbourCoordinates);
+                log.info(
+                    "Distance between {} and {} is {} km",
+                    ref.getLocation().getName(),
+                    neighbour.getLocation().getName(),
+                    distance);
+                addConnectionsWithinRange(ref, neighbour, distance);
+              });
+    }
+  }
+
+  // TODO: Complete this method
+  private void connectAtLeastOneSettlement() {
+    List<Vertex<AbstractLocation>> vertices = map.getVertices();
+    for (var ref : vertices) {
+      var refCoordinates = ref.getLocation().getCoordinates();
+      vertices.stream()
+        .filter(neighbour -> !ref.equals(neighbour))
+        .forEach(
+          neighbour -> {
+            var neighbourCoordinates = neighbour.getLocation().getCoordinates();
+            var distance = plane.calculateDistance(refCoordinates, neighbourCoordinates);
+            log.info(
+              "Distance between {} and {} is {} km",
+              ref.getLocation().getName(),
+              neighbour.getLocation().getName(),
+              distance);
+            addConnectionsWithinRange(ref, neighbour, distance);
+          });
+    }
+  }
+
+  private void addConnectionsWithinRange(
+      Vertex<AbstractLocation> ref, Vertex<AbstractLocation> neighbour, int distance) {
+    if (distance < ChunkComponent.MAX_NEIGHBOUR_DISTANCE) {
+      map.addEdge(ref, neighbour, distance);
+      if (ref.getLocation() instanceof Settlement settlement) {
+        settlement.addNeighbour(neighbour.getLocation());
+      }
+      if (neighbour.getLocation() instanceof Settlement settlement) {
+        settlement.addNeighbour(ref.getLocation());
+      }
+      log.info(
+          "Added {} as neighbour of {} and vice versa",
+          neighbour.getLocation().getName(),
+          ref.getLocation().getName());
+    }
+  }
+
   private void generateSettlements() {
     var settlementsCount = plane.getDensity();
     for (int i = 0; i < settlementsCount; i++) {
