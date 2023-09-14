@@ -8,6 +8,7 @@ import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 
 import java.util.stream.IntStream;
 
@@ -16,8 +17,9 @@ import java.util.stream.IntStream;
 @EqualsAndHashCode(callSuper = true)
 public class Settlement extends AbstractSettlement {
 
-  public Settlement(StringGenerator stringGenerator) {
+  public Settlement(StringGenerator stringGenerator, Pair<Float, Float> coordinates) {
     super(stringGenerator);
+    setCoordinates(coordinates);
     generate();
     logResult();
   }
@@ -33,6 +35,7 @@ public class Settlement extends AbstractSettlement {
 
   private void generateFoundation() {
     size = LocationComponent.randomSize(random);
+    area = LocationComponent.randomArea(random, size);
     name = stringGenerator.locationNameFrom(this.getClass());
   }
 
@@ -74,15 +77,6 @@ public class Settlement extends AbstractSettlement {
               .location(amenities.get(i - 1))
               .build());
     }
-  }
-
-  /**
-   * Modify once higher-level locations such as countries or lands are implemented. This method is
-   * currently redundant but would allow referencing the parent name in its own name.
-   */
-  @Override
-  public void generate(String parentName) {
-    generate();
   }
 
   @Override

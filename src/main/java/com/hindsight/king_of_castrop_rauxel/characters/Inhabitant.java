@@ -42,11 +42,6 @@ public class Inhabitant implements Npc {
 
   @Override
   public void generate() {
-    generate(null);
-  }
-
-  @Override
-  public void generate(String parentName) {
     id = UUID.randomUUID().toString();
     firstName = stringGenerator.npcFirstNameFrom(Inhabitant.class);
     lastName = stringGenerator.npcLastNameFrom(Inhabitant.class);

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 
 import java.util.*;
 
@@ -18,6 +19,8 @@ public abstract class AbstractLocation implements Location {
   @Getter protected final long seed;
   @Getter @Setter protected String name;
   @Getter @Setter protected String description;
+  protected float latitude;
+  protected float longitude;
   @Getter protected List<PlayerAction> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
@@ -41,6 +44,16 @@ public abstract class AbstractLocation implements Location {
   @Override
   public void addVisitor(Visitor visitor) {
     visitors.add(visitor);
+  }
+
+  @Override
+  public Pair<Float, Float> getCoordinates() {
+    return Pair.of(latitude, longitude);
+  }
+
+  protected void setCoordinates(Pair<Float, Float> coordinates) {
+    this.latitude = coordinates.getFirst();
+    this.longitude = coordinates.getSecond();
   }
 
   public enum Size {

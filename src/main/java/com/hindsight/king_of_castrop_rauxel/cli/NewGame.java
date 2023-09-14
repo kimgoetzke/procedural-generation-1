@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -36,14 +37,15 @@ public class NewGame {
   private Settlement generateMap() {
     var startTime = System.currentTimeMillis();
     var random = SeedComponent.getInstance();
-    var startLocation = new Settlement(stringGenerator);
+    var startLocation = new Settlement(stringGenerator, Pair.of(0F, 0F));
     var startVertex = map.addVertex(startLocation);
     generateNeighbours(random, startVertex, 0);
     logOutcome(startTime);
     return startLocation;
   }
 
-  // TODO: Link other vertices to neighbours
+  // TODO: Replace this by an algorithm that places random coordinates on a sphere
+  //  and then calculates the distance between them to determine the neighbours
   private void generateNeighbours(
       Random random, Vertex<AbstractSettlement> previous, int distanceFromStart) {
     var neighboursCount = LocationComponent.randomNeighboursCount(random);
@@ -67,7 +69,8 @@ public class NewGame {
       Vertex<AbstractSettlement> current,
       ArrayList<Settlement> neighbours) {
     if (distanceFromStart + distance < LocationComponent.MAX_DISTANCE_FROM_START) {
-      var neighbour = new Settlement(stringGenerator);
+      var coordinates = Pair.of(0F, 0F);
+      var neighbour = new Settlement(stringGenerator, coordinates);
       current = map.addVertex(neighbour);
       neighbours.add(neighbour);
       map.addEdge(previous, current, distance);

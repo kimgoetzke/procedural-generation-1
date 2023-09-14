@@ -12,23 +12,16 @@ public class Amenity extends AbstractAmenity {
 
   public Amenity(AmenityType type, Npc npc, AbstractSettlement settlement) {
     super(type, npc, settlement);
+    setCoordinates(settlement.getCoordinates());
     generate();
     logResult();
   }
 
   @Override
   public void generate() {
-    this.name = settlement.stringGenerator.locationNameFrom(
-      this,
-      settlement.size,
-      settlement.getName(),
-      npc,
-      this.getClass());
-  }
-
-  @Override
-  public void generate(String parentName) {
-    generate();
+    this.name =
+        settlement.stringGenerator.locationNameFrom(
+            this, settlement.size, settlement.getName(), npc, this.getClass());
   }
 
   @Override
