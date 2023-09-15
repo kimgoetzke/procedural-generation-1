@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.components;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
 import java.util.EnumMap;
@@ -43,35 +43,35 @@ public class LocationComponent {
     l.area = new Bounds(2, 8);
     xl.area = new Bounds(15, 40);
 
-    xs.amenities = new EnumMap<>(AmenityType.class);
-    s.amenities = new EnumMap<>(AmenityType.class);
-    m.amenities = new EnumMap<>(AmenityType.class);
-    l.amenities = new EnumMap<>(AmenityType.class);
-    xl.amenities = new EnumMap<>(AmenityType.class);
+    xs.amenities = new EnumMap<>(PoiType.class);
+    s.amenities = new EnumMap<>(PoiType.class);
+    m.amenities = new EnumMap<>(PoiType.class);
+    l.amenities = new EnumMap<>(PoiType.class);
+    xl.amenities = new EnumMap<>(PoiType.class);
 
-    xs.amenities.put(AmenityType.ENTRANCE, new Bounds(0, 0));
-    s.amenities.put(AmenityType.ENTRANCE, new Bounds(0, 1));
-    m.amenities.put(AmenityType.ENTRANCE, new Bounds(2, 4));
-    l.amenities.put(AmenityType.ENTRANCE, new Bounds(1, 1));
-    xl.amenities.put(AmenityType.ENTRANCE, new Bounds(4, 8));
+    xs.amenities.put(PoiType.ENTRANCE, new Bounds(0, 0));
+    s.amenities.put(PoiType.ENTRANCE, new Bounds(0, 1));
+    m.amenities.put(PoiType.ENTRANCE, new Bounds(2, 4));
+    l.amenities.put(PoiType.ENTRANCE, new Bounds(1, 1));
+    xl.amenities.put(PoiType.ENTRANCE, new Bounds(4, 8));
 
-    xs.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
-    s.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
-    m.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
-    l.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
-    xl.amenities.put(AmenityType.MAIN_SQUARE, new Bounds(1, 1));
+    xs.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
+    s.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
+    m.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
+    l.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
+    xl.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
 
-    xs.amenities.put(AmenityType.SHOP, new Bounds(0, 1));
-    s.amenities.put(AmenityType.SHOP, new Bounds(1, 3));
-    m.amenities.put(AmenityType.SHOP, new Bounds(3, 6));
-    l.amenities.put(AmenityType.SHOP, new Bounds(5, 10));
-    xl.amenities.put(AmenityType.SHOP, new Bounds(8, 14));
+    xs.amenities.put(PoiType.SHOP, new Bounds(0, 1));
+    s.amenities.put(PoiType.SHOP, new Bounds(1, 3));
+    m.amenities.put(PoiType.SHOP, new Bounds(3, 6));
+    l.amenities.put(PoiType.SHOP, new Bounds(5, 10));
+    xl.amenities.put(PoiType.SHOP, new Bounds(8, 14));
 
-    xs.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(0, 2));
-    s.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(2, 5));
-    m.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(3, 8));
-    l.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(6, 12));
-    xl.amenities.put(AmenityType.QUEST_LOCATION, new Bounds(10, 20));
+    xs.amenities.put(PoiType.QUEST_LOCATION, new Bounds(0, 2));
+    s.amenities.put(PoiType.QUEST_LOCATION, new Bounds(2, 5));
+    m.amenities.put(PoiType.QUEST_LOCATION, new Bounds(3, 8));
+    l.amenities.put(PoiType.QUEST_LOCATION, new Bounds(6, 12));
+    xl.amenities.put(PoiType.QUEST_LOCATION, new Bounds(10, 20));
 
     settlementConfigs.put(Size.XS, xs);
     settlementConfigs.put(Size.S, s);
@@ -109,6 +109,6 @@ public class LocationComponent {
   public static class SettlementConfig {
     private Bounds area;
     private Bounds inhabitants;
-    private Map<AmenityType, Bounds> amenities;
+    private Map<PoiType, Bounds> amenities;
   }
 }

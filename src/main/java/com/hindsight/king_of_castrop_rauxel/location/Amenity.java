@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(callSuper = true)
 public class Amenity extends AbstractAmenity {
 
-  public Amenity(AmenityType type, Npc npc, AbstractSettlement settlement) {
+  public Amenity(PoiType type, Npc npc, AbstractSettlement settlement) {
     super(type, npc, settlement);
     generate();
     logResult();

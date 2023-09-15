@@ -34,11 +34,23 @@ public class NewGame {
   // TODO: Create basic CLI game loop
   //  - Display amenity you're at
   //  - Allow using PlayerAction to visit other locations
+  @SuppressWarnings("InfiniteLoopStatement")
   public void start() {
     var name = "Player";
     var startLocation = generateFirstChunk();
     this.player = new Player(name, startLocation);
-    play();
+    while (true) {
+      showStats();
+      play();
+    }
+  }
+
+  private void showStats() {
+    System.out.printf(
+        "%n%nSTATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
+        player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
+    Location currentLocation = player.getCurrentLocation();
+    System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
   }
 
   private Settlement generateFirstChunk() {
@@ -59,25 +71,25 @@ public class NewGame {
   }
 
   private void play() {
-    System.out.printf(
-        "%n%nSTATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
-        player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
-    Location currentLocation = player.getCurrentLocation();
-    Optional<List<Action>> actions = Optional.empty();
-    System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
-    if (currentLocation instanceof Settlement settlement) {
-      System.out.printf("You are at: %s. ", settlement.getDefaultAmenity().getName());
-      actions = Optional.of(ActionTemplate.defaultSettlementActions(settlement));
-    }
-    System.out.printf("What do you want to do?");
-    actions.ifPresent(list -> list.forEach(Action::print));
-    System.out.println("> ");
+    var actions = buildAndPrintActions();
+    System.out.printf("%n> ");
     var choice = this.input.nextInt();
-    if (choice >= 0 && actions.isPresent() && choice <= actions.get().size()) {
-      actions.get().get(choice - 1).execute(player);
+    var action = actions.stream().filter(a -> a.getNumber() == choice).findFirst();
+    if (action.isPresent()) {
+      action.get().execute(player);
     } else {
-      System.out.printf("Invalid choice! Try again...%n");
+      System.out.println("Invalid choice! Try again...");
     }
-    play();
+  }
+
+  private List<Action> buildAndPrintActions() {
+    Optional<List<Action>> actions = Optional.empty();
+    if (player.getCurrentLocation() instanceof Settlement settlement) {
+      System.out.printf("You are at: %s. ", settlement.getDefaultPoi().getName());
+      actions = Optional.of(ActionTemplate.defaultLocationActions(settlement));
+    }
+    System.out.println("What do you want to do?");
+    actions.ifPresent(list -> list.forEach(a -> System.out.println(a.print())));
+    return actions.orElse(List.of());
   }
 }

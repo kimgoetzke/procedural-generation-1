@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 
 public interface Npc {
   String getId();
@@ -9,11 +9,9 @@ public interface Npc {
 
   String getFirstName();
 
-  String getLastName();
+  PointOfInterest getHome();
 
-  Location getHome();
-
-  void setHome(Location location);
+  void setHome(PointOfInterest home);
 
   void generate();
 

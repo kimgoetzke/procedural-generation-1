@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
 import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class Player implements Visitor {
   @Setter private int age;
   @Setter private int activityPoints;
   private Location currentLocation;
+  private PointOfInterest currentPointOfInterest;
   private final Set<Location> visitedLocations = new HashSet<>();
 
   public Player(String name, @NonNull Location currentLocation) {
@@ -30,5 +32,9 @@ public class Player implements Visitor {
     visitedLocations.add(this.currentLocation);
     currentLocation.addVisitor(this);
     this.currentLocation = currentLocation;
+  }
+
+  public void setCurrentPointOfInterest(PointOfInterest currentPointOfInterest) {
+    this.currentPointOfInterest = currentPointOfInterest;
   }
 }

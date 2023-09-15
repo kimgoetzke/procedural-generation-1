@@ -1,19 +1,22 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
+import com.hindsight.king_of_castrop_rauxel.action.Action;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.util.Pair;
 
-import java.util.List;
-
 public interface Location extends Visitable, Generatable {
-
-  long getSeed();
 
   String getName();
 
   String getDescription();
 
-  List<LocationAction> getAvailableActions();
+  List<Action> getAvailableActions();
+
+  List<PointOfInterest> getPointsOfInterest();
+
+  Set<Location> getNeighbours();
 
   Pair<Integer, Integer> getCoordinates();
 

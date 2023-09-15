@@ -4,6 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,13 +18,12 @@ import org.springframework.data.util.Pair;
 public abstract class AbstractSettlement extends AbstractLocation {
 
   protected final StringGenerator stringGenerator;
-
   protected Size size;
   protected Player loyalTo;
   protected int area;
-  @Getter protected List<AbstractAmenity> amenities = new ArrayList<>();
+  protected List<PointOfInterest> pointsOfInterests = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
-  @Getter protected Set<Location> neighbours = new java.util.HashSet<>();
+  @Getter protected Set<Location> neighbours = new HashSet<>();
 
   protected AbstractSettlement(
       StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
@@ -36,11 +36,16 @@ public abstract class AbstractSettlement extends AbstractLocation {
     neighbours.add(neighbour);
   }
 
-  public AbstractAmenity getDefaultAmenity() {
-    return amenities.stream()
-        .filter(a -> a.getType() == AbstractAmenity.AmenityType.MAIN_SQUARE)
+  public PointOfInterest getDefaultPoi() {
+    return pointsOfInterests.stream()
+        .filter(a -> a.getType() == AbstractAmenity.PoiType.MAIN_SQUARE)
         .findFirst()
         .orElse(null);
+  }
+
+  @Override
+  public List<PointOfInterest> getPointsOfInterest() {
+    return pointsOfInterests;
   }
 
   @Override
@@ -56,7 +61,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
         + ", neighbours="
         + neighbours.size()
         + ", amenities="
-        + amenities.size();
+        + pointsOfInterests.size();
   }
 
   @Override
@@ -67,7 +72,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
             size,
             inhabitants.size(),
             getPopulationDensity(),
-            amenities.size(),
+            pointsOfInterests.size(),
             "(%s, %s)".formatted(getCoordinates().getFirst(), getCoordinates().getSecond()),
             neighbours.size(),
             loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());

@@ -9,5 +9,7 @@ public interface Action {
 
   boolean execute(Player player);
 
-  String print();
+  default String print() {
+    return "[%s] %s".formatted(getNumber(), getName());
+  }
 }

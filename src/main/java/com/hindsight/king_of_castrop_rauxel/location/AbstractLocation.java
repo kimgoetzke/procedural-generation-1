@@ -1,16 +1,15 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
+import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import com.hindsight.king_of_castrop_rauxel.components.SeedComponent;
+import java.util.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
-
-import java.util.*;
 
 @Slf4j
 @ToString(exclude = {"id", "seed", "description", "availableActions", "visitors", "random"})
@@ -23,7 +22,7 @@ public abstract class AbstractLocation implements Location {
   @Getter @Setter protected String description;
   protected int x;
   protected int y;
-  @Getter protected List<LocationAction> availableActions = new ArrayList<>();
+  @Getter protected List<Action> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
 

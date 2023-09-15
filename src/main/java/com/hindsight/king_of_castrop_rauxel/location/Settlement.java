@@ -1,16 +1,15 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
+import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
 import com.hindsight.king_of_castrop_rauxel.components.LocationComponent;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import java.util.stream.IntStream;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
-
-import java.util.stream.IntStream;
 
 @Slf4j
 @ToString(callSuper = true)
@@ -55,11 +54,11 @@ public class Settlement extends AbstractSettlement {
     }
   }
 
-  private void addAmenity(AmenityType type) {
+  private void addAmenity(PoiType type) {
     var npc = inhabitants.stream().filter(i -> i.getHome() == null).findFirst().orElse(null);
     var amenity = new Amenity(type, npc, this);
-    if (amenities.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
-      amenities.add(amenity);
+    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
+      pointsOfInterests.add(amenity);
     } else {
       amenity.getNpc().setHome(null);
       log.info("Skipping duplicate amenity '{}' and generating alternative", amenity.getName());
@@ -68,12 +67,12 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generatePlayerActions() {
-    for (int i = 1; i <= amenities.size(); i++) {
+    for (int i = 1; i <= pointsOfInterests.size(); i++) {
       availableActions.add(
-          LocationAction.builder()
+          PoiAction.builder()
               .number(i)
-              .name("[%s] Go to %s".formatted(i, amenities.get(i - 1).getName()))
-              .location(amenities.get(i - 1))
+              .name("[%s] Go to %s".formatted(i, pointsOfInterests.get(i - 1).getName()))
+              .location(pointsOfInterests.get(i - 1))
               .build());
     }
   }

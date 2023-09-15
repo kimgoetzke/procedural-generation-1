@@ -17,9 +17,4 @@ public class LocationAction implements Action {
     player.setCurrentLocation(location);
     return true;
   }
-
-  @Override
-  public String print() {
-    return "[%s] %s%n".formatted(number, name);
-  }
 }

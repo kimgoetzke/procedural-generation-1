@@ -1,11 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
+
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +12,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
 @NoArgsConstructor
@@ -148,8 +147,7 @@ public class BasicStringGenerator implements StringGenerator {
     return words.get(randomIndex);
   }
 
-  private void processingFileNamePlaceholders(
-      List<String> words, String pathName, AmenityType type) {
+  private void processingFileNamePlaceholders(List<String> words, String pathName, PoiType type) {
     if (words.get(0).startsWith(HYPHEN)) {
       var result = readWordsFromFile(pathName + words.get(0));
       if (result.isEmpty()) {
