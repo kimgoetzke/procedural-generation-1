@@ -3,6 +3,8 @@ package com.hindsight.king_of_castrop_rauxel.graphs;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import lombok.Getter;
 
 @Getter
@@ -50,6 +52,20 @@ public class Graph<T extends AbstractLocation> {
   public void log() {
     for (Vertex<T> vertex : this.vertices) {
       vertex.log(isWeighted);
+    }
+  }
+
+  public static void traverseGraphDepthFirst(
+      Vertex<AbstractLocation> currentVertex,
+      Set<Vertex<AbstractLocation>> visitedVertices,
+      Set<Vertex<AbstractLocation>> unvisitedVertices) {
+    visitedVertices.add(currentVertex);
+    unvisitedVertices.remove(currentVertex);
+    for (Edge<AbstractLocation> edge : currentVertex.getEdges()) {
+      var end = edge.end();
+      if (!visitedVertices.contains(end)) {
+        traverseGraphDepthFirst(end, visitedVertices, unvisitedVertices);
+      }
     }
   }
 }

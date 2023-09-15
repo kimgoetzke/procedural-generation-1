@@ -12,10 +12,10 @@ import java.util.Random;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SeedComponent {
 
-  @Getter private static long seed = 1234L;
+  private static long seed = 1234L;
   private static Random random = new Random(seed);
 
-  public static void setSeed(long seed) {
+  public static void changeSeed(long seed) {
     SeedComponent.seed = seed;
     random = new Random(seed);
   }
