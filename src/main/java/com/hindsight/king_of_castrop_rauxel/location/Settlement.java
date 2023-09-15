@@ -18,8 +18,7 @@ import java.util.stream.IntStream;
 public class Settlement extends AbstractSettlement {
 
   public Settlement(StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
-    super(stringGenerator);
-    setCoordinates(coordinates);
+    super(stringGenerator, coordinates);
     generate();
     logResult();
   }

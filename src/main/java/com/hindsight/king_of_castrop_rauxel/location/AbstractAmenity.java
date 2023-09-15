@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-@ToString(callSuper = true, exclude = {"settlement", "npc"})
+@ToString(
+    callSuper = true,
+    exclude = {"settlement", "npc"})
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public abstract class AbstractAmenity extends AbstractLocation {
 
@@ -17,7 +19,9 @@ public abstract class AbstractAmenity extends AbstractLocation {
   protected final Npc npc;
 
   protected AbstractAmenity(AmenityType type, Npc npc, AbstractSettlement settlement) {
-    super();
+    super(
+        settlement
+            .getCoordinates()); // TODO: Set coordinates to be within the area of the settlement
     this.type = type;
     this.settlement = settlement;
     this.npc = npc;

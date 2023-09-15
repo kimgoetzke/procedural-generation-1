@@ -27,10 +27,11 @@ public abstract class AbstractLocation implements Location {
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
 
-  protected AbstractLocation() {
+  protected AbstractLocation(Pair<Integer, Integer> coordinates) {
     this.id = UUID.randomUUID().toString();
-    this.seed = SeedComponent.getSeed();
-    this.random = SeedComponent.getInstance();
+    this.seed = SeedComponent.seedFrom(coordinates);
+    this.random = new Random(seed);
+    setCoordinates(coordinates);
   }
 
   @Override

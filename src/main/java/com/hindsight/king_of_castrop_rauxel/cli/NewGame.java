@@ -37,8 +37,6 @@ public class NewGame {
     play();
   }
 
-  // TODO: Figure out a way to inject the seed + coordinates on plan into each AbstractLocation
-  //  - Goal: Generation should be predictable regardless of the order of the calls
   private Settlement generateChunk(boolean hasStartLocation) {
     var startTime = System.currentTimeMillis();
     var random = SeedComponent.getInstance();

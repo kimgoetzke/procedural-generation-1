@@ -10,6 +10,7 @@ import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
@@ -24,8 +25,9 @@ public abstract class AbstractSettlement extends AbstractLocation {
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
   @Getter protected Set<Location> neighbours = new java.util.HashSet<>();
 
-  protected AbstractSettlement(StringGenerator stringGenerator) {
-    super();
+  protected AbstractSettlement(
+      StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
+    super(coordinates);
     this.stringGenerator = stringGenerator;
     stringGenerator.setRandom(random);
   }

@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.settings;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -17,6 +18,10 @@ public class SeedComponent {
   public static void setSeed(long seed) {
     SeedComponent.seed = seed;
     random = new Random(seed);
+  }
+
+  public static long seedFrom(Pair<Integer, Integer> coordinates) {
+    return seed + coordinates.getFirst() + coordinates.getSecond();
   }
 
   /**

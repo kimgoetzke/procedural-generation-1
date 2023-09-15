@@ -18,15 +18,9 @@ public class Amenity extends AbstractAmenity {
 
   @Override
   public void generate() {
-    setCoordinatesWithin(settlement);
     this.name =
         settlement.stringGenerator.locationNameFrom(
             this, settlement.size, settlement.getName(), npc, this.getClass());
-  }
-
-  // TODO: Replace with random coordinates inside the settlement
-  private void setCoordinatesWithin(AbstractSettlement settlement) {
-    setCoordinates(settlement.getCoordinates());
   }
 
   @Override
