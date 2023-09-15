@@ -6,7 +6,6 @@ import org.springframework.data.util.Pair;
 import java.util.List;
 
 public interface Location extends Visitable, Generatable {
-  String getId();
 
   long getSeed();
 

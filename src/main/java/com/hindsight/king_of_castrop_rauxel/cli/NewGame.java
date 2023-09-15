@@ -37,14 +37,13 @@ public class NewGame {
     play();
   }
 
+  // TODO: Figure out a way to inject the seed + coordinates on plan into each AbstractLocation
+  //  - Goal: Generation should be predictable regardless of the order of the calls
   private Settlement generateChunk(boolean hasStartLocation) {
     var startTime = System.currentTimeMillis();
     var random = SeedComponent.getInstance();
     plane = ChunkComponent.generateChunk(random);
-    Settlement startLocation = null;
-    if (hasStartLocation) {
-      startLocation = generateSettlement(stringGenerator, plane.getCenter());
-    }
+    var startLocation = placeStartLocation(hasStartLocation);
     generateSettlements();
     connectCloseSettlements();
     connectAtLeastOneSettlement();
@@ -52,74 +51,24 @@ public class NewGame {
     return startLocation;
   }
 
-  private void connectCloseSettlements() {
-    List<Vertex<AbstractLocation>> vertices = map.getVertices();
-    for (var ref : vertices) {
-      var refCoordinates = ref.getLocation().getCoordinates();
-      vertices.stream()
-          .filter(neighbour -> !ref.equals(neighbour))
-          .forEach(
-              neighbour -> {
-                var neighbourCoordinates = neighbour.getLocation().getCoordinates();
-                var distance = plane.calculateDistance(refCoordinates, neighbourCoordinates);
-                log.info(
-                    "Distance between {} and {} is {} km",
-                    ref.getLocation().getName(),
-                    neighbour.getLocation().getName(),
-                    distance);
-                addConnectionsWithinRange(ref, neighbour, distance);
-              });
+  private Settlement placeStartLocation(boolean hasStartLocation) {
+    Settlement startLocation = null;
+    if (hasStartLocation) {
+      startLocation = placeSettlement(stringGenerator, plane.getCenter());
     }
-  }
-
-  // TODO: Complete this method
-  private void connectAtLeastOneSettlement() {
-    List<Vertex<AbstractLocation>> vertices = map.getVertices();
-    for (var ref : vertices) {
-      var refCoordinates = ref.getLocation().getCoordinates();
-      vertices.stream()
-        .filter(neighbour -> !ref.equals(neighbour))
-        .forEach(
-          neighbour -> {
-            var neighbourCoordinates = neighbour.getLocation().getCoordinates();
-            var distance = plane.calculateDistance(refCoordinates, neighbourCoordinates);
-            log.info(
-              "Distance between {} and {} is {} km",
-              ref.getLocation().getName(),
-              neighbour.getLocation().getName(),
-              distance);
-            addConnectionsWithinRange(ref, neighbour, distance);
-          });
-    }
-  }
-
-  private void addConnectionsWithinRange(
-      Vertex<AbstractLocation> ref, Vertex<AbstractLocation> neighbour, int distance) {
-    if (distance < ChunkComponent.MAX_NEIGHBOUR_DISTANCE) {
-      map.addEdge(ref, neighbour, distance);
-      if (ref.getLocation() instanceof Settlement settlement) {
-        settlement.addNeighbour(neighbour.getLocation());
-      }
-      if (neighbour.getLocation() instanceof Settlement settlement) {
-        settlement.addNeighbour(ref.getLocation());
-      }
-      log.info(
-          "Added {} as neighbour of {} and vice versa",
-          neighbour.getLocation().getName(),
-          ref.getLocation().getName());
-    }
+    return startLocation;
   }
 
   private void generateSettlements() {
     var settlementsCount = plane.getDensity();
     for (int i = 0; i < settlementsCount; i++) {
       var coordinates = plane.getRandomCoordinates(Chunk.LocationType.SETTLEMENT);
-      var settlement = generateSettlement(stringGenerator, coordinates);
+      var settlement = placeSettlement(stringGenerator, coordinates);
       log.info("Added settlement: {}", settlement.getName());
     }
   }
 
-  public Settlement generateSettlement(
+  public Settlement placeSettlement(
       StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
     var settlement = new Settlement(stringGenerator, coordinates);
     map.addVertex(settlement);
@@ -127,51 +76,77 @@ public class NewGame {
     return settlement;
   }
 
-  // TODO: Replace this by an algorithm that places random coordinates on a sphere
-  //  and then calculates the distance between them to determine the neighbours
-  //  private void generateNeighbours(
-  //      Random random, Vertex<AbstractSettlement> previous, int distanceFromStart) {
-  //    var neighboursCount = ChunkComponent.randomNeighboursCount(random);
-  //    var neighbours = new ArrayList<Settlement>();
-  //    var current = previous;
-  //    var distance = 0;
-  //    for (int i = 0; i < neighboursCount; i++) {
-  //      distance = ChunkComponent.randomSettlementDistance(random);
-  //      current = createSettlement(previous, distanceFromStart, distance, current, neighbours);
-  //    }
-  //    for (Settlement neighbour : neighbours) {
-  //      log.info("Generating neighbours of {}", neighbour.getName());
-  //      generateNeighbours(random, current, distanceFromStart + distance);
-  //    }
-  //  }
-  //
-  //  private Vertex<AbstractSettlement> createSettlement(
-  //      Vertex<AbstractSettlement> previous,
-  //      int distanceFromStart,
-  //      int distance,
-  //      Vertex<AbstractSettlement> current,
-  //      ArrayList<Settlement> neighbours) {
-  //    if (distanceFromStart + distance < ChunkComponent.MAX_DISTANCE_FROM_START) {
-  //      var coordinates = Pair.of(0F, 0F);
-  //      var neighbour = new Settlement(stringGenerator, coordinates);
-  //      current = map.addVertex(neighbour);
-  //      neighbours.add(neighbour);
-  //      map.addEdge(previous, current, distance);
-  //      current.getLocation().addNeighbour(previous.getLocation());
-  //      previous.getLocation().addNeighbour(current.getLocation());
-  //      log.info(
-  //          "Added {} as neighbour of {} and vice versa",
-  //          neighbour.getName(),
-  //          previous.getLocation().getName());
-  //    } else {
-  //      log.info(
-  //          "Stopped because next neighbour of {} would be {} km away (max: {})",
-  //          previous.getLocation().getName(),
-  //          distanceFromStart + distance,
-  //          ChunkComponent.MAX_DISTANCE_FROM_START);
-  //    }
-  //    return current;
-  //  }
+  private void connectCloseSettlements() {
+    var vertices = map.getVertices();
+    for (var reference : vertices) {
+      var refLocation = reference.getLocation();
+      for (var other : vertices) {
+        if (reference.equals(other)) {
+          continue;
+        }
+        var otherLocation = other.getLocation();
+        var otherCoordinates = otherLocation.getCoordinates();
+        var distance = plane.calculateDistance(refLocation.getCoordinates(), otherCoordinates);
+        log.info(
+            "Distance between {} and {} is {} km",
+            refLocation.getName(),
+            otherLocation.getName(),
+            distance);
+        if (distance < ChunkComponent.MAX_NEIGHBOUR_DISTANCE) {
+          addConnections(reference, other, distance);
+        }
+      }
+    }
+  }
+
+  private void connectAtLeastOneSettlement() {
+    var vertices = map.getVertices();
+    for (var reference : vertices) {
+      if (reference.getLocation() instanceof Settlement settlement
+          && settlement.getNeighbours().isEmpty()) {
+        var closetNeighbour = findClosestNeighbours(settlement, reference, vertices);
+        if (closetNeighbour != null) {
+          var distance =
+              plane.calculateDistance(
+                  settlement.getCoordinates(), closetNeighbour.getLocation().getCoordinates());
+          addConnections(reference, closetNeighbour, distance);
+        }
+      }
+    }
+  }
+
+  private Vertex<AbstractLocation> findClosestNeighbours(
+      Settlement settlement,
+      Vertex<AbstractLocation> reference,
+      List<Vertex<AbstractLocation>> vertices) {
+    Vertex<AbstractLocation> closestNeighbor = null;
+    var minDistance = Integer.MAX_VALUE;
+    for (var other : vertices) {
+      if (reference.equals(other)) {
+        continue;
+      }
+      var otherCoordinates = other.getLocation().getCoordinates();
+      var distance = plane.calculateDistance(settlement.getCoordinates(), otherCoordinates);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestNeighbor = other;
+      }
+    }
+    return closestNeighbor;
+  }
+
+  private void addConnections(
+      Vertex<AbstractLocation> l1, Vertex<AbstractLocation> l2, int distance) {
+    map.addEdge(l1, l2, distance);
+    if (l1.getLocation() instanceof Settlement s1 && l2.getLocation() instanceof Settlement s2) {
+      s1.addNeighbour(s2);
+      s2.addNeighbour(s1);
+    }
+    log.info(
+        "Added {} and {} as neighbours of each other",
+        l2.getLocation().getName(),
+        l1.getLocation().getName());
+  }
 
   private void logOutcome(long startTime) {
     map.log();

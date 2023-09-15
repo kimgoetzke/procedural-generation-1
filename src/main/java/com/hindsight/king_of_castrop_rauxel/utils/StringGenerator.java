@@ -13,12 +13,8 @@ public interface StringGenerator {
 
   String locationNameFrom(Class<?> clazz);
 
-  String locationNameFrom(AbstractAmenity amenity, Class<?> clazz);
-
-  String locationNameFrom(String parentName, Class<?> clazz);
-
   String locationNameFrom(
-    AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz);
+      AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz);
 
   String npcFirstNameFrom(Class<?> clazz);
 

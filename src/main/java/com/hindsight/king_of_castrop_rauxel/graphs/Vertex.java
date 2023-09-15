@@ -1,22 +1,21 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
 import com.hindsight.king_of_castrop_rauxel.location.Location;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Getter
 public class Vertex<T extends Location> {
 
   private final T location;
-  private final List<Edge> edges;
+  private final Set<Edge> edges;
 
   public Vertex(T location) {
     this.location = location;
-    this.edges = new ArrayList<>();
+    this.edges = new HashSet<>();
   }
 
   public void addEdge(Vertex<T> endVertex, Integer weight) {
@@ -28,23 +27,24 @@ public class Vertex<T extends Location> {
   }
 
   public void log(boolean showWeight) {
-    StringBuilder message = new StringBuilder();
-    if (this.edges.isEmpty()) {
-      log.info(this.location.getName() + " -->");
+    if (edges.isEmpty()) {
+      log.info(location.getName() + " -->");
       return;
     }
-    for (int i = 0; i < this.edges.size(); i++) {
-      if (i == 0) {
-        message.append(this.edges.get(i).start().location.getName()).append(" -->  ");
+    StringBuilder message = new StringBuilder();
+    boolean first = true;
+    for (Edge edge : edges) {
+      if (first) {
+        message.append(edge.start().location.getName()).append(" --> ");
+        first = false;
       }
-      message.append(this.edges.get(i).end().location.getName());
+      message.append(edge.end().location.getName());
       if (showWeight) {
-        message.append(" (").append(this.edges.get(i).weight()).append(")");
+        message.append(" (").append(edge.weight()).append(")");
       }
-      if (i != this.edges.size() - 1) {
-        message.append(", ");
-      }
+      message.append(", ");
     }
+    message.setLength(message.length() - 2);
     log.info(message.toString());
   }
 }

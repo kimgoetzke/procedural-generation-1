@@ -43,16 +43,6 @@ public class BasicStringGenerator implements StringGenerator {
   }
 
   @Override
-  public String locationNameFrom(AbstractAmenity amenity, Class<?> clazz) {
-    return locationNameFrom(amenity, null, null, null, clazz);
-  }
-
-  @Override
-  public String locationNameFrom(String parentName, Class<?> clazz) {
-    return locationNameFrom(null, null, parentName, null, clazz);
-  }
-
-  @Override
   public String locationNameFrom(
       AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz) {
     var type = amenity == null ? null : amenity.getType();
