@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graphs.GraphComponent;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
@@ -10,14 +11,13 @@ import com.hindsight.king_of_castrop_rauxel.settings.Chunk;
 import com.hindsight.king_of_castrop_rauxel.settings.ChunkComponent;
 import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -27,7 +27,7 @@ public class NewGame {
   private final StringGenerator stringGenerator;
 
   private Chunk plane;
-  private final Graph<AbstractLocation> map = new Graph<>(true, false);
+  private final Graph<AbstractLocation> map = new Graph<>(true);
   private Player player;
 
   public void start() {
@@ -45,8 +45,32 @@ public class NewGame {
     generateSettlements();
     connectCloseSettlements();
     connectAtLeastOneSettlement();
+    connectDisconnectedGroups();
     logOutcome(startTime);
     return startLocation;
+  }
+
+  private void connectDisconnectedGroups() {
+    var connectivityResult = GraphComponent.getDisconnectedVertices(map);
+    var unvisitedVertices = connectivityResult.getUnvisitedVertices();
+    if (unvisitedVertices.isEmpty()) {
+      return;
+    }
+    for (var unvisitedVertex : unvisitedVertices) {
+      if (unvisitedVertex.getLocation() instanceof Settlement settlement) {
+        var closestNeighbour =
+            findClosestNeighbours(
+                settlement,
+                unvisitedVertex,
+                connectivityResult.getVisitedVertices().stream().toList());
+        if (closestNeighbour != null) {
+          var distance =
+              plane.calculateDistance(
+                  settlement.getCoordinates(), closestNeighbour.getLocation().getCoordinates());
+          addConnections(unvisitedVertex, closestNeighbour, distance);
+        }
+      }
+    }
   }
 
   private Settlement placeStartLocation(boolean hasStartLocation) {

@@ -10,11 +10,9 @@ public class Graph<T extends AbstractLocation> {
 
   private final List<Vertex<T>> vertices = new ArrayList<>();
   private final boolean isWeighted;
-  private final boolean isDirected;
 
-  public Graph(boolean isWeighted, boolean isDirected) {
+  public Graph(boolean isWeighted) {
     this.isWeighted = isWeighted;
-    this.isDirected = isDirected;
   }
 
   public Vertex<T> addVertex(T location) {
@@ -27,17 +25,13 @@ public class Graph<T extends AbstractLocation> {
     if (!this.isWeighted) {
       weight = null;
     }
-    if (!this.isDirected) {
-      vertex2.addEdge(vertex1, weight);
-    }
+    vertex2.addEdge(vertex1, weight);
     vertex1.addEdge(vertex2, weight);
   }
 
   public void removeEdge(Vertex<T> vertex1, Vertex<T> vertex2) {
     vertex1.removeEdge(vertex2);
-    if (!this.isDirected) {
-      vertex2.removeEdge(vertex1);
-    }
+    vertex2.removeEdge(vertex1);
   }
 
   public void removeVertex(Vertex<T> vertex) {

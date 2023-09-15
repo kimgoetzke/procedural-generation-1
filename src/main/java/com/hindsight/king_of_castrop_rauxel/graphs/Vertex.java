@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Vertex<T extends Location> {
 
   private final T location;
-  private final Set<Edge> edges;
+  private final Set<Edge<T>> edges;
 
   public Vertex(T location) {
     this.location = location;
@@ -19,7 +19,7 @@ public class Vertex<T extends Location> {
   }
 
   public void addEdge(Vertex<T> endVertex, Integer weight) {
-    this.edges.add(new Edge(this, endVertex, weight));
+    this.edges.add(new Edge<>(this, endVertex, weight));
   }
 
   public void removeEdge(Vertex<T> endVertex) {
@@ -33,7 +33,7 @@ public class Vertex<T extends Location> {
     }
     StringBuilder message = new StringBuilder();
     boolean first = true;
-    for (Edge edge : edges) {
+    for (Edge<T> edge : edges) {
       if (first) {
         message.append(edge.start().location.getName()).append(" --> ");
         first = false;
