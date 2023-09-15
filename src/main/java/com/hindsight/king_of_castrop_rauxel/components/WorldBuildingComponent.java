@@ -1,9 +1,11 @@
-package com.hindsight.king_of_castrop_rauxel.graphs;
+package com.hindsight.king_of_castrop_rauxel.components;
 
+import static com.hindsight.king_of_castrop_rauxel.components.Chunk.*;
+
+import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
-import com.hindsight.king_of_castrop_rauxel.settings.Chunk;
-import com.hindsight.king_of_castrop_rauxel.settings.ChunkComponent;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.HashSet;
 import java.util.List;
@@ -13,8 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
-
-import static com.hindsight.king_of_castrop_rauxel.settings.Chunk.*;
 
 @Slf4j
 @Component

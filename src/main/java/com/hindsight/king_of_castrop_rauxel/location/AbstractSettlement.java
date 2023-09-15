@@ -21,7 +21,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
   protected Size size;
   protected Player loyalTo;
   protected int area;
-  protected List<AbstractAmenity> amenities = new ArrayList<>();
+  @Getter protected List<AbstractAmenity> amenities = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
   @Getter protected Set<Location> neighbours = new java.util.HashSet<>();
 
@@ -34,6 +34,13 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   public void addNeighbour(Location neighbour) {
     neighbours.add(neighbour);
+  }
+
+  public AbstractAmenity getDefaultAmenity() {
+    return amenities.stream()
+        .filter(a -> a.getType() == AbstractAmenity.AmenityType.MAIN_SQUARE)
+        .findFirst()
+        .orElse(null);
   }
 
   @Override

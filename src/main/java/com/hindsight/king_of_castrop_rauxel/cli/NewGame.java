@@ -1,15 +1,20 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
+import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.action.ActionTemplate;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.components.Chunk;
+import com.hindsight.king_of_castrop_rauxel.components.ChunkComponent;
+import com.hindsight.king_of_castrop_rauxel.components.SeedComponent;
+import com.hindsight.king_of_castrop_rauxel.components.WorldBuildingComponent;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.graphs.WorldBuildingComponent;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
-import com.hindsight.king_of_castrop_rauxel.settings.Chunk;
-import com.hindsight.king_of_castrop_rauxel.settings.ChunkComponent;
-import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +27,7 @@ import org.springframework.stereotype.Component;
 public class NewGame {
 
   private final StringGenerator stringGenerator;
+  private final Scanner input = new Scanner(System.in);
   private final Graph<AbstractLocation> map = new Graph<>(true);
   private Player player;
 
@@ -53,16 +59,25 @@ public class NewGame {
   }
 
   private void play() {
-    System.out.printf("%nWelcome to King of Castrop-Rauxel, %s!%n%n", player.getName());
     System.out.printf(
-        "STATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
+        "%n%nSTATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
         player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
     Location currentLocation = player.getCurrentLocation();
+    Optional<List<Action>> actions = Optional.empty();
     System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
-    System.out.printf("What do you want to do?%n");
-    player
-        .getCurrentLocation()
-        .getAvailableActions()
-        .forEach(action -> System.out.printf("%s%n", action.getName()));
+    if (currentLocation instanceof Settlement settlement) {
+      System.out.printf("You are at: %s. ", settlement.getDefaultAmenity().getName());
+      actions = Optional.of(ActionTemplate.defaultSettlementActions(settlement));
+    }
+    System.out.printf("What do you want to do?");
+    actions.ifPresent(list -> list.forEach(Action::print));
+    System.out.println("> ");
+    var choice = this.input.nextInt();
+    if (choice >= 0 && actions.isPresent() && choice <= actions.get().size()) {
+      actions.get().get(choice - 1).execute(player);
+    } else {
+      System.out.printf("Invalid choice! Try again...%n");
+    }
+    play();
   }
 }

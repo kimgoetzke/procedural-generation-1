@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
+import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
-import com.hindsight.king_of_castrop_rauxel.settings.SeedComponent;
+import com.hindsight.king_of_castrop_rauxel.components.SeedComponent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,7 @@ public abstract class AbstractLocation implements Location {
   @Getter @Setter protected String description;
   protected int x;
   protected int y;
-  @Getter protected List<PlayerAction> availableActions = new ArrayList<>();
+  @Getter protected List<LocationAction> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
 

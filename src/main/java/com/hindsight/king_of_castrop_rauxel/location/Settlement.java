@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
+import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
-import com.hindsight.king_of_castrop_rauxel.settings.LocationComponent;
+import com.hindsight.king_of_castrop_rauxel.components.LocationComponent;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -70,7 +70,7 @@ public class Settlement extends AbstractSettlement {
   private void generatePlayerActions() {
     for (int i = 1; i <= amenities.size(); i++) {
       availableActions.add(
-          PlayerAction.builder()
+          LocationAction.builder()
               .number(i)
               .name("[%s] Go to %s".formatted(i, amenities.get(i - 1).getName()))
               .location(amenities.get(i - 1))

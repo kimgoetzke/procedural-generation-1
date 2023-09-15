@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
+import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
 import org.springframework.data.util.Pair;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface Location extends Visitable, Generatable {
 
   String getDescription();
 
-  List<PlayerAction> getAvailableActions();
+  List<LocationAction> getAvailableActions();
 
   Pair<Integer, Integer> getCoordinates();
 

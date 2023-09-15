@@ -18,7 +18,7 @@ public class Player implements Visitor {
   @Setter private int age;
   @Setter private int activityPoints;
   private Location currentLocation;
-  private Set<Location> visitedLocations = new HashSet<>();
+  private final Set<Location> visitedLocations = new HashSet<>();
 
   public Player(String name, @NonNull Location currentLocation) {
     this.name = name;
@@ -28,6 +28,7 @@ public class Player implements Visitor {
 
   public void setCurrentLocation(Location currentLocation) {
     visitedLocations.add(this.currentLocation);
+    currentLocation.addVisitor(this);
     this.currentLocation = currentLocation;
   }
 }

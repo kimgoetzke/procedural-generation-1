@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.settings;
+package com.hindsight.king_of_castrop_rauxel.components;
 
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.AmenityType;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
