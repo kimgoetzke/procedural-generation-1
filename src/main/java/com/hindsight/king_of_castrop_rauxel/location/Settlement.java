@@ -67,12 +67,12 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generatePlayerActions() {
-    for (int i = 1; i <= pointsOfInterests.size(); i++) {
+    for (int i = 0; i < pointsOfInterests.size(); i++) {
       availableActions.add(
           PoiAction.builder()
-              .number(i)
-              .name("[%s] Go to %s".formatted(i, pointsOfInterests.get(i - 1).getName()))
-              .location(pointsOfInterests.get(i - 1))
+              .index(i)
+              .name("Go to %s".formatted(pointsOfInterests.get(i).getName()))
+              .poi(pointsOfInterests.get(i))
               .build());
     }
   }

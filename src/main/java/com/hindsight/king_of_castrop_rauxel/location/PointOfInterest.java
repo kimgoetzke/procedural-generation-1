@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
-import java.util.List;
-
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
+
+import com.hindsight.king_of_castrop_rauxel.action.Action;
+import java.util.List;
 
 public interface PointOfInterest {
 
@@ -13,7 +13,9 @@ public interface PointOfInterest {
 
   PoiType getType();
 
-  List<LocationAction> getAvailableActions();
+  Location getParent();
+
+  List<Action> getAvailableActions();
 
   String getSummary(); // TODO: Replace with objects so that it can be used via API
 }

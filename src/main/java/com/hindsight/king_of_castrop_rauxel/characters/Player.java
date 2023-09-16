@@ -18,14 +18,16 @@ public class Player implements Visitor {
   @Setter private int level;
   @Setter private int age;
   @Setter private int activityPoints;
+  @Setter @Getter private State state = State.AT_DEFAULT_POI;
   private Location currentLocation;
-  private PointOfInterest currentPointOfInterest;
+  @Setter private PointOfInterest currentPoi;
   private final Set<Location> visitedLocations = new HashSet<>();
 
   public Player(String name, @NonNull Location currentLocation) {
     this.name = name;
     id = UUID.randomUUID().toString();
     setCurrentLocation(currentLocation);
+    setCurrentPoi(currentLocation.getDefaultPoi());
   }
 
   public void setCurrentLocation(Location currentLocation) {
@@ -34,7 +36,9 @@ public class Player implements Visitor {
     this.currentLocation = currentLocation;
   }
 
-  public void setCurrentPointOfInterest(PointOfInterest currentPointOfInterest) {
-    this.currentPointOfInterest = currentPointOfInterest;
+  public enum State {
+    AT_DEFAULT_POI,
+    INSIDE_LOCATION,
+    AT_SPECIFIC_POI
   }
 }

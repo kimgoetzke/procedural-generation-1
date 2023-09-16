@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.action.ActionTemplate;
+import com.hindsight.king_of_castrop_rauxel.action.ActionComponent;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.components.Chunk;
 import com.hindsight.king_of_castrop_rauxel.components.ChunkComponent;
@@ -13,7 +13,6 @@ import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,25 +31,17 @@ public class NewGame {
   private Player player;
 
   // TODO: Create basic CLI game loop
-  //  - Display amenity you're at
-  //  - Allow using PlayerAction to visit other locations
+  //  - Consider whether to use actions from templates or from location/POI
+  //  - Implement PoiAction
   @SuppressWarnings("InfiniteLoopStatement")
   public void start() {
     var name = "Player";
     var startLocation = generateFirstChunk();
+    var actions = ActionComponent.emptyActions();
     this.player = new Player(name, startLocation);
     while (true) {
-      showStats();
-      play();
+      play(actions);
     }
-  }
-
-  private void showStats() {
-    System.out.printf(
-        "%n%nSTATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
-        player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
-    Location currentLocation = player.getCurrentLocation();
-    System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
   }
 
   private Settlement generateFirstChunk() {
@@ -70,26 +61,44 @@ public class NewGame {
     map.getVertices().forEach(vertex -> log.info("-> " + vertex.getLocation().getSummary()));
   }
 
-  private void play() {
-    var actions = buildAndPrintActions();
-    System.out.printf("%n> ");
-    var choice = this.input.nextInt();
-    var action = actions.stream().filter(a -> a.getNumber() == choice).findFirst();
-    if (action.isPresent()) {
-      action.get().execute(player);
-    } else {
-      System.out.println("Invalid choice! Try again...");
+  private void play(List<Action> actions) {
+    showStats();
+    buildActions(actions);
+    displayActions(actions);
+    processAction(actions);
+  }
+
+  private void showStats() {
+    System.out.printf(
+        "%n%nSTATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
+        player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
+    Location currentLocation = player.getCurrentLocation();
+    System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
+    System.out.printf("You are at: %s. ", player.getCurrentPoi().getName());
+  }
+
+  private void buildActions(List<Action> actions) {
+    actions.clear();
+    switch (player.getState()) {
+      case AT_DEFAULT_POI -> actions.addAll(ActionComponent.listForLocation(player));
+      case INSIDE_LOCATION -> actions.addAll(ActionComponent.listPois(player));
+      case AT_SPECIFIC_POI -> actions.addAll(ActionComponent.listForPoi(player));
     }
   }
 
-  private List<Action> buildAndPrintActions() {
-    Optional<List<Action>> actions = Optional.empty();
-    if (player.getCurrentLocation() instanceof Settlement settlement) {
-      System.out.printf("You are at: %s. ", settlement.getDefaultPoi().getName());
-      actions = Optional.of(ActionTemplate.defaultLocationActions(settlement));
-    }
+  private void displayActions(List<Action> actions) {
     System.out.println("What do you want to do?");
-    actions.ifPresent(list -> list.forEach(a -> System.out.println(a.print())));
-    return actions.orElse(List.of());
+    actions.forEach(a -> System.out.println(a.print()));
+    System.out.printf("%n> ");
+  }
+
+  private void processAction(List<Action> actions) {
+    var choice = this.input.nextInt();
+    var action = actions.stream().filter(a -> a.getIndex() == choice).findFirst();
+    if (action.isPresent()) {
+      action.get().execute(player, actions);
+    } else {
+      System.out.println("Invalid choice! Try again...");
+    }
   }
 }

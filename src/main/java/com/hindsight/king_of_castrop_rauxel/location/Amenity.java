@@ -10,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(callSuper = true)
 public class Amenity extends AbstractAmenity {
 
-  public Amenity(PoiType type, Npc npc, AbstractSettlement settlement) {
-    super(type, npc, settlement);
+  public Amenity(PoiType type, Npc npc, Location parent) {
+    super(type, npc, parent);
     generate();
     logResult();
   }
@@ -19,8 +19,9 @@ public class Amenity extends AbstractAmenity {
   @Override
   public void generate() {
     this.name =
-        settlement.stringGenerator.locationNameFrom(
-            this, settlement.size, settlement.getName(), npc, this.getClass());
+        parent
+            .getStringGenerator()
+            .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
   }
 
   @Override

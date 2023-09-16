@@ -4,19 +4,20 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
 @Builder
-public class ActionAction implements Action {
-  private int number;
+public class StateAction implements Action {
+
+  @Setter private int index;
   private String name;
-  private List<Action> actions;
+  @Setter private Player.State nextState;
 
   @Override
-  public boolean execute(Player player) {
-    log.debug("Action {} has not been implemented yet", getName());
-    return false;
+  public void execute(Player player, List<Action> actions) {
+    player.setState(nextState);
   }
 }

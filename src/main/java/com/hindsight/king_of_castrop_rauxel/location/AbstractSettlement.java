@@ -17,8 +17,8 @@ import org.springframework.data.util.Pair;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public abstract class AbstractSettlement extends AbstractLocation {
 
-  protected final StringGenerator stringGenerator;
-  protected Size size;
+  @Getter protected final StringGenerator stringGenerator;
+  @Getter protected Size size;
   protected Player loyalTo;
   protected int area;
   protected List<PointOfInterest> pointsOfInterests = new ArrayList<>();

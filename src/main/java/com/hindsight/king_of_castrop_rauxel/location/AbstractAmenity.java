@@ -1,18 +1,17 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.LocationAction;
+import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.components.SeedComponent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 @Slf4j
 @Getter
@@ -25,17 +24,17 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
   @ToString.Include @Getter @Setter protected String name;
   @Getter @Setter protected String description;
   @ToString.Include protected final PoiType type;
-  protected final AbstractSettlement settlement;
+  @Getter protected final Location parent;
   protected final Npc npc;
-  @Getter protected final List<LocationAction> availableActions = new ArrayList<>();
+  @Getter protected final List<Action> availableActions = new ArrayList<>();
   protected final Random random;
 
-  protected AbstractAmenity(PoiType type, Npc npc, AbstractSettlement settlement) {
+  protected AbstractAmenity(PoiType type, Npc npc, Location parent) {
     this.id = UUID.randomUUID().toString();
-    this.seed = SeedComponent.seedFrom(settlement.getCoordinates());
+    this.seed = SeedComponent.seedFrom(parent.getCoordinates());
     this.random = new Random(seed);
     this.type = type;
-    this.settlement = settlement;
+    this.parent = parent;
     this.npc = npc;
     if (npc != null) {
       npc.setHome(this);
@@ -44,7 +43,7 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 
   @Override
   public String getSummary() {
-    return "%s [ Type: %s | Located in %s ]".formatted(name, type, settlement.getName());
+    return "%s [ Type: %s | Located in %s ]".formatted(name, type, parent.getName());
   }
 
   public enum PoiType {
