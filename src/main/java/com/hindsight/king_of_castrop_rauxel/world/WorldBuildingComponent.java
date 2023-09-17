@@ -5,6 +5,7 @@ import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.HashSet;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorldBuildingComponent {
 
+  public static final int WORLD_SIZE = 50;
+
   public static Settlement build(
       Graph<AbstractLocation> map, Chunk chunk, StringGenerator stringGenerator) {
     var startLocation = placeSettlement(map, chunk, stringGenerator, chunk.getCenter());
@@ -29,6 +32,19 @@ public class WorldBuildingComponent {
     connectAtLeastOneSettlement(map, chunk);
     connectDisconnectedGroups(map, chunk);
     return startLocation;
+  }
+
+  public static void buildNext(
+      Graph<AbstractLocation> map,
+      Chunk chunk,
+      StringGenerator stringGenerator,
+      Location location) {
+    // Add methods to connect toConnect to newly generated settlements within distance (at least
+    // one)
+    generateSettlements(map, chunk, stringGenerator);
+    connectCloseSettlements(map, chunk);
+    connectAtLeastOneSettlement(map, chunk);
+    connectDisconnectedGroups(map, chunk);
   }
 
   private static void generateSettlements(

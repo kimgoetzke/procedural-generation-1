@@ -3,10 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionComponent;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.world.Chunk;
-import com.hindsight.king_of_castrop_rauxel.world.ChunkComponent;
-import com.hindsight.king_of_castrop_rauxel.world.SeedComponent;
-import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent;
+import com.hindsight.king_of_castrop_rauxel.world.*;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
@@ -28,6 +25,7 @@ public class NewGame {
   private final StringGenerator stringGenerator;
   private final Scanner input = new Scanner(System.in);
   private final Graph<AbstractLocation> map = new Graph<>(true);
+  private World world;
   private Player player;
 
   @SuppressWarnings("InfiniteLoopStatement")
@@ -40,6 +38,7 @@ public class NewGame {
       buildActions(actions);
       displayActions(actions);
       processAction(actions);
+      generateNextChunk();
     }
   }
 
@@ -48,6 +47,8 @@ public class NewGame {
     var random = SeedComponent.getInstance();
     Chunk chunk = ChunkComponent.generateChunk(random);
     var startLocation = WorldBuildingComponent.build(map, chunk, stringGenerator);
+    world = new World();
+    world.placeCenter(chunk);
     startLocation.generate();
     logOutcome(startTime);
     return startLocation;
@@ -101,6 +102,20 @@ public class NewGame {
       System.out.println("Invalid choice, try again...");
     }
     System.out.printf("%n%n");
+  }
+
+  // TODO: Implement auto-generation of next chunk
+  //  - Fix bug where next chunk has same settlement names
+  private void generateNextChunk() {
+    if (ChunkComponent.isInsideTriggerZone(player.getCurrentLocation().getCoordinates())) {
+      log.info("Generating next chunk...");
+      var startTime = System.currentTimeMillis();
+      var random = SeedComponent.getInstance();
+      // Find out where to generate the next chunk
+      Chunk chunk = ChunkComponent.generateChunk(random);
+      WorldBuildingComponent.buildNext(map, chunk, stringGenerator, player.getCurrentLocation());
+      logOutcome(startTime);
+    }
   }
 
   private void showStats(boolean showLocation) {

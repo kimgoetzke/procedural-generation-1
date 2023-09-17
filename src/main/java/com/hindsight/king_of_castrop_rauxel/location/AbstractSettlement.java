@@ -66,7 +66,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   @Override
   public String getFullSummary() {
-    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Located at %s | Travel to %s locations from here | Stance: %s ]"
+    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Located at %s | Connected to %s locations | Stance: %s ]"
         .formatted(
             name,
             size.getName(),
