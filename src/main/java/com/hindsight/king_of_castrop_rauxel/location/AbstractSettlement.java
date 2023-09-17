@@ -65,7 +65,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
   }
 
   @Override
-  public String getSummary() {
+  public String getFullSummary() {
     return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Located at %s | Travel to %s locations from here | Stance: %s ]"
         .formatted(
             name,
@@ -76,6 +76,16 @@ public abstract class AbstractSettlement extends AbstractLocation {
             "(%s, %s)".formatted(getCoordinates().getFirst(), getCoordinates().getSecond()),
             neighbours.size(),
             loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
+  }
+
+  @Override
+  public String getBriefSummary() {
+    return "%s [ Size: %s | Location: %s | Connected to %s locations ]"
+        .formatted(
+            name,
+            size.getName(),
+            "(%s, %s)".formatted(getCoordinates().getFirst(), getCoordinates().getSecond()),
+            neighbours.size());
   }
 
   private String getPopulationDensity() {

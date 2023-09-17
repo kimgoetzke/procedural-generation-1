@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
 
@@ -22,9 +24,17 @@ public class LocationAction implements Action {
 
   @Override
   public void execute(Player player, List<Action> actions) {
+    generateSettlementOnSeparateThread();
     ProgressBar.displayProgress(player.getCurrentLocation(), location);
     setPlayerState(player);
     player.setCurrentPoi(location.getDefaultPoi());
+  }
+
+  private void generateSettlementOnSeparateThread() {
+    try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+      executor.submit(() -> location.generate());
+      executor.shutdown();
+    }
   }
 
   public State getNextState() {

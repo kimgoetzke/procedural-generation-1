@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.components.SeedComponent;
+import com.hindsight.king_of_castrop_rauxel.world.SeedComponent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

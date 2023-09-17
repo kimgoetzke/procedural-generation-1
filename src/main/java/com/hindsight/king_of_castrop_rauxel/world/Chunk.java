@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.components;
+package com.hindsight.king_of_castrop_rauxel.world;
 
 import java.util.Random;
 import lombok.Getter;
@@ -19,8 +19,7 @@ public class Chunk {
 
   public enum LocationType {
     EMPTY,
-    SETTLEMENT,
-    AMENITY,
+    SETTLEMENT
   }
 
   public Pair<Integer, Integer> getCenter() {

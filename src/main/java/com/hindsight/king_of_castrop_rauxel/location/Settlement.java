@@ -2,7 +2,6 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
-import com.hindsight.king_of_castrop_rauxel.components.LocationComponent;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.stream.IntStream;
@@ -18,20 +17,21 @@ public class Settlement extends AbstractSettlement {
 
   public Settlement(StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
     super(stringGenerator, coordinates);
-    generate();
+    generateFoundation();
     logResult();
   }
 
   @Override
   public void generate() {
-    log.info("Generating settlement...");
-    generateFoundation();
+    log.info("Generating full settlement...");
     generateInhabitants();
     generateAmenities();
     generatePlayerActions();
+    logResult();
   }
 
   private void generateFoundation() {
+    log.info("Generating settlement foundation...");
     size = LocationComponent.randomSize(random);
     area = LocationComponent.randomArea(random, size);
     name = stringGenerator.locationNameFrom(this.getClass());

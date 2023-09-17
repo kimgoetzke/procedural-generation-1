@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.components;
+package com.hindsight.king_of_castrop_rauxel.world;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

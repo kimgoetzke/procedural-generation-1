@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.components;
+package com.hindsight.king_of_castrop_rauxel.location;
 
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
@@ -6,6 +6,8 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Siz
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

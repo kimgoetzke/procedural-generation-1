@@ -1,6 +1,6 @@
-package com.hindsight.king_of_castrop_rauxel.components;
+package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.components.Chunk.*;
+import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;

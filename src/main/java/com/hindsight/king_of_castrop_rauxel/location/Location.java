@@ -29,7 +29,9 @@ public interface Location extends Visitable, Generatable {
 
   StringGenerator getStringGenerator();
 
-  String getSummary(); // TODO: Replace with objects so that it can be used via API
+  String getFullSummary(); // TODO: Replace with objects so that it can be used via API
+
+  String getBriefSummary();
 
   default int distanceTo(Location end) {
     int deltaX = end.getCoordinates().getFirst() - getCoordinates().getFirst();

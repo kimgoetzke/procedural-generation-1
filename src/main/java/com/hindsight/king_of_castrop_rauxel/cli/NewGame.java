@@ -3,10 +3,10 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionComponent;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.components.Chunk;
-import com.hindsight.king_of_castrop_rauxel.components.ChunkComponent;
-import com.hindsight.king_of_castrop_rauxel.components.SeedComponent;
-import com.hindsight.king_of_castrop_rauxel.components.WorldBuildingComponent;
+import com.hindsight.king_of_castrop_rauxel.world.Chunk;
+import com.hindsight.king_of_castrop_rauxel.world.ChunkComponent;
+import com.hindsight.king_of_castrop_rauxel.world.SeedComponent;
+import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
@@ -48,6 +48,7 @@ public class NewGame {
     var random = SeedComponent.getInstance();
     Chunk chunk = ChunkComponent.generateChunk(random);
     var startLocation = WorldBuildingComponent.build(map, chunk, stringGenerator);
+    startLocation.generate();
     logOutcome(startTime);
     return startLocation;
   }
@@ -57,11 +58,11 @@ public class NewGame {
     log.info("Generation took {} seconds", (System.currentTimeMillis() - startTime) / 1000);
     log.info("Generated {} settlements", map.getVertices().size());
     log.info("List of settlements generated:");
-    map.getVertices().forEach(vertex -> log.info("- " + vertex.getLocation().getSummary()));
+    map.getVertices().forEach(vertex -> log.info("- " + vertex.getLocation().getBriefSummary()));
   }
 
   private void displayWelcome(Player player) {
-    System.out.printf("%n%nHello %s!%n%n%n", player.getName());
+    System.out.printf("%n%nHello, %s!%n%n%n", player.getName());
   }
 
   private void buildActions(List<Action> actions) {
@@ -108,7 +109,7 @@ public class NewGame {
         player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
     if (showLocation) {
       Location currentLocation = player.getCurrentLocation();
-      System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
+      System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getFullSummary());
       System.out.printf("You are at: %s. ", player.getCurrentPoi().getName());
     } else {
       System.out.println();
