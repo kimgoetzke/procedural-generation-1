@@ -78,7 +78,17 @@ public class LocationComponent {
     settlementConfigs.put(Size.M, m);
     settlementConfigs.put(Size.L, l);
     settlementConfigs.put(Size.XL, xl);
-    log.info(settlementConfigs.toString());
+    log.debug(this.toString());
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Available settlement configurations:%n".formatted());
+    for (var entry : settlementConfigs.entrySet()) {
+      sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
+    }
+    return sb.toString();
   }
 
   /**
@@ -104,11 +114,17 @@ public class LocationComponent {
     return random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
   }
 
+  // TODO: Add dungeons, caves or similar as non-amenity POIs
   @Getter
   @Setter
   public static class SettlementConfig {
     private Bounds area;
     private Bounds inhabitants;
     private Map<PoiType, Bounds> amenities;
+
+    @Override
+    public String toString() {
+      return "{area=" + area + ", inhabitants=" + inhabitants + ", amenities=" + amenities + '}';
+    }
   }
 }

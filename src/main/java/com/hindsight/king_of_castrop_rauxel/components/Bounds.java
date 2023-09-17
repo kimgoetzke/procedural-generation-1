@@ -14,4 +14,9 @@ public class Bounds {
 
   /** Inclusive upper bounds. */
   private int upper;
+
+  @Override
+  public String toString() {
+    return lower + "-" + upper;
+  }
 }

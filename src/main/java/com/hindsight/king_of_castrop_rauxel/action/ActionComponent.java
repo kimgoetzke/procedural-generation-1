@@ -14,58 +14,75 @@ import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ActionComponent {
 
-  public static List<Action> listForLocation(Player player) {
-    var actions = new ArrayList<Action>();
+  public static void defaultPoi(Player player, List<Action> actions) {
+    prepare(actions);
     var location = player.getCurrentLocation();
     actions.add(
-        StateAction.builder()
-            .index(1)
-            .name(
-                "Explore any of the %s points of interest"
-                    .formatted(location.getPointsOfInterest().size()))
-            .nextState(INSIDE_LOCATION)
-            .build());
+        new StateAction(
+            actions.size() + 1,
+            "Explore any of the %s points of interest"
+                .formatted(location.getPointsOfInterest().size()),
+            CHOOSE_POI));
     var neighbours = location.getNeighbours().stream().toList();
     for (Location neighbour : neighbours) {
       actions.add(
           new LocationAction(
               actions.size() + 1,
-              "Leave %s and travel to %s".formatted(location.getName(), neighbour.getName()),
+              "Travel to %s (%s)".formatted(neighbour.getName(), neighbour.distanceTo(location)),
               neighbour));
     }
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
-    return actions;
   }
 
-  public static List<Action> listPois(Player player) {
-    var actions = new ArrayList<Action>();
+  public static void allPois(Player player, List<Action> actions) {
+    prepare(actions);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
-    actions.add(new LocationAction(1, "Stay at " + poi.getName(), location));
-    addAllActions(location.getAvailableActions(), actions);
-    return actions;
+    var defaultAction =
+        new LocationAction(actions.size() + 1, "Stay at " + poi.getName(), location);
+    actions.add(defaultAction);
+    addAllActions(location.getAvailableActions(), actions, defaultAction);
   }
 
-  public static List<Action> listForPoi(Player player) {
-    var actions = new ArrayList<Action>();
+  public static void thisPoi(Player player, List<Action> actions) {
+    prepare(actions);
     var poi = player.getCurrentPoi();
     var currentLocation = player.getCurrentLocation();
     actions.add(
         new LocationAction(
-            1, "Go back to " + currentLocation.getDefaultPoi().getName(), currentLocation));
+            actions.size() + 1,
+            "Go back to " + currentLocation.getDefaultPoi().getName(),
+            currentLocation));
     actions.addAll(poi.getAvailableActions());
-    return actions;
   }
 
-  public static List<Action> emptyActions() {
+  public static List<Action> empty() {
     return new ArrayList<>();
   }
 
-  private static void addAllActions(List<Action> from, List<Action> to) {
+  private static void prepare(List<Action> actions) {
+    actions.clear();
+    actions.add(new StateAction(1, "Show map", SHOW_MAP));
+  }
+
+  private static void addAllActions(List<Action> from, List<Action> to, LocationAction except) {
     var adjustedActions = new ArrayList<>(from);
     for (Action action : adjustedActions) {
+      if (action.getName().contains(except.getLocation().getName())) {
+        continue;
+      }
       action.setIndex(to.size() + 1);
       to.add(action);
     }
+  }
+
+  public static void fallback(Player player, List<Action> actions) {
+    prepare(actions);
+    actions.add(
+        new LocationAction(
+            actions.size() + 1,
+            "Back to " + player.getCurrentPoi().getName(),
+            player.getCurrentLocation()));
+    actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }
 }

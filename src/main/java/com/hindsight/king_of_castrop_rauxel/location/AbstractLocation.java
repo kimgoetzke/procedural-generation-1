@@ -58,11 +58,20 @@ public abstract class AbstractLocation implements Location {
     this.y = coordinates.getSecond();
   }
 
+  @Getter
   public enum Size {
-    XS,
-    S,
-    M,
-    L,
-    XL
+    XS("Very small", 0),
+    S("Small", 1),
+    M("Medium", 2),
+    L("Large", 3),
+    XL("Very large", 4);
+
+    private final String name;
+    private final int ordinal;
+
+    Size(String s, int i) {
+      this.name = s;
+      this.ordinal = i;
+    }
   }
 }

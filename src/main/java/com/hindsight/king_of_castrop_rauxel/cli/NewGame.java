@@ -30,17 +30,16 @@ public class NewGame {
   private final Graph<AbstractLocation> map = new Graph<>(true);
   private Player player;
 
-  // TODO: Create basic CLI game loop
-  //  - Consider whether to use actions from templates or from location/POI
-  //  - Implement PoiAction
   @SuppressWarnings("InfiniteLoopStatement")
   public void start() {
-    var name = "Player";
     var startLocation = generateFirstChunk();
-    var actions = ActionComponent.emptyActions();
-    this.player = new Player(name, startLocation);
+    var actions = ActionComponent.empty();
+    this.player = new Player("Traveller", startLocation);
+    displayWelcome(player);
     while (true) {
-      play(actions);
+      buildActions(actions);
+      displayActions(actions);
+      processAction(actions);
     }
   }
 
@@ -58,36 +57,36 @@ public class NewGame {
     log.info("Generation took {} seconds", (System.currentTimeMillis() - startTime) / 1000);
     log.info("Generated {} settlements", map.getVertices().size());
     log.info("List of settlements generated:");
-    map.getVertices().forEach(vertex -> log.info("-> " + vertex.getLocation().getSummary()));
+    map.getVertices().forEach(vertex -> log.info("- " + vertex.getLocation().getSummary()));
   }
 
-  private void play(List<Action> actions) {
-    showStats();
-    buildActions(actions);
-    displayActions(actions);
-    processAction(actions);
-  }
-
-  private void showStats() {
-    System.out.printf(
-        "%n%nSTATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
-        player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
-    Location currentLocation = player.getCurrentLocation();
-    System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
-    System.out.printf("You are at: %s. ", player.getCurrentPoi().getName());
+  private void displayWelcome(Player player) {
+    System.out.printf("%n%nHello %s!%n%n%n", player.getName());
   }
 
   private void buildActions(List<Action> actions) {
-    actions.clear();
     switch (player.getState()) {
-      case AT_DEFAULT_POI -> actions.addAll(ActionComponent.listForLocation(player));
-      case INSIDE_LOCATION -> actions.addAll(ActionComponent.listPois(player));
-      case AT_SPECIFIC_POI -> actions.addAll(ActionComponent.listForPoi(player));
+      case AT_DEFAULT_POI:
+        showStats(true);
+        ActionComponent.defaultPoi(player, actions);
+        break;
+      case CHOOSE_POI:
+        showStats(false);
+        ActionComponent.allPois(player, actions);
+        break;
+      case AT_SPECIFIC_POI:
+        showStats(true);
+        ActionComponent.thisPoi(player, actions);
+        break;
+      default:
+        showStats(false);
+        ActionComponent.fallback(player, actions);
+        break;
     }
   }
 
   private void displayActions(List<Action> actions) {
-    System.out.println("What do you want to do?");
+    System.out.println("What's next?");
     actions.forEach(a -> System.out.println(a.print()));
     System.out.printf("%n> ");
   }
@@ -98,7 +97,21 @@ public class NewGame {
     if (action.isPresent()) {
       action.get().execute(player, actions);
     } else {
-      System.out.println("Invalid choice! Try again...");
+      System.out.println("Invalid choice, try again...");
+    }
+    System.out.printf("%n%n");
+  }
+
+  private void showStats(boolean showLocation) {
+    System.out.printf(
+        "STATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
+        player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
+    if (showLocation) {
+      Location currentLocation = player.getCurrentLocation();
+      System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getSummary());
+      System.out.printf("You are at: %s. ", player.getCurrentPoi().getName());
+    } else {
+      System.out.println();
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.cli.ProgressBar;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,8 +22,8 @@ public class LocationAction implements Action {
 
   @Override
   public void execute(Player player, List<Action> actions) {
+    ProgressBar.displayProgress(player.getCurrentLocation(), location);
     setPlayerState(player);
-    player.setCurrentLocation(location);
     player.setCurrentPoi(location.getDefaultPoi());
   }
 

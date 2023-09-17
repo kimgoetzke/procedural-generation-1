@@ -30,4 +30,11 @@ public interface Location extends Visitable, Generatable {
   StringGenerator getStringGenerator();
 
   String getSummary(); // TODO: Replace with objects so that it can be used via API
+
+  default int distanceTo(Location end) {
+    int deltaX = end.getCoordinates().getFirst() - getCoordinates().getFirst();
+    int deltaY = end.getCoordinates().getSecond() - getCoordinates().getSecond();
+    double distance = Math.sqrt((double) deltaX * deltaX + deltaY * deltaY);
+    return (int) Math.round(distance);
+  }
 }
