@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.ProgressBar;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,20 +27,31 @@ public class LocationAction implements Action {
 
   @Override
   public void execute(Player player, List<Action> actions) {
+    if (location.isGenerated()) {
+      concludeAction(player, location.getDefaultPoi());
+      return;
+    }
+    generateSettlementAndConcludeAction(player);
+  }
+
+  private void generateSettlementAndConcludeAction(Player player) {
     var poiLeft = player.getCurrentPoi();
     var settlementFuture = generateSettlementOnSeparateThread();
     ProgressBar.displayProgress(player.getCurrentLocation(), location);
     try {
       settlementFuture.get();
-      setPlayerState(player);
-      player.setCurrentPoi(location.getDefaultPoi());
+      concludeAction(player, location.getDefaultPoi());
     } catch (ExecutionException | InterruptedException e) {
       Thread.currentThread().interrupt();
       System.out.printf(
           "%nSeems like you didn't know the way because you ended up where you started.%n");
-      setPlayerState(player);
-      player.setCurrentPoi(poiLeft);
+      concludeAction(player, poiLeft);
     }
+  }
+
+  private void concludeAction(Player player, PointOfInterest poi) {
+    setPlayerState(player);
+    player.setCurrentPoi(poi);
   }
 
   private Future<?> generateSettlementOnSeparateThread() {

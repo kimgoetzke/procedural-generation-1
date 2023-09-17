@@ -22,6 +22,7 @@ public class Amenity extends AbstractAmenity {
         parent
             .getStringGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
+    setGenerated(true);
   }
 
   @Override

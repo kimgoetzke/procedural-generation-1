@@ -25,6 +25,7 @@ public abstract class AbstractLocation implements Location {
   @Getter protected List<Action> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
+  @Getter @Setter private boolean isGenerated;
 
   protected AbstractLocation(Pair<Integer, Integer> coordinates) {
     this.id = UUID.randomUUID().toString();

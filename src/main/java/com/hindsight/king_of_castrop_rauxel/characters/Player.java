@@ -5,6 +5,7 @@ import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.springframework.data.util.Pair;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,15 +21,18 @@ public class Player implements Visitor {
   @Setter private int age;
   @Setter private int activityPoints;
   @Setter @Getter private State state = State.AT_DEFAULT_POI;
+  @Getter @Setter private Pair<Integer, Integer> currentWorldCoordinates;
   private Location currentLocation;
   private PointOfInterest currentPoi;
   private final Set<Location> visitedLocations = new HashSet<>();
 
-  public Player(String name, @NonNull Location currentLocation) {
+  public Player(
+      String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoordinates) {
     this.name = name;
     this.id = UUID.randomUUID().toString();
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
+    this.currentWorldCoordinates = worldCoordinates;
   }
 
   public void setCurrentPoi(PointOfInterest currentPoi) {
@@ -43,6 +47,6 @@ public class Player implements Visitor {
     AT_DEFAULT_POI,
     CHOOSE_POI,
     AT_SPECIFIC_POI,
-    SHOW_MAP
+    DEBUG
   }
 }

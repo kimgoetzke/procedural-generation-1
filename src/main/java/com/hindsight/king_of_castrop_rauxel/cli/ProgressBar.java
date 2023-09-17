@@ -85,7 +85,7 @@ public class ProgressBar {
       // via IntelliJ will not allow the console to be cleared which is required for the animation
       // to work
     }
-    System.out.println("Running from IntelliJ: " + hideHorsey);
+    log.info("Running from IntelliJ: " + hideHorsey);
   }
 
   // TODO: Allow interrupting (returning progress %) and resuming later (accepting progress %)

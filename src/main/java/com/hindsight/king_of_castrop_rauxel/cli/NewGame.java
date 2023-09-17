@@ -3,12 +3,12 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionComponent;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.world.*;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import com.hindsight.king_of_castrop_rauxel.world.*;
 import java.util.List;
 import java.util.Scanner;
 import lombok.AccessLevel;
@@ -23,32 +23,32 @@ import org.springframework.stereotype.Component;
 public class NewGame {
 
   private final StringGenerator stringGenerator;
-  private final Scanner input = new Scanner(System.in);
-  private final Graph<AbstractLocation> map = new Graph<>(true);
-  private World world;
+  private final World world;
+  private final Graph<AbstractLocation> map;
+  private final Scanner input;
   private Player player;
 
   @SuppressWarnings("InfiniteLoopStatement")
   public void start() {
     var startLocation = generateFirstChunk();
     var actions = ActionComponent.empty();
-    this.player = new Player("Traveller", startLocation);
+    var worldCoordinates = world.getCurrentChunk().getWorldCoordinates();
+    this.player = new Player("Traveller", startLocation, worldCoordinates);
     displayWelcome(player);
     while (true) {
       buildActions(actions);
       displayActions(actions);
       processAction(actions);
-      generateNextChunk();
+      updateWorld();
     }
   }
 
   private Settlement generateFirstChunk() {
     var startTime = System.currentTimeMillis();
     var random = SeedComponent.getInstance();
-    Chunk chunk = ChunkComponent.generateChunk(random);
+    var chunk = ChunkComponent.generateChunk(random, world.getCenter());
     var startLocation = WorldBuildingComponent.build(map, chunk, stringGenerator);
-    world = new World();
-    world.placeCenter(chunk);
+    world.placeChunk(chunk);
     startLocation.generate();
     logOutcome(startTime);
     return startLocation;
@@ -80,9 +80,14 @@ public class NewGame {
         showStats(true);
         ActionComponent.thisPoi(player, actions);
         break;
-      default:
+      case DEBUG:
         showStats(false);
-        ActionComponent.fallback(player, actions);
+        ActionComponent.debug(player, actions);
+        break;
+      default:
+        System.out.printf("Not implemented yet...%n%n");
+        showStats(false);
+        ActionComponent.defaultPoi(player, actions);
         break;
     }
   }
@@ -104,18 +109,43 @@ public class NewGame {
     System.out.printf("%n%n");
   }
 
-  // TODO: Implement auto-generation of next chunk
-  //  - Fix bug where next chunk has same settlement names
-  private void generateNextChunk() {
-    if (ChunkComponent.isInsideTriggerZone(player.getCurrentLocation().getCoordinates())) {
-      log.info("Generating next chunk...");
-      var startTime = System.currentTimeMillis();
-      var random = SeedComponent.getInstance();
-      // Find out where to generate the next chunk
-      Chunk chunk = ChunkComponent.generateChunk(random);
-      WorldBuildingComponent.buildNext(map, chunk, stringGenerator, player.getCurrentLocation());
-      logOutcome(startTime);
+  // TODO: Implement DebugAction and confirm things work as expected (use functional interface)
+  // TODO: Create method to ensure currentChunk and nextChunk are always connected
+  // TODO: Add settlement as well as chunk unloading/destroying to free up memory
+  private void updateWorld() {
+    updatePlayerWorldCoordinates();
+    updateChunks();
+  }
+
+  private void updatePlayerWorldCoordinates() {
+    var worldCoordinates = world.getCurrentChunk().getWorldCoordinates();
+    if (player.getCurrentWorldCoordinates() != worldCoordinates) {
+      log.info("Player is entering a new chunk");
+      player.setCurrentWorldCoordinates(worldCoordinates);
     }
+  }
+
+  private void updateChunks() {
+    var chunkCoordinates = player.getCurrentLocation().getCoordinates();
+    if (ChunkComponent.isInsideTriggerZone(chunkCoordinates)) {
+      var whereNext = ChunkComponent.nextChunkPosition(chunkCoordinates);
+      if (world.hasChunk(whereNext)) {
+        log.info("Chunk already exists, skipping...");
+        return;
+      }
+      generateNextChunk(whereNext);
+    }
+  }
+
+  private void generateNextChunk(WorldBuildingComponent.RelativePosition whereNext) {
+    log.info("Generating next chunk...");
+    var startTime = System.currentTimeMillis();
+    var random = SeedComponent.getInstance();
+    var currentChunk = world.getCurrentChunk();
+    Chunk nextChunk = ChunkComponent.generateChunk(random, world.getPosition(whereNext));
+    world.placeChunk(nextChunk, whereNext);
+    WorldBuildingComponent.buildNext(map, currentChunk, nextChunk, whereNext, stringGenerator);
+    logOutcome(startTime);
   }
 
   private void showStats(boolean showLocation) {

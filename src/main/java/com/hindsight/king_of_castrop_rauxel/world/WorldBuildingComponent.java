@@ -5,7 +5,6 @@ import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.HashSet;
@@ -24,6 +23,14 @@ public class WorldBuildingComponent {
 
   public static final int WORLD_SIZE = 50;
 
+  public enum RelativePosition {
+    THIS,
+    ABOVE,
+    RIGHT,
+    BELOW,
+    LEFT
+  }
+
   public static Settlement build(
       Graph<AbstractLocation> map, Chunk chunk, StringGenerator stringGenerator) {
     var startLocation = placeSettlement(map, chunk, stringGenerator, chunk.getCenter());
@@ -36,15 +43,14 @@ public class WorldBuildingComponent {
 
   public static void buildNext(
       Graph<AbstractLocation> map,
-      Chunk chunk,
-      StringGenerator stringGenerator,
-      Location location) {
-    // Add methods to connect toConnect to newly generated settlements within distance (at least
-    // one)
-    generateSettlements(map, chunk, stringGenerator);
-    connectCloseSettlements(map, chunk);
-    connectAtLeastOneSettlement(map, chunk);
-    connectDisconnectedGroups(map, chunk);
+      Chunk currentChunk,
+      Chunk nextChunk,
+      RelativePosition where,
+      StringGenerator stringGenerator) {
+    generateSettlements(map, nextChunk, stringGenerator);
+    connectCloseSettlements(map, nextChunk);
+    connectAtLeastOneSettlement(map, nextChunk);
+    connectDisconnectedGroups(map, nextChunk);
   }
 
   private static void generateSettlements(
@@ -79,11 +85,6 @@ public class WorldBuildingComponent {
         var otherLocation = other.getLocation();
         var otherCoordinates = otherLocation.getCoordinates();
         var distance = chunk.calculateDistance(refLocation.getCoordinates(), otherCoordinates);
-        log.info(
-            "Distance between {} and {} is {} km",
-            refLocation.getName(),
-            otherLocation.getName(),
-            distance);
         if (distance < ChunkComponent.MAX_NEIGHBOUR_DISTANCE) {
           addConnections(map, reference, other, distance);
         }
@@ -142,9 +143,10 @@ public class WorldBuildingComponent {
       s2.addNeighbour(s1);
     }
     log.info(
-        "Added {} and {} as neighbours of each other",
+        "Added {} and {} (distance: {} km) as neighbours of each other",
         l2.getLocation().getName(),
-        l1.getLocation().getName());
+        l1.getLocation().getName(),
+        distance);
   }
 
   private static Vertex<AbstractLocation> findClosestNeighbour(

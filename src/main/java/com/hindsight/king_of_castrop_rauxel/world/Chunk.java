@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.world;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
@@ -11,9 +12,12 @@ public class Chunk {
   @Getter private final int density;
   private final Random random;
   private final int[][] plane = new int[ChunkComponent.CHUNK_SIZE][ChunkComponent.CHUNK_SIZE];
+  @Getter @Setter private Pair<Integer, Integer> worldCoordinates;
 
-  public Chunk(Random random, int density) {
-    this.random = random;
+  public Chunk(int density, Pair<Integer, Integer> coordinates) {
+    var seed = SeedComponent.seedFrom(coordinates);
+    this.worldCoordinates = coordinates;
+    this.random = new Random(seed);
     this.density = density;
   }
 

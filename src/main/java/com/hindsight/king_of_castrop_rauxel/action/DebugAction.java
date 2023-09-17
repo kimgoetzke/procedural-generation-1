@@ -7,20 +7,22 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @Builder
-public class ExitAction implements Action {
+public class DebugAction<T> implements Action {
 
   @Setter private int index;
   private String name;
   private static final State NEXT_STATE = State.AT_DEFAULT_POI;
+  private Class<T> clazz;
 
   @Override
   public void execute(Player player, List<Action> actions) {
     setPlayerState(player);
-    System.out.printf("Goodbye!%n%n");
-    System.exit(0);
+    log.info("Debug action triggered for class: {}", clazz.getSimpleName());
   }
 
   public State getNextState() {

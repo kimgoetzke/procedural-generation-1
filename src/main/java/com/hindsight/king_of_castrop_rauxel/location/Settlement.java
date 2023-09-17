@@ -27,6 +27,7 @@ public class Settlement extends AbstractSettlement {
     generateInhabitants();
     generateAmenities();
     generatePlayerActions();
+    setGenerated(true);
     logResult();
   }
 

@@ -1,17 +1,17 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.location.Location;
-
-import java.util.ArrayList;
-import java.util.List;
-import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
-
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.location.Settlement;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
 @Component
-@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ActionComponent {
 
   public static void defaultPoi(Player player, List<Action> actions) {
@@ -62,7 +62,7 @@ public class ActionComponent {
 
   private static void prepare(List<Action> actions) {
     actions.clear();
-    actions.add(new StateAction(1, "Show map", SHOW_MAP));
+    actions.add(new StateAction(1, "Show debug menu", DEBUG));
   }
 
   private static void addAllActions(List<Action> from, List<Action> to, LocationAction except) {
@@ -76,13 +76,18 @@ public class ActionComponent {
     }
   }
 
-  public static void fallback(Player player, List<Action> actions) {
+  // TODO: Create debug actions:
+  //  - to show all Settlements across all Chunks
+  //  - to show full graph and any disconnected vertices (autowire graph)
+  public static void debug(Player player, List<Action> actions) {
     prepare(actions);
+    actions.remove(0);
     actions.add(
         new LocationAction(
             actions.size() + 1,
             "Back to " + player.getCurrentPoi().getName(),
             player.getCurrentLocation()));
+    actions.add(new DebugAction<>(actions.size() + 1, "Debug settlements", Settlement.class));
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }
 }
