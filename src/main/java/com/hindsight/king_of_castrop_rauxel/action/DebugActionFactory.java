@@ -32,21 +32,25 @@ public class DebugActionFactory {
     map.log();
   }
 
+  public void printConnectivity() {
+    WorldBuildingComponent.logDisconnectedVertices(map);
+  }
+
   public void printWorld() {
     ChunkComponent.log(
-        world.getChunk(WorldBuildingComponent.RelativePosition.LEFT),
-        WorldBuildingComponent.RelativePosition.LEFT);
+        world.getChunk(WorldBuildingComponent.CardinalDirection.WEST),
+        WorldBuildingComponent.CardinalDirection.WEST);
     ChunkComponent.log(
-        world.getChunk(WorldBuildingComponent.RelativePosition.ABOVE),
-        WorldBuildingComponent.RelativePosition.ABOVE);
+        world.getChunk(WorldBuildingComponent.CardinalDirection.NORTH),
+        WorldBuildingComponent.CardinalDirection.NORTH);
     ChunkComponent.log(
-        world.getChunk(WorldBuildingComponent.RelativePosition.RIGHT),
-        WorldBuildingComponent.RelativePosition.RIGHT);
+        world.getChunk(WorldBuildingComponent.CardinalDirection.EAST),
+        WorldBuildingComponent.CardinalDirection.EAST);
     ChunkComponent.log(
-        world.getChunk(WorldBuildingComponent.RelativePosition.BELOW),
-        WorldBuildingComponent.RelativePosition.BELOW);
+        world.getChunk(WorldBuildingComponent.CardinalDirection.SOUTH),
+        WorldBuildingComponent.CardinalDirection.SOUTH);
     ChunkComponent.log(
-        world.getChunk(WorldBuildingComponent.RelativePosition.THIS),
-        WorldBuildingComponent.RelativePosition.THIS);
+        world.getChunk(WorldBuildingComponent.CardinalDirection.THIS),
+        WorldBuildingComponent.CardinalDirection.THIS);
   }
 }

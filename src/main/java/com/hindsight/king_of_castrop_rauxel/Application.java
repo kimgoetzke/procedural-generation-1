@@ -12,6 +12,6 @@ public class Application {
   public static void main(String[] args) {
     var context = SpringApplication.run(Application.class, args);
     var newGame = context.getBean(NewGame.class);
-    newGame.start();
+    newGame.play();
   }
 }

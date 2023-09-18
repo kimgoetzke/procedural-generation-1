@@ -15,27 +15,28 @@ public class World {
   @Getter @Setter private Chunk currentChunk;
   private final Chunk[][] plane = new Chunk[WORLD_SIZE][WORLD_SIZE];
 
-  public boolean hasChunk(RelativePosition position) {
+  public boolean hasChunk(CardinalDirection position) {
     var x = (int) currentChunk.getWorldCoordinates().getFirst();
     var y = (int) currentChunk.getWorldCoordinates().getSecond();
     return switch (position) {
-      case ABOVE -> plane[x][y + 1] != null;
-      case RIGHT -> plane[x + 1][y] != null;
-      case BELOW -> plane[x][y - 1] != null;
-      case LEFT -> plane[x - 1][y] != null;
+      case NORTH -> plane[x][y + 1] != null;
+      case EAST -> plane[x + 1][y] != null;
+      case SOUTH -> plane[x][y - 1] != null;
+      case WEST -> plane[x - 1][y] != null;
       default -> true;
     };
   }
 
-  public Chunk getChunk(RelativePosition position) {
+  public Chunk getChunk(CardinalDirection position) {
     var x = (int) currentChunk.getWorldCoordinates().getFirst();
     var y = (int) currentChunk.getWorldCoordinates().getSecond();
     return switch (position) {
       case THIS -> plane[x][y];
-      case ABOVE -> plane[x][y + 1];
-      case RIGHT -> plane[x + 1][y];
-      case BELOW -> plane[x][y - 1];
-      case LEFT -> plane[x - 1][y];
+      case NORTH -> plane[x][y + 1];
+      case EAST -> plane[x + 1][y];
+      case SOUTH -> plane[x][y - 1];
+      case WEST -> plane[x - 1][y];
+      default -> throw new IllegalStateException("Unexpected value: " + position);
     };
   }
 
@@ -50,17 +51,17 @@ public class World {
     return Pair.of(WORLD_SIZE / 2, WORLD_SIZE / 2);
   }
 
-  public Pair<Integer, Integer> getPosition(RelativePosition position) {
+  public Pair<Integer, Integer> getPosition(CardinalDirection position) {
     var x = (int) currentChunk.getWorldCoordinates().getFirst();
     var y = (int) currentChunk.getWorldCoordinates().getSecond();
     return getPosition(position, currentChunk.getWorldCoordinates(), x, y);
   }
 
-  public void placeChunk(Chunk chunk, RelativePosition position) {
+  public void placeChunk(Chunk chunk, CardinalDirection position) {
     var x = (int) currentChunk.getWorldCoordinates().getFirst();
     var y = (int) currentChunk.getWorldCoordinates().getSecond();
     var coordinates = getPosition(position, currentChunk.getWorldCoordinates(), x, y);
-    if (position == RelativePosition.THIS) {
+    if (position == CardinalDirection.THIS) {
       throw new IllegalStateException(
           "Unexpected coordinates for placing a new chunk: "
               + position
@@ -71,13 +72,14 @@ public class World {
   }
 
   private static Pair<Integer, Integer> getPosition(
-      RelativePosition position, Pair<Integer, Integer> coordinates, int x, int y) {
+      CardinalDirection position, Pair<Integer, Integer> coordinates, int x, int y) {
     return switch (position) {
       case THIS -> coordinates;
-      case ABOVE -> Pair.of(x, y + 1);
-      case RIGHT -> Pair.of(x + 1, y);
-      case BELOW -> Pair.of(x, y - 1);
-      case LEFT -> Pair.of(x - 1, y);
+      case NORTH -> Pair.of(x, y + 1);
+      case EAST -> Pair.of(x + 1, y);
+      case SOUTH -> Pair.of(x, y - 1);
+      case WEST -> Pair.of(x - 1, y);
+      default -> throw new IllegalStateException("Unexpected value: " + position);
     };
   }
 }

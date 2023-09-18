@@ -43,6 +43,10 @@ public class Player implements Visitor {
     location.addVisitor(this);
   }
 
+  public Pair<Integer, Integer> getCurrentCoordinates() {
+    return currentLocation.getCoordinates();
+  }
+
   public enum State {
     AT_DEFAULT_POI,
     CHOOSE_POI,

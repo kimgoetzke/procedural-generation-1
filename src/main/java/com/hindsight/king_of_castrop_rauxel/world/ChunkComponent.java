@@ -36,22 +36,22 @@ public class ChunkComponent {
         || coordinates.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE;
   }
 
-  public static RelativePosition nextChunkPosition(Pair<Integer, Integer> coordinates) {
+  public static CardinalDirection nextChunkPosition(Pair<Integer, Integer> coordinates) {
     if (coordinates.getFirst() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE) {
-      return RelativePosition.RIGHT;
+      return CardinalDirection.EAST;
     } else if (coordinates.getFirst() < GENERATION_TRIGGER_ZONE) {
-      return RelativePosition.LEFT;
+      return CardinalDirection.WEST;
     } else if (coordinates.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE) {
-      return RelativePosition.ABOVE;
+      return CardinalDirection.NORTH;
     } else if (coordinates.getSecond() < GENERATION_TRIGGER_ZONE) {
-      return RelativePosition.BELOW;
+      return CardinalDirection.SOUTH;
     } else {
       throw new IllegalStateException(
           "Cannot return RelativePosition for coordinates " + coordinates);
     }
   }
 
-  public static void log(Chunk chunk, WorldBuildingComponent.RelativePosition position) {
+  public static void log(Chunk chunk, CardinalDirection position) {
     if (chunk == null) {
       log.info("{} chunk does not exist yet", position);
       return;

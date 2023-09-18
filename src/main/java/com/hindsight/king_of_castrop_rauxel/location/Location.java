@@ -1,13 +1,13 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
+import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
+
 import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.List;
 import java.util.Set;
-
-import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import org.springframework.data.util.Pair;
-
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 
 public interface Location extends Visitable, Generatable {
 
@@ -26,6 +26,8 @@ public interface Location extends Visitable, Generatable {
   Set<Location> getNeighbours();
 
   Pair<Integer, Integer> getCoordinates();
+
+  CardinalDirection getCardinalDirection(Pair<Integer, Integer> otherCoordinates);
 
   StringGenerator getStringGenerator();
 

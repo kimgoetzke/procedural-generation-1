@@ -28,38 +28,39 @@ public class LocationAction implements Action {
   @Override
   public void execute(Player player, List<Action> actions) {
     if (location.isGenerated()) {
-      concludeAction(player, location.getDefaultPoi());
+      executeAction(player, location.getDefaultPoi());
       return;
     }
-    generateSettlementAndConcludeAction(player);
+    generateLocationThenExecuteAction(player);
   }
 
-  private void generateSettlementAndConcludeAction(Player player) {
+  private void generateLocationThenExecuteAction(Player player) {
     var poiLeft = player.getCurrentPoi();
-    var settlementFuture = generateSettlementOnSeparateThread();
+    var locationFuture = generateLocation();
     ProgressBar.displayProgress(player.getCurrentLocation(), location);
     try {
-      settlementFuture.get();
-      concludeAction(player, location.getDefaultPoi());
+      locationFuture.get();
+      executeAction(player, location.getDefaultPoi());
     } catch (ExecutionException | InterruptedException e) {
       Thread.currentThread().interrupt();
       System.out.printf(
           "%nSeems like you didn't know the way because you ended up where you started.%n");
-      concludeAction(player, poiLeft);
+      executeAction(player, poiLeft);
     }
   }
 
-  private void concludeAction(Player player, PointOfInterest poi) {
-    setPlayerState(player);
-    player.setCurrentPoi(poi);
-  }
-
-  private Future<?> generateSettlementOnSeparateThread() {
+  private Future<?> generateLocation() {
     try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
       return executor.submit(() -> location.generate());
     }
   }
 
+  private void executeAction(Player player, PointOfInterest poi) {
+    setPlayerState(player);
+    player.setCurrentPoi(poi);
+  }
+
+  @Override
   public State getNextState() {
     return NEXT_STATE;
   }

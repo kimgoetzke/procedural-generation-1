@@ -30,9 +30,9 @@ public class NewGame {
   private Player player;
 
   @SuppressWarnings("InfiniteLoopStatement")
-  public void start() {
+  public void play() {
     var startLocation = generateFirstChunk();
-    var actions = actionHandler.empty();
+    var actions = actionHandler.getEmpty();
     var worldCoordinates = world.getCurrentChunk().getWorldCoordinates();
     this.player = new Player("Traveller", startLocation, worldCoordinates);
     displayWelcome(player);
@@ -75,7 +75,7 @@ public class NewGame {
         break;
       case CHOOSE_POI:
         showInfo(true, false);
-        actionHandler.getAllPoisActions(player, actions);
+        actionHandler.getAllPoiActions(player, actions);
         break;
       case AT_SPECIFIC_POI:
         showInfo(true, true);
@@ -94,7 +94,7 @@ public class NewGame {
   }
 
   private void displayActions(List<Action> actions) {
-    System.out.println("What's next?");
+    System.out.printf("What's next?%n");
     actions.forEach(a -> System.out.println(a.print()));
     System.out.printf("%n> ");
   }
@@ -110,12 +110,13 @@ public class NewGame {
     System.out.printf("%n%n");
   }
 
-  // TODO: Implement DebugAction and confirm things work as expected (use functional interface)
-  // TODO: Create method to ensure currentChunk and nextChunk are always connected
+  // TODO: Ensure getDefaultPoiActions() displays relative location to player i.e. North, South, etc.
   // TODO: Add settlement as well as chunk unloading/destroying to free up memory
+  // TODO: Add method to log connections between two chunks to "printConnectivity()"
+  // TODO: Create method to ensure currentChunk and nextChunk are always connected
   private void updateWorld() {
     updatePlayerWorldCoordinates();
-    updateChunks();
+    generateNextChunk();
   }
 
   private void updatePlayerWorldCoordinates() {
@@ -126,19 +127,19 @@ public class NewGame {
     }
   }
 
-  private void updateChunks() {
+  private void generateNextChunk() {
     var chunkCoordinates = player.getCurrentLocation().getCoordinates();
     if (ChunkComponent.isInsideTriggerZone(chunkCoordinates)) {
       var whereNext = ChunkComponent.nextChunkPosition(chunkCoordinates);
       if (world.hasChunk(whereNext)) {
-        log.info("Chunk already exists, skipping...");
+        log.info("Player is inside trigger zone but next chunk already exists");
         return;
       }
       generateNextChunk(whereNext);
     }
   }
 
-  private void generateNextChunk(WorldBuildingComponent.RelativePosition whereNext) {
+  private void generateNextChunk(WorldBuildingComponent.CardinalDirection whereNext) {
     log.info("Generating next chunk...");
     var startTime = System.currentTimeMillis();
     var random = SeedComponent.getInstance();

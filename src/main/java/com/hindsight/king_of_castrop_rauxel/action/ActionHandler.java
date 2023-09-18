@@ -31,13 +31,17 @@ public class ActionHandler {
       actions.add(
           new LocationAction(
               actions.size() + 1,
-              "Travel to %s (%s)".formatted(neighbour.getName(), neighbour.distanceTo(location)),
+              "Travel to %s (%s, %s)"
+                  .formatted(
+                      neighbour.getName(),
+                      neighbour.distanceTo(location),
+                      neighbour.getCardinalDirection(player.getCurrentCoordinates()).toString()),
               neighbour));
     }
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }
 
-  public void getAllPoisActions(Player player, List<Action> actions) {
+  public void getAllPoiActions(Player player, List<Action> actions) {
     prepare(actions);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
@@ -59,7 +63,7 @@ public class ActionHandler {
     actions.addAll(poi.getAvailableActions());
   }
 
-  public List<Action> empty() {
+  public List<Action> getEmpty() {
     return new ArrayList<>();
   }
 
@@ -79,15 +83,14 @@ public class ActionHandler {
     }
   }
 
-  // TODO: Create debug actions:
-  //  - to show all Settlements across all Chunks
-  //  - to show full graph and any disconnected vertices (autowire graph)
   public void getDebugActions(Player player, List<Action> actions) {
     prepare(actions);
     actions.remove(0);
     actions.add(new LocationAction(actions.size() + 1, "Resume game", player.getCurrentLocation()));
-    actions.add(debug.create(actions.size() + 1, "Debug graph", debug::printGraph));
-    actions.add(debug.create(actions.size() + 1, "Debug world", debug::printWorld));
+    actions.add(debug.create(actions.size() + 1, "Show full graph", debug::printGraph));
+    actions.add(
+        debug.create(actions.size() + 1, "Show graph connectivity", debug::printConnectivity));
+    actions.add(debug.create(actions.size() + 1, "Show close chunks", debug::printWorld));
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }
 }

@@ -23,12 +23,16 @@ public class WorldBuildingComponent {
 
   public static final int WORLD_SIZE = 50;
 
-  public enum RelativePosition {
+  public enum CardinalDirection {
     THIS,
-    ABOVE,
-    RIGHT,
-    BELOW,
-    LEFT
+    NORTH,
+    NORTH_EAST,
+    EAST,
+    SOUTH_EAST,
+    SOUTH,
+    SOUTH_WEST,
+    WEST,
+    NORTH_WEST
   }
 
   public static Settlement build(
@@ -45,7 +49,7 @@ public class WorldBuildingComponent {
       Graph<AbstractLocation> map,
       Chunk currentChunk,
       Chunk nextChunk,
-      RelativePosition where,
+      CardinalDirection where,
       StringGenerator stringGenerator) {
     generateSettlements(map, nextChunk, stringGenerator);
     connectCloseSettlements(map, nextChunk);
@@ -168,6 +172,13 @@ public class WorldBuildingComponent {
       }
     }
     return closestNeighbor;
+  }
+
+  public static void logDisconnectedVertices(Graph<AbstractLocation> graph) {
+    var result = findDisconnectedVertices(graph);
+    log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
+    result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
+    log.info("Visited vertices: {}", result.visitedVertices().size());
   }
 
   private static ConnectivityResult findDisconnectedVertices(Graph<AbstractLocation> graph) {

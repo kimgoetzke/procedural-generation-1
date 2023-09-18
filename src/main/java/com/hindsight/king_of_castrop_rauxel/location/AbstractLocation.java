@@ -4,6 +4,8 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import com.hindsight.king_of_castrop_rauxel.world.SeedComponent;
 import java.util.*;
+
+import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,6 +59,38 @@ public abstract class AbstractLocation implements Location {
   protected void setCoordinates(Pair<Integer, Integer> coordinates) {
     this.x = coordinates.getFirst();
     this.y = coordinates.getSecond();
+  }
+
+  @Override
+  public WorldBuildingComponent.CardinalDirection getCardinalDirection(
+      Pair<Integer, Integer> other) {
+    int dx = other.getFirst() - getCoordinates().getFirst();
+    int dy = other.getSecond() - getCoordinates().getSecond();
+
+    if (dx == 0) {
+      if (dy < 0) {
+        return WorldBuildingComponent.CardinalDirection.NORTH;
+      } else if (dy > 0) {
+        return WorldBuildingComponent.CardinalDirection.SOUTH;
+      }
+    } else if (dy == 0) {
+      if (dx < 0) {
+        return WorldBuildingComponent.CardinalDirection.WEST;
+      } else {
+        return WorldBuildingComponent.CardinalDirection.EAST;
+      }
+    } else {
+      if (dx < 0 && dy < 0) {
+        return WorldBuildingComponent.CardinalDirection.NORTH_WEST;
+      } else if (dx < 0) {
+        return WorldBuildingComponent.CardinalDirection.SOUTH_WEST;
+      } else if (dy < 0) {
+        return WorldBuildingComponent.CardinalDirection.NORTH_EAST;
+      } else {
+        return WorldBuildingComponent.CardinalDirection.SOUTH_EAST;
+      }
+    }
+    return WorldBuildingComponent.CardinalDirection.THIS;
   }
 
   @Getter
