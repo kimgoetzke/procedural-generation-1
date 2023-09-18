@@ -1,6 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,5 +49,29 @@ public class ChunkComponent {
       throw new IllegalStateException(
           "Cannot return RelativePosition for coordinates " + coordinates);
     }
+  }
+
+  public static void log(Chunk chunk, WorldBuildingComponent.RelativePosition position) {
+    if (chunk == null) {
+      log.info("{} chunk does not exist yet", position);
+      return;
+    }
+    var settlements = new AtomicInteger();
+    Arrays.stream(chunk.getPlane())
+        .forEach(
+            row -> {
+              for (var cell : row) {
+                if (cell > 0) {
+                  settlements.getAndIncrement();
+                }
+              }
+            });
+    log.info(
+        "{} chunk at ({}, {}) has a density of {} and {} settlements",
+        position,
+        chunk.getWorldCoordinates().getFirst(),
+        chunk.getWorldCoordinates().getSecond(),
+        chunk.getDensity(),
+        settlements);
   }
 }

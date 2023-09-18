@@ -3,26 +3,30 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import java.util.List;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+
+import com.hindsight.king_of_castrop_rauxel.world.World;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
 @Builder
-public class DebugAction<T> implements Action {
+public class DebugAction implements Action {
 
+  private static final State NEXT_STATE = State.DEBUG;
   @Setter private int index;
   private String name;
-  private static final State NEXT_STATE = State.AT_DEFAULT_POI;
-  private Class<T> clazz;
+  private Debuggable debuggable;
+  private Graph<AbstractLocation> map;
+  private World world;
 
   @Override
   public void execute(Player player, List<Action> actions) {
     setPlayerState(player);
-    log.info("Debug action triggered for class: {}", clazz.getSimpleName());
+    debuggable.execute();
   }
 
   public State getNextState() {

@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.action.ActionComponent;
+import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
 public class NewGame {
 
+  private final ActionHandler actionHandler;
   private final StringGenerator stringGenerator;
   private final World world;
   private final Graph<AbstractLocation> map;
@@ -31,7 +32,7 @@ public class NewGame {
   @SuppressWarnings("InfiniteLoopStatement")
   public void start() {
     var startLocation = generateFirstChunk();
-    var actions = ActionComponent.empty();
+    var actions = actionHandler.empty();
     var worldCoordinates = world.getCurrentChunk().getWorldCoordinates();
     this.player = new Player("Traveller", startLocation, worldCoordinates);
     displayWelcome(player);
@@ -69,25 +70,25 @@ public class NewGame {
   private void buildActions(List<Action> actions) {
     switch (player.getState()) {
       case AT_DEFAULT_POI:
-        showStats(true);
-        ActionComponent.defaultPoi(player, actions);
+        showInfo(true, true);
+        actionHandler.getDefaultPoiActions(player, actions);
         break;
       case CHOOSE_POI:
-        showStats(false);
-        ActionComponent.allPois(player, actions);
+        showInfo(true, false);
+        actionHandler.getAllPoisActions(player, actions);
         break;
       case AT_SPECIFIC_POI:
-        showStats(true);
-        ActionComponent.thisPoi(player, actions);
+        showInfo(true, true);
+        actionHandler.getThisPoiActions(player, actions);
         break;
       case DEBUG:
-        showStats(false);
-        ActionComponent.debug(player, actions);
+        showInfo(false, false);
+        actionHandler.getDebugActions(player, actions);
         break;
       default:
         System.out.printf("Not implemented yet...%n%n");
-        showStats(false);
-        ActionComponent.defaultPoi(player, actions);
+        showInfo(false, false);
+        actionHandler.getDefaultPoiActions(player, actions);
         break;
     }
   }
@@ -148,15 +149,18 @@ public class NewGame {
     logOutcome(startTime);
   }
 
-  private void showStats(boolean showLocation) {
-    System.out.printf(
-        "STATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
-        player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
+  private void showInfo(boolean showStats, boolean showLocation) {
+    if (showStats) {
+      System.out.printf(
+          "STATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
+          player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
+    }
     if (showLocation) {
       Location currentLocation = player.getCurrentLocation();
       System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getFullSummary());
       System.out.printf("You are at: %s. ", player.getCurrentPoi().getName());
-    } else {
+    }
+    if (showStats || showLocation) {
       System.out.println();
     }
   }

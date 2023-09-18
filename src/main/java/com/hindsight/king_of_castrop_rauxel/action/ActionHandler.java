@@ -4,17 +4,20 @@ import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
-import com.hindsight.king_of_castrop_rauxel.location.Settlement;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-@Component
-@RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class ActionComponent {
+@Service
+@RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE, onConstructor = @__(@Autowired))
+public class ActionHandler {
 
-  public static void defaultPoi(Player player, List<Action> actions) {
+  private final DebugActionFactory debug;
+
+  public void getDefaultPoiActions(Player player, List<Action> actions) {
     prepare(actions);
     var location = player.getCurrentLocation();
     actions.add(
@@ -34,7 +37,7 @@ public class ActionComponent {
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }
 
-  public static void allPois(Player player, List<Action> actions) {
+  public void getAllPoisActions(Player player, List<Action> actions) {
     prepare(actions);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
@@ -44,7 +47,7 @@ public class ActionComponent {
     addAllActions(location.getAvailableActions(), actions, defaultAction);
   }
 
-  public static void thisPoi(Player player, List<Action> actions) {
+  public void getThisPoiActions(Player player, List<Action> actions) {
     prepare(actions);
     var poi = player.getCurrentPoi();
     var currentLocation = player.getCurrentLocation();
@@ -56,11 +59,11 @@ public class ActionComponent {
     actions.addAll(poi.getAvailableActions());
   }
 
-  public static List<Action> empty() {
+  public List<Action> empty() {
     return new ArrayList<>();
   }
 
-  private static void prepare(List<Action> actions) {
+  private void prepare(List<Action> actions) {
     actions.clear();
     actions.add(new StateAction(1, "Show debug menu", DEBUG));
   }
@@ -79,15 +82,12 @@ public class ActionComponent {
   // TODO: Create debug actions:
   //  - to show all Settlements across all Chunks
   //  - to show full graph and any disconnected vertices (autowire graph)
-  public static void debug(Player player, List<Action> actions) {
+  public void getDebugActions(Player player, List<Action> actions) {
     prepare(actions);
     actions.remove(0);
-    actions.add(
-        new LocationAction(
-            actions.size() + 1,
-            "Back to " + player.getCurrentPoi().getName(),
-            player.getCurrentLocation()));
-    actions.add(new DebugAction<>(actions.size() + 1, "Debug settlements", Settlement.class));
+    actions.add(new LocationAction(actions.size() + 1, "Resume game", player.getCurrentLocation()));
+    actions.add(debug.create(actions.size() + 1, "Debug graph", debug::printGraph));
+    actions.add(debug.create(actions.size() + 1, "Debug world", debug::printWorld));
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }
 }
