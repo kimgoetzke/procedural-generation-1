@@ -26,8 +26,8 @@ public abstract class AbstractSettlement extends AbstractLocation {
   @Getter protected Set<Location> neighbours = new HashSet<>();
 
   protected AbstractSettlement(
-      StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
-    super(coordinates);
+      StringGenerator stringGenerator, Pair<Integer, Integer> chunkCoords) {
+    super(chunkCoords);
     this.stringGenerator = stringGenerator;
     stringGenerator.setRandom(random);
   }
@@ -73,7 +73,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
             inhabitants.size(),
             getPopulationDensity(),
             pointsOfInterests.size(),
-            "(%s, %s)".formatted(getCoordinates().getFirst(), getCoordinates().getSecond()),
+            "(%s, %s)".formatted(getChunkCoords().getFirst(), getChunkCoords().getSecond()),
             neighbours.size(),
             loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
   }
@@ -84,7 +84,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
         .formatted(
             name,
             size.getName(),
-            "(%s, %s)".formatted(getCoordinates().getFirst(), getCoordinates().getSecond()),
+            "(%s, %s)".formatted(getChunkCoords().getFirst(), getChunkCoords().getSecond()),
             neighbours.size(),
             isLoaded());
   }

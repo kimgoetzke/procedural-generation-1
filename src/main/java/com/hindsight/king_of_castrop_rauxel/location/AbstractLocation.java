@@ -22,18 +22,18 @@ public abstract class AbstractLocation implements Location {
   @EqualsAndHashCode.Include @Getter protected final long seed;
   @Getter @Setter protected String name;
   @Getter @Setter protected String description;
-  protected int x;
-  protected int y;
   @Getter protected List<Action> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
+  @Getter private Pair<Integer, Integer> worldCoords;
+  @Getter private final Pair<Integer, Integer> chunkCoords;
   @Getter @Setter private boolean isLoaded;
 
-  protected AbstractLocation(Pair<Integer, Integer> coordinates) {
+  protected AbstractLocation(Pair<Integer, Integer> chunkCoords) {
     this.id = UUID.randomUUID().toString();
-    this.seed = SeedComponent.seedFrom(coordinates);
+    this.seed = SeedComponent.seedFrom(chunkCoords);
     this.random = new Random(seed);
-    setCoordinates(coordinates);
+    this.chunkCoords = chunkCoords;
   }
 
   @Override
@@ -52,20 +52,10 @@ public abstract class AbstractLocation implements Location {
   }
 
   @Override
-  public Pair<Integer, Integer> getCoordinates() {
-    return Pair.of(x, y);
-  }
-
-  protected void setCoordinates(Pair<Integer, Integer> coordinates) {
-    this.x = coordinates.getFirst();
-    this.y = coordinates.getSecond();
-  }
-
-  @Override
   public WorldBuildingComponent.CardinalDirection getCardinalDirection(
       Pair<Integer, Integer> other) {
-    int dx = other.getFirst() - getCoordinates().getFirst();
-    int dy = other.getSecond() - getCoordinates().getSecond();
+    int dx = other.getFirst() - getChunkCoords().getFirst();
+    int dy = other.getSecond() - getChunkCoords().getSecond();
 
     if (dx == 0) {
       if (dy < 0) {

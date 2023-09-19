@@ -71,8 +71,8 @@ public class ChunkComponent {
     log.info(
         "{} chunk at ({}, {}) has a density of {} and {} settlements",
         position,
-        chunk.getWorldCoordinates().getFirst(),
-        chunk.getWorldCoordinates().getSecond(),
+        chunk.getWorldCoords().getFirst(),
+        chunk.getWorldCoords().getSecond(),
         chunk.getDensity(),
         settlements);
   }

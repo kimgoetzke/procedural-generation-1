@@ -33,7 +33,7 @@ public class NewGame {
   public void play() {
     var startLocation = generateFirstChunk();
     var actions = actionHandler.getEmpty();
-    var worldCoordinates = world.getCurrentChunk().getWorldCoordinates();
+    var worldCoordinates = world.getCurrentChunk().getWorldCoords();
     this.player = new Player("Traveller", startLocation, worldCoordinates);
     displayWelcome(player);
     while (true) {
@@ -110,8 +110,8 @@ public class NewGame {
     System.out.printf("%n%n");
   }
 
-  // TODO: Ensure getDefaultPoiActions() displays relative location to player i.e. North, South, etc.
-  // TODO: Add settlement as well as chunk unloading/destroying to free up memory
+  // TODO: Fix bug where graph doesn't check which chunk a location is in
+  // TODO: Add chunk unloading to free up memory
   // TODO: Add method to log connections between two chunks to "printConnectivity()"
   // TODO: Create method to ensure currentChunk and nextChunk are always connected
   private void updateWorld() {
@@ -120,15 +120,15 @@ public class NewGame {
   }
 
   private void updatePlayerWorldCoordinates() {
-    var worldCoordinates = world.getCurrentChunk().getWorldCoordinates();
-    if (player.getCurrentWorldCoordinates() != worldCoordinates) {
+    var worldCoordinates = world.getCurrentChunk().getWorldCoords();
+    if (player.getWorldCoords() != worldCoordinates) {
       log.info("Player is entering a new chunk");
-      player.setCurrentWorldCoordinates(worldCoordinates);
+      player.setWorldCoords(worldCoordinates);
     }
   }
 
   private void generateNextChunk() {
-    var chunkCoordinates = player.getCurrentLocation().getCoordinates();
+    var chunkCoordinates = player.getCurrentLocation().getChunkCoords();
     if (ChunkComponent.isInsideTriggerZone(chunkCoordinates)) {
       var whereNext = ChunkComponent.nextChunkPosition(chunkCoordinates);
       if (world.hasChunk(whereNext)) {

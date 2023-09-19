@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -23,16 +24,25 @@ public class WorldBuildingComponent {
 
   public static final int WORLD_SIZE = 50;
 
+  @Getter
   public enum CardinalDirection {
-    THIS,
-    NORTH,
-    NORTH_EAST,
-    EAST,
-    SOUTH_EAST,
-    SOUTH,
-    SOUTH_WEST,
-    WEST,
-    NORTH_WEST
+    THIS("This", 0),
+    NORTH("North", 1),
+    NORTH_EAST("North-east", 2),
+    EAST("East", 3),
+    SOUTH_EAST("South-east", 4),
+    SOUTH("South", 5),
+    SOUTH_WEST("South-west", 6),
+    WEST("West", 7),
+    NORTH_WEST("North-west", 8);
+
+    private final String name;
+    private final int ordinal;
+
+    CardinalDirection(String s, int i) {
+      this.name = s;
+      this.ordinal = i;
+    }
   }
 
   public static Settlement build(
@@ -87,8 +97,8 @@ public class WorldBuildingComponent {
           continue;
         }
         var otherLocation = other.getLocation();
-        var otherCoordinates = otherLocation.getCoordinates();
-        var distance = chunk.calculateDistance(refLocation.getCoordinates(), otherCoordinates);
+        var otherChunkCoords = otherLocation.getChunkCoords();
+        var distance = chunk.calculateDistance(refLocation.getChunkCoords(), otherChunkCoords);
         if (distance < ChunkComponent.MAX_NEIGHBOUR_DISTANCE) {
           addConnections(map, reference, other, distance);
         }
@@ -101,12 +111,12 @@ public class WorldBuildingComponent {
     for (var reference : vertices) {
       if (reference.getLocation() instanceof Settlement settlement
           && settlement.getNeighbours().isEmpty()) {
-        var closetNeighbour = findClosestNeighbour(chunk, settlement, reference, vertices);
-        if (closetNeighbour != null) {
+        var closestNeighbour = findClosestNeighbour(chunk, settlement, reference, vertices);
+        if (closestNeighbour != null) {
           var distance =
               chunk.calculateDistance(
-                  settlement.getCoordinates(), closetNeighbour.getLocation().getCoordinates());
-          addConnections(map, reference, closetNeighbour, distance);
+                  settlement.getChunkCoords(), closestNeighbour.getLocation().getChunkCoords());
+          addConnections(map, reference, closestNeighbour, distance);
         }
       }
     }
@@ -129,7 +139,7 @@ public class WorldBuildingComponent {
         if (closestNeighbour != null) {
           var distance =
               chunk.calculateDistance(
-                  settlement.getCoordinates(), closestNeighbour.getLocation().getCoordinates());
+                  settlement.getChunkCoords(), closestNeighbour.getLocation().getChunkCoords());
           addConnections(map, unvisitedVertex, closestNeighbour, distance);
         }
       }
@@ -164,8 +174,8 @@ public class WorldBuildingComponent {
       if (reference.equals(other)) {
         continue;
       }
-      var otherCoordinates = other.getLocation().getCoordinates();
-      var distance = chunk.calculateDistance(settlement.getCoordinates(), otherCoordinates);
+      var otherChunkCoords = other.getLocation().getChunkCoords();
+      var distance = chunk.calculateDistance(settlement.getChunkCoords(), otherChunkCoords);
       if (distance < minDistance) {
         minDistance = distance;
         closestNeighbor = other;

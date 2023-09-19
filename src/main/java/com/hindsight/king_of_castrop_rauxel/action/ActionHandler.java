@@ -31,11 +31,14 @@ public class ActionHandler {
       actions.add(
           new LocationAction(
               actions.size() + 1,
-              "Travel to %s (%s, %s)"
+              "Travel to %s (%s km %s)"
                   .formatted(
                       neighbour.getName(),
                       neighbour.distanceTo(location),
-                      neighbour.getCardinalDirection(player.getCurrentCoordinates()).toString()),
+                      neighbour
+                          .getCardinalDirection(player.getChunkCoords())
+                          .getName()
+                          .toLowerCase()),
               neighbour));
     }
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));

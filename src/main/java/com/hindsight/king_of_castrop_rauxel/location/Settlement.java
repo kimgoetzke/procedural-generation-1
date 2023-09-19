@@ -88,11 +88,12 @@ public class Settlement extends AbstractSettlement {
     neighbours.clear();
     availableActions.clear();
     setLoaded(false);
-    log.info("Unloaded: {}", this);
+    logResult();
   }
 
   @Override
   public void logResult() {
-    log.info("Generated: {}", this);
+    var action = isLoaded() ? "Generated" : "Unloaded";
+    log.info("{}: {}", action, this);
   }
 }

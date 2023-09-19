@@ -21,7 +21,7 @@ public class Player implements Visitor {
   @Setter private int age;
   @Setter private int activityPoints;
   @Setter @Getter private State state = State.AT_DEFAULT_POI;
-  @Getter @Setter private Pair<Integer, Integer> currentWorldCoordinates;
+  @Getter @Setter private Pair<Integer, Integer> worldCoords;
   private Location currentLocation;
   private PointOfInterest currentPoi;
   private final Set<Location> visitedLocations = new HashSet<>();
@@ -32,7 +32,7 @@ public class Player implements Visitor {
     this.id = UUID.randomUUID().toString();
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
-    this.currentWorldCoordinates = worldCoordinates;
+    this.worldCoords = worldCoordinates;
   }
 
   public void setCurrentPoi(PointOfInterest currentPoi) {
@@ -43,8 +43,8 @@ public class Player implements Visitor {
     location.addVisitor(this);
   }
 
-  public Pair<Integer, Integer> getCurrentCoordinates() {
-    return currentLocation.getCoordinates();
+  public Pair<Integer, Integer> getChunkCoords() {
+    return currentLocation.getChunkCoords();
   }
 
   public enum State {

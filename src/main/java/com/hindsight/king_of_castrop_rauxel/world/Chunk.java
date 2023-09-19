@@ -3,26 +3,51 @@ package com.hindsight.king_of_castrop_rauxel.world;
 import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
 
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.location.Generatable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-public class Chunk {
+public class Chunk implements Generatable {
 
-  private final Random random;
   @Getter private final int density;
 
   @Getter private final int[][] plane = new int[CHUNK_SIZE][CHUNK_SIZE];
 
-  @Getter @Setter private Pair<Integer, Integer> worldCoordinates;
+  private Random random;
+  @Getter @Setter private Pair<Integer, Integer> worldCoords;
+  @Getter @Setter private boolean isLoaded;
 
-  public Chunk(int density, Pair<Integer, Integer> coordinates) {
-    var seed = SeedComponent.seedFrom(coordinates);
-    this.worldCoordinates = coordinates;
+  public Chunk(int density, Pair<Integer, Integer> worldCoords) {
+    var seed = SeedComponent.seedFrom(worldCoords);
+    this.worldCoords = worldCoords;
     this.random = new Random(seed);
     this.density = density;
+    load();
+  }
+
+  @Override
+  public void load() {
+    log.info("Generating chunk...");
+    setLoaded(true);
+    logResult();
+  }
+
+  @Override
+  public void unload() {
+    var seed = SeedComponent.seedFrom(worldCoords);
+    random = new Random(seed);
+    setLoaded(false);
+    logResult();
+  }
+
+  @Override
+  public void logResult() {
+    var action = isLoaded ? "Generated" : "Unloaded";
+    log.info("{}: Chunk at ({}, {})", action, worldCoords.getFirst(), worldCoords.getSecond());
   }
 
   public enum LocationType {

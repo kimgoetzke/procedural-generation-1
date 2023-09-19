@@ -16,8 +16,8 @@ public class World {
   private final Chunk[][] plane = new Chunk[WORLD_SIZE][WORLD_SIZE];
 
   public boolean hasChunk(CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoordinates().getFirst();
-    var y = (int) currentChunk.getWorldCoordinates().getSecond();
+    var x = (int) currentChunk.getWorldCoords().getFirst();
+    var y = (int) currentChunk.getWorldCoords().getSecond();
     return switch (position) {
       case NORTH -> plane[x][y + 1] != null;
       case EAST -> plane[x + 1][y] != null;
@@ -28,8 +28,8 @@ public class World {
   }
 
   public Chunk getChunk(CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoordinates().getFirst();
-    var y = (int) currentChunk.getWorldCoordinates().getSecond();
+    var x = (int) currentChunk.getWorldCoords().getFirst();
+    var y = (int) currentChunk.getWorldCoords().getSecond();
     return switch (position) {
       case THIS -> plane[x][y];
       case NORTH -> plane[x][y + 1];
@@ -44,7 +44,7 @@ public class World {
     currentChunk = chunk;
     var center = getCenter();
     plane[center.getFirst()][center.getSecond()] = chunk;
-    chunk.setWorldCoordinates(center);
+    chunk.setWorldCoords(center);
   }
 
   public Pair<Integer, Integer> getCenter() {
@@ -52,15 +52,15 @@ public class World {
   }
 
   public Pair<Integer, Integer> getPosition(CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoordinates().getFirst();
-    var y = (int) currentChunk.getWorldCoordinates().getSecond();
-    return getPosition(position, currentChunk.getWorldCoordinates(), x, y);
+    var x = (int) currentChunk.getWorldCoords().getFirst();
+    var y = (int) currentChunk.getWorldCoords().getSecond();
+    return getPosition(position, currentChunk.getWorldCoords(), x, y);
   }
 
   public void placeChunk(Chunk chunk, CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoordinates().getFirst();
-    var y = (int) currentChunk.getWorldCoordinates().getSecond();
-    var coordinates = getPosition(position, currentChunk.getWorldCoordinates(), x, y);
+    var x = (int) currentChunk.getWorldCoords().getFirst();
+    var y = (int) currentChunk.getWorldCoords().getSecond();
+    var coordinates = getPosition(position, currentChunk.getWorldCoords(), x, y);
     if (position == CardinalDirection.THIS) {
       throw new IllegalStateException(
           "Unexpected coordinates for placing a new chunk: "
@@ -68,7 +68,7 @@ public class World {
               + " - this would overwrite the current chunk");
     }
     plane[coordinates.getFirst()][coordinates.getSecond()] = chunk;
-    chunk.setWorldCoordinates(coordinates);
+    chunk.setWorldCoords(coordinates);
   }
 
   private static Pair<Integer, Integer> getPosition(

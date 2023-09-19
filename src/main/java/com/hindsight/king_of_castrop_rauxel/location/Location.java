@@ -25,7 +25,9 @@ public interface Location extends Visitable, Generatable {
 
   Set<Location> getNeighbours();
 
-  Pair<Integer, Integer> getCoordinates();
+  Pair<Integer, Integer> getChunkCoords();
+
+  Pair<Integer, Integer> getWorldCoords();
 
   CardinalDirection getCardinalDirection(Pair<Integer, Integer> otherCoordinates);
 
@@ -36,8 +38,8 @@ public interface Location extends Visitable, Generatable {
   String getBriefSummary();
 
   default int distanceTo(Location end) {
-    int deltaX = end.getCoordinates().getFirst() - getCoordinates().getFirst();
-    int deltaY = end.getCoordinates().getSecond() - getCoordinates().getSecond();
+    int deltaX = end.getChunkCoords().getFirst() - getChunkCoords().getFirst();
+    int deltaY = end.getChunkCoords().getSecond() - getChunkCoords().getSecond();
     double distance = Math.sqrt((double) deltaX * deltaX + deltaY * deltaY);
     return (int) Math.round(distance);
   }
