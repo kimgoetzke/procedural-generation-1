@@ -50,7 +50,7 @@ public class NewGame {
     var chunk = ChunkComponent.generateChunk(random, world.getCenter());
     var startLocation = WorldBuildingComponent.build(map, chunk, stringGenerator);
     world.placeChunk(chunk);
-    startLocation.generate();
+    startLocation.load();
     logOutcome(startTime);
     return startLocation;
   }

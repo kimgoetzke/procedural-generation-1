@@ -33,7 +33,9 @@ public class ChunkComponent {
 
   public static boolean isInsideTriggerZone(Pair<Integer, Integer> coordinates) {
     return coordinates.getFirst() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE
-        || coordinates.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE;
+        || coordinates.getFirst() < GENERATION_TRIGGER_ZONE
+        || coordinates.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE
+        || coordinates.getSecond() < GENERATION_TRIGGER_ZONE;
   }
 
   public static CardinalDirection nextChunkPosition(Pair<Integer, Integer> coordinates) {

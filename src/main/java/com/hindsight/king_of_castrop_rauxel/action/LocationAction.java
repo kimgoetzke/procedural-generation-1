@@ -27,15 +27,15 @@ public class LocationAction implements Action {
 
   @Override
   public void execute(Player player, List<Action> actions) {
-    if (location.isGenerated()) {
+    var poiLeaving = player.getCurrentPoi();
+    if (location.isLoaded()) {
       executeAction(player, location.getDefaultPoi());
       return;
     }
-    generateLocationThenExecuteAction(player);
+    generateLocationThenExecuteAction(player, poiLeaving);
   }
 
-  private void generateLocationThenExecuteAction(Player player) {
-    var poiLeft = player.getCurrentPoi();
+  private void generateLocationThenExecuteAction(Player player, PointOfInterest poiLeaving) {
     var locationFuture = generateLocation();
     ProgressBar.displayProgress(player.getCurrentLocation(), location);
     try {
@@ -45,19 +45,20 @@ public class LocationAction implements Action {
       Thread.currentThread().interrupt();
       System.out.printf(
           "%nSeems like you didn't know the way because you ended up where you started.%n");
-      executeAction(player, poiLeft);
+      executeAction(player, poiLeaving);
     }
   }
 
   private Future<?> generateLocation() {
     try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-      return executor.submit(() -> location.generate());
+      return executor.submit(() -> location.load());
     }
   }
 
-  private void executeAction(Player player, PointOfInterest poi) {
+  private void executeAction(Player player, PointOfInterest poiVisiting) {
+    System.out.println();
     setPlayerState(player);
-    player.setCurrentPoi(poi);
+    player.setCurrentPoi(poiVisiting);
   }
 
   @Override

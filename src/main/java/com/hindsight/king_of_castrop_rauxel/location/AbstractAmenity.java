@@ -27,8 +27,8 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
   @Getter protected final Location parent;
   protected final Npc npc;
   @Getter protected final List<Action> availableActions = new ArrayList<>();
-  protected final Random random;
-  @Getter @Setter private boolean isGenerated;
+  protected Random random;
+  @Getter @Setter private boolean isLoaded;
 
   protected AbstractAmenity(PoiType type, Npc npc, Location parent) {
     this.id = UUID.randomUUID().toString();

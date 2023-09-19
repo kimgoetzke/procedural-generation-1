@@ -36,6 +36,19 @@ public class DebugActionFactory {
     WorldBuildingComponent.logDisconnectedVertices(map);
   }
 
+  public void printMemoryUsage() {
+    var rt = Runtime.getRuntime();
+    var totalMemory = rt.totalMemory();
+    var freeMemory = rt.freeMemory();
+    var usedMemory = totalMemory - freeMemory;
+    log.info(
+        String.format(
+            "Memory Usage [ Total: %.2f MB | Free: %.2f MB | Used: %.2f MB ]",
+            totalMemory / (1024.0 * 1024),
+            freeMemory / (1024.0 * 1024),
+            usedMemory / (1024.0 * 1024)));
+  }
+
   public void printWorld() {
     ChunkComponent.log(
         world.getChunk(WorldBuildingComponent.CardinalDirection.WEST),

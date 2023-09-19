@@ -86,7 +86,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
             size.getName(),
             "(%s, %s)".formatted(getCoordinates().getFirst(), getCoordinates().getSecond()),
             neighbours.size(),
-            isGenerated());
+            isLoaded());
   }
 
   private String getPopulationDensity() {

@@ -4,6 +4,8 @@ import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+
+import java.util.Random;
 import java.util.stream.IntStream;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -22,12 +24,12 @@ public class Settlement extends AbstractSettlement {
   }
 
   @Override
-  public void generate() {
+  public void load() {
     log.info("Generating full settlement...");
     generateInhabitants();
     generateAmenities();
     generatePlayerActions();
-    setGenerated(true);
+    setLoaded(true);
     logResult();
   }
 
@@ -76,6 +78,17 @@ public class Settlement extends AbstractSettlement {
               .poi(pointsOfInterests.get(i))
               .build());
     }
+  }
+
+  @Override
+  public void unload() {
+    random = new Random(seed);
+    inhabitants.clear();
+    pointsOfInterests.clear();
+    neighbours.clear();
+    availableActions.clear();
+    setLoaded(false);
+    log.info("Unloaded: {}", this);
   }
 
   @Override
