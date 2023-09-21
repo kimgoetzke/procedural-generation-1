@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 public class Graph<T extends AbstractLocation> {
 
@@ -50,18 +52,17 @@ public class Graph<T extends AbstractLocation> {
   }
 
   public void log() {
+    log.info("Current graph: ");
     for (Vertex<T> vertex : this.vertices) {
       vertex.log(isWeighted);
     }
   }
 
-  public static void traverseGraphDepthFirst(
-      Vertex<AbstractLocation> currentVertex,
-      Set<Vertex<AbstractLocation>> visitedVertices,
-      Set<Vertex<AbstractLocation>> unvisitedVertices) {
+  public static <T extends AbstractLocation> void traverseGraphDepthFirst(
+      Vertex<T> currentVertex, Set<Vertex<T>> visitedVertices, Set<Vertex<T>> unvisitedVertices) {
     visitedVertices.add(currentVertex);
     unvisitedVertices.remove(currentVertex);
-    for (Edge<AbstractLocation> edge : currentVertex.getEdges()) {
+    for (var edge : currentVertex.getEdges()) {
       var end = edge.end();
       if (!visitedVertices.contains(end)) {
         traverseGraphDepthFirst(end, visitedVertices, unvisitedVertices);

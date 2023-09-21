@@ -1,15 +1,14 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
+
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
-
-import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
 
 @Slf4j
 @Component
@@ -20,15 +19,10 @@ public class ChunkComponent {
   public static final int MIN_PLACEMENT_DISTANCE = 5;
   public static final int MAX_NEIGHBOUR_DISTANCE = 100;
   public static final int GENERATION_TRIGGER_ZONE = 100;
-  private static final Bounds chunkDensity = new Bounds(5, 10);
+  private static final Bounds density = new Bounds(5, 10);
 
-  public static Chunk generateChunk(Random random, Pair<Integer, Integer> coordinates) {
-    return new Chunk(randomDensity(random), coordinates);
-  }
-
-  private static int randomDensity(Random random) {
-    return random.nextInt(chunkDensity.getUpper() - chunkDensity.getLower() + 1)
-        + chunkDensity.getLower();
+  public static int randomDensity(Random random) {
+    return random.nextInt(density.getUpper() - density.getLower() + 1) + density.getLower();
   }
 
   public static boolean isInsideTriggerZone(Pair<Integer, Integer> coordinates) {
@@ -69,10 +63,9 @@ public class ChunkComponent {
               }
             });
     log.info(
-        "{} chunk at ({}, {}) has a density of {} and {} settlements",
+        "{} chunk at {} has a density of {} and {} settlements",
         position,
-        chunk.getWorldCoords().getFirst(),
-        chunk.getWorldCoords().getSecond(),
+        chunk.getCoordinates(),
         chunk.getDensity(),
         settlements);
   }

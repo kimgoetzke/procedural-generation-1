@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
 import com.hindsight.king_of_castrop_rauxel.location.Location;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ public class Vertex<T extends Location> {
 
   public Vertex(T location) {
     this.location = location;
-    this.edges = new HashSet<>();
+    this.edges = new LinkedHashSet<>();
   }
 
   public void addEdge(Vertex<T> endVertex, Integer weight) {
@@ -28,14 +28,14 @@ public class Vertex<T extends Location> {
 
   public void log(boolean showWeight) {
     if (edges.isEmpty()) {
-      log.info(location.getName() + " -->");
+      log.info("- " + location.getName() + " -->");
       return;
     }
     StringBuilder message = new StringBuilder();
     boolean first = true;
     for (Edge<T> edge : edges) {
       if (first) {
-        message.append(edge.start().location.getName()).append(" --> ");
+        message.append("- ").append(edge.start().location.getName()).append(" --> ");
         first = false;
       }
       message.append(edge.end().location.getName());

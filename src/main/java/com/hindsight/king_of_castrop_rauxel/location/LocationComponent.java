@@ -98,16 +98,13 @@ public class LocationComponent {
    */
   public static Size randomSize(Random random) {
     var randomNumber = random.nextInt(0, 21);
-    Size size =
-        switch (randomNumber) {
-          case 0, 1, 2, 3, 4, 5 -> Size.XS;
-          case 6, 7, 8, 9, 10, 11, 12, 13, 14 -> Size.S;
-          case 15, 16, 17 -> Size.M;
-          case 18, 19 -> Size.L;
-          default -> Size.XL;
-        };
-    log.info("Set size to {}", size);
-    return size;
+    return switch (randomNumber) {
+      case 0, 1, 2, 3, 4, 5 -> Size.XS;
+      case 6, 7, 8, 9, 10, 11, 12, 13, 14 -> Size.S;
+      case 15, 16, 17 -> Size.M;
+      case 18, 19 -> Size.L;
+      default -> Size.XL;
+    };
   }
 
   /** Returns a random float that expresses the area of a settlement in square kilometers. */

@@ -17,10 +17,13 @@ import org.springframework.data.util.Pair;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Settlement extends AbstractSettlement {
 
-  public Settlement(StringGenerator stringGenerator, Pair<Integer, Integer> coordinates) {
-    super(stringGenerator, coordinates);
+  public Settlement(
+      Pair<Integer, Integer> worldCoords,
+      Pair<Integer, Integer> chunkCoords,
+      StringGenerator stringGenerator) {
+    super(worldCoords, chunkCoords, stringGenerator);
     generateFoundation();
-    logResult();
+    logResult(true);
   }
 
   @Override
@@ -34,7 +37,6 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateFoundation() {
-    log.info("Generating settlement foundation...");
     size = LocationComponent.randomSize(random);
     area = LocationComponent.randomArea(random, size);
     name = stringGenerator.locationNameFrom(this.getClass());
@@ -93,7 +95,11 @@ public class Settlement extends AbstractSettlement {
 
   @Override
   public void logResult() {
-    var action = isLoaded() ? "Generated" : "Unloaded";
+    logResult(false);
+  }
+
+  public void logResult(boolean initial) {
+    var action = initial || isLoaded() ? "Generated" : "Unloaded";
     log.info("{}: {}", action, this);
   }
 }

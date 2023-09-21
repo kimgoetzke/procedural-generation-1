@@ -6,7 +6,6 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
-import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.*;
 import java.util.List;
@@ -31,9 +30,9 @@ public class NewGame {
 
   @SuppressWarnings("InfiniteLoopStatement")
   public void play() {
-    var startLocation = generateFirstChunk();
+    var startLocation = WorldBuildingComponent.build(world, map, stringGenerator);
     var actions = actionHandler.getEmpty();
-    var worldCoordinates = world.getCurrentChunk().getWorldCoords();
+    var worldCoordinates = world.getCurrentChunk().getCoordinates().getWorld();
     this.player = new Player("Traveller", startLocation, worldCoordinates);
     displayWelcome(player);
     while (true) {
@@ -42,25 +41,6 @@ public class NewGame {
       processAction(actions);
       updateWorld();
     }
-  }
-
-  private Settlement generateFirstChunk() {
-    var startTime = System.currentTimeMillis();
-    var random = SeedComponent.getInstance();
-    var chunk = ChunkComponent.generateChunk(random, world.getCenter());
-    var startLocation = WorldBuildingComponent.build(map, chunk, stringGenerator);
-    world.placeChunk(chunk);
-    startLocation.load();
-    logOutcome(startTime);
-    return startLocation;
-  }
-
-  private void logOutcome(long startTime) {
-    map.log();
-    log.info("Generation took {} seconds", (System.currentTimeMillis() - startTime) / 1000);
-    log.info("Generated {} settlements", map.getVertices().size());
-    log.info("List of settlements generated:");
-    map.getVertices().forEach(vertex -> log.info("- " + vertex.getLocation().getBriefSummary()));
   }
 
   private void displayWelcome(Player player) {
@@ -115,15 +95,15 @@ public class NewGame {
   // TODO: Add method to log connections between two chunks to "printConnectivity()"
   // TODO: Create method to ensure currentChunk and nextChunk are always connected
   private void updateWorld() {
-    updatePlayerWorldCoordinates();
+    updateWorldCoords();
     generateNextChunk();
   }
 
-  private void updatePlayerWorldCoordinates() {
-    var worldCoordinates = world.getCurrentChunk().getWorldCoords();
-    if (player.getWorldCoords() != worldCoordinates) {
+  private void updateWorldCoords() {
+    var worldCoords = world.getCurrentChunk().getCoordinates().getWorld();
+    if (player.getCoordinates().getWorld() != worldCoords) {
       log.info("Player is entering a new chunk");
-      player.setWorldCoords(worldCoordinates);
+      world.setCurrentChunk(player.getCoordinates().getWorld());
     }
   }
 
@@ -135,19 +115,8 @@ public class NewGame {
         log.info("Player is inside trigger zone but next chunk already exists");
         return;
       }
-      generateNextChunk(whereNext);
+      WorldBuildingComponent.buildNext(whereNext, world, map, stringGenerator);
     }
-  }
-
-  private void generateNextChunk(WorldBuildingComponent.CardinalDirection whereNext) {
-    log.info("Generating next chunk...");
-    var startTime = System.currentTimeMillis();
-    var random = SeedComponent.getInstance();
-    var currentChunk = world.getCurrentChunk();
-    Chunk nextChunk = ChunkComponent.generateChunk(random, world.getPosition(whereNext));
-    world.placeChunk(nextChunk, whereNext);
-    WorldBuildingComponent.buildNext(map, currentChunk, nextChunk, whereNext, stringGenerator);
-    logOutcome(startTime);
   }
 
   private void showInfo(boolean showStats, boolean showLocation) {

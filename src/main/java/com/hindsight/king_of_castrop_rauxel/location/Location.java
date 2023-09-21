@@ -7,6 +7,8 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.List;
 import java.util.Set;
+
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import org.springframework.data.util.Pair;
 
 public interface Location extends Visitable, Generatable {
@@ -25,9 +27,13 @@ public interface Location extends Visitable, Generatable {
 
   Set<Location> getNeighbours();
 
-  Pair<Integer, Integer> getChunkCoords();
+  void addNeighbour(Location neighbour);
 
-  Pair<Integer, Integer> getWorldCoords();
+  Coordinates getCoordinates();
+
+  Pair<Integer, Integer> getGlobalCoords();
+
+  Pair<Integer, Integer> getChunkCoords();
 
   CardinalDirection getCardinalDirection(Pair<Integer, Integer> otherCoordinates);
 
@@ -38,9 +44,6 @@ public interface Location extends Visitable, Generatable {
   String getBriefSummary();
 
   default int distanceTo(Location end) {
-    int deltaX = end.getChunkCoords().getFirst() - getChunkCoords().getFirst();
-    int deltaY = end.getChunkCoords().getSecond() - getChunkCoords().getSecond();
-    double distance = Math.sqrt((double) deltaX * deltaX + deltaY * deltaY);
-    return (int) Math.round(distance);
+    return getCoordinates().distanceTo(end.getCoordinates());
   }
 }

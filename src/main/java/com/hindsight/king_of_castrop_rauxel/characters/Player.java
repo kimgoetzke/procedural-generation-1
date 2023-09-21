@@ -1,38 +1,38 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.data.util.Pair;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 @Getter
 public class Player implements Visitor {
 
   private final String id;
   private final String name;
+  private final Set<Location> visitedLocations = new HashSet<>();
+  private final Coordinates coordinates;
   @Setter private int gold;
   @Setter private int level;
   @Setter private int age;
   @Setter private int activityPoints;
   @Setter @Getter private State state = State.AT_DEFAULT_POI;
-  @Getter @Setter private Pair<Integer, Integer> worldCoords;
   private Location currentLocation;
   private PointOfInterest currentPoi;
-  private final Set<Location> visitedLocations = new HashSet<>();
 
   public Player(
       String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoordinates) {
     this.name = name;
-    this.id = UUID.randomUUID().toString();
+    this.id = "PLA~" + UUID.randomUUID();
+    this.coordinates = new Coordinates(worldCoordinates, currentLocation.getChunkCoords());
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
-    this.worldCoords = worldCoordinates;
   }
 
   public void setCurrentPoi(PointOfInterest currentPoi) {
@@ -41,10 +41,11 @@ public class Player implements Visitor {
     this.currentLocation = location;
     visitedLocations.add(this.currentLocation);
     location.addVisitor(this);
+    updateCoordinates(location.getGlobalCoords());
   }
 
-  public Pair<Integer, Integer> getChunkCoords() {
-    return currentLocation.getChunkCoords();
+  private void updateCoordinates(Pair<Integer, Integer> globalCoords) {
+    this.coordinates.setTo(globalCoords);
   }
 
   public enum State {

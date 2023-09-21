@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.SeedComponent;
 import java.util.*;
 
@@ -25,15 +26,25 @@ public abstract class AbstractLocation implements Location {
   @Getter protected List<Action> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
-  @Getter private Pair<Integer, Integer> worldCoords;
-  @Getter private final Pair<Integer, Integer> chunkCoords;
+  @Getter protected final Coordinates coordinates;
   @Getter @Setter private boolean isLoaded;
 
-  protected AbstractLocation(Pair<Integer, Integer> chunkCoords) {
-    this.id = UUID.randomUUID().toString();
-    this.seed = SeedComponent.seedFrom(chunkCoords);
+  protected AbstractLocation(
+      Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
+    this.coordinates = new Coordinates(worldCoords, chunkCoords);
+    this.seed = SeedComponent.seedFrom(getGlobalCoords());
     this.random = new Random(seed);
-    this.chunkCoords = chunkCoords;
+    this.id = "LOC~" + getCoordinates().getGlobal();
+  }
+
+  @Override
+  public Pair<Integer, Integer> getGlobalCoords() {
+    return coordinates.getGlobal();
+  }
+
+  @Override
+  public Pair<Integer, Integer> getChunkCoords() {
+    return coordinates.getChunk();
   }
 
   @Override

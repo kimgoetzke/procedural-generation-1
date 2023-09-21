@@ -7,7 +7,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -46,59 +46,74 @@ public class WorldBuildingComponent {
   }
 
   public static Settlement build(
-      Graph<AbstractLocation> map, Chunk chunk, StringGenerator stringGenerator) {
-    var startLocation = placeSettlement(map, chunk, stringGenerator, chunk.getCenter());
+      World world, Graph<AbstractLocation> map, StringGenerator stringGenerator) {
+    var stats = getStats(map);
+    var chunk = new Chunk(world.getCenter());
+    var startLocation = placeSettlement(map, chunk, chunk.getCenterCoords(), stringGenerator);
     generateSettlements(map, chunk, stringGenerator);
-    connectCloseSettlements(map, chunk);
-    connectAtLeastOneSettlement(map, chunk);
-    connectDisconnectedGroups(map, chunk);
+    connectCloseSettlements(map);
+    connectAtLeastOneSettlement(map);
+    connectDisconnectedGroups(map);
+    world.placeChunk(chunk);
+    startLocation.load();
+    logOutcome(stats, map);
     return startLocation;
   }
 
   public static void buildNext(
+      CardinalDirection whereNext,
+      World world,
       Graph<AbstractLocation> map,
-      Chunk currentChunk,
-      Chunk nextChunk,
-      CardinalDirection where,
       StringGenerator stringGenerator) {
+    var stats = getStats(map);
+    Chunk nextChunk = new Chunk(world.getPosition(whereNext));
     generateSettlements(map, nextChunk, stringGenerator);
-    connectCloseSettlements(map, nextChunk);
-    connectAtLeastOneSettlement(map, nextChunk);
-    connectDisconnectedGroups(map, nextChunk);
+    connectCloseSettlements(map);
+    connectAtLeastOneSettlement(map);
+    connectDisconnectedGroups(map);
+    world.placeChunk(nextChunk, whereNext);
+    logOutcome(stats, map);
+  }
+
+  private static void logOutcome(LogStats stats, Graph<AbstractLocation> map) {
+    map.log();
+    log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startTime) / 1000.0);
+    log.info("Generated {} settlements", map.getVertices().size() - stats.prevSettlementCount);
+    log.info("List of generated settlements:");
+    map.getVertices().stream()
+        .filter(v -> !stats.prevSettlements.contains(v.getLocation()))
+        .forEach(vertex -> log.info("- " + vertex.getLocation().getBriefSummary()));
   }
 
   private static void generateSettlements(
       Graph<AbstractLocation> map, Chunk chunk, StringGenerator stringGenerator) {
     var settlementsCount = chunk.getDensity();
     for (int i = 0; i < settlementsCount; i++) {
-      var coordinates = chunk.getRandomCoordinates(LocationType.SETTLEMENT);
-      var settlement = placeSettlement(map, chunk, stringGenerator, coordinates);
-      log.info("Added settlement: {}", settlement.getName());
+      var chunkCoords = chunk.getRandomCoords();
+      placeSettlement(map, chunk, chunkCoords, stringGenerator);
     }
   }
 
   private static Settlement placeSettlement(
       Graph<AbstractLocation> map,
       Chunk chunk,
-      StringGenerator stringGenerator,
-      Pair<Integer, Integer> coordinates) {
-    var settlement = new Settlement(stringGenerator, coordinates);
+      Pair<Integer, Integer> chunkCoords,
+      StringGenerator stringGenerator) {
+    var worldCoords = chunk.getCoordinates().getWorld();
+    var settlement = new Settlement(worldCoords, chunkCoords, stringGenerator);
     map.addVertex(settlement);
-    chunk.place(coordinates.getFirst(), coordinates.getSecond(), LocationType.SETTLEMENT);
+    chunk.place(chunkCoords, LocationType.SETTLEMENT);
     return settlement;
   }
 
-  private static void connectCloseSettlements(Graph<AbstractLocation> map, Chunk chunk) {
+  private static void connectCloseSettlements(Graph<AbstractLocation> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
-      var refLocation = reference.getLocation();
       for (var other : vertices) {
         if (reference.equals(other)) {
           continue;
         }
-        var otherLocation = other.getLocation();
-        var otherChunkCoords = otherLocation.getChunkCoords();
-        var distance = chunk.calculateDistance(refLocation.getChunkCoords(), otherChunkCoords);
+        var distance = reference.getLocation().distanceTo(other.getLocation());
         if (distance < ChunkComponent.MAX_NEIGHBOUR_DISTANCE) {
           addConnections(map, reference, other, distance);
         }
@@ -106,76 +121,63 @@ public class WorldBuildingComponent {
     }
   }
 
-  private static void connectAtLeastOneSettlement(Graph<AbstractLocation> map, Chunk chunk) {
+  private static void connectAtLeastOneSettlement(Graph<AbstractLocation> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
-      if (reference.getLocation() instanceof Settlement settlement
-          && settlement.getNeighbours().isEmpty()) {
-        var closestNeighbour = findClosestNeighbour(chunk, settlement, reference, vertices);
+      var refLocation = reference.getLocation();
+      if (refLocation.getNeighbours().isEmpty()) {
+        var closestNeighbour = findClosestNeighbour(reference, vertices);
         if (closestNeighbour != null) {
-          var distance =
-              chunk.calculateDistance(
-                  settlement.getChunkCoords(), closestNeighbour.getLocation().getChunkCoords());
+          var distance = refLocation.distanceTo(closestNeighbour.getLocation());
           addConnections(map, reference, closestNeighbour, distance);
         }
       }
     }
   }
 
-  private static void connectDisconnectedGroups(Graph<AbstractLocation> map, Chunk chunk) {
+  private static void connectDisconnectedGroups(Graph<AbstractLocation> map) {
     var connectivityResult = findDisconnectedVertices(map);
     var unvisitedVertices = connectivityResult.unvisitedVertices();
     if (unvisitedVertices.isEmpty()) {
       return;
     }
     for (var unvisitedVertex : unvisitedVertices) {
-      if (unvisitedVertex.getLocation() instanceof Settlement settlement) {
-        var closestNeighbour =
-            findClosestNeighbour(
-                chunk,
-                settlement,
-                unvisitedVertex,
-                connectivityResult.visitedVertices().stream().toList());
-        if (closestNeighbour != null) {
-          var distance =
-              chunk.calculateDistance(
-                  settlement.getChunkCoords(), closestNeighbour.getLocation().getChunkCoords());
-          addConnections(map, unvisitedVertex, closestNeighbour, distance);
-        }
+      var refLocation = unvisitedVertex.getLocation();
+      var visitedVertices = connectivityResult.visitedVertices().stream().toList();
+      var closestNeighbour = findClosestNeighbour(unvisitedVertex, visitedVertices);
+      if (closestNeighbour != null) {
+        var distance = refLocation.distanceTo(closestNeighbour.getLocation());
+        addConnections(map, unvisitedVertex, closestNeighbour, distance);
       }
     }
   }
 
   private static void addConnections(
       Graph<AbstractLocation> map,
-      Vertex<AbstractLocation> l1,
-      Vertex<AbstractLocation> l2,
+      Vertex<AbstractLocation> vertex1,
+      Vertex<AbstractLocation> vertex2,
       int distance) {
-    map.addEdge(l1, l2, distance);
-    if (l1.getLocation() instanceof Settlement s1 && l2.getLocation() instanceof Settlement s2) {
-      s1.addNeighbour(s2);
-      s2.addNeighbour(s1);
-    }
+    map.addEdge(vertex1, vertex2, distance);
+    var v1Location = vertex1.getLocation();
+    var v2Location = vertex2.getLocation();
+    v1Location.addNeighbour(v2Location);
+    v2Location.addNeighbour(v1Location);
     log.info(
         "Added {} and {} (distance: {} km) as neighbours of each other",
-        l2.getLocation().getName(),
-        l1.getLocation().getName(),
+        v2Location.getName(),
+        v1Location.getName(),
         distance);
   }
 
   private static Vertex<AbstractLocation> findClosestNeighbour(
-      Chunk chunk,
-      Settlement settlement,
-      Vertex<AbstractLocation> reference,
-      List<Vertex<AbstractLocation>> vertices) {
+      Vertex<AbstractLocation> reference, List<Vertex<AbstractLocation>> vertices) {
     Vertex<AbstractLocation> closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var other : vertices) {
       if (reference.equals(other)) {
         continue;
       }
-      var otherChunkCoords = other.getLocation().getChunkCoords();
-      var distance = chunk.calculateDistance(settlement.getChunkCoords(), otherChunkCoords);
+      var distance = reference.getLocation().distanceTo(other.getLocation());
       if (distance < minDistance) {
         minDistance = distance;
         closestNeighbor = other;
@@ -192,17 +194,26 @@ public class WorldBuildingComponent {
   }
 
   private static ConnectivityResult findDisconnectedVertices(Graph<AbstractLocation> graph) {
-    Set<Vertex<AbstractLocation>> visitedVertices = new HashSet<>();
-    Set<Vertex<AbstractLocation>> unvisitedVertices = new HashSet<>(graph.getVertices());
-
+    var visitedVertices = new LinkedHashSet<Vertex<AbstractLocation>>();
+    var unvisitedVertices = new LinkedHashSet<>(graph.getVertices());
     if (!unvisitedVertices.isEmpty()) {
-      Vertex<AbstractLocation> startVertex = unvisitedVertices.iterator().next();
+      var startVertex = unvisitedVertices.iterator().next();
       Graph.traverseGraphDepthFirst(startVertex, visitedVertices, unvisitedVertices);
     }
     return new ConnectivityResult(visitedVertices, unvisitedVertices);
   }
 
+  private static LogStats getStats(Graph<AbstractLocation> map) {
+    return new LogStats(
+        System.currentTimeMillis(),
+        map.getVertices().size(),
+        map.getVertices().stream().map(Vertex::getLocation).sorted().toList());
+  }
+
   private record ConnectivityResult(
       Set<Vertex<AbstractLocation>> visitedVertices,
       Set<Vertex<AbstractLocation>> unvisitedVertices) {}
+
+  private record LogStats(
+      long startTime, int prevSettlementCount, List<AbstractLocation> prevSettlements) {}
 }

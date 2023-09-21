@@ -1,23 +1,24 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
-
-import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
 
 @Slf4j
 @NoArgsConstructor
 public class World {
 
-  @Getter @Setter private Chunk currentChunk;
+  @Getter private Chunk currentChunk;
   private final Chunk[][] plane = new Chunk[WORLD_SIZE][WORLD_SIZE];
 
   public boolean hasChunk(CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoords().getFirst();
-    var y = (int) currentChunk.getWorldCoords().getSecond();
+    var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
+    var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
     return switch (position) {
       case NORTH -> plane[x][y + 1] != null;
       case EAST -> plane[x + 1][y] != null;
@@ -28,8 +29,8 @@ public class World {
   }
 
   public Chunk getChunk(CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoords().getFirst();
-    var y = (int) currentChunk.getWorldCoords().getSecond();
+    var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
+    var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
     return switch (position) {
       case THIS -> plane[x][y];
       case NORTH -> plane[x][y + 1];
@@ -40,11 +41,8 @@ public class World {
     };
   }
 
-  public void placeChunk(Chunk chunk) {
-    currentChunk = chunk;
-    var center = getCenter();
-    plane[center.getFirst()][center.getSecond()] = chunk;
-    chunk.setWorldCoords(center);
+  private Chunk getChunk(Pair<Integer, Integer> worldCoords) {
+    return plane[worldCoords.getFirst()][worldCoords.getSecond()];
   }
 
   public Pair<Integer, Integer> getCenter() {
@@ -52,29 +50,40 @@ public class World {
   }
 
   public Pair<Integer, Integer> getPosition(CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoords().getFirst();
-    var y = (int) currentChunk.getWorldCoords().getSecond();
-    return getPosition(position, currentChunk.getWorldCoords(), x, y);
+    return getPosition(position, currentChunk);
+  }
+
+  public void placeChunk(Chunk chunk) {
+    currentChunk = chunk;
+    var center = getCenter();
+    plane[center.getFirst()][center.getSecond()] = chunk;
   }
 
   public void placeChunk(Chunk chunk, CardinalDirection position) {
-    var x = (int) currentChunk.getWorldCoords().getFirst();
-    var y = (int) currentChunk.getWorldCoords().getSecond();
-    var coordinates = getPosition(position, currentChunk.getWorldCoords(), x, y);
+    var newCoords = getPosition(position, currentChunk);
     if (position == CardinalDirection.THIS) {
       throw new IllegalStateException(
           "Unexpected coordinates for placing a new chunk: "
               + position
               + " - this would overwrite the current chunk");
     }
-    plane[coordinates.getFirst()][coordinates.getSecond()] = chunk;
-    chunk.setWorldCoords(coordinates);
+    plane[newCoords.getFirst()][newCoords.getSecond()] = chunk;
   }
 
-  private static Pair<Integer, Integer> getPosition(
-      CardinalDirection position, Pair<Integer, Integer> coordinates, int x, int y) {
+  public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {
+    var chunk = getChunk(worldCoords);
+    if (chunk == null) {
+      throw new IllegalStateException(
+          "Current chunk can't be set to %s because there is no chunk".formatted(worldCoords));
+    }
+    currentChunk = chunk;
+  }
+
+  private static Pair<Integer, Integer> getPosition(CardinalDirection position, Chunk chunk) {
+    var x = (int) chunk.getCoordinates().getWorld().getFirst();
+    var y = (int) chunk.getCoordinates().getWorld().getSecond();
     return switch (position) {
-      case THIS -> coordinates;
+      case THIS -> Pair.of(x, y);
       case NORTH -> Pair.of(x, y + 1);
       case EAST -> Pair.of(x + 1, y);
       case SOUTH -> Pair.of(x, y - 1);

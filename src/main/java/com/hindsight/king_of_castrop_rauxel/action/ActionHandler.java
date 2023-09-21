@@ -36,7 +36,7 @@ public class ActionHandler {
                       neighbour.getName(),
                       neighbour.distanceTo(location),
                       neighbour
-                          .getCardinalDirection(player.getChunkCoords())
+                          .getCardinalDirection(player.getCoordinates().getChunk())
                           .getName()
                           .toLowerCase()),
               neighbour));

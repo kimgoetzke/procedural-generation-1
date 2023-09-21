@@ -18,14 +18,14 @@ public class Chunk implements Generatable {
   @Getter private final int[][] plane = new int[CHUNK_SIZE][CHUNK_SIZE];
 
   private Random random;
-  @Getter @Setter private Pair<Integer, Integer> worldCoords;
+  @Getter private final Coordinates coordinates;
   @Getter @Setter private boolean isLoaded;
 
-  public Chunk(int density, Pair<Integer, Integer> worldCoords) {
+  public Chunk(Pair<Integer, Integer> worldCoords) {
     var seed = SeedComponent.seedFrom(worldCoords);
-    this.worldCoords = worldCoords;
+    this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
-    this.density = density;
+    this.density = ChunkComponent.randomDensity(random);
     load();
   }
 
@@ -38,7 +38,7 @@ public class Chunk implements Generatable {
 
   @Override
   public void unload() {
-    var seed = SeedComponent.seedFrom(worldCoords);
+    var seed = SeedComponent.seedFrom(coordinates.getGlobal());
     random = new Random(seed);
     setLoaded(false);
     logResult();
@@ -47,7 +47,12 @@ public class Chunk implements Generatable {
   @Override
   public void logResult() {
     var action = isLoaded ? "Generated" : "Unloaded";
-    log.info("{}: Chunk at ({}, {})", action, worldCoords.getFirst(), worldCoords.getSecond());
+    log.info(
+        "{}: Chunk at {} with density {} using seed {}",
+        action,
+        coordinates,
+        density,
+        SeedComponent.seedFrom(coordinates.getGlobal()));
   }
 
   public enum LocationType {
@@ -55,22 +60,23 @@ public class Chunk implements Generatable {
     SETTLEMENT
   }
 
-  public Pair<Integer, Integer> getCenter() {
+  public Pair<Integer, Integer> getCenterCoords() {
     return Pair.of(CHUNK_SIZE / 2, CHUNK_SIZE / 2);
   }
 
-  public Pair<Integer, Integer> getRandomCoordinates(LocationType type) {
+  public Pair<Integer, Integer> getRandomCoords() {
     var x = -1;
     var y = -1;
     while (!isValidPosition(x, y) || hasNeighbors(x, y, MIN_PLACEMENT_DISTANCE)) {
       x = random.nextInt(CHUNK_SIZE + 1);
       y = random.nextInt(CHUNK_SIZE + 1);
     }
-    plane[x][y] = type.ordinal();
     return Pair.of(x, y);
   }
 
-  public void place(int x, int y, LocationType type) {
+  public void place(Pair<Integer, Integer> chunkCoords, LocationType type) {
+    var x = chunkCoords.getFirst();
+    var y = chunkCoords.getSecond();
     if (isValidPosition(x, y)) {
       plane[x][y] = type.ordinal();
     }
@@ -80,11 +86,11 @@ public class Chunk implements Generatable {
     return x >= 0 && x < CHUNK_SIZE && y >= 0 && y < CHUNK_SIZE;
   }
 
-  public boolean hasNeighbors(int x, int y, int distance) {
-    for (int dx = -distance; dx <= distance; dx++) {
-      for (int dy = -distance; dy <= distance; dy++) {
-        int neighborX = x + dx;
-        int neighborY = y + dy;
+  private boolean hasNeighbors(int x, int y, int distance) {
+    for (var dx = -distance; dx <= distance; dx++) {
+      for (var dy = -distance; dy <= distance; dy++) {
+        var neighborX = x + dx;
+        var neighborY = y + dy;
         if (isValidPosition(neighborX, neighborY)
             && plane[neighborX][neighborY] > LocationType.EMPTY.ordinal()) {
           return true;
@@ -92,12 +98,5 @@ public class Chunk implements Generatable {
       }
     }
     return false;
-  }
-
-  public int calculateDistance(Pair<Integer, Integer> start, Pair<Integer, Integer> end) {
-    int deltaX = end.getFirst() - start.getFirst();
-    int deltaY = end.getSecond() - start.getSecond();
-    double distance = Math.sqrt((double) deltaX * deltaX + deltaY * deltaY);
-    return (int) Math.round(distance);
   }
 }

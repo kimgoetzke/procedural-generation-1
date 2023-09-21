@@ -26,8 +26,10 @@ public abstract class AbstractSettlement extends AbstractLocation {
   @Getter protected Set<Location> neighbours = new HashSet<>();
 
   protected AbstractSettlement(
-      StringGenerator stringGenerator, Pair<Integer, Integer> chunkCoords) {
-    super(chunkCoords);
+      Pair<Integer, Integer> worldCoords,
+      Pair<Integer, Integer> chunkCoords,
+      StringGenerator stringGenerator) {
+    super(worldCoords, chunkCoords);
     this.stringGenerator = stringGenerator;
     stringGenerator.setRandom(random);
   }
@@ -65,6 +67,12 @@ public abstract class AbstractSettlement extends AbstractLocation {
   }
 
   @Override
+  public String getBriefSummary() {
+    return "%s [ Size: %s | Location: %s | Connected to %s location(s) | Generated: %s ]"
+        .formatted(name, size, coordinates.toString(), neighbours.size(), isLoaded());
+  }
+
+  @Override
   public String getFullSummary() {
     return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Located at %s | Connected to %s location(s) | Stance: %s ]"
         .formatted(
@@ -76,17 +84,6 @@ public abstract class AbstractSettlement extends AbstractLocation {
             "(%s, %s)".formatted(getChunkCoords().getFirst(), getChunkCoords().getSecond()),
             neighbours.size(),
             loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
-  }
-
-  @Override
-  public String getBriefSummary() {
-    return "%s [ Size: %s | Location: %s | Connected to %s location(s) | Generated: %s ]"
-        .formatted(
-            name,
-            size.getName(),
-            "(%s, %s)".formatted(getChunkCoords().getFirst(), getChunkCoords().getSecond()),
-            neighbours.size(),
-            isLoaded());
   }
 
   private String getPopulationDensity() {
