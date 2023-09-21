@@ -125,4 +125,16 @@ public class Coordinates {
         + chunk.getSecond()
         + "))";
   }
+
+  public String globalToString() {
+    return "g(" + global.getFirst() + ", " + global.getSecond() + ")";
+  }
+
+  public String worldToString() {
+    return "w(" + world.getFirst() + ", " + world.getSecond() + ")";
+  }
+
+  public String chunkToString() {
+    return "c(" + chunk.getFirst() + ", " + chunk.getSecond() + ")";
+  }
 }

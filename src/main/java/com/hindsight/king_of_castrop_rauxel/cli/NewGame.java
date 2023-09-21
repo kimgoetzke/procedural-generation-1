@@ -108,9 +108,9 @@ public class NewGame {
   }
 
   private void generateNextChunk() {
-    var chunkCoordinates = player.getCurrentLocation().getChunkCoords();
-    if (ChunkComponent.isInsideTriggerZone(chunkCoordinates)) {
-      var whereNext = ChunkComponent.nextChunkPosition(chunkCoordinates);
+    var chunkCoords = player.getCurrentLocation().getCoordinates().getChunk();
+    if (ChunkComponent.isInsideTriggerZone(chunkCoords)) {
+      var whereNext = ChunkComponent.nextChunkPosition(chunkCoords);
       if (world.hasChunk(whereNext)) {
         log.info("Player is inside trigger zone but next chunk already exists");
         return;

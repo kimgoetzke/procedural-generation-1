@@ -91,6 +91,7 @@ public class ActionHandler {
     actions.remove(0);
     actions.add(new LocationAction(actions.size() + 1, "Resume game", player.getCurrentLocation()));
     actions.add(debug.create(actions.size() + 1, "Show memory usage", debug::printMemoryUsage));
+    actions.add(debug.create(actions.size() + 1, "Show all locations", debug::printLocations));
     actions.add(debug.create(actions.size() + 1, "Show full graph", debug::printGraph));
     actions.add(
         debug.create(actions.size() + 1, "Show graph connectivity", debug::printConnectivity));

@@ -68,20 +68,20 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   @Override
   public String getBriefSummary() {
-    return "%s [ Size: %s | Location: %s | Connected to %s location(s) | Generated: %s ]"
+    return "%s [ Size: %s | Coordinates: %s | Connected to %s location(s) | Generated: %s ]"
         .formatted(name, size, coordinates.toString(), neighbours.size(), isLoaded());
   }
 
   @Override
   public String getFullSummary() {
-    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Located at %s | Connected to %s location(s) | Stance: %s ]"
+    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Coordinates: %s | Connected to %s location(s) | Stance: %s ]"
         .formatted(
             name,
             size.getName(),
             inhabitants.size(),
             getPopulationDensity(),
             pointsOfInterests.size(),
-            "(%s, %s)".formatted(getChunkCoords().getFirst(), getChunkCoords().getSecond()),
+            coordinates.globalToString(),
             neighbours.size(),
             loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
   }

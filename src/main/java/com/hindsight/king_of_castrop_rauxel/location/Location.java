@@ -31,10 +31,6 @@ public interface Location extends Visitable, Generatable {
 
   Coordinates getCoordinates();
 
-  Pair<Integer, Integer> getGlobalCoords();
-
-  Pair<Integer, Integer> getChunkCoords();
-
   CardinalDirection getCardinalDirection(Pair<Integer, Integer> otherCoordinates);
 
   StringGenerator getStringGenerator();

@@ -32,19 +32,9 @@ public abstract class AbstractLocation implements Location {
   protected AbstractLocation(
       Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
     this.coordinates = new Coordinates(worldCoords, chunkCoords);
-    this.seed = SeedComponent.seedFrom(getGlobalCoords());
+    this.seed = SeedComponent.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
     this.id = "LOC~" + getCoordinates().getGlobal();
-  }
-
-  @Override
-  public Pair<Integer, Integer> getGlobalCoords() {
-    return coordinates.getGlobal();
-  }
-
-  @Override
-  public Pair<Integer, Integer> getChunkCoords() {
-    return coordinates.getChunk();
   }
 
   @Override
@@ -65,8 +55,8 @@ public abstract class AbstractLocation implements Location {
   @Override
   public WorldBuildingComponent.CardinalDirection getCardinalDirection(
       Pair<Integer, Integer> other) {
-    int dx = other.getFirst() - getChunkCoords().getFirst();
-    int dy = other.getSecond() - getChunkCoords().getSecond();
+    int dx = other.getFirst() - getCoordinates().getChunk().getFirst();
+    int dy = other.getSecond() - getCoordinates().getChunk().getSecond();
 
     if (dx == 0) {
       if (dy < 0) {

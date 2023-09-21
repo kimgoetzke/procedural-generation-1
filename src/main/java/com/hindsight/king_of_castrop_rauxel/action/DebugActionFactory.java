@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.world.ChunkComponent;
 import com.hindsight.king_of_castrop_rauxel.world.World;
@@ -34,6 +35,12 @@ public class DebugActionFactory {
 
   public void printConnectivity() {
     WorldBuildingComponent.logDisconnectedVertices(map);
+  }
+
+  public void printLocations() {
+    map.getVertices().stream()
+        .map(Vertex::getLocation)
+        .forEach(l -> log.info("- " + l.getFullSummary()));
   }
 
   public void printMemoryUsage() {

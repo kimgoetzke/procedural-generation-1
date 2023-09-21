@@ -27,10 +27,10 @@ public class Player implements Visitor {
   private PointOfInterest currentPoi;
 
   public Player(
-      String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoordinates) {
+      String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoords) {
     this.name = name;
     this.id = "PLA~" + UUID.randomUUID();
-    this.coordinates = new Coordinates(worldCoordinates, currentLocation.getChunkCoords());
+    this.coordinates = new Coordinates(worldCoords, currentLocation.getCoordinates().getChunk());
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
   }
@@ -41,7 +41,7 @@ public class Player implements Visitor {
     this.currentLocation = location;
     visitedLocations.add(this.currentLocation);
     location.addVisitor(this);
-    updateCoordinates(location.getGlobalCoords());
+    updateCoordinates(location.getCoordinates().getGlobal());
   }
 
   private void updateCoordinates(Pair<Integer, Integer> globalCoords) {

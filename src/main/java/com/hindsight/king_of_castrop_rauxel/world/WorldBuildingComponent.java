@@ -207,7 +207,7 @@ public class WorldBuildingComponent {
     return new LogStats(
         System.currentTimeMillis(),
         map.getVertices().size(),
-        map.getVertices().stream().map(Vertex::getLocation).sorted().toList());
+        map.getVertices().stream().map(Vertex::getLocation).toList());
   }
 
   private record ConnectivityResult(
