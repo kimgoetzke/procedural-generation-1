@@ -8,9 +8,11 @@ import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE, onConstructor = @__(@Autowired))
 public class ActionHandler {
@@ -31,14 +33,17 @@ public class ActionHandler {
       actions.add(
           new LocationAction(
               actions.size() + 1,
-              "Travel to %s (%s km %s)"
+              "Travel to %s (%s km %s%s)"
                   .formatted(
                       neighbour.getName(),
                       neighbour.distanceTo(location),
                       neighbour
                           .getCardinalDirection(player.getCoordinates().getChunk())
                           .getName()
-                          .toLowerCase()),
+                          .toLowerCase(),
+                      player.getVisitedLocations().stream().anyMatch(a -> a.equals(neighbour))
+                          ? ""
+                          : ", unvisited"),
               neighbour));
     }
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
@@ -90,12 +95,15 @@ public class ActionHandler {
     prepare(actions);
     actions.remove(0);
     actions.add(new LocationAction(actions.size() + 1, "Resume game", player.getCurrentLocation()));
-    actions.add(debug.create(actions.size() + 1, "Show memory usage", debug::printMemoryUsage));
-    actions.add(debug.create(actions.size() + 1, "Show all locations", debug::printLocations));
-    actions.add(debug.create(actions.size() + 1, "Show full graph", debug::printGraph));
+    actions.add(debug.create(actions.size() + 1, "Log memory usage", debug::logMemoryStats));
+    actions.add(debug.create(actions.size() + 1, "Log all locations", debug::logVertices));
     actions.add(
-        debug.create(actions.size() + 1, "Show graph connectivity", debug::printConnectivity));
-    actions.add(debug.create(actions.size() + 1, "Show close chunks", debug::printWorld));
+        debug.create(
+            actions.size() + 1, "Log visited locations", () -> debug.logVisitedLocations(player)));
+    actions.add(
+        debug.create(actions.size() + 1, "Log graph connectivity", debug::printConnectivity));
+    actions.add(debug.create(actions.size() + 1, "Log full graph", debug::logGraph));
+    actions.add(debug.create(actions.size() + 1, "Log close chunks", debug::logWorld));
     actions.add(debug.create(actions.size() + 1, "Visualise plane", debug::printPlane));
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }

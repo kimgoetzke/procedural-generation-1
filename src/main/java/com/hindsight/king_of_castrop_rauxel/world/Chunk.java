@@ -55,6 +55,10 @@ public class Chunk implements Generatable {
         SeedComponent.seedFrom(coordinates.getGlobal()));
   }
 
+  public String getSummary() {
+    return String.format("Chunk at %s with density %d", coordinates, density);
+  }
+
   public enum LocationType {
     EMPTY,
     SETTLEMENT

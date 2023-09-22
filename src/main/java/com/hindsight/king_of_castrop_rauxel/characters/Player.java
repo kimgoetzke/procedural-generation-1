@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class Player implements Visitor {
 
   private final String id;
   private final String name;
-  private final Set<Location> visitedLocations = new HashSet<>();
+  private final Set<Location> visitedLocations = new LinkedHashSet<>();
   private final Coordinates coordinates;
   @Setter private int gold;
   @Setter private int level;
@@ -33,13 +33,15 @@ public class Player implements Visitor {
     this.coordinates = new Coordinates(worldCoords, currentLocation.getCoordinates().getChunk());
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
+    visitedLocations.add(currentLocation);
+    currentLocation.addVisitor(this);
   }
 
   public void setCurrentPoi(PointOfInterest currentPoi) {
     var location = currentPoi.getParent();
-    this.currentPoi = currentPoi;
     this.currentLocation = location;
-    visitedLocations.add(this.currentLocation);
+    this.currentPoi = currentPoi;
+    visitedLocations.add(location);
     location.addVisitor(this);
     updateCoordinates(location.getCoordinates().getGlobal());
   }

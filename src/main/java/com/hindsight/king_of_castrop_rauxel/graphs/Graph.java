@@ -4,9 +4,9 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 
 @Slf4j
 @Getter
@@ -45,6 +45,20 @@ public class Graph<T extends AbstractLocation> {
   public Vertex<T> getVertexByValue(T location) {
     for (Vertex<T> vertex : this.vertices) {
       if (vertex.getLocation().equals(location)) {
+        return vertex;
+      }
+    }
+    return null;
+  }
+
+  public Vertex<T> getVertexByValue(Pair<Integer, Integer> chunkCoords) {
+    var rX = (int) chunkCoords.getFirst();
+    var rY = (int) chunkCoords.getSecond();
+    for (Vertex<T> vertex : this.vertices) {
+      var vChunkCoords = vertex.getLocation().getCoordinates().getChunk();
+      var vX = (int) vChunkCoords.getFirst();
+      var vY = (int) vChunkCoords.getSecond();
+      if (vX == rX && vY == rY) {
         return vertex;
       }
     }
