@@ -73,4 +73,41 @@ public class DebugActionFactory {
         world.getChunk(WorldBuildingComponent.CardinalDirection.THIS),
         WorldBuildingComponent.CardinalDirection.THIS);
   }
+
+  public void printPlane() {
+    var chunk = world.getChunk(WorldBuildingComponent.CardinalDirection.THIS);
+    var plane = chunk.getPlane();
+    var scale = 10;
+    var smallerSize = ChunkComponent.CHUNK_SIZE / scale;
+    var newPlane = new int[smallerSize][smallerSize];
+    int numRows = newPlane.length;
+    int numCols = newPlane[0].length;
+
+    // Shrink data into the new array
+    for (int i = 0; i < ChunkComponent.CHUNK_SIZE; i++) {
+      for (int j = 0; j < ChunkComponent.CHUNK_SIZE; j++) {
+        newPlane[i / scale][j / scale] += plane[i][j];
+      }
+    }
+
+    // Print column numbers
+    System.out.print("   ");
+    for (int col = 0; col < numCols; col++) {
+      System.out.printf("%3d", col);
+    }
+    System.out.println();
+
+    // Print row numbers and array contents
+    for (int row = 0; row < numRows; row++) {
+      System.out.printf("%2d|", row);
+      for (int col = 0; col < numCols; col++) {
+        if (newPlane[row][col] != 0) {
+          System.out.print(newPlane[row][col]);
+        } else {
+          System.out.print("   ");
+        }
+      }
+      System.out.println();
+    }
+  }
 }

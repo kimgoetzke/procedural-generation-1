@@ -96,6 +96,7 @@ public class ActionHandler {
     actions.add(
         debug.create(actions.size() + 1, "Show graph connectivity", debug::printConnectivity));
     actions.add(debug.create(actions.size() + 1, "Show close chunks", debug::printWorld));
+    actions.add(debug.create(actions.size() + 1, "Visualise plane", debug::printPlane));
     actions.add(new ExitAction(actions.size() + 1, "Exit game"));
   }
 }
