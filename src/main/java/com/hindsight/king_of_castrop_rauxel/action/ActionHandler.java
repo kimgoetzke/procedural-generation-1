@@ -19,8 +19,17 @@ public class ActionHandler {
 
   private final DebugActionFactory debug;
 
+  private void prepend(List<Action> actions) {
+    actions.clear();
+    actions.add(new StateAction(1, "Show debug menu", DEBUG));
+  }
+
+  private void append(List<Action> actions) {
+    actions.add(new ExitAction(actions.size() + 1, "Exit game"));
+  }
+
   public void getDefaultPoiActions(Player player, List<Action> actions) {
-    prepare(actions);
+    prepend(actions);
     var location = player.getCurrentLocation();
     actions.add(
         new StateAction(
@@ -46,21 +55,22 @@ public class ActionHandler {
                           : ", unvisited"),
               neighbour));
     }
-    actions.add(new ExitAction(actions.size() + 1, "Exit game"));
+    append(actions);
   }
 
   public void getAllPoiActions(Player player, List<Action> actions) {
-    prepare(actions);
+    prepend(actions);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
     var defaultAction =
         new LocationAction(actions.size() + 1, "Stay at " + poi.getName(), location);
     actions.add(defaultAction);
     addAllActions(location.getAvailableActions(), actions, defaultAction);
+    append(actions);
   }
 
   public void getThisPoiActions(Player player, List<Action> actions) {
-    prepare(actions);
+    prepend(actions);
     var poi = player.getCurrentPoi();
     var currentLocation = player.getCurrentLocation();
     actions.add(
@@ -69,15 +79,11 @@ public class ActionHandler {
             "Go back to " + currentLocation.getDefaultPoi().getName(),
             currentLocation));
     actions.addAll(poi.getAvailableActions());
+    append(actions);
   }
 
   public List<Action> getEmpty() {
     return new ArrayList<>();
-  }
-
-  private void prepare(List<Action> actions) {
-    actions.clear();
-    actions.add(new StateAction(1, "Show debug menu", DEBUG));
   }
 
   private static void addAllActions(List<Action> from, List<Action> to, LocationAction except) {
@@ -92,7 +98,7 @@ public class ActionHandler {
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
-    prepare(actions);
+    prepend(actions);
     actions.remove(0);
     actions.add(new LocationAction(actions.size() + 1, "Resume game", player.getCurrentLocation()));
     actions.add(debug.create(actions.size() + 1, "Log memory usage", debug::logMemoryStats));
@@ -105,6 +111,6 @@ public class ActionHandler {
     actions.add(debug.create(actions.size() + 1, "Log full graph", debug::logGraph));
     actions.add(debug.create(actions.size() + 1, "Log close chunks", debug::logWorld));
     actions.add(debug.create(actions.size() + 1, "Visualise plane", debug::printPlane));
-    actions.add(new ExitAction(actions.size() + 1, "Exit game"));
+    append(actions);
   }
 }

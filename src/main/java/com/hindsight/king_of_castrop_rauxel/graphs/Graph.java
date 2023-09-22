@@ -66,7 +66,7 @@ public class Graph<T extends AbstractLocation> {
   }
 
   public void log() {
-    log.info("Current graph: ");
+    log.info("Graph: ");
     for (Vertex<T> vertex : this.vertices) {
       vertex.log(isWeighted);
     }

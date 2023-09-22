@@ -51,8 +51,8 @@ public class Chunk implements Generatable {
     var action = isLoaded ? "Generated" : "Unloaded";
     log.info(
         "{}: Chunk '{}' at {} with density {} using seed {}",
-        id,
         action,
+        id,
         coordinates,
         density,
         SeedComponent.seedFrom(coordinates.getGlobal()));

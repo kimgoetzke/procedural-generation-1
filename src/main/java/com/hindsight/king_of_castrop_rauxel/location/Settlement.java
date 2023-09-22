@@ -28,7 +28,7 @@ public class Settlement extends AbstractSettlement {
 
   @Override
   public void load() {
-    log.info("Generating full settlement...");
+    log.info("Generating full settlement '{}'...", id);
     generateInhabitants();
     generateAmenities();
     generatePlayerActions();

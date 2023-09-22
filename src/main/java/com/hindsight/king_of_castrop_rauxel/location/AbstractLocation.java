@@ -15,7 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-@ToString(exclude = {"id", "seed", "description", "availableActions", "visitors", "random"})
+@ToString(
+    exclude = {"id", "seed", "description", "availableActions", "visitors", "random", "isLoaded"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractLocation implements Location {
 

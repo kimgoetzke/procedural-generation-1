@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
 
@@ -41,6 +42,7 @@ public class DebugActionFactory {
   }
 
   public void logVertices() {
+    log.info("All locations/vertices:");
     map.getVertices().stream()
         .map(Vertex::getLocation)
         .forEach(l -> log.info("- " + l.getFullSummary()));
@@ -101,7 +103,7 @@ public class DebugActionFactory {
           sb.append("   ");
           continue;
         }
-        sb.append(downscaledPlane[row][col], 0, 3);
+        sb.append("%s%s%s".formatted(FMT.CYAN, downscaledPlane[row][col], FMT.RESET), 0, 3);
         locationCount++;
       }
       log.info(sb.toString());

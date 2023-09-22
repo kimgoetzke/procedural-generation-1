@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 
 @Slf4j
@@ -27,7 +28,7 @@ public class NewGame {
   private final StringGenerator stringGenerator;
   private final World world;
   private final Graph<AbstractLocation> map;
-  private final Scanner input;
+  private final Scanner scanner;
   private Player player;
 
   @SuppressWarnings("InfiniteLoopStatement")
@@ -76,18 +77,23 @@ public class NewGame {
   }
 
   private void displayActions(List<Action> actions) {
-    System.out.printf("What's next?%n");
+    System.out.printf("%sWhat's next?%s%n", FMT.DEFAULT_BOLD, FMT.RESET);
     actions.forEach(a -> System.out.println(a.print()));
-    System.out.printf("%n> ");
+    System.out.printf("%n%s>%s ", FMT.WHITE_BOLD_BRIGHT, FMT.RESET);
   }
 
   private void processAction(List<Action> actions) {
-    var choice = this.input.nextInt();
-    var action = actions.stream().filter(a -> a.getIndex() == choice).findFirst();
-    if (action.isPresent()) {
-      action.get().execute(player, actions);
-    } else {
-      System.out.println("Invalid choice, try again...");
+    var anyInput = this.scanner.next();
+    try {
+      var validInput = Integer.parseInt(anyInput);
+      var action = actions.stream().filter(a -> a.getIndex() == validInput).findFirst();
+      if (action.isPresent()) {
+        action.ifPresent(chosenAction -> chosenAction.execute(player, actions));
+      } else {
+        System.out.println(FMT.RED + "Invalid choice, try again..." + FMT.RESET);
+      }
+    } catch (NumberFormatException e) {
+      System.out.println(FMT.RED + "Invalid choice, try again..." + FMT.RESET);
     }
     System.out.printf("%n%n");
   }
@@ -127,16 +133,29 @@ public class NewGame {
   private void showInfo(boolean showStats, boolean showLocation) {
     if (showStats) {
       System.out.printf(
-          "STATS: [ Gold: %s | Level: %s | Age: %s | Activity points left: %s ]%n",
-          player.getGold(), player.getLevel(), player.getAge(), player.getActivityPoints());
+          "%sSTATS: [ Gold: %s%s%s | Level: %s%s%s | Age: %s%s%s | Activity points left: %s%s%s ]%s%n",
+          FMT.DEFAULT_BOLD,
+          FMT.YELLOW_BOLD_BRIGHT,
+          player.getGold(),
+          FMT.DEFAULT_BOLD,
+          FMT.YELLOW_BOLD_BRIGHT,
+          player.getLevel(),
+          FMT.DEFAULT_BOLD,
+          FMT.YELLOW_BOLD_BRIGHT,
+          player.getAge(),
+          FMT.DEFAULT_BOLD,
+          FMT.YELLOW_BOLD_BRIGHT,
+          player.getActivityPoints(),
+          FMT.DEFAULT_BOLD,
+          FMT.RESET);
     }
     if (showLocation) {
       Location currentLocation = player.getCurrentLocation();
-      System.out.printf("CURRENT LOCATION: %s%n%n", currentLocation.getFullSummary());
-      System.out.printf("You are at: %s. ", player.getCurrentPoi().getName());
-    }
-    if (showStats || showLocation) {
-      System.out.println();
+      System.out.printf(
+          "%sCURRENT LOCATION: %s%s%n%n",
+          FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), FMT.RESET);
+      System.out.printf(
+          "%sYou are at: %s.%s ", FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), FMT.RESET);
     }
   }
 }

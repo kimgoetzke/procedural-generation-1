@@ -1,10 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
-
-import java.util.List;
-
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import java.util.List;
 
 public interface Action {
 
@@ -25,6 +25,7 @@ public interface Action {
   }
 
   default String print() {
-    return "[%s] %s".formatted(getIndex(), getName());
+    return "%s[%s%s%s]%s %s"
+        .formatted(FMT.WHITE, FMT.CYAN, getIndex(), FMT.WHITE, FMT.RESET, getName());
   }
 }

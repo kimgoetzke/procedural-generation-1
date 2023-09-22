@@ -52,8 +52,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   @Override
   public String toString() {
-    return "AbstractSettlement(super="
-        + super.toString()
+    return super.toString()
         + "), size="
         + size
         + ", loyalTo="
