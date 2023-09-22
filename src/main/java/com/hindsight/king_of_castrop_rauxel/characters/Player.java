@@ -41,13 +41,9 @@ public class Player implements Visitor {
     var location = currentPoi.getParent();
     this.currentLocation = location;
     this.currentPoi = currentPoi;
+    this.coordinates.setTo(location.getCoordinates().getGlobal());
     visitedLocations.add(location);
     location.addVisitor(this);
-    updateCoordinates(location.getCoordinates().getGlobal());
-  }
-
-  private void updateCoordinates(Pair<Integer, Integer> globalCoords) {
-    this.coordinates.setTo(globalCoords);
   }
 
   public enum State {

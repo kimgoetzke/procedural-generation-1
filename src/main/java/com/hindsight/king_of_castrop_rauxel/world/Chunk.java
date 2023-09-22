@@ -13,6 +13,7 @@ import org.springframework.data.util.Pair;
 @Slf4j
 public class Chunk implements Generatable {
 
+  @Getter private final String id;
   @Getter private final int density;
 
   @Getter private final int[][] plane = new int[CHUNK_SIZE][CHUNK_SIZE];
@@ -26,12 +27,13 @@ public class Chunk implements Generatable {
     this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
     this.density = ChunkComponent.randomDensity(random);
+    this.id = "CHU~" + coordinates.getWorld().getFirst() + coordinates.getWorld().getSecond();
     load();
   }
 
   @Override
   public void load() {
-    log.info("Generating chunk...");
+    log.info("Generating chunk '{}'...", id);
     setLoaded(true);
     logResult();
   }
@@ -48,7 +50,8 @@ public class Chunk implements Generatable {
   public void logResult() {
     var action = isLoaded ? "Generated" : "Unloaded";
     log.info(
-        "{}: Chunk at {} with density {} using seed {}",
+        "{}: Chunk '{}' at {} with density {} using seed {}",
+        id,
         action,
         coordinates,
         density,
@@ -56,7 +59,7 @@ public class Chunk implements Generatable {
   }
 
   public String getSummary() {
-    return String.format("Chunk at %s with density %d", coordinates, density);
+    return String.format("Chunk '%s' at %s with density %d", id, coordinates, density);
   }
 
   public enum LocationType {

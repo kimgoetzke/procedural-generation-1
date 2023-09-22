@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
@@ -101,8 +103,8 @@ public class NewGame {
 
   private void updateWorldCoords() {
     var worldCoords = world.getCurrentChunk().getCoordinates().getWorld();
-    if (player.getCoordinates().getWorld() != worldCoords) {
-      log.info("Player is entering a new chunk");
+    if (!player.getCoordinates().equalTo(worldCoords, CoordType.WORLD)) {
+      log.info(String.format("Player is entering: %s%n", world.getCurrentChunk().getSummary()));
       world.setCurrentChunk(player.getCoordinates().getWorld());
     }
   }
@@ -112,7 +114,10 @@ public class NewGame {
     if (ChunkComponent.isInsideTriggerZone(chunkCoords)) {
       var whereNext = ChunkComponent.nextChunkPosition(chunkCoords);
       if (world.hasChunk(whereNext)) {
-        log.info("Player is inside trigger zone but next chunk already exists");
+        log.info(
+            String.format(
+                "Player is inside trigger zone but %s chunk already exists%n",
+                whereNext.getName().toLowerCase()));
         return;
       }
       WorldBuildingComponent.buildNext(whereNext, world, map, stringGenerator);

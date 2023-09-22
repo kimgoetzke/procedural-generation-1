@@ -62,6 +62,10 @@ public class Coordinates {
     this.chunk = toChunkCoords(globalCoords);
   }
 
+  /**
+   * Returns true if the coordinates are within the relevant bounds i.e. CHUNK_SIZE for chunkCoords,
+   * WORLD_SIZE for worldCoords and CHUNK_SIZE * WORLD_SIZE for globalCoords.
+   */
   private void verify(Pair<Integer, Integer> anyCoords, CoordType type) {
     var max =
         switch (type) {
@@ -76,6 +80,17 @@ public class Coordinates {
     }
     throw new IllegalArgumentException(
         "%s coordinates %s are out of bounds (%s)".formatted(type, anyCoords, max));
+  }
+
+  public boolean equalTo(Pair<Integer, Integer> anyCoords, CoordType type) {
+    var thisCoords =
+        switch (type) {
+          case GLOBAL -> global;
+          case WORLD -> world;
+          case CHUNK -> chunk;
+        };
+    return (int) thisCoords.getFirst() == anyCoords.getFirst()
+        && (int) thisCoords.getSecond() == anyCoords.getSecond();
   }
 
   public int distanceTo(Coordinates other) {

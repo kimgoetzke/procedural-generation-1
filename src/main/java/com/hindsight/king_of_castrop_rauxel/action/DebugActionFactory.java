@@ -84,7 +84,7 @@ public class DebugActionFactory {
     }
 
     // Print column numbers
-    log.info("Plane of chunk: {}", chunk.getSummary());
+    log.info("Visualising: {}", chunk.getSummary());
     StringBuilder sb = new StringBuilder();
     sb.append("   ");
     for (int col = 0; col < numCols; col++) {
@@ -107,7 +107,7 @@ public class DebugActionFactory {
       log.info(sb.toString());
     }
     log.info("");
-    log.info("Locations in chunk: " + locationCount);
+    log.info("- Locations in this chunk: " + locationCount);
   }
 
   public void logVisitedLocations(Player player) {
