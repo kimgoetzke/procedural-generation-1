@@ -28,14 +28,20 @@ public class Vertex<T extends Location> {
 
   public void log(boolean showWeight) {
     if (edges.isEmpty()) {
-      log.info("- " + location.getName() + " -->");
+      log.info(
+          "- " + location.getName() + " (" + location.getCoordinates().globalToString() + ") -->");
       return;
     }
     StringBuilder message = new StringBuilder();
     boolean first = true;
     for (Edge<T> edge : edges) {
       if (first) {
-        message.append("- ").append(edge.start().location.getName()).append(" --> ");
+        message
+            .append("- ")
+            .append(edge.start().location.getName())
+            .append(" (")
+            .append(edge.start().location.getCoordinates().globalToString())
+            .append(") --> ");
         first = false;
       }
       message.append(edge.end().location.getName());

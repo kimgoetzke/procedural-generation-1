@@ -18,10 +18,10 @@ public class Player implements Visitor {
   private final String name;
   private final Set<Location> visitedLocations = new LinkedHashSet<>();
   private final Coordinates coordinates;
-  @Setter private int gold;
+  @Setter private int gold = 100;
   @Setter private int level;
-  @Setter private int age;
-  @Setter private int activityPoints;
+  @Setter private int age = 15;
+  @Setter private int activityPoints = 20;
   @Setter @Getter private State state = State.AT_DEFAULT_POI;
   private Location currentLocation;
   private PointOfInterest currentPoi;

@@ -15,11 +15,9 @@ public class Chunk implements Generatable {
 
   @Getter private final String id;
   @Getter private final int density;
-
   @Getter private final int[][] plane = new int[CHUNK_SIZE][CHUNK_SIZE];
-
-  private Random random;
   @Getter private final Coordinates coordinates;
+  private Random random;
   @Getter @Setter private boolean isLoaded;
 
   public Chunk(Pair<Integer, Integer> worldCoords) {

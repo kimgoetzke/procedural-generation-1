@@ -1,5 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class CliComponent {
   public enum FMT {
     RESET("\033[0m"),

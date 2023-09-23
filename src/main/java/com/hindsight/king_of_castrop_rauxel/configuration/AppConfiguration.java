@@ -24,8 +24,13 @@ public class AppConfiguration {
   }
 
   @Bean
+  public AppProperties appProperties() {
+    return new AppProperties();
+  }
+
+  @Bean
   public World world() {
-    return new World();
+    return new World(appProperties());
   }
 
   @Bean

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 public class WorldBuildingComponent {
 
   public static final int WORLD_SIZE = 50;
+  public static final int REMOVAL_ZONE = 2;
 
   @Getter
   public enum CardinalDirection {
