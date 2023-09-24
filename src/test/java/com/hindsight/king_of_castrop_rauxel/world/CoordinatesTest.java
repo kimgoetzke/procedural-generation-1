@@ -1,11 +1,11 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.data.util.Pair;
-
-import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.data.util.Pair;
 
 class CoordinatesTest {
 

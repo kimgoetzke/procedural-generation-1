@@ -98,8 +98,6 @@ public class NewGame {
     System.out.printf("%n%n");
   }
 
-  // TODO: Fix bug where graph doesn't check which chunk a location is in
-  // TODO: Add chunk unloading to free up memory
   // TODO: Add method to log connections between two chunks to "printConnectivity()"
   // TODO: Create method to ensure currentChunk and nextChunk are always connected
   private void updateWorld() {

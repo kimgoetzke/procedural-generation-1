@@ -2,28 +2,21 @@ package com.hindsight.king_of_castrop_rauxel.world;
 
 import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import lombok.AccessLevel;
+import java.util.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorldBuildingComponent {
-
-  public static final int WORLD_SIZE = 50;
-  public static final int REMOVAL_ZONE = 2;
 
   @Getter
   public enum CardinalDirection {
@@ -40,9 +33,9 @@ public class WorldBuildingComponent {
     private final String name;
     private final int ordinal;
 
-    CardinalDirection(String s, int i) {
-      this.name = s;
-      this.ordinal = i;
+    CardinalDirection(String name, int ordinal) {
+      this.name = name;
+      this.ordinal = ordinal;
     }
   }
 
@@ -115,7 +108,7 @@ public class WorldBuildingComponent {
           continue;
         }
         var distance = reference.getLocation().distanceTo(other.getLocation());
-        if (distance < ChunkComponent.MAX_NEIGHBOUR_DISTANCE) {
+        if (distance < AppProperties.MAX_NEIGHBOUR_DISTANCE) {
           addConnections(map, reference, other, distance);
         }
       }
@@ -184,6 +177,13 @@ public class WorldBuildingComponent {
         closestNeighbor = other;
       }
     }
+    log.info(
+        "Closest neighbour of {} is {} (distance: {} km)",
+        reference.getLocation().getName(),
+        closestNeighbor != null && closestNeighbor.getLocation() != null
+            ? closestNeighbor.getLocation().getName()
+            : "'null'",
+        minDistance);
     return closestNeighbor;
   }
 
@@ -215,6 +215,6 @@ public class WorldBuildingComponent {
       Set<Vertex<AbstractLocation>> visitedVertices,
       Set<Vertex<AbstractLocation>> unvisitedVertices) {}
 
-  private record LogStats(
+  public record LogStats(
       long startTime, int prevSettlementCount, List<AbstractLocation> prevSettlements) {}
 }

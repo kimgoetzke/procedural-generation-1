@@ -4,7 +4,6 @@ import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
-
 import java.util.Random;
 import java.util.stream.IntStream;
 import lombok.EqualsAndHashCode;
@@ -28,26 +27,20 @@ public class Settlement extends AbstractSettlement {
 
   @Override
   public void load() {
+    var startTime = System.currentTimeMillis();
     log.info("Generating full settlement '{}'...", id);
-    generateInhabitants();
     generateAmenities();
+    generateInhabitants();
     generatePlayerActions();
     setLoaded(true);
     logResult();
+    log.info("Generated '{}' in {} seconds", id, System.currentTimeMillis() - startTime / 1000.0);
   }
 
   private void generateFoundation() {
     size = LocationComponent.randomSize(random);
     area = LocationComponent.randomArea(random, size);
     name = stringGenerator.locationNameFrom(this.getClass());
-  }
-
-  private void generateInhabitants() {
-    var bounds = LocationComponent.getSettlementConfigs().get(size).getInhabitants();
-    var inhabitantCount =
-        random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
-    IntStream.range(0, inhabitantCount)
-        .forEach(i -> inhabitants.add(new Inhabitant(stringGenerator)));
   }
 
   private void generateAmenities() {
@@ -60,15 +53,24 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addAmenity(PoiType type) {
-    var npc = inhabitants.stream().filter(i -> i.getHome() == null).findFirst().orElse(null);
+    var npc = new Inhabitant(stringGenerator);
     var amenity = new Amenity(type, npc, this);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);
+      inhabitants.add(npc);
     } else {
       amenity.getNpc().setHome(null);
       log.info("Skipping duplicate amenity '{}' and generating alternative", amenity.getName());
       addAmenity(type);
     }
+  }
+
+  private void generateInhabitants() {
+    var bounds = LocationComponent.getSettlementConfigs().get(size).getInhabitants();
+    inhabitantCount =
+        Math.max(
+            random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower(),
+            inhabitants.size());
   }
 
   private void generatePlayerActions() {

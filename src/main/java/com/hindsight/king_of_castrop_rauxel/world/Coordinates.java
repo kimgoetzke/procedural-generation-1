@@ -1,5 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.*;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -69,9 +71,9 @@ public class Coordinates {
   private void verify(Pair<Integer, Integer> anyCoords, CoordType type) {
     var max =
         switch (type) {
-          case GLOBAL -> ChunkComponent.CHUNK_SIZE * WorldBuildingComponent.WORLD_SIZE;
-          case WORLD -> WorldBuildingComponent.WORLD_SIZE;
-          case CHUNK -> ChunkComponent.CHUNK_SIZE;
+          case GLOBAL -> CHUNK_SIZE * WORLD_SIZE;
+          case WORLD -> WORLD_SIZE;
+          case CHUNK -> CHUNK_SIZE;
         };
     var x = (int) anyCoords.getFirst();
     var y = (int) anyCoords.getSecond();
@@ -106,20 +108,20 @@ public class Coordinates {
 
   private Pair<Integer, Integer> toGlobalCoords(
       Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
-    var x = chunkCoords.getFirst() + (worldCoords.getFirst() * ChunkComponent.CHUNK_SIZE);
-    var y = chunkCoords.getSecond() + (worldCoords.getSecond() * ChunkComponent.CHUNK_SIZE);
+    var x = chunkCoords.getFirst() + (worldCoords.getFirst() * CHUNK_SIZE);
+    var y = chunkCoords.getSecond() + (worldCoords.getSecond() * CHUNK_SIZE);
     return Pair.of(x, y);
   }
 
   private Pair<Integer, Integer> toWorldCoords(Pair<Integer, Integer> globalCoords) {
-    var x = globalCoords.getFirst() / ChunkComponent.CHUNK_SIZE;
-    var y = globalCoords.getSecond() / ChunkComponent.CHUNK_SIZE;
+    var x = globalCoords.getFirst() / CHUNK_SIZE;
+    var y = globalCoords.getSecond() / CHUNK_SIZE;
     return Pair.of(x, y);
   }
 
   private Pair<Integer, Integer> toChunkCoords(Pair<Integer, Integer> globalCoords) {
-    var x = globalCoords.getFirst() % ChunkComponent.CHUNK_SIZE;
-    var y = globalCoords.getSecond() % ChunkComponent.CHUNK_SIZE;
+    var x = globalCoords.getFirst() % CHUNK_SIZE;
+    var y = globalCoords.getSecond() % CHUNK_SIZE;
     return Pair.of(x, y);
   }
 

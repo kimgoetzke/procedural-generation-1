@@ -29,7 +29,7 @@ public class Vertex<T extends Location> {
   public void log(boolean showWeight) {
     if (edges.isEmpty()) {
       log.info(
-          "- " + location.getName() + " (" + location.getCoordinates().globalToString() + ") -->");
+          "- " + location.getName() + " " + location.getCoordinates().globalToString() + " -->");
       return;
     }
     StringBuilder message = new StringBuilder();
@@ -39,9 +39,9 @@ public class Vertex<T extends Location> {
         message
             .append("- ")
             .append(edge.start().location.getName())
-            .append(" (")
+            .append(" ")
             .append(edge.start().location.getCoordinates().globalToString())
-            .append(") --> ");
+            .append(" --> ");
         first = false;
       }
       message.append(edge.end().location.getName());

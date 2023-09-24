@@ -1,10 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
-
-import java.util.Random;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.*;
 
 import com.hindsight.king_of_castrop_rauxel.location.Generatable;
+import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -96,8 +95,7 @@ public class Chunk implements Generatable {
       for (var dy = -distance; dy <= distance; dy++) {
         var neighborX = x + dx;
         var neighborY = y + dy;
-        if (isValidPosition(neighborX, neighborY)
-            && plane[neighborX][neighborY] > LocationType.EMPTY.ordinal()) {
+        if (plane[neighborX][neighborY] > LocationType.EMPTY.ordinal()) {
           return true;
         }
       }

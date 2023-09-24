@@ -1,9 +1,11 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.CHUNK_SIZE;
-import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.CHUNK_SIZE;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.WORLD_SIZE;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.REMOVAL_ZONE;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.CardinalDirection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

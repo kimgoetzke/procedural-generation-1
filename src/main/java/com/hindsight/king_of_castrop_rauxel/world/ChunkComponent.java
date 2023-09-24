@@ -1,10 +1,12 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
 
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -15,14 +17,8 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ChunkComponent {
 
-  public static final int CHUNK_SIZE = 500;
-  public static final int MIN_PLACEMENT_DISTANCE = 5;
-  public static final int MAX_NEIGHBOUR_DISTANCE = 100;
-  public static final int GENERATION_TRIGGER_ZONE = 100;
-  private static final Bounds density = new Bounds(5, 10);
-
   public static int randomDensity(Random random) {
-    return random.nextInt(density.getUpper() - density.getLower() + 1) + density.getLower();
+    return random.nextInt(DENSITY.getUpper() - DENSITY.getLower() + 1) + DENSITY.getLower();
   }
 
   public static boolean isInsideTriggerZone(Pair<Integer, Integer> coordinates) {

@@ -35,7 +35,7 @@ public abstract class AbstractLocation implements Location {
     this.coordinates = new Coordinates(worldCoords, chunkCoords);
     this.seed = SeedComponent.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
-    this.id = "LOC~" + getCoordinates().getGlobal();
+    this.id = "LOC~" + coordinates.getGlobal().getFirst() + coordinates.getGlobal().getSecond();
   }
 
   @Override

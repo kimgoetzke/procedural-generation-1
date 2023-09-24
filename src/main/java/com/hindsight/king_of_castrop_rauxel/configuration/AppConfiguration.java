@@ -5,10 +5,9 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicStringGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.World;
+import java.util.Scanner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Scanner;
 
 @Configuration
 public class AppConfiguration {

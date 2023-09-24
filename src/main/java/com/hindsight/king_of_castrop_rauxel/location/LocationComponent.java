@@ -7,6 +7,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Random;
 
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,33 +18,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocationComponent {
 
-  @Getter
-  private static final Map<Size, SettlementConfig> settlementConfigs = new EnumMap<>(Size.class);
+  private static final Map<Size, SettlementConfig> SETTLEMENT_CONFIGS = new EnumMap<>(Size.class);
 
   public LocationComponent() {
-    initialiseSettlementConfigurations();
+    configureSettlements();
+    log.debug(this.toString());
   }
 
-  private void initialiseSettlementConfigurations() {
+  public static Map<Size, SettlementConfig> getSettlementConfigs() {
+    return SETTLEMENT_CONFIGS;
+  }
+
+  private void configureSettlements() {
     SettlementConfig xs = new SettlementConfig();
     SettlementConfig s = new SettlementConfig();
     SettlementConfig m = new SettlementConfig();
     SettlementConfig l = new SettlementConfig();
     SettlementConfig xl = new SettlementConfig();
 
-    xs.inhabitants = new Bounds(1, 10);
-    s.inhabitants = new Bounds(11, 100);
-    m.inhabitants = new Bounds(101, 1000);
-    l.inhabitants = new Bounds(1001, 10000);
-    xl.inhabitants = new Bounds(10000, 100000);
+    xs.setInhabitants(AppProperties.XS_INHABITANTS);
+    s.setInhabitants(AppProperties.S_INHABITANTS);
+    m.setInhabitants(AppProperties.M_INHABITANTS);
+    l.setInhabitants(AppProperties.L_INHABITANTS);
+    xl.setInhabitants(AppProperties.XL_INHABITANTS);
 
-    // Area occupied by the settlement in square kilometers; will be multiplied by 1000 to get
-    // square meters for locations of amenities inside the settlement
-    xs.area = new Bounds(1, 1);
-    s.area = new Bounds(1, 2);
-    m.area = new Bounds(1, 3);
-    l.area = new Bounds(2, 8);
-    xl.area = new Bounds(15, 40);
+    xs.area = AppProperties.XS_AREA;
+    s.area = AppProperties.S_AREA;
+    m.area = AppProperties.M_AREA;
+    l.area = AppProperties.L_AREA;
+    xl.area = AppProperties.XL_AREA;
 
     xs.amenities = new EnumMap<>(PoiType.class);
     s.amenities = new EnumMap<>(PoiType.class);
@@ -51,43 +54,42 @@ public class LocationComponent {
     l.amenities = new EnumMap<>(PoiType.class);
     xl.amenities = new EnumMap<>(PoiType.class);
 
-    xs.amenities.put(PoiType.ENTRANCE, new Bounds(0, 0));
-    s.amenities.put(PoiType.ENTRANCE, new Bounds(0, 1));
-    m.amenities.put(PoiType.ENTRANCE, new Bounds(2, 4));
-    l.amenities.put(PoiType.ENTRANCE, new Bounds(1, 1));
-    xl.amenities.put(PoiType.ENTRANCE, new Bounds(4, 8));
+    xs.amenities.put(PoiType.ENTRANCE, AppProperties.XS_AMENITIES_ENTRANCE);
+    s.amenities.put(PoiType.ENTRANCE, AppProperties.S_AMENITIES_ENTRANCE);
+    m.amenities.put(PoiType.ENTRANCE, AppProperties.M_AMENITIES_ENTRANCE);
+    l.amenities.put(PoiType.ENTRANCE, AppProperties.L_AMENITIES_ENTRANCE);
+    xl.amenities.put(PoiType.ENTRANCE, AppProperties.XL_AMENITIES_ENTRANCE);
 
-    xs.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
-    s.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
-    m.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
-    l.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
-    xl.amenities.put(PoiType.MAIN_SQUARE, new Bounds(1, 1));
+    xs.amenities.put(PoiType.MAIN_SQUARE, AppProperties.XS_AMENITIES_MAIN_SQUARE);
+    s.amenities.put(PoiType.MAIN_SQUARE, AppProperties.S_AMENITIES_MAIN_SQUARE);
+    m.amenities.put(PoiType.MAIN_SQUARE, AppProperties.M_AMENITIES_MAIN_SQUARE);
+    l.amenities.put(PoiType.MAIN_SQUARE, AppProperties.L_AMENITIES_MAIN_SQUARE);
+    xl.amenities.put(PoiType.MAIN_SQUARE, AppProperties.XL_AMENITIES_MAIN_SQUARE);
 
-    xs.amenities.put(PoiType.SHOP, new Bounds(0, 1));
-    s.amenities.put(PoiType.SHOP, new Bounds(1, 3));
-    m.amenities.put(PoiType.SHOP, new Bounds(3, 6));
-    l.amenities.put(PoiType.SHOP, new Bounds(5, 10));
-    xl.amenities.put(PoiType.SHOP, new Bounds(8, 14));
+    xs.amenities.put(PoiType.SHOP, AppProperties.XS_AMENITIES_SHOP);
+    s.amenities.put(PoiType.SHOP, AppProperties.S_AMENITIES_SHOP);
+    m.amenities.put(PoiType.SHOP, AppProperties.M_AMENITIES_SHOP);
+    l.amenities.put(PoiType.SHOP, AppProperties.L_AMENITIES_SHOP);
+    xl.amenities.put(PoiType.SHOP, AppProperties.XL_AMENITIES_SHOP);
 
-    xs.amenities.put(PoiType.QUEST_LOCATION, new Bounds(0, 2));
-    s.amenities.put(PoiType.QUEST_LOCATION, new Bounds(2, 5));
-    m.amenities.put(PoiType.QUEST_LOCATION, new Bounds(3, 8));
-    l.amenities.put(PoiType.QUEST_LOCATION, new Bounds(6, 12));
-    xl.amenities.put(PoiType.QUEST_LOCATION, new Bounds(10, 20));
+    xs.amenities.put(PoiType.QUEST_LOCATION, AppProperties.XS_AMENITIES_QUEST_LOCATION);
+    s.amenities.put(PoiType.QUEST_LOCATION, AppProperties.S_AMENITIES_QUEST_LOCATION);
+    m.amenities.put(PoiType.QUEST_LOCATION, AppProperties.M_AMENITIES_QUEST_LOCATION);
+    l.amenities.put(PoiType.QUEST_LOCATION, AppProperties.L_AMENITIES_QUEST_LOCATION);
+    xl.amenities.put(PoiType.QUEST_LOCATION, AppProperties.XL_AMENITIES_QUEST_LOCATION);
 
-    settlementConfigs.put(Size.XS, xs);
-    settlementConfigs.put(Size.S, s);
-    settlementConfigs.put(Size.M, m);
-    settlementConfigs.put(Size.L, l);
-    settlementConfigs.put(Size.XL, xl);
-    log.debug(this.toString());
+    LocationComponent.SETTLEMENT_CONFIGS.put(Size.XS, xs);
+    LocationComponent.SETTLEMENT_CONFIGS.put(Size.S, s);
+    LocationComponent.SETTLEMENT_CONFIGS.put(Size.M, m);
+    LocationComponent.SETTLEMENT_CONFIGS.put(Size.L, l);
+    LocationComponent.SETTLEMENT_CONFIGS.put(Size.XL, xl);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("Available settlement configurations:%n".formatted());
-    for (var entry : settlementConfigs.entrySet()) {
+    for (var entry : SETTLEMENT_CONFIGS.entrySet()) {
       sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
     }
     return sb.toString();
@@ -109,7 +111,7 @@ public class LocationComponent {
 
   /** Returns a random float that expresses the area of a settlement in square kilometers. */
   public static int randomArea(Random random, Size size) {
-    var bounds = settlementConfigs.get(size).getArea();
+    var bounds = SETTLEMENT_CONFIGS.get(size).getArea();
     return random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
   }
 

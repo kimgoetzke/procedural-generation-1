@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.*;
 import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
 
@@ -103,7 +104,8 @@ public class DebugActionFactory {
           sb.append("   ");
           continue;
         }
-        sb.append("%s%s%s".formatted(FMT.CYAN, downscaledPlane[row][col], FMT.RESET), 0, 3);
+        sb.append(
+            "%s%s%s".formatted(FMT.CYAN, downscaledPlane[row][col].substring(0, 3), FMT.RESET));
         locationCount++;
       }
       log.info(sb.toString());
