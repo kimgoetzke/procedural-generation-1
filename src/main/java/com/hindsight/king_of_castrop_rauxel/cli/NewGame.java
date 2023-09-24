@@ -1,5 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
+
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
@@ -15,9 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 
 @Slf4j
 @Component
@@ -98,7 +98,7 @@ public class NewGame {
     System.out.printf("%n%n");
   }
 
-  // TODO: Add method to log connections between two chunks to "printConnectivity()"
+  // TODO: Add method to log connections between two chunks to "logConnectionsInTriggerZone()"
   // TODO: Create method to ensure currentChunk and nextChunk are always connected
   private void updateWorld() {
     updateWorldCoords();
@@ -133,16 +133,16 @@ public class NewGame {
       System.out.printf(
           "%sSTATS: [ Gold: %s%s%s | Level: %s%s%s | Age: %s%s%s | Activity points left: %s%s%s ]%s%n",
           FMT.DEFAULT_BOLD,
-          FMT.YELLOW_BOLD_BRIGHT,
+          FMT.YELLOW_BOLD,
           player.getGold(),
           FMT.DEFAULT_BOLD,
-          FMT.BLUE_BOLD_BRIGHT,
+          FMT.BLUE_BOLD,
           player.getLevel(),
           FMT.DEFAULT_BOLD,
-          FMT.MAGENTA_BOLD_BRIGHT,
+          FMT.MAGENTA_BOLD,
           player.getAge(),
           FMT.DEFAULT_BOLD,
-          FMT.GREEN_BOLD_BRIGHT,
+          FMT.GREEN_BOLD,
           player.getActivityPoints(),
           FMT.DEFAULT_BOLD,
           FMT.RESET);

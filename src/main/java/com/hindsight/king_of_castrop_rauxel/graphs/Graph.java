@@ -74,13 +74,13 @@ public class Graph<T extends AbstractLocation> {
 
   public static <T extends AbstractLocation> void traverseGraphDepthFirst(
       Vertex<T> currentVertex, Set<Vertex<T>> visitedVertices, Set<Vertex<T>> unvisitedVertices) {
+    if (visitedVertices.contains(currentVertex)) {
+      return;
+    }
     visitedVertices.add(currentVertex);
     unvisitedVertices.remove(currentVertex);
     for (var edge : currentVertex.getEdges()) {
-      var end = edge.end();
-      if (!visitedVertices.contains(end)) {
-        traverseGraphDepthFirst(end, visitedVertices, unvisitedVertices);
-      }
+      traverseGraphDepthFirst(edge.end(), visitedVertices, unvisitedVertices);
     }
   }
 }

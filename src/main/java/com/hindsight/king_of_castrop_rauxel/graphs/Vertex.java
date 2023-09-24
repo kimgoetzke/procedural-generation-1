@@ -3,17 +3,25 @@ package com.hindsight.king_of_castrop_rauxel.graphs;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Vertex<T extends Location> {
 
-  private final T location;
+  @EqualsAndHashCode.Include private final String id;
   private final Set<Edge<T>> edges;
+  private final T location;
 
   public Vertex(T location) {
+    this.id =
+        "VER~"
+            + location.getName().substring(0, 3).toUpperCase()
+            + location.getCoordinates().globalToString();
     this.location = location;
     this.edges = new LinkedHashSet<>();
   }
@@ -52,5 +60,16 @@ public class Vertex<T extends Location> {
     }
     message.setLength(message.length() - 2);
     log.info(message.toString());
+  }
+
+  @Override
+  public String toString() {
+    return "Vertex(id="
+        + id
+        + ", edges="
+        + edges.stream().map(e -> e.end().location.getName()).toList()
+        + ", location="
+        + location
+        + ')';
   }
 }

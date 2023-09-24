@@ -47,7 +47,7 @@ public class WorldBuildingComponent {
     generateSettlements(map, chunk, stringGenerator);
     connectCloseSettlements(map);
     connectAtLeastOneSettlement(map);
-    connectDisconnectedGroups(map);
+    //    connectDisconnectedGroups(map); // TODO: Uncomment once the algorithm is fixed
     world.placeChunk(chunk);
     startLocation.load();
     logOutcome(stats, map);
@@ -119,7 +119,17 @@ public class WorldBuildingComponent {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       var refLocation = reference.getLocation();
-      if (refLocation.getNeighbours().isEmpty()) {
+      var hasNoEdges = map.getVertexByValue(refLocation).getEdges().isEmpty();
+      var hasNoNeighbours = refLocation.getNeighbours().isEmpty();
+      if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
+        throw new IllegalStateException(
+            String.format(
+                "Vertex %s has %d edges and %d neighbours but should have none or both",
+                refLocation.getName(),
+                refLocation.getNeighbours().size(),
+                reference.getEdges().size()));
+      }
+      if (hasNoNeighbours) {
         var closestNeighbour = findClosestNeighbour(reference, vertices);
         if (closestNeighbour != null) {
           var distance = refLocation.distanceTo(closestNeighbour.getLocation());
@@ -129,6 +139,7 @@ public class WorldBuildingComponent {
     }
   }
 
+  // TODO: Fix this method
   private static void connectDisconnectedGroups(Graph<AbstractLocation> map) {
     var connectivityResult = findDisconnectedVertices(map);
     var unvisitedVertices = connectivityResult.unvisitedVertices();
@@ -152,6 +163,7 @@ public class WorldBuildingComponent {
       Vertex<AbstractLocation> vertex2,
       int distance) {
     map.addEdge(vertex1, vertex2, distance);
+
     var v1Location = vertex1.getLocation();
     var v2Location = vertex2.getLocation();
     v1Location.addNeighbour(v2Location);

@@ -10,13 +10,10 @@ import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-@ToString(
-    exclude = {"id", "seed", "description", "availableActions", "visitors", "random", "isLoaded"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractLocation implements Location {
 
@@ -100,5 +97,16 @@ public abstract class AbstractLocation implements Location {
       this.name = s;
       this.ordinal = i;
     }
+  }
+
+  @Override
+  public String toString() {
+    return "Location(name="
+        + name
+        + ", coordinates="
+        + coordinates
+        + ", isLoaded="
+        + isLoaded
+        + ")";
   }
 }

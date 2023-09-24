@@ -95,7 +95,8 @@ public class Chunk implements Generatable {
       for (var dy = -distance; dy <= distance; dy++) {
         var neighborX = x + dx;
         var neighborY = y + dy;
-        if (plane[neighborX][neighborY] > LocationType.EMPTY.ordinal()) {
+        if (isValidPosition(neighborX, neighborY)
+            && plane[neighborX][neighborY] > LocationType.EMPTY.ordinal()) {
           return true;
         }
       }

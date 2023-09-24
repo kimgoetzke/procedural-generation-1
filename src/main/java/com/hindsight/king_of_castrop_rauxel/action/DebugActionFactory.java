@@ -110,6 +110,7 @@ public class DebugActionFactory {
       }
       log.info(sb.toString());
     }
+
     log.info("");
     log.info("- Locations in this chunk: " + locationCount);
   }

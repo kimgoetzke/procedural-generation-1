@@ -34,7 +34,7 @@ public class Settlement extends AbstractSettlement {
     generatePlayerActions();
     setLoaded(true);
     logResult();
-    log.info("Generated '{}' in {} seconds", id, System.currentTimeMillis() - startTime / 1000.0);
+    log.info("Generated '{}' in {} seconds", id, (System.currentTimeMillis() - startTime) / 1000.0);
   }
 
   private void generateFoundation() {
