@@ -163,7 +163,6 @@ public class WorldBuildingComponent {
       Vertex<AbstractLocation> vertex2,
       int distance) {
     map.addEdge(vertex1, vertex2, distance);
-
     var v1Location = vertex1.getLocation();
     var v2Location = vertex2.getLocation();
     v1Location.addNeighbour(v2Location);
@@ -204,6 +203,7 @@ public class WorldBuildingComponent {
     log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
     result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
     log.info("Visited vertices: {}", result.visitedVertices().size());
+    result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
   }
 
   private static ConnectivityResult findDisconnectedVertices(Graph<AbstractLocation> graph) {

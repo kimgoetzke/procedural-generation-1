@@ -105,9 +105,13 @@ public class ActionHandler {
     actions.add(debug.create(actions.size() + 1, "Log all locations", debug::logVertices));
     actions.add(
         debug.create(
-            actions.size() + 1, "Log visited locations", () -> debug.logVisitedLocations(player)));
+            actions.size() + 1,
+            "Log locations inside trigger zone",
+            () -> debug.logLocationsInsideTriggerZone(player)));
     actions.add(
-        debug.create(actions.size() + 1, "Log graph connectivity", debug::printConnectivity));
+        debug.create(
+            actions.size() + 1, "Log visited locations", () -> debug.logVisitedLocations(player)));
+    debug.create(actions.size() + 1, "Log graph connectivity", debug::printConnectivity);
     actions.add(debug.create(actions.size() + 1, "Log full graph", debug::logGraph));
     actions.add(debug.create(actions.size() + 1, "Log close chunks", debug::logWorld));
     actions.add(debug.create(actions.size() + 1, "Visualise plane", debug::printPlane));

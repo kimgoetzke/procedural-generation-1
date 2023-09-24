@@ -20,25 +20,25 @@ public class ChunkComponent {
     return random.nextInt(DENSITY.getUpper() - DENSITY.getLower() + 1) + DENSITY.getLower();
   }
 
-  public static boolean isInsideTriggerZone(Pair<Integer, Integer> coordinates) {
-    return coordinates.getFirst() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE
-        || coordinates.getFirst() < GENERATION_TRIGGER_ZONE
-        || coordinates.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE
-        || coordinates.getSecond() < GENERATION_TRIGGER_ZONE;
+  public static boolean isInsideTriggerZone(Pair<Integer, Integer> chunkCoords) {
+    return chunkCoords.getFirst() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE
+        || chunkCoords.getFirst() < GENERATION_TRIGGER_ZONE
+        || chunkCoords.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE
+        || chunkCoords.getSecond() < GENERATION_TRIGGER_ZONE;
   }
 
-  public static CardinalDirection nextChunkPosition(Pair<Integer, Integer> coordinates) {
-    if (coordinates.getFirst() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE) {
+  // TODO: Expand to include all 8 directions
+  public static CardinalDirection nextChunkPosition(Pair<Integer, Integer> chunkCoords) {
+    if (chunkCoords.getFirst() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE) {
       return CardinalDirection.EAST;
-    } else if (coordinates.getFirst() < GENERATION_TRIGGER_ZONE) {
+    } else if (chunkCoords.getFirst() < GENERATION_TRIGGER_ZONE) {
       return CardinalDirection.WEST;
-    } else if (coordinates.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE) {
+    } else if (chunkCoords.getSecond() > CHUNK_SIZE - GENERATION_TRIGGER_ZONE) {
       return CardinalDirection.NORTH;
-    } else if (coordinates.getSecond() < GENERATION_TRIGGER_ZONE) {
+    } else if (chunkCoords.getSecond() < GENERATION_TRIGGER_ZONE) {
       return CardinalDirection.SOUTH;
     } else {
-      throw new IllegalStateException(
-          "Cannot return RelativePosition for coordinates " + coordinates);
+      return CardinalDirection.THIS;
     }
   }
 

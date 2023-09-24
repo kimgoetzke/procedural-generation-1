@@ -3,7 +3,6 @@ package com.hindsight.king_of_castrop_rauxel.graphs;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

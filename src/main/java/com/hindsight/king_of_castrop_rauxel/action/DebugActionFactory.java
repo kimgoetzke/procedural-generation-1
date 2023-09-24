@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
@@ -118,5 +119,28 @@ public class DebugActionFactory {
   public void logVisitedLocations(Player player) {
     log.info("Visited locations:");
     player.getVisitedLocations().forEach(l -> log.info("- " + l.getName()));
+  }
+
+  public void logLocationsInsideTriggerZone(Player player) {
+    var vertices =
+        map.getVertices().stream()
+            .map(Vertex::getLocation)
+            .filter(l -> isInsideTriggerZone(l.getCoordinates().getChunk()))
+            .toList();
+    var allPlayerCords = player.getCoordinates();
+    var whereNext = nextChunkPosition(allPlayerCords.getChunk());
+    var whereNextAllCoords = world.getChunk(whereNext).getCoordinates();
+    if (whereNext == CardinalDirection.THIS) {
+      log.info("Player is not inside any trigger zone of {}", whereNextAllCoords.worldToString());
+    } else {
+      log.info(
+          "Player is inside trigger zone for chunk {} of {}:",
+          whereNext.toString().toUpperCase(),
+          allPlayerCords.worldToString());
+      vertices.stream()
+          .filter(l -> l.getCoordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
+          .filter(l -> isInsideTriggerZone(l.getCoordinates().getChunk()))
+          .forEach(l -> log.info("- " + l.getBriefSummary()));
+    }
   }
 }
