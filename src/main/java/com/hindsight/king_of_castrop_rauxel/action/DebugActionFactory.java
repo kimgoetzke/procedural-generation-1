@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
 

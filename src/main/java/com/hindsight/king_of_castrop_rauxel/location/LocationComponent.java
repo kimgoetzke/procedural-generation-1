@@ -1,14 +1,13 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
+import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Random;
-
-import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,17 +35,17 @@ public class LocationComponent {
     SettlementConfig l = new SettlementConfig();
     SettlementConfig xl = new SettlementConfig();
 
-    xs.setInhabitants(AppProperties.XS_INHABITANTS);
-    s.setInhabitants(AppProperties.S_INHABITANTS);
-    m.setInhabitants(AppProperties.M_INHABITANTS);
-    l.setInhabitants(AppProperties.L_INHABITANTS);
-    xl.setInhabitants(AppProperties.XL_INHABITANTS);
+    xs.setInhabitants(XS_INHABITANTS);
+    s.setInhabitants(S_INHABITANTS);
+    m.setInhabitants(M_INHABITANTS);
+    l.setInhabitants(L_INHABITANTS);
+    xl.setInhabitants(XL_INHABITANTS);
 
-    xs.area = AppProperties.XS_AREA;
-    s.area = AppProperties.S_AREA;
-    m.area = AppProperties.M_AREA;
-    l.area = AppProperties.L_AREA;
-    xl.area = AppProperties.XL_AREA;
+    xs.area = XS_AREA;
+    s.area = S_AREA;
+    m.area = M_AREA;
+    l.area = L_AREA;
+    xl.area = XL_AREA;
 
     xs.amenities = new EnumMap<>(PoiType.class);
     s.amenities = new EnumMap<>(PoiType.class);
@@ -54,29 +53,29 @@ public class LocationComponent {
     l.amenities = new EnumMap<>(PoiType.class);
     xl.amenities = new EnumMap<>(PoiType.class);
 
-    xs.amenities.put(PoiType.ENTRANCE, AppProperties.XS_AMENITIES_ENTRANCE);
-    s.amenities.put(PoiType.ENTRANCE, AppProperties.S_AMENITIES_ENTRANCE);
-    m.amenities.put(PoiType.ENTRANCE, AppProperties.M_AMENITIES_ENTRANCE);
-    l.amenities.put(PoiType.ENTRANCE, AppProperties.L_AMENITIES_ENTRANCE);
-    xl.amenities.put(PoiType.ENTRANCE, AppProperties.XL_AMENITIES_ENTRANCE);
+    xs.amenities.put(PoiType.ENTRANCE, XS_AMENITIES_ENTRANCE);
+    s.amenities.put(PoiType.ENTRANCE, S_AMENITIES_ENTRANCE);
+    m.amenities.put(PoiType.ENTRANCE, M_AMENITIES_ENTRANCE);
+    l.amenities.put(PoiType.ENTRANCE, L_AMENITIES_ENTRANCE);
+    xl.amenities.put(PoiType.ENTRANCE, XL_AMENITIES_ENTRANCE);
 
-    xs.amenities.put(PoiType.MAIN_SQUARE, AppProperties.XS_AMENITIES_MAIN_SQUARE);
-    s.amenities.put(PoiType.MAIN_SQUARE, AppProperties.S_AMENITIES_MAIN_SQUARE);
-    m.amenities.put(PoiType.MAIN_SQUARE, AppProperties.M_AMENITIES_MAIN_SQUARE);
-    l.amenities.put(PoiType.MAIN_SQUARE, AppProperties.L_AMENITIES_MAIN_SQUARE);
-    xl.amenities.put(PoiType.MAIN_SQUARE, AppProperties.XL_AMENITIES_MAIN_SQUARE);
+    xs.amenities.put(PoiType.MAIN_SQUARE, XS_AMENITIES_MAIN_SQUARE);
+    s.amenities.put(PoiType.MAIN_SQUARE, S_AMENITIES_MAIN_SQUARE);
+    m.amenities.put(PoiType.MAIN_SQUARE, M_AMENITIES_MAIN_SQUARE);
+    l.amenities.put(PoiType.MAIN_SQUARE, L_AMENITIES_MAIN_SQUARE);
+    xl.amenities.put(PoiType.MAIN_SQUARE, XL_AMENITIES_MAIN_SQUARE);
 
-    xs.amenities.put(PoiType.SHOP, AppProperties.XS_AMENITIES_SHOP);
-    s.amenities.put(PoiType.SHOP, AppProperties.S_AMENITIES_SHOP);
-    m.amenities.put(PoiType.SHOP, AppProperties.M_AMENITIES_SHOP);
-    l.amenities.put(PoiType.SHOP, AppProperties.L_AMENITIES_SHOP);
-    xl.amenities.put(PoiType.SHOP, AppProperties.XL_AMENITIES_SHOP);
+    xs.amenities.put(PoiType.SHOP, XS_AMENITIES_SHOP);
+    s.amenities.put(PoiType.SHOP, S_AMENITIES_SHOP);
+    m.amenities.put(PoiType.SHOP, M_AMENITIES_SHOP);
+    l.amenities.put(PoiType.SHOP, L_AMENITIES_SHOP);
+    xl.amenities.put(PoiType.SHOP, XL_AMENITIES_SHOP);
 
-    xs.amenities.put(PoiType.QUEST_LOCATION, AppProperties.XS_AMENITIES_QUEST_LOCATION);
-    s.amenities.put(PoiType.QUEST_LOCATION, AppProperties.S_AMENITIES_QUEST_LOCATION);
-    m.amenities.put(PoiType.QUEST_LOCATION, AppProperties.M_AMENITIES_QUEST_LOCATION);
-    l.amenities.put(PoiType.QUEST_LOCATION, AppProperties.L_AMENITIES_QUEST_LOCATION);
-    xl.amenities.put(PoiType.QUEST_LOCATION, AppProperties.XL_AMENITIES_QUEST_LOCATION);
+    xs.amenities.put(PoiType.QUEST_LOCATION, XS_AMENITIES_QUEST_LOCATION);
+    s.amenities.put(PoiType.QUEST_LOCATION, S_AMENITIES_QUEST_LOCATION);
+    m.amenities.put(PoiType.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
+    l.amenities.put(PoiType.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
+    xl.amenities.put(PoiType.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
 
     LocationComponent.SETTLEMENT_CONFIGS.put(Size.XS, xs);
     LocationComponent.SETTLEMENT_CONFIGS.put(Size.S, s);

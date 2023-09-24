@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 
 import com.hindsight.king_of_castrop_rauxel.location.Generatable;
 import java.util.Random;

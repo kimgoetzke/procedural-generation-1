@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 
-import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
@@ -108,7 +108,7 @@ public class WorldBuildingComponent {
           continue;
         }
         var distance = reference.getLocation().distanceTo(other.getLocation());
-        if (distance < AppProperties.MAX_NEIGHBOUR_DISTANCE) {
+        if (distance < MAX_NEIGHBOUR_DISTANCE) {
           addConnections(map, reference, other, distance);
         }
       }

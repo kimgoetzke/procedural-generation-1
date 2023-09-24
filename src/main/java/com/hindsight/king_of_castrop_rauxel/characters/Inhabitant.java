@@ -13,13 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode
 public class Inhabitant implements Npc {
 
+  private final StringGenerator stringGenerator;
+
   @Getter private String id;
   @Getter private String firstName;
   @Getter private String lastName;
   @Getter private String fullName;
   @Getter private PointOfInterest home;
-
-  private final StringGenerator stringGenerator;
 
   public Inhabitant(StringGenerator stringGenerator) {
     this.stringGenerator = stringGenerator;

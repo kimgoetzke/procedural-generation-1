@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.CHUNK_SIZE;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.WORLD_SIZE;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppProperties.REMOVAL_ZONE;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.CHUNK_SIZE;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WORLD_SIZE;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.REMOVAL_ZONE;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.CardinalDirection;
