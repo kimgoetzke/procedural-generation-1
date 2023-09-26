@@ -20,7 +20,8 @@ public class Vertex<T extends Location> {
     this.id =
         "VER~"
             + location.getName().substring(0, 3).toUpperCase()
-            + location.getCoordinates().globalToString();
+            + location.getCoordinates().getGlobal().getFirst()
+            + location.getCoordinates().getGlobal().getSecond();
     this.location = location;
     this.edges = new LinkedHashSet<>();
   }

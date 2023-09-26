@@ -69,6 +69,10 @@ public class DebugActionFactory {
   }
 
   public void printPlane() {
+    printPlane(world, map);
+  }
+
+  public void printPlane(World world, Graph<AbstractLocation> map) {
     var chunk = world.getChunk(CardinalDirection.THIS);
     var plane = chunk.getPlane();
     var scale = 10;
@@ -82,7 +86,7 @@ public class DebugActionFactory {
       for (int j = 0; j < CHUNK_SIZE; j++) {
         if (plane[i][j] > 0) {
           downscaledPlane[i / scale][j / scale] =
-              map.getVertexByValue(Pair.of(i, j)).getLocation().getName();
+              map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocation().getName();
         }
       }
     }

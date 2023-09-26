@@ -64,21 +64,33 @@ public class World {
     return getPosition(position, currentChunk);
   }
 
-  public void placeChunk(Chunk chunk) {
+  /** Places a chunk in the center of the world. Used to place the first chunk in a new world. */
+  public void place(Chunk chunk) {
     currentChunk = chunk;
     var center = getCenter();
     plane[center.getFirst()][center.getSecond()] = chunk;
   }
 
-  public void placeChunk(Chunk chunk, CardinalDirection position) {
+  /**
+   * Places a chunk in the given position relative to the current chunk. Used to place any
+   * subsequently created chunks in an existing world.
+   */
+  public void place(Chunk chunk, CardinalDirection position) {
     var newCoords = getPosition(position, currentChunk);
     if (position == CardinalDirection.THIS) {
-      throw new IllegalStateException(
-          "Unexpected coordinates for placing a new chunk: "
-              + position
-              + " - this would overwrite the current chunk");
+      log.warn(
+          "You are placing a chunk in the same position as the current chunk, if it exists - if this is intentional, you must setCurrentChunk first");
     }
     plane[newCoords.getFirst()][newCoords.getSecond()] = chunk;
+  }
+
+  /**
+   * Places a chunk in the specified position. Mostly used when testing but would be used more
+   * frequently if more than one player was supported.
+   */
+  public void place(Chunk chunk, Pair<Integer, Integer> worldCoords) {
+    currentChunk = chunk;
+    plane[worldCoords.getFirst()][worldCoords.getSecond()] = chunk;
   }
 
   public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {

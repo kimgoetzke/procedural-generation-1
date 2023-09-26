@@ -4,6 +4,8 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -51,13 +53,18 @@ public class Graph<T extends AbstractLocation> {
     return null;
   }
 
-  public Vertex<T> getVertexByValue(Pair<Integer, Integer> chunkCoords) {
-    var rX = (int) chunkCoords.getFirst();
-    var rY = (int) chunkCoords.getSecond();
+  public Vertex<T> getVertexByValue(Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
+    var rX = (int) anyCoords.getFirst();
+    var rY = (int) anyCoords.getSecond();
     for (Vertex<T> vertex : this.vertices) {
-      var vChunkCoords = vertex.getLocation().getCoordinates().getChunk();
-      var vX = (int) vChunkCoords.getFirst();
-      var vY = (int) vChunkCoords.getSecond();
+      var vCoords =
+          switch (type) {
+            case WORLD -> vertex.getLocation().getCoordinates().getWorld();
+            case GLOBAL -> vertex.getLocation().getCoordinates().getGlobal();
+            case CHUNK -> vertex.getLocation().getCoordinates().getChunk();
+          };
+      var vX = (int) vCoords.getFirst();
+      var vY = (int) vCoords.getSecond();
       if (vX == rX && vY == rY) {
         return vertex;
       }

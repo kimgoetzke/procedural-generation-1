@@ -45,10 +45,10 @@ public class WorldBuildingComponent {
     var chunk = new Chunk(world.getCenter());
     var startLocation = placeSettlement(map, chunk, chunk.getCenterCoords(), stringGenerator);
     generateSettlements(map, chunk, stringGenerator);
-    connectCloseSettlements(map);
-    connectAtLeastOneSettlement(map);
-    //    connectDisconnectedGroups(map); // TODO: Uncomment once the algorithm is fixed
-    world.placeChunk(chunk);
+    connectAnyWithinNeighbourDistance(map);
+    connectNeighbourlessToClosest(map);
+    connectDisconnectedToClosestConnected(map);
+    world.place(chunk);
     startLocation.load();
     logOutcome(stats, map);
     return startLocation;
@@ -62,10 +62,10 @@ public class WorldBuildingComponent {
     var stats = getStats(map);
     Chunk nextChunk = new Chunk(world.getPosition(whereNext));
     generateSettlements(map, nextChunk, stringGenerator);
-    connectCloseSettlements(map);
-    connectAtLeastOneSettlement(map);
-    connectDisconnectedGroups(map);
-    world.placeChunk(nextChunk, whereNext);
+    connectAnyWithinNeighbourDistance(map);
+    connectNeighbourlessToClosest(map);
+    connectDisconnectedToClosestConnected(map);
+    world.place(nextChunk, whereNext);
     logOutcome(stats, map);
   }
 
@@ -79,7 +79,7 @@ public class WorldBuildingComponent {
         .forEach(vertex -> log.info("- " + vertex.getLocation().getBriefSummary()));
   }
 
-  private static void generateSettlements(
+  protected static void generateSettlements(
       Graph<AbstractLocation> map, Chunk chunk, StringGenerator stringGenerator) {
     var settlementsCount = chunk.getDensity();
     for (int i = 0; i < settlementsCount; i++) {
@@ -100,7 +100,7 @@ public class WorldBuildingComponent {
     return settlement;
   }
 
-  private static void connectCloseSettlements(Graph<AbstractLocation> map) {
+  protected static void connectAnyWithinNeighbourDistance(Graph<AbstractLocation> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       for (var other : vertices) {
@@ -115,7 +115,7 @@ public class WorldBuildingComponent {
     }
   }
 
-  private static void connectAtLeastOneSettlement(Graph<AbstractLocation> map) {
+  private static void connectNeighbourlessToClosest(Graph<AbstractLocation> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       var refLocation = reference.getLocation();
@@ -139,25 +139,25 @@ public class WorldBuildingComponent {
     }
   }
 
-  // TODO: Fix this method
-  private static void connectDisconnectedGroups(Graph<AbstractLocation> map) {
-    var connectivityResult = findDisconnectedVertices(map);
-    var unvisitedVertices = connectivityResult.unvisitedVertices();
+  protected static void connectDisconnectedToClosestConnected(Graph<AbstractLocation> map) {
+    var connectivity = evaluateConnectivity(map);
+    var visitedVertices = new ArrayList<>(connectivity.visitedVertices());
+    var unvisitedVertices = connectivity.unvisitedVertices();
     if (unvisitedVertices.isEmpty()) {
       return;
     }
     for (var unvisitedVertex : unvisitedVertices) {
       var refLocation = unvisitedVertex.getLocation();
-      var visitedVertices = connectivityResult.visitedVertices().stream().toList();
       var closestNeighbour = findClosestNeighbour(unvisitedVertex, visitedVertices);
       if (closestNeighbour != null) {
         var distance = refLocation.distanceTo(closestNeighbour.getLocation());
         addConnections(map, unvisitedVertex, closestNeighbour, distance);
+        visitedVertices.add(unvisitedVertex);
       }
     }
   }
 
-  private static void addConnections(
+  protected static void addConnections(
       Graph<AbstractLocation> map,
       Vertex<AbstractLocation> vertex1,
       Vertex<AbstractLocation> vertex2,
@@ -199,14 +199,14 @@ public class WorldBuildingComponent {
   }
 
   public static void logDisconnectedVertices(Graph<AbstractLocation> graph) {
-    var result = findDisconnectedVertices(graph);
+    var result = evaluateConnectivity(graph);
     log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
     result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
     log.info("Visited vertices: {}", result.visitedVertices().size());
     result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
   }
 
-  private static ConnectivityResult findDisconnectedVertices(Graph<AbstractLocation> graph) {
+  protected static ConnectivityResult evaluateConnectivity(Graph<AbstractLocation> graph) {
     var visitedVertices = new LinkedHashSet<Vertex<AbstractLocation>>();
     var unvisitedVertices = new LinkedHashSet<>(graph.getVertices());
     if (!unvisitedVertices.isEmpty()) {
@@ -223,7 +223,7 @@ public class WorldBuildingComponent {
         map.getVertices().stream().map(Vertex::getLocation).toList());
   }
 
-  private record ConnectivityResult(
+  protected record ConnectivityResult(
       Set<Vertex<AbstractLocation>> visitedVertices,
       Set<Vertex<AbstractLocation>> unvisitedVertices) {}
 
