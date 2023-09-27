@@ -33,7 +33,7 @@ public class NewGame {
 
   @SuppressWarnings("InfiniteLoopStatement")
   public void play() {
-    var startLocation = WorldBuildingComponent.build(world, map, stringGenerator);
+    var startLocation = WorldBuilder.build(world, map, stringGenerator);
     var actions = actionHandler.getEmpty();
     var worldCoordinates = world.getCurrentChunk().getCoordinates().getWorld();
     this.player = new Player("Traveller", startLocation, worldCoordinates);
@@ -115,8 +115,8 @@ public class NewGame {
 
   private void generateNextChunk() {
     var chunkCoords = player.getCurrentLocation().getCoordinates().getChunk();
-    if (ChunkComponent.isInsideTriggerZone(chunkCoords)) {
-      var whereNext = ChunkComponent.nextChunkPosition(chunkCoords);
+    if (ChunkBuilder.isInsideTriggerZone(chunkCoords)) {
+      var whereNext = ChunkBuilder.nextChunkPosition(chunkCoords);
       if (world.hasChunk(whereNext)) {
         log.info(
             String.format(
@@ -124,7 +124,7 @@ public class NewGame {
                 whereNext.getName().toLowerCase()));
         return;
       }
-      WorldBuildingComponent.buildNext(whereNext, world, map, stringGenerator);
+      WorldBuilder.buildNext(whereNext, world, map, stringGenerator);
     }
   }
 

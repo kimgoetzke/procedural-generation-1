@@ -5,7 +5,7 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WO
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.REMOVAL_ZONE;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.CardinalDirection;
+import com.hindsight.king_of_castrop_rauxel.world.WorldBuilder.CardinalDirection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

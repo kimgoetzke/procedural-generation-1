@@ -20,10 +20,10 @@ public class Chunk implements Generatable {
   @Getter @Setter private boolean isLoaded;
 
   public Chunk(Pair<Integer, Integer> worldCoords) {
-    var seed = SeedComponent.seedFrom(worldCoords);
+    var seed = SeedBuilder.seedFrom(worldCoords);
     this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
-    this.density = ChunkComponent.randomDensity(random);
+    this.density = ChunkBuilder.randomDensity(random);
     this.id = "CHU~" + coordinates.getWorld().getFirst() + coordinates.getWorld().getSecond();
     load();
   }
@@ -37,7 +37,7 @@ public class Chunk implements Generatable {
 
   @Override
   public void unload() {
-    var seed = SeedComponent.seedFrom(coordinates.getGlobal());
+    var seed = SeedBuilder.seedFrom(coordinates.getGlobal());
     random = new Random(seed);
     setLoaded(false);
     logResult();
@@ -52,7 +52,7 @@ public class Chunk implements Generatable {
         id,
         coordinates,
         density,
-        SeedComponent.seedFrom(coordinates.getGlobal()));
+        SeedBuilder.seedFrom(coordinates.getGlobal()));
   }
 
   public String getSummary() {

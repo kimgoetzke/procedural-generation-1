@@ -3,10 +3,10 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
-import com.hindsight.king_of_castrop_rauxel.world.SeedComponent;
+import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.*;
 
-import com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent;
+import com.hindsight.king_of_castrop_rauxel.world.WorldBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +30,7 @@ public abstract class AbstractLocation implements Location {
   protected AbstractLocation(
       Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
     this.coordinates = new Coordinates(worldCoords, chunkCoords);
-    this.seed = SeedComponent.seedFrom(coordinates.getGlobal());
+    this.seed = SeedBuilder.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
     this.id = "LOC~" + coordinates.getGlobal().getFirst() + coordinates.getGlobal().getSecond();
   }
@@ -51,35 +51,35 @@ public abstract class AbstractLocation implements Location {
   }
 
   @Override
-  public WorldBuildingComponent.CardinalDirection getCardinalDirection(
+  public WorldBuilder.CardinalDirection getCardinalDirection(
       Pair<Integer, Integer> other) {
     int dx = other.getFirst() - getCoordinates().getChunk().getFirst();
     int dy = other.getSecond() - getCoordinates().getChunk().getSecond();
 
     if (dx == 0) {
       if (dy < 0) {
-        return WorldBuildingComponent.CardinalDirection.NORTH;
+        return WorldBuilder.CardinalDirection.NORTH;
       } else if (dy > 0) {
-        return WorldBuildingComponent.CardinalDirection.SOUTH;
+        return WorldBuilder.CardinalDirection.SOUTH;
       }
     } else if (dy == 0) {
       if (dx < 0) {
-        return WorldBuildingComponent.CardinalDirection.WEST;
+        return WorldBuilder.CardinalDirection.WEST;
       } else {
-        return WorldBuildingComponent.CardinalDirection.EAST;
+        return WorldBuilder.CardinalDirection.EAST;
       }
     } else {
       if (dx < 0 && dy < 0) {
-        return WorldBuildingComponent.CardinalDirection.NORTH_WEST;
+        return WorldBuilder.CardinalDirection.NORTH_WEST;
       } else if (dx < 0) {
-        return WorldBuildingComponent.CardinalDirection.SOUTH_WEST;
+        return WorldBuilder.CardinalDirection.SOUTH_WEST;
       } else if (dy < 0) {
-        return WorldBuildingComponent.CardinalDirection.NORTH_EAST;
+        return WorldBuilder.CardinalDirection.NORTH_EAST;
       } else {
-        return WorldBuildingComponent.CardinalDirection.SOUTH_EAST;
+        return WorldBuilder.CardinalDirection.SOUTH_EAST;
       }
     }
-    return WorldBuildingComponent.CardinalDirection.THIS;
+    return WorldBuilder.CardinalDirection.THIS;
   }
 
   @Getter

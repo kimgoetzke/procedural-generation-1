@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class LocationComponent {
+public class LocationBuilder {
 
   private static final Map<Size, SettlementConfig> SETTLEMENT_CONFIGS = new EnumMap<>(Size.class);
 
-  public LocationComponent() {
+  public LocationBuilder() {
     configureSettlements();
     log.debug(this.toString());
   }
@@ -77,11 +77,11 @@ public class LocationComponent {
     l.amenities.put(PoiType.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
     xl.amenities.put(PoiType.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
 
-    LocationComponent.SETTLEMENT_CONFIGS.put(Size.XS, xs);
-    LocationComponent.SETTLEMENT_CONFIGS.put(Size.S, s);
-    LocationComponent.SETTLEMENT_CONFIGS.put(Size.M, m);
-    LocationComponent.SETTLEMENT_CONFIGS.put(Size.L, l);
-    LocationComponent.SETTLEMENT_CONFIGS.put(Size.XL, xl);
+    SETTLEMENT_CONFIGS.put(Size.XS, xs);
+    SETTLEMENT_CONFIGS.put(Size.S, s);
+    SETTLEMENT_CONFIGS.put(Size.M, m);
+    SETTLEMENT_CONFIGS.put(Size.L, l);
+    SETTLEMENT_CONFIGS.put(Size.XL, xl);
   }
 
   @Override

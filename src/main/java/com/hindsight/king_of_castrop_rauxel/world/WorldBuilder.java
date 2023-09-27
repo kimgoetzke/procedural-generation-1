@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class WorldBuildingComponent {
+public class WorldBuilder {
 
   @Getter
   public enum CardinalDirection {
@@ -100,7 +100,9 @@ public class WorldBuildingComponent {
     return settlement;
   }
 
-  protected static void connectAnyWithinNeighbourDistance(Graph<AbstractLocation> map) {
+  /** Connects any vertices that are within a certain distance of each other. */
+  protected static <T extends AbstractLocation> void connectAnyWithinNeighbourDistance(
+      Graph<T> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       for (var other : vertices) {
@@ -115,7 +117,15 @@ public class WorldBuildingComponent {
     }
   }
 
-  private static void connectNeighbourlessToClosest(Graph<AbstractLocation> map) {
+  /**
+   * Connects any vertices that have no neighbours to the closest vertex. Does NOT guarantee that
+   * all vertices will be connected to the graph. This method will skip any vertex that has been
+   * connected while running the algorithm even if this vertex has an even closer neighbour.
+   * Example: A and B are already connected. C's closed neighbour, D, is 100km away. D to A is 10km.
+   * C will be connected to D and D will be skipped because it now has a neighbour, despite D's
+   * closest neighbour being A.
+   */
+  protected static void connectNeighbourlessToClosest(Graph<AbstractLocation> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       var refLocation = reference.getLocation();
@@ -124,7 +134,7 @@ public class WorldBuildingComponent {
       if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
         throw new IllegalStateException(
             String.format(
-                "Vertex %s has %d edges and %d neighbours but should have none or both",
+                "Vertex %s has %d edges and %d neighbours but both must have the same value",
                 refLocation.getName(),
                 refLocation.getNeighbours().size(),
                 reference.getEdges().size()));
@@ -139,6 +149,12 @@ public class WorldBuildingComponent {
     }
   }
 
+  /**
+   * Connects any vertices that are not connected to the closest vertex that is connected. This
+   * method guarantees that all vertices will be connected to the graph. However, it will ignore
+   * close vertices if they have not been connected to the graph yet. Executing this method prior to
+   * any other connection algorithm will provide odd results.
+   */
   protected static void connectDisconnectedToClosestConnected(Graph<AbstractLocation> map) {
     var connectivity = evaluateConnectivity(map);
     var visitedVertices = new ArrayList<>(connectivity.visitedVertices());
@@ -157,11 +173,8 @@ public class WorldBuildingComponent {
     }
   }
 
-  protected static void addConnections(
-      Graph<AbstractLocation> map,
-      Vertex<AbstractLocation> vertex1,
-      Vertex<AbstractLocation> vertex2,
-      int distance) {
+  protected static <T extends AbstractLocation> void addConnections(
+      Graph<T> map, Vertex<T> vertex1, Vertex<T> vertex2, int distance) {
     map.addEdge(vertex1, vertex2, distance);
     var v1Location = vertex1.getLocation();
     var v2Location = vertex2.getLocation();
@@ -174,9 +187,9 @@ public class WorldBuildingComponent {
         distance);
   }
 
-  private static Vertex<AbstractLocation> findClosestNeighbour(
-      Vertex<AbstractLocation> reference, List<Vertex<AbstractLocation>> vertices) {
-    Vertex<AbstractLocation> closestNeighbor = null;
+  private static <T extends AbstractLocation> Vertex<T> findClosestNeighbour(
+      Vertex<T> reference, List<Vertex<T>> vertices) {
+    Vertex<T> closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var other : vertices) {
       if (reference.equals(other)) {
@@ -198,7 +211,7 @@ public class WorldBuildingComponent {
     return closestNeighbor;
   }
 
-  public static void logDisconnectedVertices(Graph<AbstractLocation> graph) {
+  public static <T extends AbstractLocation> void logDisconnectedVertices(Graph<T> graph) {
     var result = evaluateConnectivity(graph);
     log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
     result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
@@ -206,14 +219,15 @@ public class WorldBuildingComponent {
     result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
   }
 
-  protected static ConnectivityResult evaluateConnectivity(Graph<AbstractLocation> graph) {
-    var visitedVertices = new LinkedHashSet<Vertex<AbstractLocation>>();
+  protected static <T extends AbstractLocation> ConnectivityResult<T> evaluateConnectivity(
+      Graph<T> graph) {
+    var visitedVertices = new LinkedHashSet<Vertex<T>>();
     var unvisitedVertices = new LinkedHashSet<>(graph.getVertices());
     if (!unvisitedVertices.isEmpty()) {
       var startVertex = unvisitedVertices.iterator().next();
       Graph.traverseGraphDepthFirst(startVertex, visitedVertices, unvisitedVertices);
     }
-    return new ConnectivityResult(visitedVertices, unvisitedVertices);
+    return new ConnectivityResult<>(visitedVertices, unvisitedVertices);
   }
 
   private static LogStats getStats(Graph<AbstractLocation> map) {
@@ -223,9 +237,8 @@ public class WorldBuildingComponent {
         map.getVertices().stream().map(Vertex::getLocation).toList());
   }
 
-  protected record ConnectivityResult(
-      Set<Vertex<AbstractLocation>> visitedVertices,
-      Set<Vertex<AbstractLocation>> unvisitedVertices) {}
+  protected record ConnectivityResult<T extends AbstractLocation>(
+      Set<Vertex<T>> visitedVertices, Set<Vertex<T>> unvisitedVertices) {}
 
   public record LogStats(
       long startTime, int prevSettlementCount, List<AbstractLocation> prevSettlements) {}

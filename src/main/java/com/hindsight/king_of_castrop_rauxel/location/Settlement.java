@@ -38,13 +38,13 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateFoundation() {
-    size = LocationComponent.randomSize(random);
-    area = LocationComponent.randomArea(random, size);
+    size = LocationBuilder.randomSize(random);
+    area = LocationBuilder.randomArea(random, size);
     name = stringGenerator.locationNameFrom(this.getClass());
   }
 
   private void generateAmenities() {
-    var amenities = LocationComponent.getSettlementConfigs().get(size).getAmenities();
+    var amenities = LocationBuilder.getSettlementConfigs().get(size).getAmenities();
     for (var amenity : amenities.entrySet()) {
       var bounds = amenity.getValue();
       var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
@@ -66,7 +66,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateInhabitants() {
-    var bounds = LocationComponent.getSettlementConfigs().get(size).getInhabitants();
+    var bounds = LocationBuilder.getSettlementConfigs().get(size).getInhabitants();
     inhabitantCount =
         Math.max(
             random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower(),

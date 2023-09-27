@@ -11,11 +11,12 @@ import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.location.LocationComponent;
+import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 
 @SpringBootTest
-class WorldBuildingComponentTest extends WorldBuildingComponent {
+class WorldBuilderTest extends WorldBuilder {
 
   public static final Pair<Integer, Integer> C_1_W_COORDS = Pair.of(0, 0);
 
@@ -35,21 +36,21 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
   private Chunk chunk;
   private World world;
   private Graph<AbstractLocation> map;
-  private DebugActionFactory debug;
+  private DebugActionFactory daf;
 
   @BeforeEach
   void setUp() {
-    SeedComponent.changeSeed(123L);
+    SeedBuilder.changeSeed(123L);
     world = new World(appProperties);
     chunk = new Chunk(C_1_W_COORDS);
     map = new Graph<>(true);
-    debug = new DebugActionFactory(map, world);
+    daf = new DebugActionFactory(map, world);
     world.place(chunk, C_1_W_COORDS);
   }
 
   @Test
   void givenNoConnections_whenEvaluatingConnectivity_findOnlyOneVertex() {
-    try (var mocked = mockStatic(LocationComponent.class)) {
+    try (var mocked = mockStatic(LocationBuilder.class)) {
       // Given
       locationComponentIsInitialised(mocked);
       chunkWithSettlementsExists();
@@ -65,7 +66,7 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
 
   @Test
   void givenSomeConnections_whenEvaluatingConnectivity_findThemAsExpected() {
-    try (var mocked = mockStatic(LocationComponent.class)) {
+    try (var mocked = mockStatic(LocationBuilder.class)) {
       // Given
       locationComponentIsInitialised(mocked);
       var vertices = chunkWithSettlementsExists();
@@ -90,7 +91,7 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
 
   @Test
   void whenGeneratingSettlements_createThemPredictablyAndDoNotConnectThem() {
-    try (var mocked = mockStatic(LocationComponent.class)) {
+    try (var mocked = mockStatic(LocationBuilder.class)) {
       // Given
       locationComponentIsInitialised(mocked);
       var expected1 = Pair.of(29, 293);
@@ -112,7 +113,7 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
 
   @Test
   void whenConnectingAnyWithinNeighbourDistance_connectThemAsExpected() {
-    try (var mocked = mockStatic(LocationComponent.class)) {
+    try (var mocked = mockStatic(LocationBuilder.class)) {
       // Given
       locationComponentIsInitialised(mocked);
 
@@ -139,9 +140,33 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
     }
   }
 
+
   @Test
-  void whenConnectingDisconnected_connectThemAsExpected() {
-    try (var mocked = mockStatic(LocationComponent.class)) {
+  void whenConnectingNeighbourless_addNeighboursButDoNotConnectAll() {
+    try (var mocked = mockStatic(LocationBuilder.class)) {
+      // Given
+      locationComponentIsInitialised(mocked);
+
+      // When
+      generateSettlements(map, chunk, stringGenerator);
+      connectNeighbourlessToClosest(map);
+      var result = evaluateConnectivity(map);
+      var SYR = map.getVertexByValue(Pair.of(169, 311), CoordType.GLOBAL).getLocation();
+      var MYS = map.getVertexByValue(Pair.of(245, 373), CoordType.GLOBAL).getLocation();
+      var VAL = map.getVertexByValue(Pair.of(29, 293), CoordType.GLOBAL).getLocation();
+      debug(map.getVertices());
+
+      // Then
+      map.getVertices().forEach(v -> assertThat(v.getLocation().getNeighbours()).isNotEmpty());
+      assertThat(SYR.getNeighbours()).containsOnly(VAL, MYS);
+      assertThat(result.unvisitedVertices()).hasSize(4);
+      assertThat(result.visitedVertices()).hasSize(3);
+    }
+  }
+
+  @Test
+  void whenConnectingDisconnected_connectAllAsExpected() {
+    try (var mocked = mockStatic(LocationBuilder.class)) {
       // Given
       locationComponentIsInitialised(mocked);
 
@@ -155,6 +180,7 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
       var DYN = map.getVertexByValue(Pair.of(216, 206), CoordType.GLOBAL).getLocation();
       var MYS = map.getVertexByValue(Pair.of(245, 373), CoordType.GLOBAL).getLocation();
       var VAL = map.getVertexByValue(Pair.of(29, 293), CoordType.GLOBAL).getLocation();
+      debug(map.getVertices());
 
       // Then
       assertThat(map.getVertices()).hasSize(7);
@@ -168,49 +194,9 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
     }
   }
 
-  private void debug(List<Vertex<AbstractLocation>> vertices) {
-    logDisconnectedVertices(map);
-    var connectivityResult = evaluateConnectivity(map);
-    System.out.println("Unvisited vertices: " + connectivityResult.unvisitedVertices().size());
-    connectivityResult
-        .unvisitedVertices()
-        .forEach(
-            v -> {
-              System.out.println(v.getLocation().getBriefSummary());
-              v.getLocation()
-                  .getNeighbours()
-                  .forEach(n -> System.out.println("- neighbour of: " + n.getName()));
-              vertices.forEach(
-                  vOther ->
-                      System.out.printf(
-                          "- distance to %s: %s%n",
-                          vOther.getLocation().getName(),
-                          vOther.getLocation().distanceTo(v.getLocation())));
-            });
-    System.out.println("Visited vertices: " + connectivityResult.visitedVertices().size());
-    connectivityResult
-        .visitedVertices()
-        .forEach(
-            v -> {
-              System.out.println(v.getLocation().getBriefSummary());
-              v.getLocation()
-                  .getNeighbours()
-                  .forEach(n -> System.out.println("- neighbour of: " + n.getName()));
-              vertices.forEach(
-                  vOther ->
-                      System.out.printf(
-                          "- distance to %s: %s%n",
-                          vOther.getLocation().getName(),
-                          vOther.getLocation().distanceTo(v.getLocation())));
-            });
-
-    debug.printPlane(world, map);
-    debug.printConnectivity();
-  }
-
   private List<Vertex<AbstractLocation>> chunkWithSettlementsExists() {
-    assertEquals(AbstractLocation.Size.XS, LocationComponent.randomSize(new Random()));
-    assertEquals(1, LocationComponent.randomArea(new Random(), AbstractLocation.Size.XS));
+    assertEquals(AbstractLocation.Size.XS, LocationBuilder.randomSize(new Random()));
+    assertEquals(1, LocationBuilder.randomArea(new Random(), AbstractLocation.Size.XS));
 
     var v1 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(0, 0), stringGenerator));
     var v2 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(20, 20), stringGenerator));
@@ -225,10 +211,38 @@ class WorldBuildingComponentTest extends WorldBuildingComponent {
     return List.of(v1, v2, v3, v4);
   }
 
-  private static void locationComponentIsInitialised(MockedStatic<LocationComponent> mocked) {
+  private static void locationComponentIsInitialised(MockedStatic<LocationBuilder> mocked) {
     mocked
-        .when(() -> LocationComponent.randomSize(any(Random.class)))
+        .when(() -> LocationBuilder.randomSize(any(Random.class)))
         .thenReturn(AbstractLocation.Size.XS);
-    mocked.when(() -> LocationComponent.randomArea(any(Random.class), any())).thenReturn(1);
+    mocked.when(() -> LocationBuilder.randomArea(any(Random.class), any())).thenReturn(1);
+  }
+
+  private <T extends AbstractLocation> void debug(List<Vertex<T>> vertices) {
+    logDisconnectedVertices(map);
+    var connectivityResult = evaluateConnectivity(map);
+    System.out.println("Unvisited vertices: " + connectivityResult.unvisitedVertices().size());
+    debugSet(vertices, connectivityResult.unvisitedVertices());
+    System.out.println("Visited vertices: " + connectivityResult.visitedVertices().size());
+    debugSet(vertices, connectivityResult.visitedVertices());
+    daf.printPlane(world, map);
+    daf.printConnectivity();
+  }
+
+  private <T extends AbstractLocation> void debugSet(
+      List<Vertex<T>> vertices, Set<Vertex<AbstractLocation>> vertexSet) {
+    vertexSet.forEach(
+        v -> {
+          System.out.println(v.getLocation().getBriefSummary());
+          v.getLocation()
+              .getNeighbours()
+              .forEach(n -> System.out.println("- neighbour of: " + n.getName()));
+          vertices.forEach(
+              vOther ->
+                  System.out.printf(
+                      "- distance to %s: %s%n",
+                      vOther.getLocation().getName(),
+                      vOther.getLocation().distanceTo(v.getLocation())));
+        });
   }
 }

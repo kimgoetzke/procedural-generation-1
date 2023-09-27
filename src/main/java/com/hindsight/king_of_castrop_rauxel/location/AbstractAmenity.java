@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.world.SeedComponent;
+import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -32,7 +32,7 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 
   protected AbstractAmenity(PoiType type, Npc npc, Location parent) {
     this.id = "POI~" + UUID.randomUUID();
-    this.seed = SeedComponent.seedFrom(parent.getCoordinates().getGlobal());
+    this.seed = SeedBuilder.seedFrom(parent.getCoordinates().getGlobal());
     this.random = new Random(seed);
     this.type = type;
     this.parent = parent;

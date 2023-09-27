@@ -2,9 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.action;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-import static com.hindsight.king_of_castrop_rauxel.world.ChunkComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.world.ChunkBuilder.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
-import static com.hindsight.king_of_castrop_rauxel.world.WorldBuildingComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.world.WorldBuilder.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;

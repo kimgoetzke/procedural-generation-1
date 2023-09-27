@@ -10,13 +10,13 @@ import java.util.Random;
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SeedComponent {
+public class SeedBuilder {
 
   private static long seed = 1234L;
   private static Random random = new Random(seed);
 
   public static void changeSeed(long seed) {
-    SeedComponent.seed = seed;
+    SeedBuilder.seed = seed;
     random = new Random(seed);
   }
 
