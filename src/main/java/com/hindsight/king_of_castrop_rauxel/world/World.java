@@ -1,11 +1,13 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.CHUNK_SIZE;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.RETENTION_ZONE;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WORLD_SIZE;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.REMOVAL_ZONE;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.world.WorldBuilder.CardinalDirection;
+import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.world.WorldHandler.CardinalDirection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.data.util.Pair;
 public class World {
 
   private final AppProperties appProperties;
+  private final WorldHandler worldHandler;
 
   @Getter private Chunk currentChunk;
   private final Chunk[][] plane = new Chunk[WORLD_SIZE][WORLD_SIZE];
@@ -34,6 +37,20 @@ public class World {
       case WEST -> plane[x - 1][y] != null;
       case NORTH_WEST -> plane[x - 1][y + 1] != null;
     };
+  }
+
+  public boolean hasChunk(Pair<Integer, Integer> worldCoords) {
+    return getChunk(worldCoords) != null;
+  }
+
+  public boolean hasLoadedChunk(CardinalDirection position) {
+    var chunk = getChunk(position);
+    return chunk != null && chunk.isLoaded();
+  }
+
+  public boolean hasLoadedChunk(Pair<Integer, Integer> worldCoords) {
+    var chunk = getChunk(worldCoords);
+    return chunk != null && chunk.isLoaded();
   }
 
   public Chunk getChunk(CardinalDirection position) {
@@ -56,18 +73,38 @@ public class World {
     return plane[worldCoords.getFirst()][worldCoords.getSecond()];
   }
 
-  public Pair<Integer, Integer> getCenter() {
+  /** Returns the world coordinates of the chunk in the center of the world. */
+  public Pair<Integer, Integer> getCentreCoords() {
     return Pair.of(WORLD_SIZE / 2, WORLD_SIZE / 2);
   }
 
-  public Pair<Integer, Integer> getPosition(CardinalDirection position) {
-    return getPosition(position, currentChunk);
+  /**
+   * Returns the world coordinates of the chunk in the given position relative to the current chunk.
+   */
+  public Pair<Integer, Integer> getCoordsFor(CardinalDirection position) {
+    return getCoordsFor(position, currentChunk);
+  }
+
+  public void generateChunk(Pair<Integer, Integer> worldCoords, Graph<AbstractLocation> map) {
+    throwErrorIfChunkExists(worldCoords, this);
+    var stats = worldHandler.getStats(map);
+    var chunk = new Chunk(worldCoords, worldHandler);
+    place(chunk);
+    chunk.logResult();
+    worldHandler.logOutcome(stats, map, this.getClass());
+  }
+
+  public void generateChunk(CardinalDirection whereNext, Graph<AbstractLocation> map) {
+    throwErrorIfChunkExists(whereNext, this);
+    var stats = worldHandler.getStats(map);
+    var nextChunk = new Chunk(getCoordsFor(whereNext), worldHandler);
+    place(nextChunk, whereNext);
+    worldHandler.logOutcome(stats, map, this.getClass());
   }
 
   /** Places a chunk in the center of the world. Used to place the first chunk in a new world. */
-  public void place(Chunk chunk) {
-    currentChunk = chunk;
-    var center = getCenter();
+  private void place(Chunk chunk) {
+    var center = getCentreCoords();
     plane[center.getFirst()][center.getSecond()] = chunk;
   }
 
@@ -75,8 +112,8 @@ public class World {
    * Places a chunk in the given position relative to the current chunk. Used to place any
    * subsequently created chunks in an existing world.
    */
-  public void place(Chunk chunk, CardinalDirection position) {
-    var newCoords = getPosition(position, currentChunk);
+  private void place(Chunk chunk, CardinalDirection position) {
+    var newCoords = getCoordsFor(position, currentChunk);
     if (position == CardinalDirection.THIS) {
       log.warn(
           "You are placing a chunk in the same position as the current chunk, if it exists - if this is intentional, you must setCurrentChunk first");
@@ -89,42 +126,49 @@ public class World {
    * frequently if more than one player was supported.
    */
   public void place(Chunk chunk, Pair<Integer, Integer> worldCoords) {
-    currentChunk = chunk;
     plane[worldCoords.getFirst()][worldCoords.getSecond()] = chunk;
   }
 
   public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {
-    if (appProperties.getAutoUnload().isWorld()) {
-      removeFarAwayChunks();
-    }
     var chunk = getChunk(worldCoords);
     if (chunk == null) {
       throw new IllegalStateException(
           "%s cannot be the current chunk because it is null".formatted(worldCoords));
     }
+    if (!chunk.isLoaded()) {
+      chunk.load();
+    }
     currentChunk = chunk;
+    log.info("Set current chunk to: {}", chunk.getSummary());
+    if (appProperties.getAutoUnload().isWorld()) {
+      unloadChunks();
+    }
   }
 
-  private void removeFarAwayChunks() {
-    log.info("Unloading far chunks...");
+  private void unloadChunks() {
+    log.info("Unloading chunks outside retention zone...");
     var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
     var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
-
     for (int i = 0; i < WORLD_SIZE; i++) {
       for (int j = 0; j < WORLD_SIZE; j++) {
-        if ((Math.abs(i - x) >= REMOVAL_ZONE || Math.abs(j - y) >= REMOVAL_ZONE)
-            && isValidPosition(i, j)) {
-          plane[i][j] = null;
+        if (isValidPosition(i, j)
+            && hasLoadedChunk(Pair.of(i, j))
+            && isInsideRemovalZone(i, x, j, y)) {
+          getChunk(Pair.of(i, j)).unload();
         }
       }
     }
+  }
+
+  private static boolean isInsideRemovalZone(int targetX, int currX, int targetY, int currY) {
+    return Math.abs(targetX - currX) > RETENTION_ZONE || Math.abs(targetY - currY) > RETENTION_ZONE;
   }
 
   private boolean isValidPosition(int x, int y) {
     return x >= 0 && x < CHUNK_SIZE && y >= 0 && y < CHUNK_SIZE;
   }
 
-  private static Pair<Integer, Integer> getPosition(CardinalDirection position, Chunk chunk) {
+  private static Pair<Integer, Integer> getCoordsFor(CardinalDirection position, Chunk chunk) {
     var x = (int) chunk.getCoordinates().getWorld().getFirst();
     var y = (int) chunk.getCoordinates().getWorld().getSecond();
     return switch (position) {
@@ -138,5 +182,25 @@ public class World {
       case WEST -> Pair.of(x - 1, y);
       case NORTH_WEST -> Pair.of(x - 1, y + 1);
     };
+  }
+
+  private static void throwErrorIfChunkExists(CardinalDirection whereNext, World world) {
+    if (world.hasChunk(whereNext)) {
+      throw new IllegalStateException(
+          String.format(
+              "Chunk %s of w(%d, %d) already exists",
+              whereNext.name().toLowerCase(),
+              world.getCoordsFor(whereNext).getFirst(),
+              world.getCoordsFor(whereNext).getSecond()));
+    }
+  }
+
+  private static void throwErrorIfChunkExists(Pair<Integer, Integer> worldCoords, World world) {
+    if (world.hasChunk(worldCoords)) {
+      throw new IllegalStateException(
+          String.format(
+              "Chunk at w(%d, %d) already exists",
+              worldCoords.getFirst(), worldCoords.getSecond()));
+    }
   }
 }

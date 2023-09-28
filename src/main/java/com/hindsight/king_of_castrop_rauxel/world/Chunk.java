@@ -2,7 +2,10 @@ package com.hindsight.king_of_castrop_rauxel.world;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 
+import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Generatable;
+import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,33 +15,56 @@ import org.springframework.data.util.Pair;
 @Slf4j
 public class Chunk implements Generatable {
 
+  private final WorldHandler worldHandler;
+
   @Getter private final String id;
   @Getter private final int density;
   @Getter private final int[][] plane = new int[CHUNK_SIZE][CHUNK_SIZE];
   @Getter private final Coordinates coordinates;
-  private Random random;
+  private final Random random;
+  private final WorldHandler.Strategy strategy;
+
   @Getter @Setter private boolean isLoaded;
 
-  public Chunk(Pair<Integer, Integer> worldCoords) {
+  public enum LocationType {
+    EMPTY,
+    SETTLEMENT
+  }
+
+  public Chunk(
+      Pair<Integer, Integer> worldCoords,
+      WorldHandler worldHandler,
+      WorldHandler.Strategy strategy) {
     var seed = SeedBuilder.seedFrom(worldCoords);
     this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
     this.density = ChunkBuilder.randomDensity(random);
     this.id = "CHU~" + coordinates.getWorld().getFirst() + coordinates.getWorld().getSecond();
+    this.worldHandler = worldHandler;
+    this.strategy = strategy;
+    load();
+  }
+
+  public Chunk(Pair<Integer, Integer> worldCoords, WorldHandler worldHandler) {
+    var seed = SeedBuilder.seedFrom(worldCoords);
+    this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
+    this.random = new Random(seed);
+    this.density = ChunkBuilder.randomDensity(random);
+    this.id = "CHU~" + coordinates.getWorld().getFirst() + coordinates.getWorld().getSecond();
+    this.worldHandler = worldHandler;
+    this.strategy = WorldHandler.Strategy.DEFAULT;
     load();
   }
 
   @Override
   public void load() {
-    log.info("Generating chunk '{}'...", id);
+    worldHandler.populate(this, strategy);
     setLoaded(true);
     logResult();
   }
 
   @Override
   public void unload() {
-    var seed = SeedBuilder.seedFrom(coordinates.getGlobal());
-    random = new Random(seed);
     setLoaded(false);
     logResult();
   }
@@ -59,12 +85,7 @@ public class Chunk implements Generatable {
     return String.format("Chunk '%s' at %s with density %d", id, coordinates, density);
   }
 
-  public enum LocationType {
-    EMPTY,
-    SETTLEMENT
-  }
-
-  public Pair<Integer, Integer> getCenterCoords() {
+  public Pair<Integer, Integer> getCentreCoords() {
     return Pair.of(CHUNK_SIZE / 2, CHUNK_SIZE / 2);
   }
 
@@ -76,6 +97,18 @@ public class Chunk implements Generatable {
       y = random.nextInt(CHUNK_SIZE + 1);
     }
     return Pair.of(x, y);
+  }
+
+  public Settlement getCentralLocation(World world, Graph<AbstractLocation> map) {
+    var globalCoords = world.getCurrentChunk().getCoordinates().getGlobal();
+    var startVertex = worldHandler.closestLocationTo(globalCoords, map.getVertices());
+    var centralLocation = startVertex.getLocation();
+    if (centralLocation != null) {
+      log.info("Found central location: {}", centralLocation.getBriefSummary());
+      centralLocation.load();
+      return (Settlement) centralLocation;
+    }
+    throw new IllegalStateException("Could not find any central location");
   }
 
   public void place(Pair<Integer, Integer> chunkCoords, LocationType type) {

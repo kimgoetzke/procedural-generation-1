@@ -6,7 +6,7 @@ import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.*;
 
-import com.hindsight.king_of_castrop_rauxel.world.WorldBuilder;
+import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,35 +51,34 @@ public abstract class AbstractLocation implements Location {
   }
 
   @Override
-  public WorldBuilder.CardinalDirection getCardinalDirection(
-      Pair<Integer, Integer> other) {
+  public WorldHandler.CardinalDirection getCardinalDirection(Pair<Integer, Integer> other) {
     int dx = other.getFirst() - getCoordinates().getChunk().getFirst();
     int dy = other.getSecond() - getCoordinates().getChunk().getSecond();
 
     if (dx == 0) {
       if (dy < 0) {
-        return WorldBuilder.CardinalDirection.NORTH;
+        return WorldHandler.CardinalDirection.NORTH;
       } else if (dy > 0) {
-        return WorldBuilder.CardinalDirection.SOUTH;
+        return WorldHandler.CardinalDirection.SOUTH;
       }
     } else if (dy == 0) {
       if (dx < 0) {
-        return WorldBuilder.CardinalDirection.WEST;
+        return WorldHandler.CardinalDirection.WEST;
       } else {
-        return WorldBuilder.CardinalDirection.EAST;
+        return WorldHandler.CardinalDirection.EAST;
       }
     } else {
       if (dx < 0 && dy < 0) {
-        return WorldBuilder.CardinalDirection.NORTH_WEST;
+        return WorldHandler.CardinalDirection.NORTH_WEST;
       } else if (dx < 0) {
-        return WorldBuilder.CardinalDirection.SOUTH_WEST;
+        return WorldHandler.CardinalDirection.SOUTH_WEST;
       } else if (dy < 0) {
-        return WorldBuilder.CardinalDirection.NORTH_EAST;
+        return WorldHandler.CardinalDirection.NORTH_EAST;
       } else {
-        return WorldBuilder.CardinalDirection.SOUTH_EAST;
+        return WorldHandler.CardinalDirection.SOUTH_EAST;
       }
     }
-    return WorldBuilder.CardinalDirection.THIS;
+    return WorldHandler.CardinalDirection.THIS;
   }
 
   @Getter

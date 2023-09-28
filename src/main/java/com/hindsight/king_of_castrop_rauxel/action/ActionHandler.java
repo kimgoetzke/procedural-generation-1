@@ -34,8 +34,8 @@ public class ActionHandler {
     actions.add(
         new StateAction(
             actions.size() + 1,
-            "Explore any of the %s points of interest"
-                .formatted(location.getPointsOfInterest().size()),
+            "Explore any of the %s point(s) of interest"
+                .formatted(location.getPointsOfInterest().size() - 1),
             CHOOSE_POI));
     var neighbours = location.getNeighbours().stream().toList();
     for (Location neighbour : neighbours) {

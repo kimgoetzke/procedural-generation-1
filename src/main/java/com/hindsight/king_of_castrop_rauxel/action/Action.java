@@ -4,7 +4,6 @@ import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import java.util.List;
 
 public interface Action {
 
@@ -16,7 +15,7 @@ public interface Action {
 
   State getNextState();
 
-  default void execute(Player player, List<Action> actions) {
+  default void execute(Player player) {
     setPlayerState(player);
   }
 

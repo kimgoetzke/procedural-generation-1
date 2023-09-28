@@ -44,7 +44,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateAmenities() {
-    var amenities = LocationBuilder.getSettlementConfigs().get(size).getAmenities();
+    var amenities = LocationBuilder.getSettlementConfig(size).getAmenities();
     for (var amenity : amenities.entrySet()) {
       var bounds = amenity.getValue();
       var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
@@ -66,7 +66,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateInhabitants() {
-    var bounds = LocationBuilder.getSettlementConfigs().get(size).getInhabitants();
+    var bounds = LocationBuilder.getSettlementConfig(size).getInhabitants();
     inhabitantCount =
         Math.max(
             random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower(),
@@ -89,7 +89,6 @@ public class Settlement extends AbstractSettlement {
     random = new Random(seed);
     inhabitants.clear();
     pointsOfInterests.clear();
-    neighbours.clear();
     availableActions.clear();
     setLoaded(false);
     logResult();

@@ -4,13 +4,24 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 
+@SpringBootTest
 class CoordinatesTest {
 
+  @Autowired WorldHandler worldHandler;
+  @Autowired StringGenerator stringGenerator;
+  @Mock Graph<AbstractLocation> map;
+
   @Test
-  void testConstructorWithWorldAndChunkCoords() {
+  void givenWorldAndChunkCoords_createCoords() {
     var worldCoords = Pair.of(2, 2);
     var chunkCoords = Pair.of(250, 250);
     var coordinates = new Coordinates(worldCoords, chunkCoords);
@@ -22,11 +33,11 @@ class CoordinatesTest {
   }
 
   @Test
-  void testConstructorWithChunkAndChunkInstance() {
+  void givenChunkCoordsAndChunkInstance_createCoords() {
     var worldCoords = Pair.of(5, 6);
     var chunkCoords = Pair.of(200, 200);
     var expectedGlobal = expectedGlobalFrom(worldCoords, chunkCoords); // here (2700, 3200)
-    var chunk = new Chunk(worldCoords);
+    var chunk = new Chunk(worldCoords, worldHandler);
     var coordinates = new Coordinates(chunkCoords, chunk);
 
     assertEquals(expectedGlobal, coordinates.getGlobal());
@@ -35,7 +46,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testConstructorWithWorldCoords() {
+  void givenValidWorldCoords_createCoords() {
     var worldCoords = Pair.of(7, 8);
     var expectedGlobal = expectedGlobalFrom(worldCoords, Pair.of(0, 0)); // here (3500, 4000)
     var coordinates = new Coordinates(worldCoords, CoordType.WORLD);
@@ -46,7 +57,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testConstructorWithOutOfBoundsWorldCoords() {
+  void givenOutOfBoundsWorldCoords_failToCreateCoords() {
     var worldCoords = Pair.of(-1, 8);
 
     assertThrows(
@@ -54,7 +65,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testConstructorWithGlobalCoords() {
+  void givenValidGlobalCoords_createCoords() {
     var globalCoords = Pair.of(3205, 675);
     var coordinates = new Coordinates(globalCoords, CoordType.GLOBAL);
     var expectedWorld = expectedWorldFrom(globalCoords); // here (6, 1)
@@ -66,7 +77,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testSuccessfulUpdate() {
+  void givenValidGlobalCoords_updateCoords() {
     var worldCoords = Pair.of(2, 2);
     var chunkCoords = Pair.of(250, 250);
     var coordinates = new Coordinates(worldCoords, chunkCoords);
@@ -85,7 +96,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testUpdateWithOutOfBoundsGlobalCoords() {
+  void givenOutOfBoundsGlobalCoords_failToUpdateCoords() {
     var coordinates = new Coordinates(Pair.of(2, 3), CoordType.WORLD);
     var invalidCoordinates = Pair.of(-1, 14);
 
@@ -93,7 +104,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testDistance1() {
+  void givenSameWorldCoords_calculateZeroDistance() {
     var reference = new Coordinates(Pair.of(2, 3), CoordType.WORLD);
     var other = new Coordinates(Pair.of(2, 3), CoordType.WORLD);
     var expected = 0;
@@ -103,7 +114,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testDistance2() {
+  void givenDifferentGlobalCoords_calculateDistance1() {
     var reference = new Coordinates(Pair.of(1250, 1250), CoordType.GLOBAL);
     var other = new Coordinates(Pair.of(1250, 1000), CoordType.GLOBAL);
     var expected = 250;
@@ -113,7 +124,7 @@ class CoordinatesTest {
   }
 
   @Test
-  void testDistance3() {
+  void givenDifferentGlobalCoords_calculateDistance2() {
     var reference = new Coordinates(Pair.of(500, 500), CoordType.GLOBAL);
     var other = new Coordinates(Pair.of(1000, 1000), CoordType.GLOBAL);
     var expected = 707;

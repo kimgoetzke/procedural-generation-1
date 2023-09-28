@@ -24,8 +24,8 @@ public class LocationBuilder {
     log.debug(this.toString());
   }
 
-  public static Map<Size, SettlementConfig> getSettlementConfigs() {
-    return SETTLEMENT_CONFIGS;
+  public static SettlementConfig getSettlementConfig(Size size) {
+    return SETTLEMENT_CONFIGS.get(size);
   }
 
   private void configureSettlements() {

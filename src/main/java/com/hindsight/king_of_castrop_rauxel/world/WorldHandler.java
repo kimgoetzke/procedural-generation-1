@@ -10,13 +10,17 @@ import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
-public class WorldBuilder {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class WorldHandler {
+
+  private final Graph<AbstractLocation> map;
+  private final StringGenerator stringGenerator;
 
   @Getter
   public enum CardinalDirection {
@@ -39,70 +43,38 @@ public class WorldBuilder {
     }
   }
 
-  public static Settlement build(
-      World world, Graph<AbstractLocation> map, StringGenerator stringGenerator) {
-    var stats = getStats(map);
-    var chunk = new Chunk(world.getCenter());
-    var startLocation = placeSettlement(map, chunk, chunk.getCenterCoords(), stringGenerator);
-    generateSettlements(map, chunk, stringGenerator);
-    connectAnyWithinNeighbourDistance(map);
-    connectNeighbourlessToClosest(map);
-    connectDisconnectedToClosestConnected(map);
-    world.place(chunk);
-    startLocation.load();
-    logOutcome(stats, map);
-    return startLocation;
+  public enum Strategy {
+    DEFAULT,
+    NONE,
   }
 
-  public static void buildNext(
-      CardinalDirection whereNext,
-      World world,
-      Graph<AbstractLocation> map,
-      StringGenerator stringGenerator) {
-    var stats = getStats(map);
-    Chunk nextChunk = new Chunk(world.getPosition(whereNext));
-    generateSettlements(map, nextChunk, stringGenerator);
-    connectAnyWithinNeighbourDistance(map);
-    connectNeighbourlessToClosest(map);
-    connectDisconnectedToClosestConnected(map);
-    world.place(nextChunk, whereNext);
-    logOutcome(stats, map);
-  }
-
-  private static void logOutcome(LogStats stats, Graph<AbstractLocation> map) {
-    map.log();
-    log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startTime) / 1000.0);
-    log.info("Generated {} settlements", map.getVertices().size() - stats.prevSettlementCount);
-    log.info("List of generated settlements:");
-    map.getVertices().stream()
-        .filter(v -> !stats.prevSettlements.contains(v.getLocation()))
-        .forEach(vertex -> log.info("- " + vertex.getLocation().getBriefSummary()));
-  }
-
-  protected static void generateSettlements(
-      Graph<AbstractLocation> map, Chunk chunk, StringGenerator stringGenerator) {
-    var settlementsCount = chunk.getDensity();
-    for (int i = 0; i < settlementsCount; i++) {
-      var chunkCoords = chunk.getRandomCoords();
-      placeSettlement(map, chunk, chunkCoords, stringGenerator);
+  public void populate(Chunk chunk, Strategy strategy) {
+    generateSettlements(map, chunk);
+    if (Strategy.DEFAULT == strategy) {
+      connectAnyWithinNeighbourDistance(map);
+      connectNeighbourlessToClosest(map);
+      connectDisconnectedToClosestConnected(map);
     }
   }
 
-  private static Settlement placeSettlement(
-      Graph<AbstractLocation> map,
-      Chunk chunk,
-      Pair<Integer, Integer> chunkCoords,
-      StringGenerator stringGenerator) {
+  protected void generateSettlements(Graph<AbstractLocation> map, Chunk chunk) {
+    var settlementsCount = chunk.getDensity();
+    for (int i = 0; i < settlementsCount; i++) {
+      var chunkCoords = chunk.getRandomCoords();
+      placeSettlement(map, chunk, chunkCoords);
+    }
+  }
+
+  private void placeSettlement(
+      Graph<AbstractLocation> map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
     var settlement = new Settlement(worldCoords, chunkCoords, stringGenerator);
     map.addVertex(settlement);
     chunk.place(chunkCoords, LocationType.SETTLEMENT);
-    return settlement;
   }
 
   /** Connects any vertices that are within a certain distance of each other. */
-  protected static <T extends AbstractLocation> void connectAnyWithinNeighbourDistance(
-      Graph<T> map) {
+  protected <T extends AbstractLocation> void connectAnyWithinNeighbourDistance(Graph<T> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       for (var other : vertices) {
@@ -125,7 +97,7 @@ public class WorldBuilder {
    * C will be connected to D and D will be skipped because it now has a neighbour, despite D's
    * closest neighbour being A.
    */
-  protected static void connectNeighbourlessToClosest(Graph<AbstractLocation> map) {
+  protected void connectNeighbourlessToClosest(Graph<AbstractLocation> map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       var refLocation = reference.getLocation();
@@ -134,13 +106,13 @@ public class WorldBuilder {
       if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
         throw new IllegalStateException(
             String.format(
-                "Vertex %s has %d edges and %d neighbours but both must have the same value",
+                "Vertex '%s' has %d edges and %d neighbours but both must have the same value",
                 refLocation.getName(),
                 refLocation.getNeighbours().size(),
-                reference.getEdges().size()));
+                map.getVertexByValue(refLocation).getEdges().size()));
       }
       if (hasNoNeighbours) {
-        var closestNeighbour = findClosestNeighbour(reference, vertices);
+        var closestNeighbour = closestNeighbourTo(reference, vertices);
         if (closestNeighbour != null) {
           var distance = refLocation.distanceTo(closestNeighbour.getLocation());
           addConnections(map, reference, closestNeighbour, distance);
@@ -155,7 +127,7 @@ public class WorldBuilder {
    * close vertices if they have not been connected to the graph yet. Executing this method prior to
    * any other connection algorithm will provide odd results.
    */
-  protected static void connectDisconnectedToClosestConnected(Graph<AbstractLocation> map) {
+  protected void connectDisconnectedToClosestConnected(Graph<AbstractLocation> map) {
     var connectivity = evaluateConnectivity(map);
     var visitedVertices = new ArrayList<>(connectivity.visitedVertices());
     var unvisitedVertices = connectivity.unvisitedVertices();
@@ -164,7 +136,7 @@ public class WorldBuilder {
     }
     for (var unvisitedVertex : unvisitedVertices) {
       var refLocation = unvisitedVertex.getLocation();
-      var closestNeighbour = findClosestNeighbour(unvisitedVertex, visitedVertices);
+      var closestNeighbour = closestNeighbourTo(unvisitedVertex, visitedVertices);
       if (closestNeighbour != null) {
         var distance = refLocation.distanceTo(closestNeighbour.getLocation());
         addConnections(map, unvisitedVertex, closestNeighbour, distance);
@@ -173,21 +145,21 @@ public class WorldBuilder {
     }
   }
 
-  protected static <T extends AbstractLocation> void addConnections(
+  protected <T extends AbstractLocation> void addConnections(
       Graph<T> map, Vertex<T> vertex1, Vertex<T> vertex2, int distance) {
     map.addEdge(vertex1, vertex2, distance);
     var v1Location = vertex1.getLocation();
     var v2Location = vertex2.getLocation();
     v1Location.addNeighbour(v2Location);
     v2Location.addNeighbour(v1Location);
-    log.info(
+    log.debug(
         "Added {} and {} (distance: {} km) as neighbours of each other",
         v2Location.getName(),
         v1Location.getName(),
         distance);
   }
 
-  private static <T extends AbstractLocation> Vertex<T> findClosestNeighbour(
+  private <T extends AbstractLocation> Vertex<T> closestNeighbourTo(
       Vertex<T> reference, List<Vertex<T>> vertices) {
     Vertex<T> closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
@@ -201,7 +173,7 @@ public class WorldBuilder {
         closestNeighbor = other;
       }
     }
-    log.info(
+    log.debug(
         "Closest neighbour of {} is {} (distance: {} km)",
         reference.getLocation().getName(),
         closestNeighbor != null && closestNeighbor.getLocation() != null
@@ -211,7 +183,21 @@ public class WorldBuilder {
     return closestNeighbor;
   }
 
-  public static <T extends AbstractLocation> void logDisconnectedVertices(Graph<T> graph) {
+  public <T extends AbstractLocation> Vertex<T> closestLocationTo(
+      Pair<Integer, Integer> globalCoords, List<Vertex<T>> vertices) {
+    Vertex<T> closestNeighbor = null;
+    var minDistance = Integer.MAX_VALUE;
+    for (var vertex : vertices) {
+      var distance = vertex.getLocation().getCoordinates().distanceTo(globalCoords);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestNeighbor = vertex;
+      }
+    }
+    return closestNeighbor;
+  }
+
+  public <T extends AbstractLocation> void logDisconnectedVertices(Graph<T> graph) {
     var result = evaluateConnectivity(graph);
     log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
     result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
@@ -219,7 +205,7 @@ public class WorldBuilder {
     result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
   }
 
-  protected static <T extends AbstractLocation> ConnectivityResult<T> evaluateConnectivity(
+  protected <T extends AbstractLocation> ConnectivityResult<T> evaluateConnectivity(
       Graph<T> graph) {
     var visitedVertices = new LinkedHashSet<Vertex<T>>();
     var unvisitedVertices = new LinkedHashSet<>(graph.getVertices());
@@ -230,16 +216,23 @@ public class WorldBuilder {
     return new ConnectivityResult<>(visitedVertices, unvisitedVertices);
   }
 
-  private static LogStats getStats(Graph<AbstractLocation> map) {
+  // TODO: Make this a wrapper within which code can be executed
+  public <T> void logOutcome(LogStats stats, Graph<AbstractLocation> map, Class<T> clazz) {
+    log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startT) / 1000.0);
+    if (clazz.equals(World.class)) {
+      log.info("Generated {} settlements", map.getVertices().size() - stats.prevSetCount);
+    }
+  }
+
+  public LogStats getStats(Graph<AbstractLocation> map) {
     return new LogStats(
         System.currentTimeMillis(),
         map.getVertices().size(),
         map.getVertices().stream().map(Vertex::getLocation).toList());
   }
 
+  public record LogStats(long startT, int prevSetCount, List<AbstractLocation> prevSet) {}
+
   protected record ConnectivityResult<T extends AbstractLocation>(
       Set<Vertex<T>> visitedVertices, Set<Vertex<T>> unvisitedVertices) {}
-
-  public record LogStats(
-      long startTime, int prevSettlementCount, List<AbstractLocation> prevSettlements) {}
 }

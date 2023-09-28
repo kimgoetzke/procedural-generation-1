@@ -5,7 +5,9 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicStringGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.World;
+import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import java.util.Scanner;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,11 +31,16 @@ public class AppConfiguration {
 
   @Bean
   public World world() {
-    return new World(appProperties());
+    return new World(appProperties(), worldBuilder());
   }
 
   @Bean
   public Graph<AbstractLocation> map() {
     return new Graph<>(true);
+  }
+
+  @Bean
+  public WorldHandler worldBuilder() {
+    return new WorldHandler(map(), stringGenerator());
   }
 }

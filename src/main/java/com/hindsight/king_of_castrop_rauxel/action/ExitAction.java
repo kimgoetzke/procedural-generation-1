@@ -3,7 +3,6 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,7 @@ public class ExitAction implements Action {
   private static final State NEXT_STATE = State.AT_DEFAULT_POI;
 
   @Override
-  public void execute(Player player, List<Action> actions) {
+  public void execute(Player player) {
     setPlayerState(player);
     System.out.printf("Goodbye!%n%n");
     System.exit(0);

@@ -8,7 +8,7 @@ public final class AppConstants {
 
   // WORLD PROPERTIES
   public static final int WORLD_SIZE = 50;
-  public static final int REMOVAL_ZONE = 2;
+  public static final int RETENTION_ZONE = 2;
 
   // CHUNK PROPERTIES
   public static final int CHUNK_SIZE = 500;

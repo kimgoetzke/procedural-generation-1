@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
-import static com.hindsight.king_of_castrop_rauxel.world.WorldBuilder.*;
+import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;

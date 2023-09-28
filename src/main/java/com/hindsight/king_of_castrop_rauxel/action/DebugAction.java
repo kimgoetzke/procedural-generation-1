@@ -5,8 +5,6 @@ import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import java.util.List;
-
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +22,7 @@ public class DebugAction implements Action {
   private World world;
 
   @Override
-  public void execute(Player player, List<Action> actions) {
+  public void execute(Player player) {
     setPlayerState(player);
     debuggable.execute();
   }

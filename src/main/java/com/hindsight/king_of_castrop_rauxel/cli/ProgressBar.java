@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static java.lang.System.out;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
@@ -97,7 +99,7 @@ public class ProgressBar {
     var totalSteps = 100;
     var millisecondsPerStep = from.distanceTo(to) * SPEED_MODIFIER;
     var currentStep = 0;
-    System.out.printf("%n%n");
+    out.printf("%n%n");
 
     for (int step = 0; step <= totalSteps; step++) {
       var progress = (float) step / totalSteps;
@@ -116,7 +118,7 @@ public class ProgressBar {
               + " - "
               + (int) progressPercentage
               + "%";
-      System.out.print("\r" + progressBar);
+      out.print("\r" + progressBar);
       try {
         Thread.sleep((long) millisecondsPerStep);
         currentStep++;
@@ -133,7 +135,7 @@ public class ProgressBar {
     clearConsole();
     int frameIndex = currentStep % horseFrames.size();
     String frame = horseFrames.get(frameIndex);
-    System.out.println(frame);
+    out.println(frame);
   }
 
   private static void clearConsole() {
@@ -141,8 +143,8 @@ public class ProgressBar {
       if (WINDOWS) {
         new ProcessBuilder("cmd.exe", "/c", "cls").inheritIO().start().waitFor();
       } else {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        out.print("\033[H\033[2J");
+        out.flush();
       }
     } catch (Exception e) {
       log.info("Failed to clear console", e);

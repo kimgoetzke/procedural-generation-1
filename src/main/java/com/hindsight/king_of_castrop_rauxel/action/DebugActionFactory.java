@@ -4,13 +4,14 @@ import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.world.ChunkBuilder.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
-import static com.hindsight.king_of_castrop_rauxel.world.WorldBuilder.*;
+import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.world.World;
+import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class DebugActionFactory {
 
   private final Graph<AbstractLocation> map;
   private final World world;
+  private final WorldHandler worldHandler;
 
   public DebugAction create(int index, String name, Debuggable debuggable) {
     return DebugAction.builder()
@@ -40,7 +42,7 @@ public class DebugActionFactory {
   }
 
   public void printConnectivity() {
-    logDisconnectedVertices(map);
+    worldHandler.logDisconnectedVertices(map);
   }
 
   public void logVertices() {

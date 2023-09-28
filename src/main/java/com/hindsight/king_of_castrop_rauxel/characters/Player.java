@@ -26,6 +26,13 @@ public class Player implements Visitor {
   private Location currentLocation;
   private PointOfInterest currentPoi;
 
+  public enum State {
+    AT_DEFAULT_POI,
+    CHOOSE_POI,
+    AT_SPECIFIC_POI,
+    DEBUG
+  }
+
   public Player(
       String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoords) {
     this.name = name;
@@ -44,12 +51,5 @@ public class Player implements Visitor {
     this.coordinates.setTo(location.getCoordinates().getGlobal());
     visitedLocations.add(location);
     location.addVisitor(this);
-  }
-
-  public enum State {
-    AT_DEFAULT_POI,
-    CHOOSE_POI,
-    AT_SPECIFIC_POI,
-    DEBUG
   }
 }

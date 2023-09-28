@@ -1,20 +1,18 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
+import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
+
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.ProgressBar;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -26,7 +24,7 @@ public class LocationAction implements Action {
   private Location location;
 
   @Override
-  public void execute(Player player, List<Action> actions) {
+  public void execute(Player player) {
     var poiLeaving = player.getCurrentPoi();
     if (location.isLoaded()) {
       executeAction(player, location.getDefaultPoi());

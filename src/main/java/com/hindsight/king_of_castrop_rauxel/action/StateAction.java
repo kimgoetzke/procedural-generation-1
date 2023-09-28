@@ -1,7 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,7 @@ public class StateAction implements Action {
   @Setter private Player.State nextState;
 
   @Override
-  public void execute(Player player, List<Action> actions) {
+  public void execute(Player player) {
     player.setState(nextState);
   }
 }

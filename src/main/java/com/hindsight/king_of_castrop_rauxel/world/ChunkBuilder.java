@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-import static com.hindsight.king_of_castrop_rauxel.world.WorldBuilder.*;
+import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import java.util.Arrays;
 import java.util.Random;
