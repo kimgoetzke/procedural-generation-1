@@ -176,7 +176,6 @@ class WorldHandlerTest extends BaseWorldTest {
       var WYR = map.getVertexByValue(Pair.of(292, 40), CoordType.GLOBAL).getLocation();
       var SOL = map.getVertexByValue(Pair.of(231, 332), CoordType.GLOBAL).getLocation();
       var ITH = map.getVertexByValue(Pair.of(243, 330), CoordType.GLOBAL).getLocation();
-      debug(map.getVertices(), map);
 
       // Then
       assertThat(map.getVertices()).hasSize(7);

@@ -6,10 +6,6 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.ProgressBar;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,32 +21,33 @@ public class LocationAction implements Action {
 
   @Override
   public void execute(Player player) {
-    var poiLeaving = player.getCurrentPoi();
-    if (location.isLoaded()) {
-      executeAction(player, location.getDefaultPoi());
-      return;
-    }
-    generateLocationThenExecuteAction(player, poiLeaving);
-  }
-
-  private void generateLocationThenExecuteAction(Player player, PointOfInterest poiLeaving) {
-    var locationFuture = generateLocation();
+    var thread = loadLocation();
     ProgressBar.displayProgress(player.getCurrentLocation(), location);
     try {
-      locationFuture.get();
-      executeAction(player, location.getDefaultPoi());
-    } catch (ExecutionException | InterruptedException e) {
-      Thread.currentThread().interrupt();
-      System.out.printf(
-          "%nSeems like you didn't know the way because you ended up where you started.%n");
-      executeAction(player, poiLeaving);
+      thread.join();
+    } catch (InterruptedException e) {
+      cancelAction(player, player.getCurrentPoi());
     }
+    executeAction(player, location.getDefaultPoi());
   }
 
-  private Future<?> generateLocation() {
-    try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
-      return executor.submit(() -> location.load());
-    }
+  private Thread loadLocation() {
+    var thread =
+        new Thread(
+            () -> {
+              if (!location.isLoaded()) {
+                location.load();
+              }
+            });
+    thread.start();
+    return thread;
+  }
+
+  private void cancelAction(Player player, PointOfInterest poiLeaving) {
+    System.out.printf(
+        "%nSeems like you didn't know the way because you ended up where you started.%n");
+    Thread.currentThread().interrupt();
+    executeAction(player, poiLeaving);
   }
 
   private void executeAction(Player player, PointOfInterest poiVisiting) {

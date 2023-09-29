@@ -61,7 +61,7 @@ public abstract class BaseWorldTest {
     } catch (Exception e) {
       System.out.printf(
           FMT.RED_BRIGHT
-              + "Error: Could not print plane - this is likely because your test setUp()/tearDown() does not reset all fields correctly.%n"
+              + "Error: Could not print plane - this happens usually because 1) the setUp()/tearDown() does not reset all fields correctly or 2) you never call setCurrentChunk().%n"
               + FMT.RESET);
       throw e;
     }
