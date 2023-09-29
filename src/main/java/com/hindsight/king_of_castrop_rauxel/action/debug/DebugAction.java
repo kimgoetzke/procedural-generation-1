@@ -1,7 +1,8 @@
-package com.hindsight.king_of_castrop_rauxel.action;
+package com.hindsight.king_of_castrop_rauxel.action.debug;
 
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
 
+import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;

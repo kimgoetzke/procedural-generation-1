@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.action;
+package com.hindsight.king_of_castrop_rauxel.action.debug;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;

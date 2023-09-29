@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
-import com.hindsight.king_of_castrop_rauxel.action.DebugActionFactory;
+import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
@@ -50,14 +50,13 @@ class AutoUnloadingTest extends BaseWorldTest {
         world.generateChunk(CardinalDirection.SOUTH, map);
         world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
       }
-
       debug(map.getVertices(), map);
 
       // Then
-      var currWCoords = world.getCurrentChunk().getCoordinates().getWorld();
-      var nCoords = Pair.of(currWCoords.getFirst() - RETENTION_ZONE, currWCoords.getSecond() + 1);
-      var eCoords = Pair.of(currWCoords.getFirst() - RETENTION_ZONE, currWCoords.getSecond());
-      var sCoords = Pair.of(currWCoords.getFirst() - RETENTION_ZONE, currWCoords.getSecond() - 1);
+      var currentWorldCoords = world.getCurrentChunk().getCoordinates();
+      var nCoords = Pair.of(currentWorldCoords.wX() - RETENTION_ZONE, currentWorldCoords.wY() + 1);
+      var eCoords = Pair.of(currentWorldCoords.wX() - RETENTION_ZONE, currentWorldCoords.wY());
+      var sCoords = Pair.of(currentWorldCoords.wX() - RETENTION_ZONE, currentWorldCoords.wY() - 1);
       assertThat(world.hasLoadedChunk(removedNorthCoords)).isFalse();
       assertThat(world.hasLoadedChunk(initialCoords)).isFalse();
       assertThat(world.hasLoadedChunk(removedSouthCoords)).isFalse();

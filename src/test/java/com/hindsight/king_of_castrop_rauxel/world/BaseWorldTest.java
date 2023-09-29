@@ -7,7 +7,7 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.location.LocationBuilder.*;
 
-import com.hindsight.king_of_castrop_rauxel.action.DebugActionFactory;
+import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;

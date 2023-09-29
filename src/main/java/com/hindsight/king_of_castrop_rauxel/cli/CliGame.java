@@ -5,6 +5,7 @@ import static java.lang.System.out;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
 public class CliGame {
 
+  private final EnvironmentResolver environmentResolver;
   private final ActionHandler actionHandler;
   private final GameHandler gameHandler;
   private final Scanner scanner;
@@ -33,6 +35,9 @@ public class CliGame {
 
   @SuppressWarnings("InfiniteLoopStatement")
   public void play() {
+    if (environmentResolver.isNotCli()) {
+      return;
+    }
     var actions = actionHandler.getEmpty();
     initialise();
     while (true) {

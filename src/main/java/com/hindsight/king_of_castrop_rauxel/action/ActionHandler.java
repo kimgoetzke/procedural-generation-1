@@ -2,7 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.action;
 
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 
+import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +18,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE, onConstructor = @__(@Autowired))
 public class ActionHandler {
 
+  private final EnvironmentResolver environmentResolver;
   private final DebugActionFactory debug;
 
   private void prepend(List<Action> actions) {
     actions.clear();
-    actions.add(new StateAction(1, "Show debug menu", DEBUG));
+    if (environmentResolver.isDev()) {
+      actions.add(new StateAction(1, "Show debug menu", DEBUG));
+    }
   }
 
   private void append(List<Action> actions) {
-    actions.add(new ExitAction(actions.size() + 1, "Exit game"));
+    if (environmentResolver.isCli()) {
+      actions.add(new ExitAction(actions.size() + 1, "Exit game"));
+    }
   }
 
   public void getDefaultPoiActions(Player player, List<Action> actions) {
@@ -71,13 +78,12 @@ public class ActionHandler {
   public void getThisPoiActions(Player player, List<Action> actions) {
     prepend(actions);
     var poi = player.getCurrentPoi();
-    var currentLocation = player.getCurrentLocation();
-    actions.add(
+    var location = player.getCurrentLocation();
+    var defaultAction =
         new LocationAction(
-            actions.size() + 1,
-            "Go back to " + currentLocation.getDefaultPoi().getName(),
-            currentLocation));
-    actions.addAll(poi.getAvailableActions());
+            actions.size() + 1, "Go back to " + location.getDefaultPoi().getName(), location);
+    actions.add(defaultAction);
+    addAllActions(poi.getAvailableActions(), actions, defaultAction);
     append(actions);
   }
 

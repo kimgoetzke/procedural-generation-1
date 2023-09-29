@@ -93,8 +93,8 @@ class CoordinatesTest {
     // Updates to Coords(g=(1230, 1505), w=(2, 3), c=(230, 5))
 
     var expected = new Coordinates(Pair.of(1230, 1505), CoordType.GLOBAL);
-    var x = expected.getGlobal().getFirst();
-    var y = expected.getGlobal().getSecond();
+    var x = expected.gX();
+    var y = expected.gY();
 
     assertEquals(Pair.of(x, y), coordinates.getGlobal()); // here (1230, 1505)
     assertEquals(Pair.of(x / CHUNK_SIZE, y / CHUNK_SIZE), coordinates.getWorld()); // here (2, 2)

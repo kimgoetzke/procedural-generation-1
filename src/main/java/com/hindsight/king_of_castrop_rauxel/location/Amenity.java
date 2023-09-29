@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import com.hindsight.king_of_castrop_rauxel.action.poi.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -24,7 +25,29 @@ public class Amenity extends AbstractAmenity {
         parent
             .getStringGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
+    generatePlayerActions();
     setLoaded(true);
+  }
+
+  private void generatePlayerActions() {
+    switch (type) {
+      case SHOP:
+        speakWith("the owner of this establishment");
+        break;
+      case QUEST_LOCATION:
+        speakWith("who appears to want something");
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void speakWith(String who) {
+    availableActions.add(
+        PoiAction.builder()
+            .name("Speak with %s, %s".formatted(npc.getName(), who))
+            .index(availableActions.size() + 1)
+            .build());
   }
 
   @Override

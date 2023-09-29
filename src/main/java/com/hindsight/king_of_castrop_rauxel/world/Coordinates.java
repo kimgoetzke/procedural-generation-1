@@ -106,6 +106,30 @@ public class Coordinates {
     return (int) Math.round(distance);
   }
 
+  public int gX() {
+    return global.getFirst();
+  }
+
+  public int gY() {
+    return global.getSecond();
+  }
+
+  public int wX() {
+    return world.getFirst();
+  }
+
+  public int wY() {
+    return world.getSecond();
+  }
+
+  public int cX() {
+    return chunk.getFirst();
+  }
+
+  public int cY() {
+    return chunk.getSecond();
+  }
+
   private Pair<Integer, Integer> toGlobalCoords(
       Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
     var x = chunkCoords.getFirst() + (worldCoords.getFirst() * CHUNK_SIZE);
@@ -127,31 +151,19 @@ public class Coordinates {
 
   @Override
   public String toString() {
-    return "Coords("
-        + "g=("
-        + global.getFirst()
-        + ", "
-        + global.getSecond()
-        + "), w=("
-        + world.getFirst()
-        + ", "
-        + world.getSecond()
-        + "), c=("
-        + chunk.getFirst()
-        + ", "
-        + chunk.getSecond()
-        + "))";
+    return "Coords(" + "g=(" + gX() + ", " + gY() + "), w=(" + wX() + ", " + wY() + "), c=(" + cX()
+        + ", " + cY() + "))";
   }
 
   public String globalToString() {
-    return "g(" + global.getFirst() + ", " + global.getSecond() + ")";
+    return "g(" + gX() + ", " + gY() + ")";
   }
 
   public String worldToString() {
-    return "w(" + world.getFirst() + ", " + world.getSecond() + ")";
+    return "w(" + wX() + ", " + wY() + ")";
   }
 
   public String chunkToString() {
-    return "c(" + chunk.getFirst() + ", " + chunk.getSecond() + ")";
+    return "c(" + cX() + ", " + cY() + ")";
   }
 }

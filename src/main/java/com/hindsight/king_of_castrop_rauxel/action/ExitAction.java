@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/** The only purpose of this action is to exit the game when playing via the CLI. */
 @Getter
 @Builder
 public class ExitAction implements Action {
