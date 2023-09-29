@@ -4,7 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
 import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
-import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import java.util.Random;
 import java.util.stream.IntStream;
 import lombok.EqualsAndHashCode;
@@ -20,9 +20,9 @@ public class Settlement extends AbstractSettlement {
   public Settlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
-      StringGenerator stringGenerator,
+      NameGenerator nameGenerator,
       EventGenerator eventGenerator) {
-    super(worldCoords, chunkCoords, stringGenerator, eventGenerator);
+    super(worldCoords, chunkCoords, nameGenerator, eventGenerator);
     generateFoundation();
     logResult(true);
   }
@@ -42,7 +42,7 @@ public class Settlement extends AbstractSettlement {
   private void generateFoundation() {
     size = LocationBuilder.randomSize(random);
     area = LocationBuilder.randomArea(random, size);
-    name = stringGenerator.locationNameFrom(this.getClass());
+    name = nameGenerator.locationNameFrom(this.getClass());
   }
 
   private void generateAmenities() {
@@ -55,7 +55,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addAmenity(PoiType type) {
-    var npc = new Inhabitant(stringGenerator, eventGenerator);
+    var npc = new Inhabitant(nameGenerator, eventGenerator);
     var amenity = new Amenity(type, npc, this);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);

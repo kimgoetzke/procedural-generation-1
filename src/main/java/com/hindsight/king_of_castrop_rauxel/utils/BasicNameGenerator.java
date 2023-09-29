@@ -5,10 +5,6 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,7 +14,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
 @NoArgsConstructor
-public class BasicStringGenerator implements StringGenerator {
+public class BasicNameGenerator implements NameGenerator {
   private static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
@@ -30,6 +26,7 @@ public class BasicStringGenerator implements StringGenerator {
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
   public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
+  private final FileProcessor fileProcessor = new FileProcessor(FOLDER, FILE_EXTENSION);
   private Random random;
 
   public void setRandom(Random parentRandom) {
@@ -103,9 +100,9 @@ public class BasicStringGenerator implements StringGenerator {
   private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {
     if (words.isEmpty()) {
       for (String suffix : SUFFIXES) {
-        var result = readWordsFromFile(pathName + suffix);
+        var result = fileProcessor.readWordsFromFile(pathName + suffix);
         if (!result.isEmpty() && (!suffix.equals(SUFFIX_MIDDLE) || random.nextInt(3) == 0)) {
-          words.add(getRandomWord(result));
+          words.add(fileProcessor.getRandomWord(result, random));
         }
       }
     }
@@ -113,9 +110,9 @@ public class BasicStringGenerator implements StringGenerator {
 
   private void loopThroughFilesWithoutSuffix(List<String> words, String pathName) {
     if (words.isEmpty()) {
-      var result = readWordsFromFile(pathName);
+      var result = fileProcessor.readWordsFromFile(pathName);
       if (!result.isEmpty()) {
-        words.add(getRandomWord(result).trim());
+        words.add(fileProcessor.getRandomWord(result, random));
       }
     }
   }
@@ -127,35 +124,15 @@ public class BasicStringGenerator implements StringGenerator {
     }
   }
 
-  private List<String> readWordsFromFile(String fileName) {
-    InputStream inputStream =
-        BasicStringGenerator.class
-            .getClassLoader()
-            .getResourceAsStream(FOLDER + fileName + FILE_EXTENSION);
-    if (inputStream != null) {
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-        return reader.lines().map(String::trim).toList();
-      } catch (IOException e) {
-        log.warn("File '{}' not found", fileName);
-      }
-    }
-    return new ArrayList<>();
-  }
-
-  private String getRandomWord(List<String> words) {
-    int randomIndex = random.nextInt(words.size());
-    return words.get(randomIndex);
-  }
-
   private void processingFileNamePlaceholders(List<String> words, String pathName, PoiType type) {
     if (words.get(0).startsWith(HYPHEN)) {
-      var result = readWordsFromFile(pathName + words.get(0));
+      var result = fileProcessor.readWordsFromFile(pathName + words.get(0));
       if (result.isEmpty()) {
         log.warn("Failed to replace '{}' at path '{}'", words.get(0), pathName);
         var fallbackName = type != null ? type.name() : pathName;
         words.set(0, NONDESCRIPT + fallbackName + " " + RandomStringUtils.randomNumeric(3));
       } else {
-        var randomWord = getRandomWord(result);
+        var randomWord = fileProcessor.getRandomWord(result, random);
         log.info("Replacing '{}' with word '{}'", words.get(0), randomWord);
         words.set(0, randomWord);
       }
@@ -177,7 +154,6 @@ public class BasicStringGenerator implements StringGenerator {
     }
   }
 
-  // TODO: Find a solution that doesn't require a fallback inhabitant name
   private void injectInhabitantName(
       List<String> words, String word, Npc inhabitant, AbstractAmenity amenity) {
     if (!word.contains(PLACEHOLDER_OWNER_NAME)) {
@@ -198,10 +174,10 @@ public class BasicStringGenerator implements StringGenerator {
   }
 
   private String getFallbackName(String fileName) {
-    var result = readWordsFromFile(fileName);
+    var result = fileProcessor.readWordsFromFile(fileName);
     if (result.isEmpty()) {
       throw new IllegalStateException("Failed to find fallback name in '%s'".formatted(fileName));
     }
-    return getRandomWord(result);
+    return fileProcessor.getRandomWord(result, random);
   }
 }

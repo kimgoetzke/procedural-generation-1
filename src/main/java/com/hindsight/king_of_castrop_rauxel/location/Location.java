@@ -4,7 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +33,7 @@ public interface Location extends Visitable, Generatable {
 
   CardinalDirection getCardinalDirection(Pair<Integer, Integer> otherCoordinates);
 
-  StringGenerator getStringGenerator();
+  NameGenerator getNameGenerator();
 
   String getFullSummary(); // TODO: Replace with objects so that it can be used via API
 

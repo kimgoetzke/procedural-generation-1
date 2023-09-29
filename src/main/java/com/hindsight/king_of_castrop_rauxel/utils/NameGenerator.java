@@ -8,7 +8,8 @@ import java.util.Random;
 
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
-public interface StringGenerator {
+public interface NameGenerator {
+
   void setRandom(Random random);
 
   String locationNameFrom(Class<?> clazz);

@@ -23,7 +23,7 @@ public class Amenity extends AbstractAmenity {
   public void load() {
     this.name =
         parent
-            .getStringGenerator()
+            .getNameGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
     generatePlayerActions();
     setLoaded(true);

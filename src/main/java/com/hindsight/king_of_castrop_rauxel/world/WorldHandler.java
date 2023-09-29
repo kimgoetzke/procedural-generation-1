@@ -8,7 +8,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
-import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import java.util.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import org.springframework.data.util.Pair;
 public class WorldHandler {
 
   private final Graph<AbstractLocation> map;
-  private final StringGenerator stringGenerator;
+  private final NameGenerator nameGenerator;
   private final EventGenerator eventGenerator;
 
   @Getter
@@ -70,7 +70,7 @@ public class WorldHandler {
   private void placeSettlement(
       Graph<AbstractLocation> map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
-    var settlement = new Settlement(worldCoords, chunkCoords, stringGenerator, eventGenerator);
+    var settlement = new Settlement(worldCoords, chunkCoords, nameGenerator, eventGenerator);
     map.addVertex(settlement);
     chunk.place(chunkCoords, LocationType.SETTLEMENT);
   }
