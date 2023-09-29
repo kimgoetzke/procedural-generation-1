@@ -23,10 +23,10 @@ public class World {
   @Getter private Chunk currentChunk;
   private final Chunk[][] plane = new Chunk[WORLD_SIZE][WORLD_SIZE];
 
-  public boolean hasChunk(CardinalDirection position) {
+  public boolean hasChunk(CardinalDirection where) {
     var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
     var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
-    return switch (position) {
+    return switch (where) {
       case THIS -> plane[x][y] != null;
       case NORTH -> plane[x][y + 1] != null;
       case NORTH_EAST -> plane[x + 1][y + 1] != null;
@@ -43,8 +43,8 @@ public class World {
     return getChunk(worldCoords) != null;
   }
 
-  public boolean hasLoadedChunk(CardinalDirection position) {
-    var chunk = getChunk(position);
+  public boolean hasLoadedChunk(CardinalDirection where) {
+    var chunk = getChunk(where);
     return chunk != null && chunk.isLoaded();
   }
 
@@ -53,10 +53,10 @@ public class World {
     return chunk != null && chunk.isLoaded();
   }
 
-  public Chunk getChunk(CardinalDirection position) {
+  public Chunk getChunk(CardinalDirection where) {
     var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
     var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
-    return switch (position) {
+    return switch (where) {
       case THIS -> plane[x][y];
       case NORTH -> plane[x][y + 1];
       case NORTH_EAST -> plane[x + 1][y + 1];
@@ -81,8 +81,8 @@ public class World {
   /**
    * Returns the world coordinates of the chunk in the given position relative to the current chunk.
    */
-  public Pair<Integer, Integer> getCoordsFor(CardinalDirection position) {
-    return getCoordsFor(position, currentChunk);
+  public Pair<Integer, Integer> getCoordsFor(CardinalDirection where) {
+    return getCoordsFor(where, currentChunk);
   }
 
   public void generateChunk(Pair<Integer, Integer> worldCoords, Graph<AbstractLocation> map) {
@@ -94,11 +94,11 @@ public class World {
     worldHandler.logOutcome(stats, map, this.getClass());
   }
 
-  public void generateChunk(CardinalDirection whereNext, Graph<AbstractLocation> map) {
-    throwErrorIfChunkExists(whereNext, this);
+  public void generateChunk(CardinalDirection where, Graph<AbstractLocation> map) {
+    throwErrorIfChunkExists(where, this);
     var stats = worldHandler.getStats(map);
-    var nextChunk = new Chunk(getCoordsFor(whereNext), worldHandler);
-    place(nextChunk, whereNext);
+    var nextChunk = new Chunk(getCoordsFor(where), worldHandler);
+    place(nextChunk, where);
     worldHandler.logOutcome(stats, map, this.getClass());
   }
 
@@ -112,9 +112,9 @@ public class World {
    * Places a chunk in the given position relative to the current chunk. Used to place any
    * subsequently created chunks in an existing world.
    */
-  private void place(Chunk chunk, CardinalDirection position) {
-    var newCoords = getCoordsFor(position, currentChunk);
-    if (position == CardinalDirection.THIS) {
+  private void place(Chunk chunk, CardinalDirection where) {
+    var newCoords = getCoordsFor(where, currentChunk);
+    if (where == CardinalDirection.THIS) {
       log.warn(
           "You are placing a chunk in the same position as the current chunk, if it exists - if this is intentional, you must setCurrentChunk first");
     }
@@ -168,10 +168,10 @@ public class World {
     return x >= 0 && x < CHUNK_SIZE && y >= 0 && y < CHUNK_SIZE;
   }
 
-  private static Pair<Integer, Integer> getCoordsFor(CardinalDirection position, Chunk chunk) {
+  private static Pair<Integer, Integer> getCoordsFor(CardinalDirection where, Chunk chunk) {
     var x = (int) chunk.getCoordinates().getWorld().getFirst();
     var y = (int) chunk.getCoordinates().getWorld().getSecond();
-    return switch (position) {
+    return switch (where) {
       case THIS -> Pair.of(x, y);
       case NORTH -> Pair.of(x, y + 1);
       case NORTH_EAST -> Pair.of(x + 1, y + 1);
@@ -184,14 +184,14 @@ public class World {
     };
   }
 
-  private static void throwErrorIfChunkExists(CardinalDirection whereNext, World world) {
-    if (world.hasChunk(whereNext)) {
+  private static void throwErrorIfChunkExists(CardinalDirection where, World world) {
+    if (world.hasChunk(where)) {
       throw new IllegalStateException(
           String.format(
               "Chunk %s of w(%d, %d) already exists",
-              whereNext.name().toLowerCase(),
-              world.getCoordsFor(whereNext).getFirst(),
-              world.getCoordsFor(whereNext).getSecond()));
+              where.name().toLowerCase(),
+              world.getCoordsFor(where).getFirst(),
+              world.getCoordsFor(where).getSecond()));
     }
   }
 

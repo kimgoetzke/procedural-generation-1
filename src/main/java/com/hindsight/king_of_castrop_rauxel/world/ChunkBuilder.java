@@ -42,9 +42,9 @@ public class ChunkBuilder {
     }
   }
 
-  public static void log(Chunk chunk, CardinalDirection position) {
+  public static void log(Chunk chunk, CardinalDirection where) {
     if (chunk == null) {
-      log.info("{} chunk does not exist yet", position);
+      log.info("{} chunk does not exist yet", where);
       return;
     }
     var settlements = new AtomicInteger();
@@ -59,7 +59,7 @@ public class ChunkBuilder {
             });
     log.info(
         "{} chunk at {} has a density of {} and {} settlements",
-        position,
+        where,
         chunk.getCoordinates(),
         chunk.getDensity(),
         settlements);
