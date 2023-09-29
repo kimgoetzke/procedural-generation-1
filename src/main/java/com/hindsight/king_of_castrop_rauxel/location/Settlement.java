@@ -1,8 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.poi.PoiAction;
+import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
+import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -19,8 +20,9 @@ public class Settlement extends AbstractSettlement {
   public Settlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
-      StringGenerator stringGenerator) {
-    super(worldCoords, chunkCoords, stringGenerator);
+      StringGenerator stringGenerator,
+      EventGenerator eventGenerator) {
+    super(worldCoords, chunkCoords, stringGenerator, eventGenerator);
     generateFoundation();
     logResult(true);
   }
@@ -53,7 +55,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addAmenity(PoiType type) {
-    var npc = new Inhabitant(stringGenerator);
+    var npc = new Inhabitant(stringGenerator, eventGenerator);
     var amenity = new Amenity(type, npc, this);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);

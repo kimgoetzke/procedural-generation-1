@@ -13,13 +13,13 @@ public interface Action {
 
   String getName();
 
-  State getNextState();
+  PlayerState getNextState();
 
   default void execute(Player player) {
-    setPlayerState(player);
+    nextState(player);
   }
 
-  default void setPlayerState(Player player) {
+  default void nextState(Player player) {
     player.setState(getNextState());
   }
 

@@ -2,7 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.utils.BasicEventGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicStringGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
@@ -25,6 +27,11 @@ public class AppConfiguration {
   }
 
   @Bean
+  public EventGenerator eventGenerator() {
+    return new BasicEventGenerator();
+  }
+
+  @Bean
   public AppProperties appProperties() {
     return new AppProperties();
   }
@@ -41,6 +48,6 @@ public class AppConfiguration {
 
   @Bean
   public WorldHandler worldBuilder() {
-    return new WorldHandler(map(), stringGenerator());
+    return new WorldHandler(map(), stringGenerator(), eventGenerator());
   }
 }

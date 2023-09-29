@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,12 @@ class CoordinatesTest {
 
   @Autowired WorldHandler worldHandler;
   @Autowired StringGenerator stringGenerator;
+  @Autowired EventGenerator eventGenerator;
   @Mock Graph<AbstractLocation> map;
 
   @BeforeEach
   void setUp() {
-    worldHandler = new WorldHandler(map, stringGenerator);
+    worldHandler = new WorldHandler(map, stringGenerator, eventGenerator);
   }
 
   @Test

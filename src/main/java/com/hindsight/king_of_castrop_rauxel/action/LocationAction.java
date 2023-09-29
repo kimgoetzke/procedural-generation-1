@@ -21,7 +21,6 @@ public class LocationAction implements Action {
 
   @Setter private int index;
   private String name;
-  private static final State NEXT_STATE = State.AT_DEFAULT_POI;
   private Location location;
 
   @Override
@@ -57,12 +56,12 @@ public class LocationAction implements Action {
 
   private void executeAction(Player player, PointOfInterest poiVisiting) {
     System.out.println();
-    setPlayerState(player);
+    nextState(player);
     player.setCurrentPoi(poiVisiting);
   }
 
   @Override
-  public State getNextState() {
-    return NEXT_STATE;
+  public PlayerState getNextState() {
+    return PlayerState.AT_DEFAULT_POI;
   }
 }

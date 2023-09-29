@@ -36,15 +36,18 @@ public class CliGame {
   @SuppressWarnings("InfiniteLoopStatement")
   public void play() {
     if (environmentResolver.isNotCli()) {
+      log.info("Not running in CLI mode, so no CLI game is started");
       return;
     }
     var actions = actionHandler.getEmpty();
     initialise();
     while (true) {
-      getActions(actions);
-      displayActions(actions);
-      processInput(actions);
-      gameHandler.updateWorld(player);
+      printText();
+      preProcess();
+      prepareActions(actions);
+      printActions(actions);
+      takeAction(actions);
+      postProcess();
     }
   }
 
@@ -56,50 +59,61 @@ public class CliGame {
     player = new Player("Traveller", startLocation, worldCoordinates);
   }
 
-  public void getActions(List<Action> actions) {
+  public void printText() {
     switch (player.getState()) {
-      case AT_DEFAULT_POI:
-        showInfo(true, true);
-        actionHandler.getDefaultPoiActions(player, actions);
-        break;
-      case CHOOSE_POI:
-        showInfo(true, false);
-        actionHandler.getAllPoiActions(player, actions);
-        break;
-      case AT_SPECIFIC_POI:
-        showInfo(true, true);
-        actionHandler.getThisPoiActions(player, actions);
-        break;
-      case DEBUG:
+      case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI -> showInfo(true, true);
+      case DEBUG -> showInfo(false, false);
+      case EVENT -> {
         showInfo(false, false);
-        actionHandler.getDebugActions(player, actions);
-        break;
-      default:
-        showInfo(false, false);
-        actionHandler.getDefaultPoiActions(player, actions);
-        break;
+        showText();
+      }
     }
   }
 
-  public void displayActions(List<Action> actions) {
+  public void preProcess() {
+    if (player.getState() == Player.PlayerState.EVENT) {
+      var event = player.getCurrentEvent();
+      event.progress();
+      if (!event.hasNext()) {
+        player.setCurrentEvent(null);
+        player.setState(Player.PlayerState.AT_SPECIFIC_POI);
+      }
+    }
+  }
+
+  public void prepareActions(List<Action> actions) {
+    switch (player.getState()) {
+      case AT_DEFAULT_POI -> actionHandler.getDefaultPoiActions(player, actions);
+      case CHOOSE_POI -> actionHandler.getAllPoiActions(player, actions);
+      case AT_SPECIFIC_POI -> actionHandler.getThisPoiActions(player, actions);
+      case DEBUG -> actionHandler.getDebugActions(player, actions);
+      case EVENT -> actionHandler.getDialogueActions(player, actions);
+    }
+  }
+
+  public void printActions(List<Action> actions) {
     out.printf("%sWhat's next?%s%n", CliComponent.FMT.DEFAULT_BOLD, CliComponent.FMT.RESET);
     actions.forEach(a -> out.println(a.print()));
     out.printf("%n%s>%s ", CliComponent.FMT.WHITE_BOLD_BRIGHT, CliComponent.FMT.RESET);
   }
 
-  public void processInput(List<Action> actions) {
+  public void takeAction(List<Action> actions) {
     var anyInput = this.scanner.next();
     try {
       var validInput = Integer.parseInt(anyInput);
       var action = actions.stream().filter(a -> a.getIndex() == validInput).findFirst();
-      processAction(action);
+      takeAction(action);
     } catch (NumberFormatException e) {
       out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
     }
     out.printf("%n%n");
   }
 
-  public void processAction(Optional<Action> action) {
+  private void postProcess() {
+    gameHandler.updateWorld(player);
+  }
+
+  private void takeAction(Optional<Action> action) {
     if (action.isPresent()) {
       action.ifPresent(chosenAction -> chosenAction.execute(player));
     } else {
@@ -134,6 +148,22 @@ public class CliGame {
       out.printf(
           "%sYou are at: %s.%s ",
           CliComponent.FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), CliComponent.FMT.RESET);
+    }
+    if (showStats && !showLocation) {
+      out.printf("%n%n");
+    }
+  }
+
+  private void showText() {
+    var event = player.getCurrentEvent();
+    if (event.hasNext()) {
+      out.printf(
+          "%s%s%s%s: %s%n%n",
+          CliComponent.FMT.BLACK,
+          CliComponent.FMT.WHITE_BACKGROUND,
+          event.getNpc().getName(),
+          CliComponent.FMT.RESET,
+          event.getNext().text());
     }
   }
 }

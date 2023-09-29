@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 public class DebugAction implements Action {
 
-  private static final State NEXT_STATE = State.DEBUG;
   @Setter private int index;
   private String name;
   private Debuggable debuggable;
@@ -24,11 +23,11 @@ public class DebugAction implements Action {
 
   @Override
   public void execute(Player player) {
-    setPlayerState(player);
+    nextState(player);
     debuggable.execute();
   }
 
-  public State getNextState() {
-    return NEXT_STATE;
+  public PlayerState getNextState() {
+    return PlayerState.DEBUG;
   }
 }

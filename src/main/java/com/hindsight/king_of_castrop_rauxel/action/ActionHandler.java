@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
+import static com.hindsight.king_of_castrop_rauxel.characters.Player.PlayerState.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
@@ -36,31 +36,15 @@ public class ActionHandler {
 
   public void getDefaultPoiActions(Player player, List<Action> actions) {
     prepend(actions);
-    var location = player.getCurrentLocation();
+    var currentLocation = player.getCurrentLocation();
     actions.add(
         new StateAction(
             actions.size() + 1,
             "Explore any of the %s point(s) of interest"
-                .formatted(location.getPointsOfInterest().size() - 1),
+                .formatted(currentLocation.getPointsOfInterest().size() - 1),
             CHOOSE_POI));
-    var neighbours = location.getNeighbours().stream().toList();
-    for (Location neighbour : neighbours) {
-      actions.add(
-          new LocationAction(
-              actions.size() + 1,
-              "Travel to %s (%s km %s%s)"
-                  .formatted(
-                      neighbour.getName(),
-                      neighbour.distanceTo(location),
-                      neighbour
-                          .getCardinalDirection(player.getCoordinates().getChunk())
-                          .getName()
-                          .toLowerCase(),
-                      player.getVisitedLocations().stream().anyMatch(a -> a.equals(neighbour))
-                          ? ""
-                          : ", unvisited"),
-              neighbour));
-    }
+    var neighbours = currentLocation.getNeighbours().stream().toList();
+    addLocationActions(neighbours, actions, currentLocation, player);
     append(actions);
   }
 
@@ -87,19 +71,11 @@ public class ActionHandler {
     append(actions);
   }
 
-  public List<Action> getEmpty() {
-    return new ArrayList<>();
-  }
-
-  private static void addAllActions(List<Action> from, List<Action> to, LocationAction except) {
-    var adjustedActions = new ArrayList<>(from);
-    for (Action action : adjustedActions) {
-      if (action.getName().contains(except.getLocation().getName())) {
-        continue;
-      }
-      action.setIndex(to.size() + 1);
-      to.add(action);
-    }
+  public void getDialogueActions(Player player, List<Action> actions) {
+    prepend(actions);
+    var eventActions = player.getCurrentEvent().getNext().actions();
+    actions.addAll(eventActions);
+    append(actions);
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
@@ -122,5 +98,41 @@ public class ActionHandler {
     actions.add(debug.create(actions.size() + 1, "Log close chunks", debug::logWorld));
     actions.add(debug.create(actions.size() + 1, "Visualise plane", debug::printPlane));
     append(actions);
+  }
+
+  public List<Action> getEmpty() {
+    return new ArrayList<>();
+  }
+
+  private static void addLocationActions(
+      List<Location> from, List<Action> to, Location currentLocation, Player player) {
+    for (var neighbour : from) {
+      to.add(
+          new LocationAction(
+              to.size() + 1,
+              "Travel to %s (%s km %s%s)"
+                  .formatted(
+                      neighbour.getName(),
+                      neighbour.distanceTo(currentLocation),
+                      neighbour
+                          .getCardinalDirection(player.getCoordinates().getChunk())
+                          .getName()
+                          .toLowerCase(),
+                      player.getVisitedLocations().stream().anyMatch(a -> a.equals(neighbour))
+                          ? ""
+                          : ", unvisited"),
+              neighbour));
+    }
+  }
+
+  private static void addAllActions(List<Action> from, List<Action> to, LocationAction except) {
+    var adjustedActions = new ArrayList<>(from);
+    for (Action action : adjustedActions) {
+      if (action.getName().contains(except.getLocation().getName())) {
+        continue;
+      }
+      action.setIndex(to.size() + 1);
+      to.add(action);
+    }
   }
 }

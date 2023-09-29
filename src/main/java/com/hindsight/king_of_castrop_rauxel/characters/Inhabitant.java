@@ -1,6 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
@@ -14,15 +16,18 @@ import lombok.extern.slf4j.Slf4j;
 public class Inhabitant implements Npc {
 
   private final StringGenerator stringGenerator;
+  private final EventGenerator eventGenerator;
 
   @Getter private String id;
   @Getter private String firstName;
   @Getter private String lastName;
   @Getter private String fullName;
   @Getter private PointOfInterest home;
+  @Getter private Event event;
 
-  public Inhabitant(StringGenerator stringGenerator) {
+  public Inhabitant(StringGenerator stringGenerator, EventGenerator eventGenerator) {
     this.stringGenerator = stringGenerator;
+    this.eventGenerator = eventGenerator;
     generate();
     logResult();
   }
@@ -44,6 +49,7 @@ public class Inhabitant implements Npc {
     firstName = stringGenerator.npcFirstNameFrom(Inhabitant.class);
     lastName = stringGenerator.npcLastNameFrom(Inhabitant.class);
     fullName = firstName + " " + lastName;
+    event = eventGenerator.emptyDialogueEvent(this);
   }
 
   @Override
