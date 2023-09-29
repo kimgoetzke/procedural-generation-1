@@ -23,7 +23,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
   protected int area;
   protected List<PointOfInterest> pointsOfInterests = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
-  @Getter protected int inhabitantCount;
+  @EqualsAndHashCode.Include @Getter protected int inhabitantCount;
   @Getter protected Set<Location> neighbours = new HashSet<>();
 
   protected AbstractSettlement(

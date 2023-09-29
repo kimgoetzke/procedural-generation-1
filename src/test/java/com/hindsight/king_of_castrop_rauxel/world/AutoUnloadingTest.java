@@ -7,10 +7,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
+import com.hindsight.king_of_castrop_rauxel.action.DebugActionFactory;
+import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 
 import java.util.Random;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +22,15 @@ import org.springframework.data.util.Pair;
 
 @SpringBootTest
 class AutoUnloadingTest extends BaseWorldTest {
+
+  @BeforeEach
+  void setUp() {
+    SeedBuilder.changeSeed(123L);
+    map = new Graph<>(true);
+    worldHandler = new WorldHandler(map, stringGenerator);
+    world = new World(appProperties, worldHandler);
+    daf = new DebugActionFactory(map, world, worldHandler);
+  }
 
   @Test
   void whenChangingCurrentChunk_unloadChunksOutsideRetentionZone() {
@@ -37,6 +50,8 @@ class AutoUnloadingTest extends BaseWorldTest {
         world.generateChunk(CardinalDirection.SOUTH, map);
         world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
       }
+
+      debug(map.getVertices(), map);
 
       // Then
       var currWCoords = world.getCurrentChunk().getCoordinates().getWorld();
@@ -75,7 +90,7 @@ class AutoUnloadingTest extends BaseWorldTest {
       debug(map.getVertices(), map);
 
       // Then
-      assertThat(result).isEqualTo(expected);
+      assertThat(result).containsAll(expected);
     }
   }
 

@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 
+import com.hindsight.king_of_castrop_rauxel.action.DebugActionFactory;
+import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
@@ -25,10 +27,12 @@ class WorldHandlerTest extends BaseWorldTest {
 
   protected static final Pair<Integer, Integer> C_1_W_COORDS = Pair.of(0, 0);
 
-  @Override
   @BeforeEach
   void setUp() {
-    super.setUp();
+    SeedBuilder.changeSeed(123L);
+    world = new World(appProperties, worldHandler);
+    map = new Graph<>(true);
+    daf = new DebugActionFactory(map, world, worldHandler);
     chunk = new Chunk(C_1_W_COORDS, worldHandler, WorldHandler.Strategy.NONE);
     world.place(chunk, C_1_W_COORDS);
   }

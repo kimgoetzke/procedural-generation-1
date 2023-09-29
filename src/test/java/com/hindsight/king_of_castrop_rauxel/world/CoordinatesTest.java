@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,11 @@ class CoordinatesTest {
   @Autowired WorldHandler worldHandler;
   @Autowired StringGenerator stringGenerator;
   @Mock Graph<AbstractLocation> map;
+
+  @BeforeEach
+  void setUp() {
+    worldHandler = new WorldHandler(map, stringGenerator);
+  }
 
   @Test
   void givenWorldAndChunkCoords_createCoords() {
@@ -34,7 +40,7 @@ class CoordinatesTest {
 
   @Test
   void givenChunkCoordsAndChunkInstance_createCoords() {
-    var worldCoords = Pair.of(5, 6);
+    var worldCoords = Pair.of(8, 6);
     var chunkCoords = Pair.of(200, 200);
     var expectedGlobal = expectedGlobalFrom(worldCoords, chunkCoords); // here (2700, 3200)
     var chunk = new Chunk(worldCoords, worldHandler);

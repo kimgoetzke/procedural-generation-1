@@ -24,7 +24,7 @@ public abstract class AbstractLocation implements Location {
   @Getter protected List<Action> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
-  @Getter protected final Coordinates coordinates;
+  @EqualsAndHashCode.Include @Getter protected final Coordinates coordinates;
   @Getter @Setter private boolean isLoaded;
 
   protected AbstractLocation(

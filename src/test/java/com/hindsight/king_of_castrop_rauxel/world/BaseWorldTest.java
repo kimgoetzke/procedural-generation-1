@@ -15,7 +15,7 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.utils.StringGenerator;
 import java.util.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,12 +38,12 @@ public abstract class BaseWorldTest {
     generateFakeConfig();
   }
 
-  @BeforeEach
-  void setUp() {
-    SeedBuilder.changeSeed(123L);
-    world = new World(appProperties, worldHandler);
-    map = new Graph<>(true);
-    daf = new DebugActionFactory(map, world, worldHandler);
+  @AfterEach
+  void tearDown() {
+    map = null;
+    worldHandler = null;
+    world = null;
+    daf = null;
   }
 
   protected abstract void locationComponentIsInitialised(MockedStatic<LocationBuilder> mocked);
@@ -60,9 +60,10 @@ public abstract class BaseWorldTest {
       daf.printPlane(world, map);
     } catch (Exception e) {
       System.out.printf(
-          FMT.RED_BRIGHT + "Error: Could not print plane %nReason: %s%n" + FMT.RESET,
-          e.getMessage());
-      // throw e; // FIXME: find out why coords in DAF method are incorrect
+          FMT.RED_BRIGHT
+              + "Error: Could not print plane - this is likely because your test setUp()/tearDown() does not reset all fields correctly.%n"
+              + FMT.RESET);
+      throw e;
     }
     daf.printConnectivity();
   }
