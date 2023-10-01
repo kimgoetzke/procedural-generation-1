@@ -71,24 +71,7 @@ public class ProgressBar {
    */
   public static final float SPEED_MODIFIER = 0.1F;
 
-  public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
   private static final List<String> horseFrames = List.of(HORSE_1, HORSE_2, HORSE_3, HORSE_4);
-  private static boolean hideHorsey = true;
-
-  static {
-    try {
-      hideHorsey =
-          ProgressBar.class
-                  .getClassLoader()
-                  .loadClass("com.intellij.rt.execution.application.AppMainV2")
-              != null;
-    } catch (ClassNotFoundException ignored) {
-      // Not running from IntelliJ so horse animation can be displayed - running the application
-      // via IntelliJ will not allow the console to be cleared which is required for the animation
-      // to work
-    }
-    log.info("Running from IntelliJ: " + hideHorsey);
-  }
 
   // TODO: Allow interrupting (returning progress %) and resuming later (accepting progress %)
   public static void displayProgress(Location from, Location to) {
@@ -129,28 +112,12 @@ public class ProgressBar {
   }
 
   private static void displayHorseFrame(int currentStep) {
-    if (hideHorsey) {
+    if (CliComponent.isRunningInIntelliJ()) {
       return;
     }
-    clearConsole();
+    CliComponent.clearConsole();
     int frameIndex = currentStep % horseFrames.size();
     String frame = horseFrames.get(frameIndex);
     out.println(frame);
-  }
-
-  private static void clearConsole() {
-    try {
-      if (WINDOWS) {
-        new ProcessBuilder("cmd.exe", "/c", "cls").inheritIO().start().waitFor();
-      } else {
-        out.print("\033[H\033[2J");
-        out.flush();
-      }
-    } catch (Exception e) {
-      log.info("Failed to clear console", e);
-      if (e instanceof InterruptedException) {
-        Thread.currentThread().interrupt();
-      }
-    }
   }
 }

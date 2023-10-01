@@ -1,9 +1,19 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import static java.lang.System.out;
+
+@Slf4j
 @Component
 public class CliComponent {
+
+  public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
+
+  @Getter private static boolean isRunningInIntelliJ = true;
+
   public enum FMT {
     RESET("\033[0m"),
 
@@ -88,6 +98,37 @@ public class CliComponent {
     @Override
     public String toString() {
       return code;
+    }
+  }
+
+  static {
+    try {
+      isRunningInIntelliJ =
+          CliComponent.class
+                  .getClassLoader()
+                  .loadClass("com.intellij.rt.execution.application.AppMainV2")
+              != null;
+    } catch (ClassNotFoundException ignored) {
+      // Not running from IntelliJ so horse animation can be displayed - running the application
+      // via IntelliJ will not allow the console to be cleared which is required for the animation
+      // to work
+    }
+    log.info("Running from IntelliJ: " + isRunningInIntelliJ);
+  }
+
+  public static void clearConsole() {
+    try {
+      if (WINDOWS) {
+        new ProcessBuilder("cmd.exe", "/c", "cls").inheritIO().start().waitFor();
+      } else {
+        out.print("\033[H\033[2J");
+        out.flush();
+      }
+    } catch (Exception e) {
+      log.info("Failed to clear console", e);
+      if (e instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
     }
   }
 }
