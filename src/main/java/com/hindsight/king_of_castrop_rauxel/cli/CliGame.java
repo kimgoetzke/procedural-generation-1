@@ -12,7 +12,6 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -42,16 +41,16 @@ public class CliGame {
     var actions = actionHandler.getEmpty();
     initialise();
     while (true) {
-      printText();
-      preProcess();
+      printHeaders();
       prepareActions(actions);
       printActions(actions);
       takeAction(actions);
       postProcess();
+      printResponse();
     }
   }
 
-  public void initialise() {
+  private void initialise() {
     world.generateChunk(world.getCentreCoords(), map);
     world.setCurrentChunk(world.getCentreCoords());
     var startLocation = world.getCurrentChunk().getCentralLocation(world, map);
@@ -59,29 +58,20 @@ public class CliGame {
     player = new Player("Traveller", startLocation, worldCoordinates);
   }
 
-  public void printText() {
+  private void printHeaders() {
+    if (!player.getCliState().printHeaders()) {
+      return;
+    }
     switch (player.getState()) {
       case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI -> showInfo(true, true);
-      case DEBUG -> showInfo(false, false);
-      case EVENT -> {
-        showInfo(false, false);
-        showText();
-      }
+      case DEBUG, EVENT -> showInfo(false, false);
     }
   }
 
-  public void preProcess() {
-    if (player.getState() == Player.PlayerState.EVENT) {
-      var event = player.getCurrentEvent();
-      event.progress();
-      if (!event.hasNext()) {
-        player.setCurrentEvent(null);
-        player.setState(Player.PlayerState.AT_SPECIFIC_POI);
-      }
+  private void prepareActions(List<Action> actions) {
+    if (!player.getCliState().prepareActions()) {
+      return;
     }
-  }
-
-  public void prepareActions(List<Action> actions) {
     switch (player.getState()) {
       case AT_DEFAULT_POI -> actionHandler.getDefaultPoiActions(player, actions);
       case CHOOSE_POI -> actionHandler.getAllPoiActions(player, actions);
@@ -91,18 +81,28 @@ public class CliGame {
     }
   }
 
-  public void printActions(List<Action> actions) {
+  private void printActions(List<Action> actions) {
+    if (!player.getCliState().printActions()) {
+      return;
+    }
     out.printf("%sWhat's next?%s%n", CliComponent.FMT.DEFAULT_BOLD, CliComponent.FMT.RESET);
     actions.forEach(a -> out.println(a.print()));
     out.printf("%n%s>%s ", CliComponent.FMT.WHITE_BOLD_BRIGHT, CliComponent.FMT.RESET);
   }
 
-  public void takeAction(List<Action> actions) {
+  private void takeAction(List<Action> actions) {
+    if (!player.getCliState().takeAction()) {
+      return;
+    }
     var anyInput = this.scanner.next();
     try {
       var validInput = Integer.parseInt(anyInput);
       var action = actions.stream().filter(a -> a.getIndex() == validInput).findFirst();
-      takeAction(action);
+      if (action.isPresent()) {
+        action.ifPresent(chosenAction -> chosenAction.execute(player));
+      } else {
+        out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
+      }
     } catch (NumberFormatException e) {
       out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
     }
@@ -111,14 +111,24 @@ public class CliGame {
 
   private void postProcess() {
     gameHandler.updateWorld(player);
+    player.updateCliState();
   }
 
-  private void takeAction(Optional<Action> action) {
-    if (action.isPresent()) {
-      action.ifPresent(chosenAction -> chosenAction.execute(player));
-    } else {
-      out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
+  // TODO: Clean up CLI loop to enable/disable relevant steps
+  // TODO: Implement CliComponent.clearConsole() in CLI loop
+  private void printResponse() {
+    if (!player.getCliState().printResponse()) {
+      return;
     }
+    if (player.getState() == Player.PlayerState.EVENT) {
+      var event = player.getCurrentEvent();
+      event.progress();
+      if (!event.hasNext()) {
+        player.setCurrentEvent(null);
+        player.setState(Player.PlayerState.AT_SPECIFIC_POI);
+      }
+    }
+    showText();
   }
 
   private void showInfo(boolean showStats, boolean showLocation) {

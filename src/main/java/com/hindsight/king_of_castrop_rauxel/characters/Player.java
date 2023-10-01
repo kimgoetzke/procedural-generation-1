@@ -7,9 +7,7 @@ import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 
 import java.util.*;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.util.Pair;
 
 @Getter
@@ -25,6 +23,7 @@ public class Player implements Visitor {
   @Setter private int age = 15;
   @Setter private int activityPoints = 20;
   @Setter @Getter private PlayerState state = PlayerState.AT_DEFAULT_POI;
+  @Setter @Getter private CliState cliState = new CliState();
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
@@ -59,5 +58,53 @@ public class Player implements Visitor {
 
   public void addEvent(Event event) {
     events.add(event);
+  }
+
+  public void updateCliState() {
+    switch (state) {
+      case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI, DEBUG -> cliState.reset();
+      case EVENT -> cliState.setPrintHeaders(false);
+    }
+  }
+
+  @Setter
+  public static final class CliState {
+    private boolean printHeaders;
+    private boolean prepareActions;
+    private boolean printActions;
+    private boolean takeAction;
+    private boolean printResponse;
+
+    public CliState() {
+      reset();
+    }
+
+    public boolean printHeaders() {
+      return printHeaders;
+    }
+
+    public boolean prepareActions() {
+      return prepareActions;
+    }
+
+    public boolean printActions() {
+      return printActions;
+    }
+
+    public boolean takeAction() {
+      return takeAction;
+    }
+
+    public boolean printResponse() {
+      return printResponse;
+    }
+
+    public void reset() {
+      this.printHeaders = true;
+      this.prepareActions = true;
+      this.printActions = true;
+      this.takeAction = true;
+      this.printResponse = false;
+    }
   }
 }
