@@ -13,8 +13,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
-import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
-import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.mockito.MockedStatic;
@@ -26,8 +25,7 @@ public abstract class BaseWorldTest {
 
   protected static final Map<Size, SettlementConfig> fakeConfig = new EnumMap<>(Size.class);
 
-  @Autowired protected NameGenerator strGen;
-  @Autowired protected EventGenerator evtGen;
+  @Autowired protected Generators generators;
   @Autowired protected AppProperties appProperties;
   @Autowired protected WorldHandler worldHandler;
 

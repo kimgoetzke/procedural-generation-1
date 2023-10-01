@@ -27,7 +27,7 @@ class AutoUnloadingTest extends BaseWorldTest {
   void setUp() {
     SeedBuilder.changeSeed(123L);
     map = new Graph<>(true);
-    worldHandler = new WorldHandler(map, strGen, evtGen);
+    worldHandler = new WorldHandler(map, generators);
     world = new World(appProperties, worldHandler);
     daf = new DebugActionFactory(map, world, worldHandler);
   }

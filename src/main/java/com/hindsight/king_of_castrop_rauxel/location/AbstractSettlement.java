@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,11 +32,10 @@ public abstract class AbstractSettlement extends AbstractLocation {
   protected AbstractSettlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
-      NameGenerator nameGenerator,
-      EventGenerator eventGenerator) {
+      Generators generators) {
     super(worldCoords, chunkCoords);
-    this.nameGenerator = nameGenerator;
-    this.eventGenerator = eventGenerator;
+    this.nameGenerator = generators.nameGenerator();
+    this.eventGenerator = generators.eventGenerator();
     nameGenerator.setRandom(random);
     eventGenerator.setRandom(random);
   }

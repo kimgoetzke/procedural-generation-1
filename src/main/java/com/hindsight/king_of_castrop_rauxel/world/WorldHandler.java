@@ -7,8 +7,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
-import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
-import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
+import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +20,7 @@ import org.springframework.data.util.Pair;
 public class WorldHandler {
 
   private final Graph<AbstractLocation> map;
-  private final NameGenerator nameGenerator;
-  private final EventGenerator eventGenerator;
+  private final Generators generators;
 
   @Getter
   public enum CardinalDirection {
@@ -70,7 +68,7 @@ public class WorldHandler {
   private void placeSettlement(
       Graph<AbstractLocation> map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
-    var settlement = new Settlement(worldCoords, chunkCoords, nameGenerator, eventGenerator);
+    var settlement = new Settlement(worldCoords, chunkCoords, generators);
     map.addVertex(settlement);
     chunk.place(chunkCoords, LocationType.SETTLEMENT);
   }
