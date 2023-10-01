@@ -9,5 +9,5 @@ public interface EventGenerator {
 
   void setRandom(Random random);
 
-  Event emptyDialogueEvent(Npc npc);
+  Event simpleDialogueEvent(Npc npc);
 }

@@ -112,7 +112,7 @@ public class ProgressBar {
   }
 
   private static void displayHorseFrame(int currentStep) {
-    if (CliComponent.isRunningInIntelliJ()) {
+    if (CliComponent.isUsingIntelliJ()) {
       return;
     }
     CliComponent.clearConsole();

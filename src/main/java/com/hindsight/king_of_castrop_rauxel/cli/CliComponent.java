@@ -12,7 +12,7 @@ public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
 
-  @Getter private static boolean isRunningInIntelliJ = true;
+  @Getter private static boolean isUsingIntelliJ = true;
 
   public enum FMT {
     RESET("\033[0m"),
@@ -103,7 +103,7 @@ public class CliComponent {
 
   static {
     try {
-      isRunningInIntelliJ =
+      isUsingIntelliJ =
           CliComponent.class
                   .getClassLoader()
                   .loadClass("com.intellij.rt.execution.application.AppMainV2")
@@ -113,10 +113,13 @@ public class CliComponent {
       // via IntelliJ will not allow the console to be cleared which is required for the animation
       // to work
     }
-    log.info("Running from IntelliJ: " + isRunningInIntelliJ);
+    log.info("Running from IntelliJ: " + isUsingIntelliJ);
   }
 
   public static void clearConsole() {
+    if (isUsingIntelliJ) {
+      return;
+    }
     try {
       if (WINDOWS) {
         new ProcessBuilder("cmd.exe", "/c", "cls").inheritIO().start().waitFor();

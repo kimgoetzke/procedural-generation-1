@@ -8,8 +8,10 @@ import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import java.util.*;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
+@Slf4j
 @Getter
 public class Player implements Visitor {
 
@@ -22,8 +24,8 @@ public class Player implements Visitor {
   @Setter private int level;
   @Setter private int age = 15;
   @Setter private int activityPoints = 20;
-  @Setter @Getter private PlayerState state = PlayerState.AT_DEFAULT_POI;
-  @Setter @Getter private CliState cliState = new CliState();
+  private PlayerState state = PlayerState.AT_DEFAULT_POI;
+  private final CliSettings cli = new CliSettings();
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
@@ -60,22 +62,35 @@ public class Player implements Visitor {
     events.add(event);
   }
 
+  public void setState(PlayerState state) {
+    this.state = state;
+    updateCliState();
+  }
+
   public void updateCliState() {
+    log.info("Updating CLI state to {}", state);
     switch (state) {
-      case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI, DEBUG -> cliState.reset();
-      case EVENT -> cliState.setPrintHeaders(false);
+      case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI, DEBUG -> cli.reset();
+      case EVENT -> {
+        cli.setPrepareActions(true);
+        cli.setPrintActions(true);
+        cli.setTakeAction(true);
+        cli.setPrintResponse(true);
+        cli.setPostProcess(true);
+      }
     }
   }
 
   @Setter
-  public static final class CliState {
+  public static final class CliSettings {
     private boolean printHeaders;
     private boolean prepareActions;
     private boolean printActions;
     private boolean takeAction;
     private boolean printResponse;
+    private boolean postProcess;
 
-    public CliState() {
+    public CliSettings() {
       reset();
     }
 
@@ -95,6 +110,10 @@ public class Player implements Visitor {
       return takeAction;
     }
 
+    public boolean postProcess() {
+      return postProcess;
+    }
+
     public boolean printResponse() {
       return printResponse;
     }
@@ -105,6 +124,7 @@ public class Player implements Visitor {
       this.printActions = true;
       this.takeAction = true;
       this.printResponse = false;
+      this.postProcess = true;
     }
   }
 }

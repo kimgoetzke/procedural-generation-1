@@ -11,6 +11,8 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.world.World;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import lombok.AccessLevel;
@@ -35,7 +37,7 @@ public class CliGame {
   @SuppressWarnings("InfiniteLoopStatement")
   public void play() {
     if (environmentResolver.isNotCli()) {
-      log.info("Not running in CLI mode, so no CLI game is started");
+      log.info("Not running in CLI mode, CLI game will not be started");
       return;
     }
     var actions = actionHandler.getEmpty();
@@ -45,8 +47,8 @@ public class CliGame {
       prepareActions(actions);
       printActions(actions);
       takeAction(actions);
-      postProcess();
       printResponse();
+      postProcess();
     }
   }
 
@@ -59,17 +61,19 @@ public class CliGame {
   }
 
   private void printHeaders() {
-    if (!player.getCliState().printHeaders()) {
+    if (!player.getCli().printHeaders()) {
       return;
     }
+    CliComponent.clearConsole();
     switch (player.getState()) {
-      case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI -> showInfo(true, true);
-      case DEBUG, EVENT -> showInfo(false, false);
+      case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI -> showInfo(true, true, true);
+      case EVENT -> showInfo(false, false, false);
+      case DEBUG -> showInfo(true, true, false);
     }
   }
 
   private void prepareActions(List<Action> actions) {
-    if (!player.getCliState().prepareActions()) {
+    if (!player.getCli().prepareActions()) {
       return;
     }
     switch (player.getState()) {
@@ -82,7 +86,7 @@ public class CliGame {
   }
 
   private void printActions(List<Action> actions) {
-    if (!player.getCliState().printActions()) {
+    if (!player.getCli().printActions()) {
       return;
     }
     out.printf("%sWhat's next?%s%n", CliComponent.FMT.DEFAULT_BOLD, CliComponent.FMT.RESET);
@@ -91,7 +95,7 @@ public class CliGame {
   }
 
   private void takeAction(List<Action> actions) {
-    if (!player.getCliState().takeAction()) {
+    if (!player.getCli().takeAction()) {
       return;
     }
     var anyInput = this.scanner.next();
@@ -109,29 +113,43 @@ public class CliGame {
     out.printf("%n%n");
   }
 
-  private void postProcess() {
-    gameHandler.updateWorld(player);
-    player.updateCliState();
-  }
-
   // TODO: Clean up CLI loop to enable/disable relevant steps
   // TODO: Implement CliComponent.clearConsole() in CLI loop
+  // TODO: Add single-step dialogue, multi-step dialogue, kill quest and go-to quest
   private void printResponse() {
-    if (!player.getCliState().printResponse()) {
+    if (!player.getCli().printResponse()) {
       return;
     }
+    showText();
+    try {
+      out.println("Press enter to continue...");
+      System.in.read();
+    } catch (IOException e) {
+      log.error("Could not read input from console", e);
+    }
+  }
+
+  private void postProcess() {
+    if (!player.getCli().postProcess()) {
+      return;
+    }
+    gameHandler.updateWorld(player);
+    updateCurrentEvent();
+  }
+
+  private void updateCurrentEvent() {
     if (player.getState() == Player.PlayerState.EVENT) {
       var event = player.getCurrentEvent();
       event.progress();
       if (!event.hasNext()) {
+        event.setComplete();
         player.setCurrentEvent(null);
         player.setState(Player.PlayerState.AT_SPECIFIC_POI);
       }
     }
-    showText();
   }
 
-  private void showInfo(boolean showStats, boolean showLocation) {
+  private void showInfo(boolean showStats, boolean showLocation, boolean showPoi) {
     if (showStats) {
       out.printf(
           "%sSTATS: [ Gold: %s%s%s | Level: %s%s%s | Age: %s%s%s | Activity points left: %s%s%s ]%s%n",
@@ -155,11 +173,13 @@ public class CliGame {
       out.printf(
           "%sCURRENT LOCATION: %s%s%n%n",
           CliComponent.FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), CliComponent.FMT.RESET);
+    }
+    if (showPoi) {
       out.printf(
           "%sYou are at: %s.%s ",
           CliComponent.FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), CliComponent.FMT.RESET);
     }
-    if (showStats && !showLocation) {
+    if (showStats && !showLocation && !showPoi) {
       out.printf("%n%n");
     }
   }

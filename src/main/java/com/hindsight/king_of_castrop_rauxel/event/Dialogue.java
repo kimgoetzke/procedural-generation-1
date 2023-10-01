@@ -26,5 +26,9 @@ public final class Dialogue {
     nextInteraction++;
   }
 
+  public void reset() {
+    nextInteraction = 0;
+  }
+
   public record Interaction(String text, List<Action> actions) {}
 }

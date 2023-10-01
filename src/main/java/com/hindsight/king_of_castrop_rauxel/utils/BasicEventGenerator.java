@@ -21,11 +21,11 @@ public class BasicEventGenerator implements EventGenerator {
   }
 
   @Override
-  public Event emptyDialogueEvent(Npc npc) {
+  public Event simpleDialogueEvent(Npc npc) {
     var pathName = "NPC-IDLE";
     var text = loopThroughFiles(pathName);
     var dialogue = new Dialogue(List.of(new Dialogue.Interaction(text, List.of())));
-    return new DialogueEvent(dialogue, npc, Event.EventType.DIALOGUE);
+    return new DialogueEvent(dialogue, npc, Event.EventType.DIALOGUE, true);
   }
 
   private String loopThroughFiles(String pathName) {

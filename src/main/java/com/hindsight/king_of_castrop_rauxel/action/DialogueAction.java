@@ -23,7 +23,8 @@ public class DialogueAction implements Action {
 
   @Override
   public void execute(Player player) {
-    if (!player.getEvents().contains(event)) {
+    if (!player.getEvents().contains(event)
+        || (event.isRepeatable() && event.getState() == EventState.AVAILABLE)) {
       player.addEvent(event);
       player.setCurrentEvent(event);
       player.setState(PlayerState.EVENT);

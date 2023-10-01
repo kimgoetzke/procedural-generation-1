@@ -10,7 +10,18 @@ public interface Event {
 
   void setState(EventState state);
 
+  default void setComplete() {
+    if (isRepeatable()) {
+      setState(EventState.AVAILABLE);
+      getDialogue().reset();
+    } else {
+      setState(EventState.COMPLETED);
+    }
+  }
+
   EventState getState();
+
+  boolean isRepeatable();
 
   Dialogue getDialogue();
 
