@@ -14,11 +14,11 @@ public final class Dialogue {
     this.nextInteraction = 0;
   }
 
-  public boolean hasNext() {
+  public boolean hasNextInteraction() {
     return nextInteraction < interactions.size();
   }
 
-  public Interaction getNext() {
+  public Interaction getNextInteraction() {
     return interactions.get(nextInteraction);
   }
 

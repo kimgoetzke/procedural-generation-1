@@ -2,6 +2,10 @@ package com.hindsight.king_of_castrop_rauxel.event;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 
+/**
+ * Events are linked to NPCs. Each NPC owns at least one event. Events can be of different types,
+ * such as dialogues (single vs multistep dialogues), defeat quests or reach quests.
+ */
 public interface Event {
 
   Npc getNpc();
@@ -13,7 +17,7 @@ public interface Event {
   default void setComplete() {
     if (isRepeatable()) {
       setState(EventState.AVAILABLE);
-      getDialogue().reset();
+      reset();
     } else {
       setState(EventState.COMPLETED);
     }
@@ -25,16 +29,20 @@ public interface Event {
 
   Dialogue getDialogue();
 
-  default boolean hasNext() {
-    return getDialogue().hasNext();
+  default boolean hasNextInteraction() {
+    return getDialogue().hasNextInteraction();
   }
 
-  default Dialogue.Interaction getNext() {
-    return getDialogue().getNext();
+  default Dialogue.Interaction getNextInteraction() {
+    return getDialogue().getNextInteraction();
   }
 
   default void progress() {
     getDialogue().progress();
+  }
+
+  default void reset() {
+    getDialogue().reset();
   }
 
   enum EventState {
@@ -42,12 +50,19 @@ public interface Event {
     AVAILABLE,
     ACTIVE,
     READY,
-    COMPLETED
+    COMPLETED,
+    DECLINED
   }
 
   enum EventType {
     DIALOGUE,
     DEFEAT,
     REACH
+  }
+
+  enum EventChoice {
+    PENDING,
+    ACCEPT,
+    DECLINE
   }
 }

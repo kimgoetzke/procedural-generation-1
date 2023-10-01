@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.DialogueAction;
+import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -44,7 +44,7 @@ public class Amenity extends AbstractAmenity {
 
   private void speakWith(String who) {
     availableActions.add(
-        DialogueAction.builder()
+        EventAction.builder()
             .name("Speak with %s, %s".formatted(npc.getName(), who))
             .index(availableActions.size() + 1)
             .event(npc.getEvent())

@@ -72,10 +72,8 @@ public class ActionHandler {
   }
 
   public void getDialogueActions(Player player, List<Action> actions) {
-    prepend(actions);
-    var eventActions = player.getCurrentEvent().getNext().actions();
+    var eventActions = player.getCurrentEvent().getNextInteraction().actions();
     actions.addAll(eventActions);
-    append(actions);
   }
 
   public void getDebugActions(Player player, List<Action> actions) {

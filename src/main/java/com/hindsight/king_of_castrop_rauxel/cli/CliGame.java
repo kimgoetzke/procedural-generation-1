@@ -141,7 +141,7 @@ public class CliGame {
     if (player.getState() == Player.PlayerState.EVENT) {
       var event = player.getCurrentEvent();
       event.progress();
-      if (!event.hasNext()) {
+      if (!event.hasNextInteraction()) {
         event.setComplete();
         player.setCurrentEvent(null);
         player.setState(Player.PlayerState.AT_SPECIFIC_POI);
@@ -186,14 +186,14 @@ public class CliGame {
 
   private void showText() {
     var event = player.getCurrentEvent();
-    if (event.hasNext()) {
+    if (event.hasNextInteraction()) {
       out.printf(
           "%s%s%s%s: %s%n%n",
           CliComponent.FMT.BLACK,
           CliComponent.FMT.WHITE_BACKGROUND,
           event.getNpc().getName(),
           CliComponent.FMT.RESET,
-          event.getNext().text());
+          event.getNextInteraction().text().formatted());
     }
   }
 }
