@@ -1,34 +1,77 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-
+import java.util.ArrayList;
 import java.util.List;
+
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import lombok.Getter;
 
 public final class Dialogue {
 
-  private final List<Interaction> interactions;
-  private int nextInteraction;
+  @Getter private final List<Interaction> interactions;
+  private int current = 0;
 
   public Dialogue(List<Interaction> interactions) {
     this.interactions = interactions;
-    this.nextInteraction = 0;
   }
 
-  public boolean hasNextInteraction() {
-    return nextInteraction < interactions.size();
+  public Dialogue() {
+    this.interactions = new ArrayList<>();
   }
 
-  public Interaction getNextInteraction() {
-    return interactions.get(nextInteraction);
+  public boolean hasCurrent() {
+    return current < interactions.size();
   }
 
-  public void progress() {
-    nextInteraction++;
+  public Interaction getCurrent() {
+    return interactions.get(current);
+  }
+
+  public boolean hasNext() {
+    return current + 1 < interactions.size();
+  }
+
+  public void progress(Player player) {
+    if (!hasNext()) {
+      complete(player);
+      return;
+    }
+    var linkedInteraction = getInteractions().get(current).nextInteraction();
+    if (linkedInteraction == null) {
+      current++;
+      return;
+    }
+    if (linkedInteraction > getInteractions().size()) {
+      complete(player);
+      return;
+    }
+    current = getInteractions().get(current).nextInteraction();
+  }
+
+  public void complete(Player player) {
+    player.getCurrentEvent().setComplete();
+    player.setCurrentEvent(null);
+    player.setState(Player.PlayerState.AT_POI);
   }
 
   public void reset() {
-    nextInteraction = 0;
+    current = 0;
   }
 
-  public record Interaction(String text, List<Action> actions) {}
+  @Override
+  public String toString() {
+    return "Dialogue(interactions=" + interactions + ", current=" + current + ")";
+  }
+
+  public void setCurrent(int nextInteraction) {
+    current = nextInteraction;
+  }
+
+  public record Interaction(String text, List<Action> actions, Integer nextInteraction) {
+    @Override
+    public String toString() {
+      return "Interaction(text=" + text + ", actions=" + actions.size() + ")";
+    }
+  }
 }

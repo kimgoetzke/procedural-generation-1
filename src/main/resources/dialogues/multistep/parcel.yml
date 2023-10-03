@@ -1,0 +1,22 @@
+# FYI: 'text' and 'name' will be displayed. 'i' is only a helper to set any action index, and it is ignored when
+# parsing. 'n' is optional and sets the index 'i' of the next interaction. 'choice' must parse to the EventChoice
+# enum.
+interactions:
+  - text: Hey there, hey you! You look like someone who travels a lot. Are you going to &L by any chance? If you do, I need you to do something for me.
+    i: 0
+  - text: I need you to get this small parcel to &O of &P. It's a bag of seeds and &O is a good friend of mine. Can you do it? Please!
+    i: 1
+    actions:
+      - index: 1
+        name: (Accept) Alright, I'll do it
+        choice: ACCEPT
+        nextInteraction: 2
+      - index: 2
+        name: (Decline) I'm sorry, I can't
+        choice: DECLINE
+        nextInteraction: 3
+  - text: You are amazing - thank you so much! Here, take the parcel. Please, don't lose it!
+    i: 2
+    n: 999
+  - text: Oh, that's a shame. I was really hoping you could help me out. Well, maybe next time.
+    i: 3

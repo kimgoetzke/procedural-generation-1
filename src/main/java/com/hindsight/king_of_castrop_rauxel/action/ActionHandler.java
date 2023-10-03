@@ -72,8 +72,9 @@ public class ActionHandler {
   }
 
   public void getDialogueActions(Player player, List<Action> actions) {
-    var eventActions = player.getCurrentEvent().getNextInteraction().actions();
-    actions.addAll(eventActions);
+    prepend(actions);
+    var eventActions = player.getCurrentEvent().getCurrentActions();
+    addAllActions(eventActions, actions);
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
@@ -98,8 +99,8 @@ public class ActionHandler {
     append(actions);
   }
 
-  public List<Action> getEmpty() {
-    return new ArrayList<>();
+  public void getNone(List<Action> actions) {
+    actions.clear();
   }
 
   private static void addLocationActions(
@@ -123,9 +124,17 @@ public class ActionHandler {
     }
   }
 
+  private static void addAllActions(List<Action> from, List<Action> to) {
+    var adjustedActions = new ArrayList<>(from);
+    for (var action : adjustedActions) {
+      action.setIndex(to.size() + 1);
+      to.add(action);
+    }
+  }
+
   private static void addAllActions(List<Action> from, List<Action> to, LocationAction except) {
     var adjustedActions = new ArrayList<>(from);
-    for (Action action : adjustedActions) {
+    for (var action : adjustedActions) {
       if (action.getName().contains(except.getLocation().getName())) {
         continue;
       }

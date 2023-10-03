@@ -1,6 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
+import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+
+import java.util.List;
 
 /**
  * Events are linked to NPCs. Each NPC owns at least one event. Events can be of different types,
@@ -29,16 +32,20 @@ public interface Event {
 
   Dialogue getDialogue();
 
+  default boolean hasCurrentInteraction() {
+    return getDialogue().hasCurrent();
+  }
+
+  default Dialogue.Interaction getCurrentInteraction() {
+    return getDialogue().getCurrent();
+  }
+
+  default List<Action> getCurrentActions() {
+    return getCurrentInteraction().actions();
+  }
+
   default boolean hasNextInteraction() {
-    return getDialogue().hasNextInteraction();
-  }
-
-  default Dialogue.Interaction getNextInteraction() {
-    return getDialogue().getNextInteraction();
-  }
-
-  default void progress() {
-    getDialogue().progress();
+    return getDialogue().hasNext();
   }
 
   default void reset() {
@@ -61,7 +68,6 @@ public interface Event {
   }
 
   enum EventChoice {
-    PENDING,
     ACCEPT,
     DECLINE
   }

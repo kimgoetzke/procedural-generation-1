@@ -49,7 +49,7 @@ public class Inhabitant implements Npc {
     firstName = nameGenerator.npcFirstNameFrom(Inhabitant.class);
     lastName = nameGenerator.npcLastNameFrom(Inhabitant.class);
     fullName = firstName + " " + lastName;
-    event = eventGenerator.multistepDialogueEvent(this);
+    event = eventGenerator.multiStepDialogue(this);
   }
 
   @Override

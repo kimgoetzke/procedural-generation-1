@@ -15,10 +15,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 @Slf4j
 @NoArgsConstructor
 public class BasicNameGenerator implements NameGenerator {
+
   private static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
-  private static final String FILE_EXTENSION = ".txt";
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
   private static final String PLACEHOLDER_PARENT_NAME = "%P";
@@ -26,7 +26,7 @@ public class BasicNameGenerator implements NameGenerator {
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
   public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
-  private final FileProcessor fileProcessor = new FileProcessor(FOLDER, FILE_EXTENSION);
+  private final TxtReader txtReader = new TxtReader(FOLDER);
   private Random random;
 
   public void setRandom(Random parentRandom) {
@@ -100,9 +100,9 @@ public class BasicNameGenerator implements NameGenerator {
   private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {
     if (words.isEmpty()) {
       for (String suffix : SUFFIXES) {
-        var result = fileProcessor.readWordsFromFile(pathName + suffix);
+        var result = txtReader.read(pathName + suffix);
         if (!result.isEmpty() && (!suffix.equals(SUFFIX_MIDDLE) || random.nextInt(3) == 0)) {
-          words.add(fileProcessor.getRandomWord(result, random));
+          words.add(txtReader.getRandom(result, random));
         }
       }
     }
@@ -110,9 +110,9 @@ public class BasicNameGenerator implements NameGenerator {
 
   private void loopThroughFilesWithoutSuffix(List<String> words, String pathName) {
     if (words.isEmpty()) {
-      var result = fileProcessor.readWordsFromFile(pathName);
+      var result = txtReader.read(pathName);
       if (!result.isEmpty()) {
-        words.add(fileProcessor.getRandomWord(result, random));
+        words.add(txtReader.getRandom(result, random));
       }
     }
   }
@@ -126,13 +126,13 @@ public class BasicNameGenerator implements NameGenerator {
 
   private void processingFileNamePlaceholders(List<String> words, String pathName, PoiType type) {
     if (words.get(0).startsWith(HYPHEN)) {
-      var result = fileProcessor.readWordsFromFile(pathName + words.get(0));
+      var result = txtReader.read(pathName + words.get(0));
       if (result.isEmpty()) {
         log.warn("Failed to replace '{}' at path '{}'", words.get(0), pathName);
         var fallbackName = type != null ? type.name() : pathName;
         words.set(0, NONDESCRIPT + fallbackName + " " + RandomStringUtils.randomNumeric(3));
       } else {
-        var randomWord = fileProcessor.getRandomWord(result, random);
+        var randomWord = txtReader.getRandom(result, random);
         log.info("Replacing '{}' with word '{}'", words.get(0), randomWord);
         words.set(0, randomWord);
       }
@@ -174,10 +174,10 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   private String getFallbackName(String fileName) {
-    var result = fileProcessor.readWordsFromFile(fileName);
+    var result = txtReader.read(fileName);
     if (result.isEmpty()) {
       throw new IllegalStateException("Failed to find fallback name in '%s'".formatted(fileName));
     }
-    return fileProcessor.getRandomWord(result, random);
+    return txtReader.getRandom(result, random);
   }
 }

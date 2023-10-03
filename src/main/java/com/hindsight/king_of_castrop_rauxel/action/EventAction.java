@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This action initiates an event by changing the state to EVENT and setting the current event on
- * the player.
+ * This action initiates a dialogue by changing the state to DIALOGUE and setting the current event
+ * on the player.
  */
 @Getter
 @Builder
@@ -27,19 +27,12 @@ public class EventAction implements Action {
         || (event.isRepeatable() && event.getState() == EventState.AVAILABLE)) {
       player.addEvent(event);
       player.setCurrentEvent(event);
-      player.setState(PlayerState.EVENT);
-      return;
-    }
-    event.progress();
-    if (!event.hasNextInteraction()) {
-      player.setCurrentEvent(null);
-      event.setState(EventState.COMPLETED);
       nextState(player);
     }
   }
 
   @Override
   public PlayerState getNextState() {
-    return PlayerState.AT_SPECIFIC_POI;
+    return PlayerState.DIALOGUE;
   }
 }

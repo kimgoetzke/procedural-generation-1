@@ -9,7 +9,7 @@ public interface EventGenerator {
 
   void setRandom(Random random);
 
-  Event simpleDialogueEvent(Npc npc);
+  Event singleStepDialogue(Npc npc);
 
-  Event multistepDialogueEvent(Npc npc);
+  Event multiStepDialogue(Npc npc);
 }

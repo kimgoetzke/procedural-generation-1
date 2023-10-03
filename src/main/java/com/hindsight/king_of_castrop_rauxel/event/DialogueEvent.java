@@ -14,10 +14,10 @@ public class DialogueEvent implements Event {
   @Setter private EventState state;
   @Setter private boolean isRepeatable;
 
-  public DialogueEvent(Dialogue dialogue, Npc npc, EventType type, boolean isRepeatable) {
+  public DialogueEvent(Dialogue dialogue, Npc npc, boolean isRepeatable) {
     this.dialogue = dialogue;
     this.npc = npc;
-    this.type = type;
+    this.type = EventType.DIALOGUE;
     this.state = EventState.AVAILABLE;
     this.isRepeatable = isRepeatable;
   }

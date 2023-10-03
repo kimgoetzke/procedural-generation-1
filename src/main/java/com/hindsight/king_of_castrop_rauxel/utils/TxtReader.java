@@ -9,23 +9,18 @@ import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class FileProcessor {
+public class TxtReader {
 
-  private final String fileExtension;
+  private static final String FILE_EXTENSION = ".txt";
   private final String folder;
 
-  public FileProcessor(String folder, String fileExtension) {
+  public TxtReader(String folder) {
     this.folder = folder;
-    this.fileExtension = fileExtension;
   }
 
-  List<String> readWordsFromFile(String fileName) {
-    return readLinesFromFile(fileName);
-  }
-
-  List<String> readLinesFromFile(String fileName) {
+  List<String> read(String fileName) {
     var inputStream =
-        FileProcessor.class.getClassLoader().getResourceAsStream(folder + fileName + fileExtension);
+        this.getClass().getClassLoader().getResourceAsStream(folder + fileName + FILE_EXTENSION);
     if (inputStream != null) {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
         return reader.lines().map(String::trim).toList();
@@ -36,11 +31,7 @@ public class FileProcessor {
     return new ArrayList<>();
   }
 
-  String getRandomWord(List<String> lines, Random random) {
-    return getRandomLine(lines, random);
-  }
-
-  String getRandomLine(List<String> lines, Random random) {
+  String getRandom(List<String> lines, Random random) {
     int randomIndex = random.nextInt(lines.size());
     return lines.get(randomIndex);
   }

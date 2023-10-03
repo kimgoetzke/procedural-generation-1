@@ -24,17 +24,16 @@ public class Player implements Visitor {
   @Setter private int level;
   @Setter private int age = 15;
   @Setter private int activityPoints = 20;
-  private PlayerState state = PlayerState.AT_DEFAULT_POI;
-  private final CliSettings cli = new CliSettings();
+  private PlayerState state = PlayerState.AT_LOCATION;
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
 
   public enum PlayerState {
-    AT_DEFAULT_POI,
+    AT_LOCATION,
     CHOOSE_POI,
-    AT_SPECIFIC_POI,
-    EVENT,
+    AT_POI,
+    DIALOGUE,
     DEBUG
   }
 
@@ -64,67 +63,6 @@ public class Player implements Visitor {
 
   public void setState(PlayerState state) {
     this.state = state;
-    updateCliState();
-  }
-
-  public void updateCliState() {
     log.info("Updating CLI state to {}", state);
-    switch (state) {
-      case AT_DEFAULT_POI, AT_SPECIFIC_POI, CHOOSE_POI, DEBUG -> cli.reset();
-      case EVENT -> {
-        cli.setPrepareActions(true);
-        cli.setPrintActions(true);
-        cli.setTakeAction(true);
-        cli.setPrintResponse(true);
-        cli.setPostProcess(true);
-      }
-    }
-  }
-
-  @Setter
-  public static final class CliSettings {
-    private boolean printHeaders;
-    private boolean prepareActions;
-    private boolean printActions;
-    private boolean takeAction;
-    private boolean printResponse;
-    private boolean postProcess;
-
-    public CliSettings() {
-      reset();
-    }
-
-    public boolean printHeaders() {
-      return printHeaders;
-    }
-
-    public boolean prepareActions() {
-      return prepareActions;
-    }
-
-    public boolean printActions() {
-      return printActions;
-    }
-
-    public boolean takeAction() {
-      return takeAction;
-    }
-
-    public boolean postProcess() {
-      return postProcess;
-    }
-
-    public boolean printResponse() {
-      return printResponse;
-    }
-
-    public void reset() {
-      this.printHeaders = true;
-      this.prepareActions = true;
-      this.printActions = true;
-      this.takeAction = true;
-      this.printResponse = false;
-      this.postProcess = true;
-    }
   }
 }

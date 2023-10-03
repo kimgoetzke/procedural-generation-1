@@ -29,6 +29,6 @@ public class PoiAction implements Action {
 
   @Override
   public PlayerState getNextState() {
-    return PlayerState.AT_SPECIFIC_POI;
+    return PlayerState.AT_POI;
   }
 }

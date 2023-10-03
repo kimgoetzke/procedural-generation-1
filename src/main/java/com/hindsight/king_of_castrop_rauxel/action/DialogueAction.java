@@ -5,10 +5,12 @@ import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /** This action is used in dialogue and allows branching logic. */
 @Getter
 @Builder
+@ToString
 public class DialogueAction implements Action {
 
   @Setter private int index;
@@ -19,14 +21,20 @@ public class DialogueAction implements Action {
   @Override
   public void execute(Player player) {
     switch (choice) {
-      case PENDING -> {}
       case ACCEPT -> player.getCurrentEvent().setState(Event.EventState.ACTIVE);
       case DECLINE -> player.getCurrentEvent().setState(Event.EventState.DECLINED);
     }
+    // Subtract 1 because the dialogue will progress after this action is executed.
+    nextInteraction = nextInteraction - 1;
+    if (nextInteraction > player.getCurrentEvent().getDialogue().getInteractions().size()) {
+      throw new IllegalArgumentException(
+          "The next interaction index is out of bounds: " + nextInteraction);
+    }
+    player.getCurrentEvent().getDialogue().setCurrent(nextInteraction);
   }
 
   @Override
   public Player.PlayerState getNextState() {
-    return Player.PlayerState.EVENT;
+    return Player.PlayerState.DIALOGUE;
   }
 }
