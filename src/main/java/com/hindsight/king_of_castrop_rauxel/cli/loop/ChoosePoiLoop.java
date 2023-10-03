@@ -22,7 +22,7 @@ public class ChoosePoiLoop extends AbstractLoop {
 
   @Override
   public void execute(List<Action> actions) {
-    printHeaders(true, true, true);
+    printHeaders(true);
     prepareActions(actions);
     printActions(actions);
     takeAction(actions);

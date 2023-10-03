@@ -95,7 +95,7 @@ public class ActionHandler {
         debug.create(actions.size() + 1, "Log graph connectivity", debug::printConnectivity));
     actions.add(debug.create(actions.size() + 1, "Log graph edges & distances", debug::logGraph));
     actions.add(debug.create(actions.size() + 1, "Log close chunks", debug::logWorld));
-    actions.add(debug.create(actions.size() + 1, "Visualise plane", debug::printPlane));
+    actions.add(debug.create(actions.size() + 1, "Log visualised plane", debug::printPlane));
     append(actions);
   }
 

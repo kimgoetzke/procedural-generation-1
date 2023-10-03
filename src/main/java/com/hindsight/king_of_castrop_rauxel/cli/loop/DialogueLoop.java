@@ -36,6 +36,9 @@ public class DialogueLoop extends AbstractLoop {
   private void printInteraction() {
     var event = player.getCurrentEvent();
     if (event.hasCurrentInteraction()) {
+      if (event.isBeginningOfDialogue()) {
+        CliComponent.clearConsole();
+      }
       out.printf(
           "%s%s%s%s: %s%n%n",
           CliComponent.FMT.BLACK,
@@ -71,6 +74,6 @@ public class DialogueLoop extends AbstractLoop {
   }
 
   private void updateCurrentEventDialogue() {
-    player.getCurrentEvent().getDialogue().progress(player);
+    player.getCurrentEvent().progressDialogue(player);
   }
 }

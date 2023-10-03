@@ -21,39 +21,32 @@ public abstract class AbstractLoop {
 
   public abstract void execute(List<Action> actions);
 
-  protected void printHeaders(boolean showStats, boolean showLocation, boolean showPoi) {
+  protected void printHeaders(boolean showPoi) {
     CliComponent.clearConsole();
-    if (showStats) {
-      out.printf(
-          "%sSTATS: [ Gold: %s%s%s | Level: %s%s%s | Age: %s%s%s | Activity points left: %s%s%s ]%s%n",
-          CliComponent.FMT.DEFAULT_BOLD,
-          CliComponent.FMT.YELLOW_BOLD,
-          player.getGold(),
-          CliComponent.FMT.DEFAULT_BOLD,
-          CliComponent.FMT.BLUE_BOLD,
-          player.getLevel(),
-          CliComponent.FMT.DEFAULT_BOLD,
-          CliComponent.FMT.MAGENTA_BOLD,
-          player.getAge(),
-          CliComponent.FMT.DEFAULT_BOLD,
-          CliComponent.FMT.GREEN_BOLD,
-          player.getActivityPoints(),
-          CliComponent.FMT.DEFAULT_BOLD,
-          CliComponent.FMT.RESET);
-    }
-    if (showLocation) {
-      var currentLocation = player.getCurrentLocation();
-      out.printf(
-          "%sCURRENT LOCATION: %s%s%n%n",
-          CliComponent.FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), CliComponent.FMT.RESET);
-    }
+    out.printf(
+        "%sSTATS: [ Gold: %s%s%s | Level: %s%s%s | Age: %s%s%s | Activity points left: %s%s%s ]%s%n",
+        CliComponent.FMT.DEFAULT_BOLD,
+        CliComponent.FMT.YELLOW_BOLD,
+        player.getGold(),
+        CliComponent.FMT.DEFAULT_BOLD,
+        CliComponent.FMT.BLUE_BOLD,
+        player.getLevel(),
+        CliComponent.FMT.DEFAULT_BOLD,
+        CliComponent.FMT.MAGENTA_BOLD,
+        player.getAge(),
+        CliComponent.FMT.DEFAULT_BOLD,
+        CliComponent.FMT.GREEN_BOLD,
+        player.getActivityPoints(),
+        CliComponent.FMT.DEFAULT_BOLD,
+        CliComponent.FMT.RESET);
+    var currentLocation = player.getCurrentLocation();
+    out.printf(
+        "%sCURRENT LOCATION: %s%s%n%n",
+        CliComponent.FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), CliComponent.FMT.RESET);
     if (showPoi) {
       out.printf(
           "%sYou are at: %s.%s ",
           CliComponent.FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), CliComponent.FMT.RESET);
-    }
-    if (showStats && !showLocation && !showPoi) {
-      out.printf("%n%n");
     }
   }
 

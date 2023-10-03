@@ -26,11 +26,7 @@ public class DialogueAction implements Action {
     }
     // Subtract 1 because the dialogue will progress after this action is executed.
     nextInteraction = nextInteraction - 1;
-    if (nextInteraction > player.getCurrentEvent().getDialogue().getInteractions().size()) {
-      throw new IllegalArgumentException(
-          "The next interaction index is out of bounds: " + nextInteraction);
-    }
-    player.getCurrentEvent().getDialogue().setCurrent(nextInteraction);
+    player.getCurrentEvent().setCurrentInteraction(nextInteraction);
   }
 
   @Override

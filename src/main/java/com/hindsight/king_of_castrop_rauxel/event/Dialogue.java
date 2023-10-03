@@ -20,19 +20,23 @@ public final class Dialogue {
     this.interactions = new ArrayList<>();
   }
 
-  public boolean hasCurrent() {
+  boolean hasCurrent() {
     return current < interactions.size();
   }
 
-  public Interaction getCurrent() {
+  Interaction getCurrent() {
     return interactions.get(current);
   }
 
-  public boolean hasNext() {
+  void setCurrent(int i) {
+    current = i;
+  }
+
+  boolean hasNext() {
     return current + 1 < interactions.size();
   }
 
-  public void progress(Player player) {
+  void progress(Player player) {
     if (!hasNext()) {
       complete(player);
       return;
@@ -49,23 +53,19 @@ public final class Dialogue {
     current = getInteractions().get(current).nextInteraction();
   }
 
-  public void complete(Player player) {
+  void complete(Player player) {
     player.getCurrentEvent().setComplete();
     player.setCurrentEvent(null);
     player.setState(Player.PlayerState.AT_POI);
   }
 
-  public void reset() {
+  void reset() {
     current = 0;
   }
 
   @Override
   public String toString() {
     return "Dialogue(interactions=" + interactions + ", current=" + current + ")";
-  }
-
-  public void setCurrent(int nextInteraction) {
-    current = nextInteraction;
   }
 
   public record Interaction(String text, List<Action> actions, Integer nextInteraction) {

@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.event;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
 
 import java.util.List;
 
@@ -30,10 +31,21 @@ public interface Event {
 
   boolean isRepeatable();
 
+  default boolean isBeginningOfDialogue() {
+    return getState() == EventState.AVAILABLE;
+  }
+
   Dialogue getDialogue();
 
   default boolean hasCurrentInteraction() {
     return getDialogue().hasCurrent();
+  }
+
+  default void setCurrentInteraction(int i) {
+    if (i > getDialogue().getInteractions().size()) {
+      throw new IllegalArgumentException("The next interaction index is out of bounds: " + i);
+    }
+    getDialogue().setCurrent(i);
   }
 
   default Dialogue.Interaction getCurrentInteraction() {
@@ -44,8 +56,8 @@ public interface Event {
     return getCurrentInteraction().actions();
   }
 
-  default boolean hasNextInteraction() {
-    return getDialogue().hasNext();
+  default void progressDialogue(Player player) {
+    getDialogue().progress(player);
   }
 
   default void reset() {

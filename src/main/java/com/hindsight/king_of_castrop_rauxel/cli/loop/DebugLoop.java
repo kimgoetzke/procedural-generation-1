@@ -22,7 +22,7 @@ public class DebugLoop extends AbstractLoop {
 
   @Override
   public void execute(List<Action> actions) {
-    printHeaders(true, true, false);
+    printHeaders(false);
     prepareActions(actions);
     printActions(actions);
     takeAction(actions);
