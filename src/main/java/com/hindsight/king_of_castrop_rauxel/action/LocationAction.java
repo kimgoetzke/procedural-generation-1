@@ -61,7 +61,7 @@ public class LocationAction implements Action {
   }
 
   @Override
-  public PlayerState getNextState() {
-    return PlayerState.AT_LOCATION;
+  public State getNextState() {
+    return State.AT_LOCATION;
   }
 }

@@ -3,6 +3,8 @@ package com.hindsight.king_of_castrop_rauxel.event;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -14,73 +16,142 @@ public interface Event {
 
   Npc getNpc();
 
-  EventType getType();
+  /**
+   * This method should only be used inside this interface. The intended way of changing the event
+   * state is by using the {@link #progressEvent(State)} or {@link #completeEvent(Player)} methods.
+   */
+  void setEventState(State state);
 
-  void setState(EventState state);
-
-  default void setComplete() {
-    if (isRepeatable()) {
-      setState(EventState.AVAILABLE);
-      reset();
-    } else {
-      setState(EventState.COMPLETED);
-    }
-  }
-
-  EventState getState();
+  State getEventState();
 
   boolean isRepeatable();
 
-  default boolean isBeginningOfDialogue() {
-    return getState() == EventState.AVAILABLE;
+  /**
+   * This method is only called by DialogueAction when changing the event state. Current interaction
+   * is set to -1 because it'll be incremented by 1 during the DialogLoop's post-processing which is
+   * before any interaction is displayed.
+   */
+  default void progressEvent(State state) {
+    setEventState(state);
+    setCurrentDialogue(getDialogue(state));
+    setCurrentInteraction(-1);
   }
 
-  Dialogue getDialogue();
+  /**
+   * This method is only called by DialogueAction when completing a quest. Current interaction is
+   * set to -1 because it'll be incremented by 1 during the DialogLoop's post-processing which is
+   * before any interaction is displayed.
+   */
+  default void completeEvent(Player player) {
+    if (isRepeatable()) {
+      resetEvent();
+    } else {
+      setEventState(Event.State.COMPLETED);
+      setCurrentDialogue(getDialogue(Event.State.COMPLETED));
+      setCurrentInteraction(-1);
+    }
+    player.setCurrentEvent(null);
+    player.setState(Player.State.AT_POI);
+  }
+
+  default void resetEvent() {
+    getDialogues().forEach(Dialogue::reset);
+    setCurrentDialogue(getDialogue(Event.State.AVAILABLE));
+    setEventState(Event.State.AVAILABLE);
+  }
+
+  List<Dialogue> getDialogues();
+
+  default Dialogue getDialogue(State state) {
+    return getDialogues().stream().filter(d -> d.getState() == state).findFirst().orElseThrow();
+  }
+
+  Dialogue getCurrentDialogue();
+
+  void setCurrentDialogue(Dialogue dialogue);
+
+  default boolean hasNextDialogue() {
+    if (getCurrentDialogue().getState() == Event.State.NONE) {
+      return false;
+    }
+    return getCurrentDialogue().getState().ordinal() < Event.State.values().length - 1;
+  }
+
+  default void progressDialogue() {
+    getCurrentDialogue().progress();
+  }
+
+  default void completeDialogue() {
+    getCurrentDialogue().reset();
+  }
+
+  /** Returns true if the current interaction is the first interaction of the first dialogue. */
+  default boolean isBeginningOfDialogue() {
+    var currentDialogue = getCurrentDialogue();
+    return (currentDialogue.getState() == Event.State.AVAILABLE
+            || currentDialogue.getState() == Event.State.NONE)
+        && currentDialogue.isFirstInteraction();
+  }
 
   default boolean hasCurrentInteraction() {
-    return getDialogue().hasCurrent();
+    return getCurrentDialogue().hasCurrentInteraction();
   }
 
   default void setCurrentInteraction(int i) {
-    if (i > getDialogue().getInteractions().size()) {
+    if (i > getCurrentDialogue().getInteractions().size()) {
       throw new IllegalArgumentException("The next interaction index is out of bounds: " + i);
     }
-    getDialogue().setCurrent(i);
+    getCurrentDialogue().setCurrentInteraction(i);
   }
 
   default Dialogue.Interaction getCurrentInteraction() {
-    return getDialogue().getCurrent();
+    return getCurrentDialogue().getCurrentInteraction();
   }
 
   default List<Action> getCurrentActions() {
+    if (!hasCurrentInteraction()) {
+      return List.of();
+    }
     return getCurrentInteraction().actions();
   }
 
-  default void progressDialogue(Player player) {
-    getDialogue().progress(player);
+  @Getter
+  @Slf4j
+  enum State {
+    NONE("None", 0),
+    AVAILABLE("Available", 1),
+    ACTIVE("Active", 2),
+    READY("Ready", 3),
+    COMPLETED("Completed", 4),
+    DECLINED("Declined", 5);
+
+    private final String name;
+    private final int ordinal;
+
+    State(String name, int ordinal) {
+      this.name = name;
+      this.ordinal = ordinal;
+    }
+
+    public static State fromOrdinal(int ordinal) {
+      return switch (ordinal) {
+        case 0 -> NONE;
+        case 1 -> AVAILABLE;
+        case 2 -> ACTIVE;
+        case 3 -> READY;
+        case 4 -> COMPLETED;
+        case 5 -> DECLINED;
+        default -> {
+          log.error("Value '" + ordinal + "' is not valid - falling back to 'DECLINED'");
+          yield DECLINED;
+        }
+      };
+    }
   }
 
-  default void reset() {
-    getDialogue().reset();
-  }
-
-  enum EventState {
-    UNAVAILABLE,
-    AVAILABLE,
-    ACTIVE,
-    READY,
-    COMPLETED,
-    DECLINED
-  }
-
-  enum EventType {
+  enum Type {
     DIALOGUE,
     DEFEAT,
     REACH
-  }
-
-  enum EventChoice {
-    ACCEPT,
-    DECLINE
   }
 }

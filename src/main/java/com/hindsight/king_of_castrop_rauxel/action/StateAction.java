@@ -20,5 +20,5 @@ public class StateAction implements Action {
 
   @Setter private int index;
   private String name;
-  @Setter private PlayerState nextState;
+  @Setter private State nextState;
 }

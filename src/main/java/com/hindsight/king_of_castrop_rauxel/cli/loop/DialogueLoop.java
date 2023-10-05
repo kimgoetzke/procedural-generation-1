@@ -4,6 +4,7 @@ import static java.lang.System.out;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import java.io.IOException;
@@ -34,18 +35,18 @@ public class DialogueLoop extends AbstractLoop {
   }
 
   private void printInteraction() {
-    var event = player.getCurrentEvent();
-    if (event.hasCurrentInteraction()) {
-      if (event.isBeginningOfDialogue()) {
+    var dialogue = player.getCurrentEvent();
+    if (dialogue.hasCurrentInteraction()) {
+      if (dialogue.isBeginningOfDialogue()) {
         CliComponent.clearConsole();
       }
       out.printf(
           "%s%s%s%s: %s%n%n",
           CliComponent.FMT.BLACK,
           CliComponent.FMT.WHITE_BACKGROUND,
-          event.getNpc().getName(),
+          dialogue.getNpc().getName(),
           CliComponent.FMT.RESET,
-          event.getCurrentInteraction().text().formatted());
+          dialogue.getCurrentInteraction().text().formatted());
     }
   }
 
@@ -74,6 +75,9 @@ public class DialogueLoop extends AbstractLoop {
   }
 
   private void updateCurrentEventDialogue() {
-    player.getCurrentEvent().progressDialogue(player);
+    player.getCurrentEvent().progressDialogue();
+    if (player.getState() != Player.State.DIALOGUE) {
+      player.getCurrentEvent().completeDialogue();
+    }
   }
 }

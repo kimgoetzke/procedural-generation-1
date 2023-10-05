@@ -1,8 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
-import static com.hindsight.king_of_castrop_rauxel.event.Event.*;
-
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.Builder;
@@ -24,15 +21,15 @@ public class EventAction implements Action {
   @Override
   public void execute(Player player) {
     if (!player.getEvents().contains(event)
-        || (event.isRepeatable() && event.getState() == EventState.AVAILABLE)) {
+        || (event.isRepeatable() && event.getEventState() == Event.State.AVAILABLE)) {
       player.addEvent(event);
-      player.setCurrentEvent(event);
-      nextState(player);
     }
+    player.setCurrentEvent(event);
+    nextState(player);
   }
 
   @Override
-  public PlayerState getNextState() {
-    return PlayerState.DIALOGUE;
+  public Player.State getNextState() {
+    return Player.State.DIALOGUE;
   }
 }

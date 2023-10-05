@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.DialogueAction;
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Dialogue;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import java.util.ArrayList;
@@ -22,17 +23,31 @@ public class YamlReader {
     this.folder = folder;
   }
 
-  public Dialogue read(String fileName) {
+  public List<Dialogue> readDialogueList(String fileName) {
     var inputStream =
         this.getClass().getClassLoader().getResourceAsStream(folder + fileName + FILE_EXTENSION);
     var yaml = new Yaml();
-    return parseDialogue(yaml.load(inputStream));
+    Map<String, Object> data = yaml.load(inputStream);
+    var dialogues = new ArrayList<Dialogue>();
+    dialogues.add(parseDialogue(data, Event.State.AVAILABLE));
+    dialogues.add(parseDialogue(data, Event.State.ACTIVE));
+    dialogues.add(parseDialogue(data, Event.State.READY));
+    dialogues.add(parseDialogue(data, Event.State.COMPLETED));
+    dialogues.add(parseDialogue(data, Event.State.DECLINED));
+    return dialogues;
+  }
+
+  public Dialogue readDialogue(String fileName) {
+    var inputStream =
+        this.getClass().getClassLoader().getResourceAsStream(folder + fileName + FILE_EXTENSION);
+    var yaml = new Yaml();
+    return parseDialogue(yaml.load(inputStream), Event.State.NONE);
   }
 
   @SuppressWarnings("unchecked")
-  private static Dialogue parseDialogue(Map<String, Object> data) {
-    var dialogue = new Dialogue();
-    var interactions = (List<Map<String, Object>>) data.get("interactions");
+  private static Dialogue parseDialogue(Map<String, Object> data, Event.State state) {
+    var dialogue = new Dialogue(state);
+    var interactions = (List<Map<String, Object>>) data.get(state.name().toLowerCase());
     for (Map<String, Object> interactionData : interactions) {
       var text = (String) interactionData.get("text");
       var n = (Integer) interactionData.get("n");
@@ -40,12 +55,19 @@ public class YamlReader {
       var actions = (List<Map<String, Object>>) interactionData.get("actions");
       if (actions != null) {
         for (Map<String, Object> a : actions) {
+          var eventStateData = (String) a.get("eventState");
+          Event.State eventState =
+              eventStateData == null ? null : Event.State.valueOf(eventStateData);
+          var playerStateData = (String) a.get("playerState");
+          Player.State playerState =
+              playerStateData == null ? null : Player.State.valueOf(playerStateData);
           Action action =
               DialogueAction.builder()
                   .index((int) a.get("index"))
                   .name((String) a.get("name"))
-                  .choice(Event.EventChoice.valueOf((String) a.get("choice")))
-                  .nextInteraction((int) a.get("nextInteraction"))
+                  .eventState(eventState)
+                  .playerState(playerState)
+                  .nextInteraction((Integer) a.get("nextInteraction"))
                   .build();
           interaction.actions().add(action);
         }

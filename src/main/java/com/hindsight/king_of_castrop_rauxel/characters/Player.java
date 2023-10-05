@@ -24,12 +24,12 @@ public class Player implements Visitor {
   @Setter private int level;
   @Setter private int age = 15;
   @Setter private int activityPoints = 20;
-  private PlayerState state = PlayerState.AT_LOCATION;
+  private State state = State.AT_LOCATION;
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
 
-  public enum PlayerState {
+  public enum State {
     AT_LOCATION,
     CHOOSE_POI,
     AT_POI,
@@ -61,8 +61,12 @@ public class Player implements Visitor {
     events.add(event);
   }
 
-  public void setState(PlayerState state) {
+  public void setState(State state) {
     this.state = state;
     log.info("Updating CLI state to {}", state);
+  }
+
+  public List<Event> getActiveEvents() {
+    return events.stream().filter(e -> e.getEventState() == Event.State.ACTIVE).toList();
   }
 }

@@ -15,22 +15,42 @@ public class DialogueAction implements Action {
 
   @Setter private int index;
   private String name;
-  private Event.EventChoice choice;
-  private int nextInteraction;
+  private Event.State eventState;
+  private Player.State playerState;
+  private Integer nextInteraction;
 
   @Override
   public void execute(Player player) {
-    switch (choice) {
-      case ACCEPT -> player.getCurrentEvent().setState(Event.EventState.ACTIVE);
-      case DECLINE -> player.getCurrentEvent().setState(Event.EventState.DECLINED);
+    if (playerState == null && eventState == null) {
+      throw new IllegalStateException("DialogueAction must have a playerState or eventState");
     }
-    // Subtract 1 because the dialogue will progress after this action is executed.
-    nextInteraction = nextInteraction - 1;
-    player.getCurrentEvent().setCurrentInteraction(nextInteraction);
+    if (playerState != null) {
+      switch (playerState) {
+        case AT_LOCATION -> player.setState(Player.State.AT_LOCATION);
+        case CHOOSE_POI -> player.setState(Player.State.CHOOSE_POI);
+        case AT_POI -> player.setState(Player.State.AT_POI);
+        case DIALOGUE -> player.setState(Player.State.DIALOGUE);
+        case DEBUG -> player.setState(Player.State.DEBUG);
+      }
+    }
+    if (eventState == Event.State.NONE && nextInteraction == null) {
+      throw new IllegalStateException("DialogueAction must have an eventState or nextInteraction");
+    }
+    if (eventState != null) {
+      switch (eventState) {
+          // Subtract 1 because the dialogue will progress after this action is executed.
+        case NONE -> player.getCurrentEvent().setCurrentInteraction(nextInteraction - 1);
+        case AVAILABLE -> player.getCurrentEvent().progressEvent(Event.State.AVAILABLE);
+        case ACTIVE -> player.getCurrentEvent().progressEvent(Event.State.ACTIVE);
+        case READY -> player.getCurrentEvent().progressEvent(Event.State.READY);
+        case COMPLETED -> player.getCurrentEvent().completeEvent(player);
+        case DECLINED -> player.getCurrentEvent().progressEvent(Event.State.DECLINED);
+      }
+    }
   }
 
   @Override
-  public Player.PlayerState getNextState() {
-    return Player.PlayerState.DIALOGUE;
+  public Player.State getNextState() {
+    return Player.State.DIALOGUE;
   }
 }

@@ -28,14 +28,15 @@ public class BasicEventGenerator implements EventGenerator {
   public Event singleStepDialogue(Npc npc) {
     var pathName = "NPC-IDLE";
     var text = loopThroughFiles(pathName);
-    var dialogue = new Dialogue(List.of(new Dialogue.Interaction(text, List.of(), null)));
-    return new DialogueEvent(dialogue, npc, true);
+    var interactions = List.of(new Dialogue.Interaction(text, List.of(), null));
+    var dialogue = new Dialogue(interactions);
+    return new DialogueEvent(List.of(dialogue), npc, true);
   }
 
   @Override
   public Event multiStepDialogue(Npc npc) {
-    var dialogue = yamlReader.read("parcel");
-    return new DialogueEvent(dialogue, npc, true);
+    var dialogues = yamlReader.readDialogueList("parcel");
+    return new DialogueEvent(dialogues, npc, true);
   }
 
   private String loopThroughFiles(String pathName) {

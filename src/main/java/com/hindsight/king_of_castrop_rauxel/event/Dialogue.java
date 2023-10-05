@@ -3,60 +3,51 @@ package com.hindsight.king_of_castrop_rauxel.event;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import lombok.Getter;
 
 public final class Dialogue {
 
   @Getter private final List<Interaction> interactions;
+  @Getter private final Event.State state;
   private int current = 0;
 
   public Dialogue(List<Interaction> interactions) {
     this.interactions = interactions;
+    this.state = Event.State.NONE;
   }
 
-  public Dialogue() {
+  public Dialogue(Event.State state) {
     this.interactions = new ArrayList<>();
+    this.state = state;
   }
 
-  boolean hasCurrent() {
-    return current < interactions.size();
+  boolean hasCurrentInteraction() {
+    return current >= 0 && current < interactions.size();
   }
 
-  Interaction getCurrent() {
+  Interaction getCurrentInteraction() {
     return interactions.get(current);
   }
 
-  void setCurrent(int i) {
+  void setCurrentInteraction(int i) {
     current = i;
   }
 
-  boolean hasNext() {
-    return current + 1 < interactions.size();
+  boolean isFirstInteraction() {
+    return current == 0;
   }
 
-  void progress(Player player) {
-    if (!hasNext()) {
-      complete(player);
-      return;
-    }
-    var linkedInteraction = getInteractions().get(current).nextInteraction();
-    if (linkedInteraction == null) {
+  void progress() {
+    var next = hasCurrentInteraction() ? getCurrentInteraction().nextInteraction() : null;
+    if (next == null) {
       current++;
       return;
     }
-    if (linkedInteraction > getInteractions().size()) {
-      complete(player);
+    if (next > getInteractions().size()) {
+      reset();
       return;
     }
-    current = getInteractions().get(current).nextInteraction();
-  }
-
-  void complete(Player player) {
-    player.getCurrentEvent().setComplete();
-    player.setCurrentEvent(null);
-    player.setState(Player.PlayerState.AT_POI);
+    setCurrentInteraction(next);
   }
 
   void reset() {
@@ -71,7 +62,13 @@ public final class Dialogue {
   public record Interaction(String text, List<Action> actions, Integer nextInteraction) {
     @Override
     public String toString() {
-      return "Interaction(text=" + text + ", actions=" + actions.size() + ")";
+      return "Interaction(text="
+          + text
+          + ", actions="
+          + actions.size()
+          + ", nextInteraction="
+          + nextInteraction
+          + ")";
     }
   }
 }

@@ -5,20 +5,28 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 public class DialogueEvent implements Event {
 
-  private final Dialogue dialogue;
   @EqualsAndHashCode.Exclude private final Npc npc;
-  private final EventType type;
-  @Setter private EventState state;
+  private final List<Dialogue> dialogues;
+  private final Type type;
+  @Setter private Dialogue currentDialogue;
+  @Setter private State eventState;
   @Setter private boolean isRepeatable;
 
-  public DialogueEvent(Dialogue dialogue, Npc npc, boolean isRepeatable) {
-    this.dialogue = dialogue;
+  public DialogueEvent(List<Dialogue> dialogues, Npc npc, boolean isRepeatable) {
+    this.dialogues = dialogues;
     this.npc = npc;
-    this.type = EventType.DIALOGUE;
-    this.state = EventState.AVAILABLE;
+    this.type = Type.DIALOGUE;
+    this.eventState = State.AVAILABLE;
     this.isRepeatable = isRepeatable;
+    setCurrentDialogue(
+        dialogues.stream()
+            .filter(d -> d.getState() == State.AVAILABLE)
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No dialogue for state AVAILABLE")));
   }
 }

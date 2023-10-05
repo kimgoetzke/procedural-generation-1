@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.PlayerState.*;
+import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;

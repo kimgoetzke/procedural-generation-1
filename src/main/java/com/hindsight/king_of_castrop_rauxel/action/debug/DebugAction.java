@@ -27,7 +27,7 @@ public class DebugAction implements Action {
     debuggable.execute();
   }
 
-  public PlayerState getNextState() {
-    return PlayerState.DEBUG;
+  public State getNextState() {
+    return State.DEBUG;
   }
 }
