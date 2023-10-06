@@ -12,4 +12,6 @@ public interface EventGenerator {
   Event singleStepDialogue(Npc npc);
 
   Event multiStepDialogue(Npc npc);
+
+  Event deliveryEvent(Npc npc);
 }

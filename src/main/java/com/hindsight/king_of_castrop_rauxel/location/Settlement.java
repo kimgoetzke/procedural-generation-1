@@ -29,9 +29,11 @@ public class Settlement extends AbstractSettlement {
   public void load() {
     var startTime = System.currentTimeMillis();
     log.info("Generating full settlement '{}'...", id);
-    generateAmenities();
-    generateInhabitants();
-    generatePlayerActions();
+    LocationBuilder.throwIfRepeatedRequest(this, true);
+    loadAmenities();
+    loadEvents();
+    loadInhabitants();
+    loadPlayerActions();
     setLoaded(true);
     logResult();
     log.info("Generated '{}' in {} seconds", id, (System.currentTimeMillis() - startTime) / 1000.0);
@@ -43,7 +45,7 @@ public class Settlement extends AbstractSettlement {
     name = nameGenerator.locationNameFrom(this.getClass());
   }
 
-  private void generateAmenities() {
+  private void loadAmenities() {
     var amenities = LocationBuilder.getSettlementConfig(size).getAmenities();
     for (var amenity : amenities.entrySet()) {
       var bounds = amenity.getValue();
@@ -65,7 +67,19 @@ public class Settlement extends AbstractSettlement {
     }
   }
 
-  private void generateInhabitants() {
+  /**
+   * Generates events and available actions for each POI. This method must be called after the
+   * settlement and POIs have been generated as the event can reference other POIs, etc.
+   */
+  private void loadEvents() {
+    pointsOfInterests.forEach(
+        poi -> {
+          poi.getNpc().loadEvent();
+          poi.loadAvailableActions();
+        });
+  }
+
+  private void loadInhabitants() {
     var bounds = LocationBuilder.getSettlementConfig(size).getInhabitants();
     inhabitantCount =
         Math.max(
@@ -73,7 +87,7 @@ public class Settlement extends AbstractSettlement {
             inhabitants.size());
   }
 
-  private void generatePlayerActions() {
+  private void loadPlayerActions() {
     for (int i = 0; i < pointsOfInterests.size(); i++) {
       availableActions.add(
           PoiAction.builder()
@@ -86,6 +100,7 @@ public class Settlement extends AbstractSettlement {
 
   @Override
   public void unload() {
+    LocationBuilder.throwIfRepeatedRequest(this, false);
     random = new Random(seed);
     inhabitants.clear();
     pointsOfInterests.clear();

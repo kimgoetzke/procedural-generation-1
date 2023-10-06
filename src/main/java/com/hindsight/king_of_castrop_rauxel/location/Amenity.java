@@ -25,11 +25,16 @@ public class Amenity extends AbstractAmenity {
         parent
             .getNameGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
-    generatePlayerActions();
     setLoaded(true);
   }
 
-  private void generatePlayerActions() {
+  /**
+   * Generates the available actions for this amenity based on its type. This method must be called
+   * after the amenity has been generated as the event, to which actions can point, is generated
+   * after all amenities have been generated. This is because events can, e.g., point to other POIs.
+   */
+  @Override
+  public void loadAvailableActions() {
     switch (type) {
       case SHOP:
         speakWith("the owner of this establishment");
@@ -53,6 +58,7 @@ public class Amenity extends AbstractAmenity {
 
   @Override
   public void unload() {
+    LocationBuilder.throwIfRepeatedRequest(this, true);
     random = new Random(seed);
     availableActions.clear();
     setLoaded(false);

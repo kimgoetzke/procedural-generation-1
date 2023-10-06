@@ -114,6 +114,14 @@ public class LocationBuilder {
     return random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
   }
 
+  public static void throwIfRepeatedRequest(Generatable generatable, boolean toBeLoaded) {
+    if (generatable.isLoaded() == toBeLoaded) {
+      throw new IllegalStateException(
+          "Request to %s settlement '%s' even though it already is, check your logic"
+              .formatted(toBeLoaded ? "loaded" : "unloaded", generatable.getId()));
+    }
+  }
+
   // TODO: Add dungeons, caves or similar as non-amenity POIs
   @Getter
   @Setter

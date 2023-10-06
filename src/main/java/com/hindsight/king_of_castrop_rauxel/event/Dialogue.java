@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
-import com.hindsight.king_of_castrop_rauxel.action.Action;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -38,7 +37,7 @@ public final class Dialogue {
   }
 
   void progress() {
-    var next = hasCurrentInteraction() ? getCurrentInteraction().nextInteraction() : null;
+    var next = hasCurrentInteraction() ? getCurrentInteraction().getNextInteraction() : null;
     if (next == null) {
       current++;
       return;
@@ -57,18 +56,5 @@ public final class Dialogue {
   @Override
   public String toString() {
     return "Dialogue(interactions=" + interactions + ", current=" + current + ")";
-  }
-
-  public record Interaction(String text, List<Action> actions, Integer nextInteraction) {
-    @Override
-    public String toString() {
-      return "Interaction(text="
-          + text
-          + ", actions="
-          + actions.size()
-          + ", nextInteraction="
-          + nextInteraction
-          + ")";
-    }
   }
 }

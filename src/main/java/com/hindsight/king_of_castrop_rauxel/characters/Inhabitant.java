@@ -28,8 +28,16 @@ public class Inhabitant implements Npc {
   public Inhabitant(NameGenerator nameGenerator, EventGenerator eventGenerator) {
     this.nameGenerator = nameGenerator;
     this.eventGenerator = eventGenerator;
-    generate();
+    load();
     logResult();
+  }
+
+  @Override
+  public void load() {
+    id = "NPC~" + UUID.randomUUID();
+    firstName = nameGenerator.npcFirstNameFrom(Inhabitant.class);
+    lastName = nameGenerator.npcLastNameFrom(Inhabitant.class);
+    fullName = firstName + " " + lastName;
   }
 
   @Override
@@ -44,12 +52,9 @@ public class Inhabitant implements Npc {
   }
 
   @Override
-  public void generate() {
-    id = UUID.randomUUID().toString();
-    firstName = nameGenerator.npcFirstNameFrom(Inhabitant.class);
-    lastName = nameGenerator.npcLastNameFrom(Inhabitant.class);
-    fullName = firstName + " " + lastName;
-    event = eventGenerator.multiStepDialogue(this);
+  public void loadEvent() {
+    var deliveryEvent = eventGenerator.deliveryEvent(this);
+    event = deliveryEvent == null ? eventGenerator.singleStepDialogue(this) : deliveryEvent;
   }
 
   @Override

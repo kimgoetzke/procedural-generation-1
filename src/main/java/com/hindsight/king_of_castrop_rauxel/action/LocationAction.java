@@ -20,7 +20,7 @@ import lombok.Setter;
 public class LocationAction implements Action {
 
   @Setter private int index;
-  private String name;
+  @Setter private String name;
   private Location location;
 
   @Override

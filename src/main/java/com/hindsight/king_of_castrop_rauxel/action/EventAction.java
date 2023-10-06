@@ -15,7 +15,7 @@ import lombok.Setter;
 public class EventAction implements Action {
 
   @Setter private int index;
-  private String name;
+  @Setter private String name;
   private Event event;
 
   @Override

@@ -8,10 +8,10 @@ import com.hindsight.king_of_castrop_rauxel.event.Event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.hindsight.king_of_castrop_rauxel.event.Interaction;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
-
-import static com.hindsight.king_of_castrop_rauxel.event.Dialogue.*;
 
 @Slf4j
 public class YamlReader {
@@ -69,13 +69,11 @@ public class YamlReader {
                   .playerState(playerState)
                   .nextInteraction((Integer) a.get("nextInteraction"))
                   .build();
-          interaction.actions().add(action);
+          interaction.getActions().add(action);
         }
       }
-
       dialogue.getInteractions().add(interaction);
     }
-
     return dialogue;
   }
 }

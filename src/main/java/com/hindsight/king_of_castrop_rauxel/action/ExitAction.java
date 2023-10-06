@@ -16,7 +16,7 @@ import lombok.Setter;
 public class ExitAction implements Action {
 
   @Setter private int index;
-  private String name;
+  @Setter private String name;
   private static final State NEXT_STATE = State.AT_LOCATION;
 
   @Override

@@ -16,7 +16,9 @@ public interface Npc {
 
   Event getEvent();
 
-  void generate();
+  void loadEvent();
+
+  void load();
 
   void logResult();
 }

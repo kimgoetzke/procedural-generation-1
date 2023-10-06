@@ -14,7 +14,7 @@ import lombok.ToString;
 public class DialogueAction implements Action {
 
   @Setter private int index;
-  private String name;
+  @Setter private String name;
   private Event.State eventState;
   private Player.State playerState;
   private Integer nextInteraction;

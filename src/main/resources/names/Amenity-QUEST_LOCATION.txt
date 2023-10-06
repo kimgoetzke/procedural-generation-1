@@ -1,6 +1,6 @@
 Palace
-Palace of %O
-%O's Palace
+Palace of &O
+&O's Palace
 Royal Residence
 Cathedral
 Church

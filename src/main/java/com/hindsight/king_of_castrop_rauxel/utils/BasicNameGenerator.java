@@ -16,21 +16,20 @@ import org.apache.commons.lang3.RandomStringUtils;
 @NoArgsConstructor
 public class BasicNameGenerator implements NameGenerator {
 
-  private static final String FOLDER = "names" + System.getProperty("file.separator");
+  public static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
-  private static final String PLACEHOLDER_PARENT_NAME = "%P";
-  private static final String PLACEHOLDER_OWNER_NAME = "%O";
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
-  public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
   private final TxtReader txtReader = new TxtReader(FOLDER);
+  private final PlaceholderProcessor placeholderProcessor = new PlaceholderProcessor();
   private Random random;
 
   public void setRandom(Random parentRandom) {
     random = parentRandom;
+    placeholderProcessor.setRandom(parentRandom);
   }
 
   @Override
@@ -60,8 +59,8 @@ public class BasicNameGenerator implements NameGenerator {
     loopThroughFilesWithoutSuffix(words, pathNameWithTypeOnly);
     setFallbackStringIfListEmpty(words, className);
 
-    processingFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
-    processWordPlaceholders(words, parentName, inhabitant, amenity);
+    processFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
+    placeholderProcessor.processList(words, parentName, inhabitant, amenity);
     return String.join("", words);
   }
 
@@ -124,7 +123,7 @@ public class BasicNameGenerator implements NameGenerator {
     }
   }
 
-  private void processingFileNamePlaceholders(List<String> words, String pathName, PoiType type) {
+  private void processFileNamePlaceholders(List<String> words, String pathName, PoiType type) {
     if (words.get(0).startsWith(HYPHEN)) {
       var result = txtReader.read(pathName + words.get(0));
       if (result.isEmpty()) {
@@ -137,47 +136,5 @@ public class BasicNameGenerator implements NameGenerator {
         words.set(0, randomWord);
       }
     }
-  }
-
-  private void processWordPlaceholders(
-      List<String> words, String parentName, Npc inhabitant, AbstractAmenity amenity) {
-    for (String word : words) {
-      injectParentName(words, word, parentName);
-      injectInhabitantName(words, word, inhabitant, amenity);
-    }
-  }
-
-  private void injectParentName(List<String> words, String word, String parentName) {
-    if (word.contains(PLACEHOLDER_PARENT_NAME) && parentName != null) {
-      log.info("Injecting parent class name '{}' into '{}'", parentName, word);
-      words.set(words.indexOf(word), word.replace(PLACEHOLDER_PARENT_NAME, parentName));
-    }
-  }
-
-  private void injectInhabitantName(
-      List<String> words, String word, Npc inhabitant, AbstractAmenity amenity) {
-    if (!word.contains(PLACEHOLDER_OWNER_NAME)) {
-      return;
-    }
-    if (inhabitant == null) {
-      var fallbackName = getFallbackName(FALLBACK_INHABITANT);
-      words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, fallbackName));
-      log.warn("Inhabitant was null when generating {}, using {} instead", word, fallbackName);
-      return;
-    } else if (inhabitant.getHome() != amenity) {
-      throw new IllegalStateException(
-          "Inhabitant '" + inhabitant.getName() + "' already has a different home");
-    }
-    log.info("Injecting inhabitant first name '{}' into '{}'", inhabitant.getFirstName(), word);
-    words.set(
-        words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER_NAME, inhabitant.getFirstName()));
-  }
-
-  private String getFallbackName(String fileName) {
-    var result = txtReader.read(fileName);
-    if (result.isEmpty()) {
-      throw new IllegalStateException("Failed to find fallback name in '%s'".formatted(fileName));
-    }
-    return txtReader.getRandom(result, random);
   }
 }

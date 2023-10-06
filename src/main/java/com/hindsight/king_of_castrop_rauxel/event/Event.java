@@ -104,7 +104,7 @@ public interface Event {
     getCurrentDialogue().setCurrentInteraction(i);
   }
 
-  default Dialogue.Interaction getCurrentInteraction() {
+  default Interaction getCurrentInteraction() {
     return getCurrentDialogue().getCurrentInteraction();
   }
 
@@ -112,7 +112,7 @@ public interface Event {
     if (!hasCurrentInteraction()) {
       return List.of();
     }
-    return getCurrentInteraction().actions();
+    return getCurrentInteraction().getActions();
   }
 
   @Getter

@@ -18,7 +18,7 @@ import lombok.Setter;
 public class PoiAction implements Action {
 
   @Setter private int index;
-  private String name;
+  @Setter private String name;
   private PointOfInterest poi;
 
   @Override

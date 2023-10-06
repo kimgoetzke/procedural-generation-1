@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DebugAction implements Action {
 
   @Setter private int index;
-  private String name;
+  @Setter private String name;
   private Debuggable debuggable;
   private Graph<AbstractLocation> map;
   private World world;

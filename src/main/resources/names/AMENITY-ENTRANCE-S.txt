@@ -1,5 +1,5 @@
 City Gates
 Barricades
 City Walls
-Outter Fence
+Outer Fence
 Barricades

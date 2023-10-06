@@ -13,6 +13,8 @@ public interface Action {
 
   String getName();
 
+  void setName(String name);
+
   State getNextState();
 
   default void execute(Player player) {
