@@ -13,9 +13,9 @@ import static com.hindsight.king_of_castrop_rauxel.utils.BasicNameGenerator.FOLD
 public class PlaceholderProcessor {
 
   private static final String PLACEHOLDER_PARENT = "&P";
-  private static final String PLACEHOLDER_OWNER = "&O";
-  private static final String PLACEHOLDER_POI_NAME = "&I";
   private static final String PLACEHOLDER_LOCATION = "&L";
+  private static final String PLACEHOLDER_POI_NAME = "&I";
+  private static final String PLACEHOLDER_OWNER = "&O";
   private static final String PLACEHOLDER_TARGET_NPC = "&TO";
   private static final String PLACEHOLDER_TARGET_POI = "&TI";
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
@@ -28,19 +28,21 @@ public class PlaceholderProcessor {
   }
 
   public String process(String text, Npc owner, Npc targetNpc) {
+    text = text.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
     text = text.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
+    text = text.replace(PLACEHOLDER_POI_NAME, owner.getName());
     text = text.replace(PLACEHOLDER_OWNER, owner.getName());
     text = text.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
     text = text.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
     text = text.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
-    text = text.replace(PLACEHOLDER_POI_NAME, owner.getHome().getName());
     return text;
   }
 
   public String process(String text, Npc owner) {
+    text = text.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
     text = text.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
+    text = text.replace(PLACEHOLDER_POI_NAME, owner.getName());
     text = text.replace(PLACEHOLDER_OWNER, owner.getName());
-    text = text.replace(PLACEHOLDER_POI_NAME, owner.getHome().getName());
     return text;
   }
 
