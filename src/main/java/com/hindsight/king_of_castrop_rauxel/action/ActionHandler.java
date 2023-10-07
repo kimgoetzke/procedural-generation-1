@@ -21,9 +21,9 @@ public class ActionHandler {
   private final EnvironmentResolver environmentResolver;
   private final DebugActionFactory debug;
 
-  private void prepend(List<Action> actions) {
+  private void prepend(List<Action> actions, boolean showDebugMenu) {
     actions.clear();
-    if (environmentResolver.isDev()) {
+    if (environmentResolver.isDev() && showDebugMenu) {
       actions.add(new StateAction(1, "Show debug menu", DEBUG));
     }
   }
@@ -35,7 +35,7 @@ public class ActionHandler {
   }
 
   public void getDefaultPoiActions(Player player, List<Action> actions) {
-    prepend(actions);
+    prepend(actions, true);
     var currentLocation = player.getCurrentLocation();
     actions.add(
         new StateAction(
@@ -49,7 +49,7 @@ public class ActionHandler {
   }
 
   public void getAllPoiActions(Player player, List<Action> actions) {
-    prepend(actions);
+    prepend(actions, true);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
     var defaultAction =
@@ -60,7 +60,7 @@ public class ActionHandler {
   }
 
   public void getThisPoiActions(Player player, List<Action> actions) {
-    prepend(actions);
+    prepend(actions, true);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
     var defaultAction =
@@ -72,13 +72,13 @@ public class ActionHandler {
   }
 
   public void getDialogueActions(Player player, List<Action> actions) {
-    prepend(actions);
+    prepend(actions, false);
     var eventActions = player.getCurrentEvent().getCurrentActions();
     addAllActions(eventActions, actions);
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
-    prepend(actions);
+    prepend(actions, true);
     actions.remove(0);
     actions.add(new LocationAction(actions.size() + 1, "Resume game", player.getCurrentLocation()));
     actions.add(debug.create(actions.size() + 1, "Log memory usage", debug::logMemoryStats));

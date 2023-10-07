@@ -47,6 +47,7 @@ available:
       - index: 1
         name: Sorry, I'll have to leave now.
         eventState: DECLINED
+        playerState: AT_POI
         nextInteraction: 0
 active:
   - text: Really appreciate you doing this for me! Safe travels.

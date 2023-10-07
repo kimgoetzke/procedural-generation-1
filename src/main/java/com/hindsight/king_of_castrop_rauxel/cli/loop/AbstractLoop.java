@@ -50,11 +50,13 @@ public abstract class AbstractLoop {
     }
   }
 
-  protected void printActions(List<Action> actions) {
+  protected void printActions(List<Action> actions, String prompt) {
     if (actions.isEmpty()) {
       return;
     }
-    out.printf("%sWhat's next?%s%n", CliComponent.FMT.DEFAULT_BOLD, CliComponent.FMT.RESET);
+    if (prompt != null) {
+      out.printf("%s%s%s%n", CliComponent.FMT.DEFAULT_BOLD, prompt, CliComponent.FMT.RESET);
+    }
     actions.forEach(a -> out.println(a.print()));
     out.printf("%n%s>%s ", CliComponent.FMT.WHITE_BOLD_BRIGHT, CliComponent.FMT.RESET);
   }
@@ -71,7 +73,7 @@ public abstract class AbstractLoop {
     } catch (NumberFormatException e) {
       out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
     }
-    out.printf("%n%n");
+    out.println();
   }
 
   private void takeAction(Optional<Action> action) {

@@ -29,7 +29,7 @@ public class DialogueLoop extends AbstractLoop {
   public void execute(List<Action> actions) {
     printInteraction();
     prepareActions(actions);
-    printActions(actions);
+    printActions(actions, null);
     takeAction(actions);
     postProcess();
   }
