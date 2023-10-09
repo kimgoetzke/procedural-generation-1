@@ -81,6 +81,10 @@ public interface Event {
     getCurrentDialogue().progress();
   }
 
+  default void rewindBy(int relativeStep) {
+    getCurrentDialogue().rewindBy(relativeStep);
+  }
+
   default void completeDialogue() {
     getCurrentDialogue().reset();
   }

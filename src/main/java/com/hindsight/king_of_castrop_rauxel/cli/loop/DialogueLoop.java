@@ -74,6 +74,12 @@ public class DialogueLoop extends AbstractLoop {
     }
   }
 
+  @Override
+  protected void recoverInvalidAction() {
+    log.info("Invalid action - recovering");
+    player.getCurrentEvent().rewindBy(1);
+  }
+
   private void updateCurrentEventDialogue() {
     player.getCurrentEvent().progressDialogue();
     if (player.getState() != Player.State.DIALOGUE) {

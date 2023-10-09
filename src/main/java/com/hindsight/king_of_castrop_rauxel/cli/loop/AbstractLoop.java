@@ -6,7 +6,6 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
 
 public abstract class AbstractLoop {
@@ -68,19 +67,23 @@ public abstract class AbstractLoop {
     var anyInput = getScanner().next();
     try {
       var validInput = Integer.parseInt(anyInput);
-      var action = actions.stream().filter(a -> a.getIndex() == validInput).findFirst();
-      takeAction(action);
+      var action = getValidActionOrThrow(validInput, actions);
+      action.execute(player);
     } catch (NumberFormatException e) {
       out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
+      recoverInvalidAction();
     }
     out.println();
   }
 
-  private void takeAction(Optional<Action> action) {
-    if (action.isPresent()) {
-      action.ifPresent(chosenAction -> chosenAction.execute(player));
-    } else {
-      out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
-    }
+  private Action getValidActionOrThrow(Integer validInput, List<Action> actions) {
+    return actions.stream()
+        .filter(a -> a.getIndex() == validInput)
+        .findFirst()
+        .orElseThrow(() -> new NumberFormatException("Couldn't find input in actions"));
+  }
+
+  protected void recoverInvalidAction() {
+    // Empty by default but can be overridden, e.g. to resent any quest progression
   }
 }

@@ -49,6 +49,13 @@ public final class Dialogue {
     setCurrentInteraction(next);
   }
 
+  void rewindBy(int i) {
+    current -= i;
+    if (current < 0) {
+      current = 0;
+    }
+  }
+
   void reset() {
     current = 0;
   }
