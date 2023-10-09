@@ -1,0 +1,75 @@
+# Option 1: Add a dialogue section for each event state i.e. available, active, ready, completed, and declined.
+# Option 2: Add a single section with the name 'none' for simple dialogues with no objectives/progression.
+# - The top-level interaction permits 'text' (mandatory), player 'actions' (optional), 'i' (optional), & 'n' (optional)
+# - 'n' (optional, accepts: int >= 0)
+#   Specifies the index of the next interaction. Any number outside the range of the interactions will be
+#   reset the dialogue to its beginning.
+# - 'i' (optional, accepts: int >= 0)
+#    Use as a helper that will be ignored when parsing to identify next interaction when using 'n'
+# - 'actions' (required to conclude a dialogue or change state of an event, accepts: list of actions)
+#   The choices a player can make. Required A dialogue can ONLY be concluded by changing the playerState. You must
+#   provide 1) 'index', 2) 'name', and 3) 'playerState' OR 'eventState'.
+# - 'index' (required, accepts: int >= 1)
+#    The index of the action. Must start with 1 for every list of actions.
+# - 'name' (required, accepts: String)
+# - 'playerState' (optional, accepts: AT_POI, AT_LOCATION, etc.)
+#    Changes the state of the player and immediately conclude the dialogue.
+# - 'eventState' (optional, accepts: NONE, AVAILABLE, ACTIVE, READY, COMPLETED, or DECLINED)
+#    Changes the state of the event AND the active dialogue immediately i.e. no further interactions in the current
+#    dialogue will be displayed.
+# - 'nextInteraction' (optional, accepts: int >= 0 and <= size of interactions in dialogue)
+#   Used in combination with 'eventState: NONE' to indicate the next interaction; this is how you branch the
+#   dialogue based on player decisions.
+available:
+  - text: Hey there, hey you! You look like someone who travels a lot. Are heading over to &TI by any chance? If you do, I need you to do something for me.
+    i: 0
+  - text: I need you to get this small parcel to &TO at &TI. It's a bag of seeds and &TO is a good friend of mine. Can you do it? Please!
+    i: 1
+    actions:
+      - index: 1
+        name: (Accept) Alright, I'll do it
+        eventState: NONE
+        nextInteraction: 2
+      - index: 2
+        name: (Decline) I'm sorry, I can't
+        eventState: NONE
+        nextInteraction: 3
+  - text: You are amazing - thank you so much! Here, take the parcel. Please, don't lose it!
+    i: 2
+    actions:
+      - index: 1
+        name: Thanks, I'll take good care of it.
+        eventState: ACTIVE
+        nextInteraction: 0
+  - text: Oh, that's a shame. I really need someone to deliver this parcel to &TO for me. I'll keep looking for someone else.
+    i: 3
+    actions:
+      - index: 1
+        name: Sorry, I'll have to leave now.
+        eventState: DECLINED
+        playerState: AT_POI
+        nextInteraction: 0
+active:
+  - text: Really appreciate you doing this for me! Safe travels.
+    actions:
+      - index: 1
+        name: All good, mate. Goodbye!
+        playerState: AT_POI
+ready:
+  - text: Really appreciate you doing this for me! Safe travels.
+    actions:
+      - index: 1
+        name: All good, mate. Goodbye!
+        playerState: AT_POI
+completed:
+  - text: Thank you so much for delivering the parcel! I really appreciate it.
+    actions:
+      - index: 1
+        name: All good, mate. Goodbye!
+        playerState: AT_POI
+declined:
+  - text: Good news! I have found something else to deliver the parcel for me.
+    actions:
+      - index: 1
+        name: I'm happy for you and &TO. Goodbye!
+        playerState: AT_POI

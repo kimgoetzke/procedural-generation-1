@@ -25,6 +25,7 @@ public class DialogueLoop extends AbstractLoop {
   private final GameHandler gameHandler;
   @Getter private final Scanner scanner;
 
+  // TODO: Fix invalid input handling for dialogues
   @Override
   public void execute(List<Action> actions) {
     printInteraction();

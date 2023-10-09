@@ -43,6 +43,7 @@ public class ActionHandler {
             "Explore any of the %s point(s) of interest"
                 .formatted(currentLocation.getPointsOfInterest().size() - 1),
             CHOOSE_POI));
+    addAllActions(currentLocation.getDefaultPoi().getAvailableActions(), actions);
     var neighbours = currentLocation.getNeighbours().stream().toList();
     addLocationActions(neighbours, actions, currentLocation, player);
     append(actions);

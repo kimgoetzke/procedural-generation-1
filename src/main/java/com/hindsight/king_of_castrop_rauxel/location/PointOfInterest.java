@@ -4,6 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface PointOfInterest {
 
   Location getParent();
 
-  void loadAvailableActions();
+  void addAvailableAction(Event event, boolean isOriginEvent);
 
   List<Action> getAvailableActions();
 

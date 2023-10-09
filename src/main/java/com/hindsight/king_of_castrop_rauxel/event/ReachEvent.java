@@ -12,18 +12,29 @@ import lombok.Setter;
 public class ReachEvent implements Event {
 
   @EqualsAndHashCode.Exclude private final Npc npc;
-  @EqualsAndHashCode.Exclude private final Npc targetNpc;
+  @EqualsAndHashCode.Exclude private final List<Npc> targetNpcs;
   @EqualsAndHashCode.Exclude private final PointOfInterest targetPoi;
   private final List<Dialogue> dialogues;
+  private final List<Dialogue> targetDialogues;
   private final Type type;
   @Setter private Dialogue currentDialogue;
   @Setter private State eventState;
   @Setter private boolean isRepeatable;
 
-  public ReachEvent(List<Dialogue> dialogues, Npc npc, Npc target, PointOfInterest targetPoi) {
+  // TODO:
+  //  - Fix bug where target NPC can start the event
+  //  - Figure out how to customise speakWith action for targetNpc
+  //  - Read reward from YAML file and give through targetNpc
+  public ReachEvent(
+      Npc npc,
+      List<Dialogue> dialogues,
+      List<Npc> targetNpcs,
+      List<Dialogue> targetDialogues,
+      PointOfInterest targetPoi) {
     this.dialogues = dialogues;
+    this.targetDialogues = targetDialogues;
     this.npc = npc;
-    this.targetNpc = target;
+    this.targetNpcs = targetNpcs;
     this.type = Type.REACH;
     this.eventState = State.AVAILABLE;
     this.targetPoi = targetPoi;

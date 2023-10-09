@@ -11,6 +11,7 @@ import java.util.List;
 public class DialogueEvent implements Event {
 
   @EqualsAndHashCode.Exclude private final Npc npc;
+  private final List<Npc> targetNpcs = List.of();
   private final List<Dialogue> dialogues;
   private final Type type;
   @Setter private Dialogue currentDialogue;

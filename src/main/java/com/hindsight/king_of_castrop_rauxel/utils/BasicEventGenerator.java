@@ -15,6 +15,7 @@ public class BasicEventGenerator implements EventGenerator {
   public static final String LINE_SEPARATOR = System.getProperty("file.separator");
   private static final String BASE_FOLDER = "events" + LINE_SEPARATOR;
   private static final String MULTI_STEP_FOLDER = "multi-step" + LINE_SEPARATOR;
+  private static final String REACH_FOLDER = "reach" + LINE_SEPARATOR;
   private static final String SINGLE_STEP_FOLDER = "single-step" + LINE_SEPARATOR;
   private final TxtReader txtReader = new TxtReader(BASE_FOLDER);
   private final YamlReader yamlReader = new YamlReader(BASE_FOLDER);
@@ -32,25 +33,29 @@ public class BasicEventGenerator implements EventGenerator {
     var text = readRandomLineFromFile(pathName);
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
-    processPlaceholders(dialogues, npc, null);
+    processPlaceholders(npc, dialogues, null);
     return new DialogueEvent(dialogues, npc, true);
   }
 
   @Override
   public Event multiStepDialogue(Npc npc) {
-    var dialogues = yamlReader.readDialogueList(MULTI_STEP_FOLDER + "parcel");
-    processPlaceholders(dialogues, npc, null);
+    var response = yamlReader.read(MULTI_STEP_FOLDER + "a-close-friends-parcel");
+    var dialogues = response.get(0);
+    processPlaceholders(npc, dialogues, null);
     return new DialogueEvent(dialogues, npc, true);
   }
 
   @Override
   public Event deliveryEvent(Npc npc) {
-    var dialogues = yamlReader.readDialogueList(MULTI_STEP_FOLDER + "parcel");
-    var poi = findAnotherPoiInSameLocation(npc, 1);
-    if (poi != null) {
-      var targetNpc = poi.getNpc();
-      processPlaceholders(dialogues, npc, targetNpc);
-      return new ReachEvent(dialogues, npc, targetNpc, poi);
+    var response = yamlReader.read(REACH_FOLDER + "a-close-friends-parcel");
+    var npcDialogues = response.get(0);
+    var targetNpcDialogues = response.get(1);
+    var targetPoi = findAnotherPoiInSameLocation(npc, 1);
+    if (targetPoi != null) {
+      var targetNpc = targetPoi.getNpc();
+      processPlaceholders(npc, npcDialogues, targetNpc);
+      processPlaceholders(npc, targetNpcDialogues, targetNpc);
+      return new ReachEvent(npc, npcDialogues, List.of(targetNpc), targetNpcDialogues, targetPoi);
     }
     return null;
   }
@@ -72,7 +77,7 @@ public class BasicEventGenerator implements EventGenerator {
     return poi;
   }
 
-  private void processPlaceholders(List<Dialogue> dialogues, Npc npc, Npc targetNpc) {
+  private void processPlaceholders(Npc npc, List<Dialogue> dialogues, Npc targetNpc) {
     for (var dialogue : dialogues) {
       for (var interaction : dialogue.getInteractions()) {
         processText(npc, targetNpc, interaction);

@@ -75,7 +75,13 @@ public class Settlement extends AbstractSettlement {
     pointsOfInterests.forEach(
         poi -> {
           poi.getNpc().loadEvent();
-          poi.loadAvailableActions();
+          var originEvent = poi.getNpc().getOriginEvent();
+          var targetNpcs = originEvent.getTargetNpcs();
+          for (var npc : targetNpcs) {
+            npc.addTargetEvent(originEvent);
+            npc.getHome().addAvailableAction(originEvent, false);
+          }
+          poi.addAvailableAction(originEvent, true);
         });
   }
 

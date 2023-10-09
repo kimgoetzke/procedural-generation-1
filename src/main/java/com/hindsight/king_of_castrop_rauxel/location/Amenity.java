@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -34,25 +35,29 @@ public class Amenity extends AbstractAmenity {
    * after all amenities have been generated. This is because events can, e.g., point to other POIs.
    */
   @Override
-  public void loadAvailableActions() {
+  public void addAvailableAction(Event event, boolean isOriginEvent) {
+    if (isOriginEvent) {
+      speakWith("", event); // TODO: Figure out how to get targetDialogue from event
+      return;
+    }
     switch (type) {
       case SHOP:
-        speakWith("the owner of this establishment");
+        speakWith(", the owner of this establishment", event);
         break;
       case QUEST_LOCATION:
-        speakWith("who appears to want something");
+        speakWith(", who appears to want something", event);
         break;
       default:
         break;
     }
   }
 
-  private void speakWith(String who) {
+  private void speakWith(String append, Event event) {
     availableActions.add(
         EventAction.builder()
-            .name("Speak with %s, %s".formatted(npc.getName(), who))
+            .name("Speak with %s%s".formatted(npc.getName(), append))
             .index(availableActions.size() + 1)
-            .event(npc.getEvent())
+            .event(event)
             .build());
   }
 

@@ -16,6 +16,8 @@ public interface Event {
 
   Npc getNpc();
 
+  List<Npc> getTargetNpcs();
+
   /**
    * This method should only be used inside this interface. The intended way of changing the event
    * state is by using the {@link #progressEvent(State)} or {@link #completeEvent(Player)} methods.
