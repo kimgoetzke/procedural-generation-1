@@ -58,6 +58,7 @@ public class Amenity extends AbstractAmenity {
             .name("Speak with %s%s".formatted(npc.getName(), append))
             .index(availableActions.size() + 1)
             .event(event)
+            .npc(npc)
             .build());
   }
 

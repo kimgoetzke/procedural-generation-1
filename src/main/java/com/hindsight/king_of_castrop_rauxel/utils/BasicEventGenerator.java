@@ -33,29 +33,34 @@ public class BasicEventGenerator implements EventGenerator {
     var text = readRandomLineFromFile(pathName);
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
+    var participants = List.of(new Participant(npc, dialogues));
     processPlaceholders(npc, dialogues, null);
-    return new DialogueEvent(dialogues, npc, true);
+    return new DialogueEvent(participants, true);
   }
 
   @Override
   public Event multiStepDialogue(Npc npc) {
-    var response = yamlReader.read(MULTI_STEP_FOLDER + "a-close-friends-parcel");
-    var dialogues = response.get(0);
+    var eventDto = yamlReader.read(MULTI_STEP_FOLDER + "a-close-friends-parcel");
+    var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
+    var participants = List.of(new Participant(npc, dialogues));
     processPlaceholders(npc, dialogues, null);
-    return new DialogueEvent(dialogues, npc, true);
+    return new DialogueEvent(participants, true);
   }
 
   @Override
   public Event deliveryEvent(Npc npc) {
-    var response = yamlReader.read(REACH_FOLDER + "a-close-friends-parcel");
-    var npcDialogues = response.get(0);
-    var targetNpcDialogues = response.get(1);
+    var eventDto = yamlReader.read(REACH_FOLDER + "a-close-friends-parcel");
+    var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
+    var giverParticipant = new Participant(npc, giverNpcDialogues);
+    var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
     var targetPoi = findAnotherPoiInSameLocation(npc, 1);
     if (targetPoi != null) {
       var targetNpc = targetPoi.getNpc();
-      processPlaceholders(npc, npcDialogues, targetNpc);
+      var targetParticipant = new Participant(targetNpc, targetNpcDialogues);
+      var participants = List.of(giverParticipant, targetParticipant);
+      processPlaceholders(npc, giverNpcDialogues, targetNpc);
       processPlaceholders(npc, targetNpcDialogues, targetNpc);
-      return new ReachEvent(npc, npcDialogues, List.of(targetNpc), targetNpcDialogues, targetPoi);
+      return new ReachEvent(participants, targetPoi);
     }
     return null;
   }

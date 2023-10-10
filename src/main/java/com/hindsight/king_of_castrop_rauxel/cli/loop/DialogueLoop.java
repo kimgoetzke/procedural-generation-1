@@ -45,7 +45,7 @@ public class DialogueLoop extends AbstractLoop {
           "%s%s%s%s: %s%n%n",
           CliComponent.FMT.BLACK,
           CliComponent.FMT.WHITE_BACKGROUND,
-          dialogue.getNpc().getName(),
+          dialogue.getCurrentNpc().getName(),
           CliComponent.FMT.RESET,
           dialogue.getCurrentInteraction().getText().formatted());
     }

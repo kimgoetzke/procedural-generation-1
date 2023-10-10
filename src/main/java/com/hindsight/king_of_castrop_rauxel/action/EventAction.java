@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.Builder;
@@ -17,6 +18,7 @@ public class EventAction implements Action {
   @Setter private int index;
   @Setter private String name;
   private Event event;
+  private Npc npc;
 
   @Override
   public void execute(Player player) {
@@ -24,6 +26,7 @@ public class EventAction implements Action {
         || (event.isRepeatable() && event.getEventState() == Event.State.AVAILABLE)) {
       player.addEvent(event);
     }
+    event.setActive(npc);
     player.setCurrentEvent(event);
     nextState(player);
   }

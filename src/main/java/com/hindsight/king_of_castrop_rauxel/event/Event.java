@@ -3,10 +3,9 @@ package com.hindsight.king_of_castrop_rauxel.event;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 /**
  * Events are linked to NPCs. Each NPC owns at least one event. Events can be of different types,
@@ -14,13 +13,36 @@ import java.util.List;
  */
 public interface Event {
 
-  Npc getNpc();
+  List<Participant> getParticipants();
 
-  List<Npc> getTargetNpcs();
+  default List<Npc> getParticipantNpcs() {
+    return getParticipants().stream().map(Participant::npc).toList();
+  }
+
+  default void setActive(Npc npc) {
+    var participant =
+        getParticipants().stream().filter(p -> p.npc().equals(npc)).findFirst().orElseThrow();
+    setActive(participant);
+  }
+
+  default void setActive(Participant participant) {
+    var dialogue =
+        participant.dialogues().stream()
+            .filter(d -> d.getState() == getEventState())
+            .findFirst()
+            .orElseThrow();
+    setCurrentDialogue(dialogue);
+    setCurrentNpc(participant.npc());
+  }
+
+  void setCurrentNpc(Npc npc);
+
+  Npc getCurrentNpc();
 
   /**
-   * This method should only be used inside this interface. The intended way of changing the event
-   * state is by using the {@link #progressEvent(State)} or {@link #completeEvent(Player)} methods.
+   * Ideally, this method is only be used inside this interface. The intended way of changing the
+   * event state is by using the {@link #progressEvent(State)} or {@link #completeEvent(Player)}
+   * methods.
    */
   void setEventState(State state);
 
@@ -57,15 +79,24 @@ public interface Event {
   }
 
   default void resetEvent() {
-    getDialogues().forEach(Dialogue::reset);
+    getParticipants().forEach(p -> p.dialogues().forEach(Dialogue::reset));
     setCurrentDialogue(getDialogue(Event.State.AVAILABLE));
     setEventState(Event.State.AVAILABLE);
   }
 
-  List<Dialogue> getDialogues();
+  default List<Dialogue> getCurrentNpcDialogues() {
+    return getParticipants().stream()
+        .filter(p -> p.npc().equals(getCurrentNpc()))
+        .findFirst()
+        .orElseThrow()
+        .dialogues();
+  }
 
   default Dialogue getDialogue(State state) {
-    return getDialogues().stream().filter(d -> d.getState() == state).findFirst().orElseThrow();
+    return getCurrentNpcDialogues().stream()
+        .filter(d -> d.getState() == state)
+        .findFirst()
+        .orElseThrow();
   }
 
   Dialogue getCurrentDialogue();
@@ -137,21 +168,6 @@ public interface Event {
     State(String name, int ordinal) {
       this.name = name;
       this.ordinal = ordinal;
-    }
-
-    public static State fromOrdinal(int ordinal) {
-      return switch (ordinal) {
-        case 0 -> NONE;
-        case 1 -> AVAILABLE;
-        case 2 -> ACTIVE;
-        case 3 -> READY;
-        case 4 -> COMPLETED;
-        case 5 -> DECLINED;
-        default -> {
-          log.error("Value '" + ordinal + "' is not valid - falling back to 'DECLINED'");
-          yield DECLINED;
-        }
-      };
     }
   }
 

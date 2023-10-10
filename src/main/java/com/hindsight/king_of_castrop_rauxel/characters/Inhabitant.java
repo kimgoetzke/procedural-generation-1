@@ -4,9 +4,6 @@ import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,8 +23,7 @@ public class Inhabitant implements Npc {
   @Getter private String lastName;
   @Getter private String fullName;
   @Getter private PointOfInterest home;
-  @Getter private Event originEvent;
-  @Getter private List<Event> targetEvents = new ArrayList<>();
+  @Getter private Event event;
 
   public Inhabitant(NameGenerator nameGenerator, EventGenerator eventGenerator) {
     this.nameGenerator = nameGenerator;
@@ -56,14 +52,9 @@ public class Inhabitant implements Npc {
   }
 
   @Override
-  public void addTargetEvent(Event event) {
-    targetEvents.add(event);
-  }
-
-  @Override
   public void loadEvent() {
     var deliveryEvent = eventGenerator.deliveryEvent(this);
-    originEvent = deliveryEvent == null ? eventGenerator.singleStepDialogue(this) : deliveryEvent;
+    event = deliveryEvent == null ? eventGenerator.singleStepDialogue(this) : deliveryEvent;
   }
 
   @Override

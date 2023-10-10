@@ -1,5 +1,5 @@
 # Step 1: What is the event about?
-settings:
+eventDetails:
   - eventType: REACH
   - about: "&O's parcel"
   - reward:
@@ -35,7 +35,7 @@ settings:
 # - 'nextInteraction' (optional, accepts: int >= 0 and <= size of interactions in dialogue)
 #   Used in combination with 'eventState: NONE' to indicate the next interaction; this is how you branch the
 #   dialogue based on player decisions.
-npc:
+eventGiver:
   available:
     - text: Hey there, hey you! You look like someone who travels a lot. Are heading over to &TI by any chance? If you do, I need you to do something for me.
       i: 0
@@ -89,7 +89,7 @@ npc:
         - index: 1
           name: I'm happy for you and &TO. Goodbye!
           playerState: AT_POI
-targetNpc:
+eventTarget:
   available:
     - text: Hey there, how can I help?
       i: 0
