@@ -132,7 +132,6 @@ public class YamlReader {
             playerStateData == null ? null : Player.State.valueOf(playerStateData);
         Action action =
             DialogueAction.builder()
-                .index((int) a.get("index"))
                 .name((String) a.get("name"))
                 .eventState(eventState)
                 .playerState(playerState)

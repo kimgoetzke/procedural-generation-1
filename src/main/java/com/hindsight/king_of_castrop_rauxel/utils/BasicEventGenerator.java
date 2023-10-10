@@ -35,7 +35,7 @@ public class BasicEventGenerator implements EventGenerator {
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
     var participants = List.of(new Participant(npc, dialogues));
-    processPlaceholders(npc, dialogues, null);
+    processPlaceholders(npc, null, dialogues);
     return new DialogueEvent(new EventDetails(), participants, true);
   }
 
@@ -44,7 +44,7 @@ public class BasicEventGenerator implements EventGenerator {
     var eventDto = yamlReader.read(MULTI_STEP_FOLDER + "a-close-friends-parcel");
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var participants = List.of(new Participant(npc, dialogues));
-    processPlaceholders(npc, dialogues, null);
+    processPlaceholders(npc, null, dialogues);
     return new DialogueEvent(eventDto.eventDetails, participants, true);
   }
 
@@ -59,8 +59,9 @@ public class BasicEventGenerator implements EventGenerator {
       var targetNpc = targetPoi.getNpc();
       var targetParticipant = new Participant(targetNpc, targetNpcDialogues);
       var participants = List.of(giverParticipant, targetParticipant);
-      processPlaceholders(npc, giverNpcDialogues, targetNpc);
-      processPlaceholders(npc, targetNpcDialogues, targetNpc);
+      processPlaceholders(npc, targetNpc, eventDto);
+      processPlaceholders(npc, targetNpc, giverNpcDialogues);
+      processPlaceholders(npc, targetNpc, targetNpcDialogues);
       return new ReachEvent(eventDto.eventDetails, participants, targetPoi);
     }
     return null;
@@ -89,7 +90,13 @@ public class BasicEventGenerator implements EventGenerator {
     return poi;
   }
 
-  private void processPlaceholders(Npc npc, List<Dialogue> dialogues, Npc targetNpc) {
+  private void processPlaceholders(Npc npc, Npc targetNpc, EventDto eventDto) {
+    var eventDetails = eventDto.eventDetails;
+    var about = processor.process(eventDetails.getAbout(), npc, targetNpc);
+    eventDetails.setAbout(about);
+  }
+
+  private void processPlaceholders(Npc npc, Npc targetNpc, List<Dialogue> dialogues) {
     for (var dialogue : dialogues) {
       for (var interaction : dialogue.getInteractions()) {
         processText(npc, targetNpc, interaction);

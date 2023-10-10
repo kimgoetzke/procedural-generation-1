@@ -10,4 +10,4 @@ Potter's Workshop
 &P's Potter
 Armourer
 &O's Armour Shop
-Armourer of %P
+Armourer of &P

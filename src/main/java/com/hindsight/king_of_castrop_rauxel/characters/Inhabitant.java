@@ -58,7 +58,7 @@ public class Inhabitant implements Npc {
   }
 
   @Override
-  public void loadEvent() {
+  public void loadPrimaryEvent() {
     var deliveryEvent = eventGenerator.deliveryEvent(this);
     primaryEvent = deliveryEvent == null ? eventGenerator.singleStepDialogue(this) : deliveryEvent;
   }

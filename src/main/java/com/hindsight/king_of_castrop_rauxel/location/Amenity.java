@@ -55,19 +55,25 @@ public class Amenity extends AbstractAmenity {
   }
 
   private void addPrimaryEvent(String append, Event event) {
-    availableActions.add(
+    var action =
         EventAction.builder()
             .name("Speak with %s%s".formatted(npc.getName(), append))
             .index(availableActions.size() + 1)
             .event(event)
             .npc(npc)
-            .build());
+            .build();
+    if (availableActions.stream().anyMatch(a -> a.getName().equals(action.getName()))) {
+      throw new IllegalStateException(
+          "Duplicate action '%s' for event '%s'".formatted(action, event));
+    }
+    availableActions.add(action);
   }
 
   private void addSecondaryEvent(EventDetails details, Event event) {
+    var about = details.getAbout() == null ? "" : details.getAbout();
     availableActions.add(
         EventAction.builder()
-            .name("Speak with %s %s".formatted(npc.getName(), details.getAbout()))
+            .name("Speak with %s %s".formatted(npc.getName(), about))
             .index(availableActions.size() + 1)
             .event(event)
             .npc(npc)

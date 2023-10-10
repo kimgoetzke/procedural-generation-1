@@ -2,10 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /** This action is used in dialogue and allows branching logic. */
 @Getter
@@ -13,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class DialogueAction implements Action {
 
-  @Setter private int index;
+  @EqualsAndHashCode.Exclude @Setter private int index;
   @Setter private String name;
   private Event.State eventState;
   private Player.State playerState;

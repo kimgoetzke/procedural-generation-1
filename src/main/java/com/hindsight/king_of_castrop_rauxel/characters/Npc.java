@@ -24,7 +24,7 @@ public interface Npc {
 
   void load();
 
-  void loadEvent();
+  void loadPrimaryEvent();
 
   void logResult();
 }

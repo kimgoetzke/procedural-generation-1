@@ -12,7 +12,6 @@ import lombok.Setter;
 public class DialogueEvent implements Event {
 
   @EqualsAndHashCode.Exclude private final List<Participant> participants;
-  private final Type type;
   private final EventDetails eventDetails;
   @Setter private Npc currentNpc;
   @Setter private Dialogue currentDialogue;
@@ -23,7 +22,6 @@ public class DialogueEvent implements Event {
       EventDetails eventDetails, List<Participant> participants, boolean isRepeatable) {
     this.eventDetails = eventDetails;
     this.participants = participants;
-    this.type = Type.DIALOGUE;
     this.eventState = State.AVAILABLE;
     this.isRepeatable = isRepeatable;
     var eventGiver =

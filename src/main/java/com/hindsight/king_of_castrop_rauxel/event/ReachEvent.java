@@ -14,7 +14,6 @@ public class ReachEvent implements Event {
 
   @EqualsAndHashCode.Exclude private final List<Participant> participants;
   @EqualsAndHashCode.Exclude private final PointOfInterest targetPoi;
-  private final Type type;
   private final EventDetails eventDetails;
   @EqualsAndHashCode.Exclude @Setter private Npc currentNpc;
   @EqualsAndHashCode.Exclude @Setter private Dialogue currentDialogue;
@@ -22,15 +21,12 @@ public class ReachEvent implements Event {
   @Setter private boolean isRepeatable;
 
   // TODO:
-  //  - Fix bug eventGiver has two identical event actions
-  //  - Fix bug where speakWith for secondaryNpc appends "null"
   //  - Give reward through targetNpc upon event completion
   //  - Consider removing targetPoi as should be accessible via participants
   public ReachEvent(
       EventDetails eventDetails, List<Participant> participants, PointOfInterest targetPoi) {
     this.eventDetails = eventDetails;
     this.participants = participants;
-    this.type = Type.REACH;
     this.eventState = State.AVAILABLE;
     this.targetPoi = targetPoi;
     this.isRepeatable = false;
