@@ -31,7 +31,7 @@ public class YamlReader {
     Map<String, Object> data = yaml.load(inputStream);
     var eventDetails = parseEventDetails(data);
     if (eventDetails != null) {
-      return switch (eventDetails.eventType()) {
+      return switch (eventDetails.getEventType()) {
         case DIALOGUE -> readDialogueEvent(data, eventDetails);
         case REACH -> readReachEvent(data, eventDetails);
         case DEFEAT -> readDialogueEvent(data, eventDetails); // TODO: Implement DEFEAT event
@@ -86,7 +86,7 @@ public class YamlReader {
       Map<String, Object> data, EventDetails eventDetails, String eventRole) {
     var giverDialogueData = parseDataFrom(data, eventRole);
     var giverNpcDialogue = getDialoguesFrom(giverDialogueData);
-    giverNpcDialogue.get(0).setAbout(eventDetails.about());
+    giverNpcDialogue.get(0).setAbout(eventDetails.getAbout());
     return giverNpcDialogue;
   }
 

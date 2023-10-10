@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
+import com.hindsight.king_of_castrop_rauxel.event.EventDetails;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -35,27 +36,38 @@ public class Amenity extends AbstractAmenity {
    * after all amenities have been generated. This is because events can, e.g., point to other POIs.
    */
   @Override
-  public void addAvailableAction(Event event, boolean isOriginEvent) {
-    if (isOriginEvent) {
-      speakWith("", event); // TODO: Figure out how to get targetDialogue from event
+  public void addAvailableAction(Event event) {
+    var isPrimaryEvent = event.equals(npc.getPrimaryEvent());
+    if (!isPrimaryEvent) {
+      addSecondaryEvent(event.getEventDetails(), event);
       return;
     }
     switch (type) {
       case SHOP:
-        speakWith(", the owner of this establishment", event);
+        addPrimaryEvent(", the owner of this establishment", event);
         break;
       case QUEST_LOCATION:
-        speakWith(", who appears to want something", event);
+        addPrimaryEvent(", who appears to want something", event);
         break;
       default:
         break;
     }
   }
 
-  private void speakWith(String append, Event event) {
+  private void addPrimaryEvent(String append, Event event) {
     availableActions.add(
         EventAction.builder()
             .name("Speak with %s%s".formatted(npc.getName(), append))
+            .index(availableActions.size() + 1)
+            .event(event)
+            .npc(npc)
+            .build());
+  }
+
+  private void addSecondaryEvent(EventDetails details, Event event) {
+    availableActions.add(
+        EventAction.builder()
+            .name("Speak with %s %s".formatted(npc.getName(), details.getAbout()))
             .index(availableActions.size() + 1)
             .event(event)
             .npc(npc)

@@ -18,11 +18,11 @@ public interface PointOfInterest {
 
   Location getParent();
 
-  void addAvailableAction(Event event, boolean isOriginEvent);
+  void addAvailableAction(Event event);
 
   List<Action> getAvailableActions();
 
   Npc getNpc();
 
-  String getSummary(); // TODO: Replace with objects so that it can be used via API
+  String getSummary();
 }

@@ -8,10 +8,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Events are linked to NPCs. Each NPC owns at least one event. Events can be of different types,
- * such as dialogues (single vs multistep dialogues), defeat quests or reach quests.
+ * Events are linked to NPCs. Each NPC has at least one primary event. Events can be of different
+ * types, such as dialogues (single vs multistep dialogues), defeat events or reach events.
  */
 public interface Event {
+
+  EventDetails getEventDetails();
 
   List<Participant> getParticipants();
 
@@ -28,7 +30,7 @@ public interface Event {
   default void setActive(Participant participant) {
     var dialogue =
         participant.dialogues().stream()
-            .filter(d -> d.getState() == getEventState())
+            .filter(d -> d.getState() == getEventState() || d.getState() == State.NONE)
             .findFirst()
             .orElseThrow();
     setCurrentDialogue(dialogue);

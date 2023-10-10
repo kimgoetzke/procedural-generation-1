@@ -15,16 +15,20 @@ public class ReachEvent implements Event {
   @EqualsAndHashCode.Exclude private final List<Participant> participants;
   @EqualsAndHashCode.Exclude private final PointOfInterest targetPoi;
   private final Type type;
-  @Setter private Npc currentNpc;
-  @Setter private Dialogue currentDialogue;
+  private final EventDetails eventDetails;
+  @EqualsAndHashCode.Exclude @Setter private Npc currentNpc;
+  @EqualsAndHashCode.Exclude @Setter private Dialogue currentDialogue;
   @Setter private State eventState;
   @Setter private boolean isRepeatable;
 
   // TODO:
-  //  - Fix bug where target NPC can start the event
-  //  - Figure out how to customise speakWith action for targetNpc
-  //  - Read reward from YAML file and give through targetNpc
-  public ReachEvent(List<Participant> participants, PointOfInterest targetPoi) {
+  //  - Fix bug eventGiver has two identical event actions
+  //  - Fix bug where speakWith for secondaryNpc appends "null"
+  //  - Give reward through targetNpc upon event completion
+  //  - Consider removing targetPoi as should be accessible via participants
+  public ReachEvent(
+      EventDetails eventDetails, List<Participant> participants, PointOfInterest targetPoi) {
+    this.eventDetails = eventDetails;
     this.participants = participants;
     this.type = Type.REACH;
     this.eventState = State.AVAILABLE;

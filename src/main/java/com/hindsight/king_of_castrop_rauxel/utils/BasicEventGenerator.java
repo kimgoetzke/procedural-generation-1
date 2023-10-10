@@ -17,6 +17,7 @@ public class BasicEventGenerator implements EventGenerator {
   private static final String MULTI_STEP_FOLDER = "multi-step" + LINE_SEPARATOR;
   private static final String REACH_FOLDER = "reach" + LINE_SEPARATOR;
   private static final String SINGLE_STEP_FOLDER = "single-step" + LINE_SEPARATOR;
+  private static final int MAX_ATTEMPTS = 3;
   private final TxtReader txtReader = new TxtReader(BASE_FOLDER);
   private final YamlReader yamlReader = new YamlReader(BASE_FOLDER);
   private final PlaceholderProcessor processor = new PlaceholderProcessor();
@@ -35,7 +36,7 @@ public class BasicEventGenerator implements EventGenerator {
     var dialogues = List.of(new Dialogue(interactions));
     var participants = List.of(new Participant(npc, dialogues));
     processPlaceholders(npc, dialogues, null);
-    return new DialogueEvent(participants, true);
+    return new DialogueEvent(new EventDetails(), participants, true);
   }
 
   @Override
@@ -44,7 +45,7 @@ public class BasicEventGenerator implements EventGenerator {
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var participants = List.of(new Participant(npc, dialogues));
     processPlaceholders(npc, dialogues, null);
-    return new DialogueEvent(participants, true);
+    return new DialogueEvent(eventDto.eventDetails, participants, true);
   }
 
   @Override
@@ -53,31 +54,37 @@ public class BasicEventGenerator implements EventGenerator {
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var giverParticipant = new Participant(npc, giverNpcDialogues);
     var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
-    var targetPoi = findAnotherPoiInSameLocation(npc, 1);
+    var targetPoi = attemptFindingPoi(npc);
     if (targetPoi != null) {
       var targetNpc = targetPoi.getNpc();
       var targetParticipant = new Participant(targetNpc, targetNpcDialogues);
       var participants = List.of(giverParticipant, targetParticipant);
       processPlaceholders(npc, giverNpcDialogues, targetNpc);
       processPlaceholders(npc, targetNpcDialogues, targetNpc);
-      return new ReachEvent(participants, targetPoi);
+      return new ReachEvent(eventDto.eventDetails, participants, targetPoi);
     }
     return null;
   }
 
-  private PointOfInterest findAnotherPoiInSameLocation(Npc npc, int attempt) {
+  private PointOfInterest attemptFindingPoi(Npc npc) {
+    for (int i = 0; i < MAX_ATTEMPTS; i++) {
+      var poi = findPoiInSameLocation(npc);
+      if (poi != null) {
+        return poi;
+      }
+    }
+    log.warn("Cannot generate DeliveryEvent - no POI available for {}", npc);
+    return null;
+  }
+
+  private PointOfInterest findPoiInSameLocation(Npc npc) {
     var pointsOfInterest = npc.getHome().getParent().getPointsOfInterest();
     var randomNumber = random.nextInt(0, pointsOfInterest.size());
     var poi = pointsOfInterest.get(randomNumber);
-    if (poi.getNpc() == null || poi.getNpc().equals(npc)) {
-      log.debug("Found no (valid) NPC in target POI candidate: {}", poi.getSummary());
-      if (attempt >= 3) {
-        log.warn(
-            "Failed to find a (valid) NPC for target POI - no delivery quest can be generated for {}",
-            npc.getHome());
-        return null;
-      }
-      findAnotherPoiInSameLocation(npc, attempt + 1);
+    var hasNoNpc = poi.getNpc() == null;
+    var isSamePoi = npc.getHome().equals(poi);
+    if (hasNoNpc || isSamePoi) {
+      return null;
     }
     return poi;
   }

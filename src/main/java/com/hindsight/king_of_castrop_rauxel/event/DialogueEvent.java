@@ -13,12 +13,15 @@ public class DialogueEvent implements Event {
 
   @EqualsAndHashCode.Exclude private final List<Participant> participants;
   private final Type type;
+  private final EventDetails eventDetails;
   @Setter private Npc currentNpc;
   @Setter private Dialogue currentDialogue;
   @Setter private State eventState;
   @Setter private boolean isRepeatable;
 
-  public DialogueEvent(List<Participant> participants, boolean isRepeatable) {
+  public DialogueEvent(
+      EventDetails eventDetails, List<Participant> participants, boolean isRepeatable) {
+    this.eventDetails = eventDetails;
     this.participants = participants;
     this.type = Type.DIALOGUE;
     this.eventState = State.AVAILABLE;
