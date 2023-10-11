@@ -81,7 +81,7 @@ public class BasicEventGenerator implements EventGenerator {
       processPlaceholders(npc, targetNpc, giverNpcDialogues);
       processPlaceholders(npc, targetNpc, targetNpcDialogues);
       processPlaceholders(eventDto, List.of(giverNpcDialogues, targetNpcDialogues));
-      return new ReachEvent(eventDto.eventDetails, participants, targetPoi);
+      return new ReachEvent(eventDto.eventDetails, participants);
     }
     return null;
   }

@@ -8,10 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,16 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 
-  @EqualsAndHashCode.Include @Getter protected final String id;
-  @EqualsAndHashCode.Include @Getter protected final long seed;
-  @ToString.Include @Getter @Setter protected String name;
+  @Getter(AccessLevel.NONE)
+  protected final List<Action> availableActions = new ArrayList<>();
+
+  @EqualsAndHashCode.Include protected final String id;
+  @EqualsAndHashCode.Include protected final long seed;
   @ToString.Include protected final PoiType type;
-  @Getter protected final List<Action> availableActions = new ArrayList<>();
-  @Getter protected final Location parent;
+  protected final Location parent;
   protected final Npc npc;
-  @Getter @Setter protected String description;
+  @ToString.Include @Setter protected String name;
+  @Setter protected String description;
+  @Setter private boolean isLoaded;
   protected Random random;
-  @Getter @Setter private boolean isLoaded;
 
   protected AbstractAmenity(PoiType type, Npc npc, Location parent) {
     this.id = "POI~" + UUID.randomUUID();

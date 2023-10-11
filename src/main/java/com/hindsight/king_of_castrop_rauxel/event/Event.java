@@ -135,6 +135,15 @@ public interface Event {
         && currentDialogue.isFirstInteraction();
   }
 
+  default boolean isDisplayable(Npc npc) {
+    if (npc.getPrimaryEvent().getEventDetails() == getEventDetails()) {
+      return true;
+    }
+    return getEventState() == Event.State.ACTIVE
+        || getEventState() == Event.State.READY
+        || getEventState() == Event.State.NONE;
+  }
+
   default boolean hasCurrentInteraction() {
     return getCurrentDialogue().hasCurrentInteraction();
   }

@@ -1,13 +1,15 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
-import com.hindsight.king_of_castrop_rauxel.event.EventDetails;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Slf4j
@@ -30,31 +32,40 @@ public class Amenity extends AbstractAmenity {
     setLoaded(true);
   }
 
-  /**
-   * Generates the available actions for this amenity based on its type. This method must be called
-   * after the amenity has been generated as the event, to which actions can point, is generated
-   * after all amenities have been generated. This is because events can, e.g., point to other POIs.
-   */
+  @Override
+  public List<Action> getAvailableActions() {
+    var processedActions = new ArrayList<Action>();
+    for (var action : availableActions) {
+      if (action instanceof EventAction eventAction && !eventAction.getEvent().isDisplayable(npc)) {
+        continue;
+      }
+      processedActions.add(action);
+    }
+    return processedActions;
+  }
+
   @Override
   public void addAvailableAction(Event event) {
     var isPrimaryEvent = event.equals(npc.getPrimaryEvent());
     if (!isPrimaryEvent) {
-      addSecondaryEvent(event.getEventDetails(), event);
+      var about = event.getEventDetails().getAbout();
+      var appendAbout = about == null ? "" : " about " + about;
+      addEventAction(event, appendAbout);
       return;
     }
     switch (type) {
       case SHOP:
-        addPrimaryEvent(", the owner of this establishment", event);
+        addEventAction(event, ", the owner of this establishment");
         break;
       case QUEST_LOCATION:
-        addPrimaryEvent(", who appears to want something", event);
+        addEventAction(event, ", who appears to want something");
         break;
       default:
         break;
     }
   }
 
-  private void addPrimaryEvent(String append, Event event) {
+  private void addEventAction(Event event, String append) {
     var action =
         EventAction.builder()
             .name("Speak with %s%s".formatted(npc.getName(), append))
@@ -67,17 +78,6 @@ public class Amenity extends AbstractAmenity {
           "Duplicate action '%s' for event '%s'".formatted(action, event));
     }
     availableActions.add(action);
-  }
-
-  private void addSecondaryEvent(EventDetails details, Event event) {
-    var about = details.getAbout() == null ? "" : "about " + details.getAbout();
-    availableActions.add(
-        EventAction.builder()
-            .name("Speak with %s %s".formatted(npc.getName(), about))
-            .index(availableActions.size() + 1)
-            .event(event)
-            .npc(npc)
-            .build());
   }
 
   @Override

@@ -11,10 +11,10 @@ import lombok.Setter;
 @Getter
 public class DialogueEvent implements Event {
 
-  @EqualsAndHashCode.Exclude private final List<Participant> participants;
   private final EventDetails eventDetails;
-  @Setter private Npc currentNpc;
-  @Setter private Dialogue currentDialogue;
+  @EqualsAndHashCode.Exclude private final List<Participant> participants;
+  @EqualsAndHashCode.Exclude @Setter private Npc currentNpc;
+  @EqualsAndHashCode.Exclude @Setter private Dialogue currentDialogue;
   @Setter private State eventState;
   @Setter private boolean isRepeatable;
 

@@ -22,7 +22,7 @@ public class Player implements Visitor {
   private final Coordinates coordinates;
   private int gold = 100;
   private int experience = 0;
-  private int age = 15;
+  private int level = 1;
   private int activityPoints = 20;
   private State state = State.AT_LOCATION;
   private Location currentLocation;
