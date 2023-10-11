@@ -35,7 +35,7 @@ public class BasicEventGenerator implements EventGenerator {
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
     var participants = List.of(new Participant(npc, dialogues));
-    processPlaceholders(npc, null, dialogues);
+    process(dialogues, npc, null);
     return new DialogueEvent(new EventDetails(), participants, true);
   }
 
@@ -54,15 +54,8 @@ public class BasicEventGenerator implements EventGenerator {
     var participants = List.of(new Participant(npc, dialogues));
     var eventDetails = eventDto.eventDetails;
     initialiseRewards(eventDetails);
-    processPlaceholders(npc, null, dialogues);
+    process(dialogues, npc, null);
     return new DialogueEvent(eventDetails, participants, true);
-  }
-
-  private void initialiseRewards(EventDetails eventDetails) {
-    for (var reward : eventDetails.getRewards()) {
-      reward.load(random);
-      log.info("Initialised reward: {}", reward);
-    }
   }
 
   @Override
@@ -77,13 +70,17 @@ public class BasicEventGenerator implements EventGenerator {
       var targetParticipant = new Participant(targetNpc, targetNpcDialogues);
       var participants = List.of(giverParticipant, targetParticipant);
       initialiseRewards(eventDto.eventDetails);
-      processPlaceholders(npc, targetNpc, eventDto);
-      processPlaceholders(npc, targetNpc, giverNpcDialogues);
-      processPlaceholders(npc, targetNpc, targetNpcDialogues);
-      processPlaceholders(eventDto, List.of(giverNpcDialogues, targetNpcDialogues));
+      processPlaceholders(eventDto, participants);
       return new ReachEvent(eventDto.eventDetails, participants);
     }
     return null;
+  }
+
+  private void initialiseRewards(EventDetails eventDetails) {
+    for (var reward : eventDetails.getRewards()) {
+      reward.load(random);
+      log.info("Initialised reward: {}", reward);
+    }
   }
 
   private PointOfInterest tryToFindAPoi(Npc npc) {
@@ -109,23 +106,42 @@ public class BasicEventGenerator implements EventGenerator {
     return poi;
   }
 
-  private void processPlaceholders(Npc npc, Npc targetNpc, EventDto eventDto) {
-    var eventDetails = eventDto.eventDetails;
+  private void processPlaceholders(EventDto eventDto, List<Participant> participants) {
+    var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
+    var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
+    var giverNpc = getNpc(participants, Role.EVENT_GIVER);
+    var targetNpc = getNpc(participants, Role.EVENT_TARGET);
+    process(eventDto, giverNpc, targetNpc);
+    process(giverNpcDialogues, giverNpc, targetNpc);
+    process(targetNpcDialogues, giverNpc, targetNpc);
+    process(List.of(giverNpcDialogues, targetNpcDialogues), eventDto);
+  }
+
+  private Npc getNpc(List<Participant> participants, Role role) {
+    return participants.stream()
+        .filter(p -> p.role() == role)
+        .map(Participant::npc)
+        .findFirst()
+        .orElseThrow();
+  }
+
+  private void process(EventDto toProcess, Npc npc, Npc targetNpc) {
+    var eventDetails = toProcess.eventDetails;
     var about = processor.process(eventDetails.getAbout(), npc, targetNpc);
     eventDetails.setAbout(about);
   }
 
-  private void processPlaceholders(Npc npc, Npc targetNpc, List<Dialogue> dialogues) {
-    for (var dialogue : dialogues) {
+  private void process(List<Dialogue> toProcess, Npc npc, Npc targetNpc) {
+    for (var dialogue : toProcess) {
       for (var interaction : dialogue.getInteractions()) {
-        processText(npc, targetNpc, interaction);
-        processActions(npc, targetNpc, interaction);
+        interaction.setText(process(interaction.getText(), npc, targetNpc));
+        process(interaction, npc, targetNpc);
       }
     }
   }
 
-  private void processPlaceholders(EventDto eventDto, List<List<Dialogue>> listOfLists) {
-    for (var dialogues : listOfLists) {
+  private void process(List<List<Dialogue>> toProcess, EventDto eventDto) {
+    for (var dialogues : toProcess) {
       for (var dialogue : dialogues) {
         for (var interaction : dialogue.getInteractions()) {
           interaction.setText(processor.process(interaction.getText(), eventDto.eventDetails));
@@ -134,26 +150,16 @@ public class BasicEventGenerator implements EventGenerator {
     }
   }
 
-  private void processText(Npc npc, Npc targetNpc, Interaction interaction) {
-    String processedText;
-    if (targetNpc == null) {
-      processedText = processor.process(interaction.getText(), npc);
-    } else {
-      processedText = processor.process(interaction.getText(), npc, targetNpc);
-    }
-    interaction.setText(processedText);
+  private void process(Interaction toProcess, Npc npc, Npc targetNpc) {
+    var actions = toProcess.getActions();
+    actions.forEach(action -> action.setName(processor.process(action.getName(), npc, targetNpc)));
   }
 
-  private void processActions(Npc npc, Npc targetNpc, Interaction interaction) {
-    var actions = interaction.getActions();
-    for (var action : actions) {
-      String processedName;
-      if (targetNpc == null) {
-        processedName = processor.process(action.getName(), npc);
-      } else {
-        processedName = processor.process(action.getName(), npc, targetNpc);
-      }
-      action.setName(processedName);
+  private String process(String toProcess, Npc npc, Npc targetNpc) {
+    if (targetNpc == null) {
+      return processor.process(toProcess, npc);
+    } else {
+      return processor.process(toProcess, npc, targetNpc);
     }
   }
 }

@@ -30,39 +30,39 @@ public class PlaceholderProcessor {
     random = parentRandom;
   }
 
-  public String process(String text, Npc owner, Npc targetNpc) {
-    text = processOwnerPlaceholders(text, owner);
-    text = text.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
-    text = text.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
-    text = text.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
-    text = text.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
-    return text;
+  public String process(String any, Npc owner, Npc targetNpc) {
+    any = processOwnerPlaceholders(any, owner);
+    any = any.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
+    any = any.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
+    any = any.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
+    any = any.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
+    return any;
   }
 
-  public String process(String text, Npc owner) {
-    return processOwnerPlaceholders(text, owner);
+  public String process(String any, Npc owner) {
+    return processOwnerPlaceholders(any, owner);
   }
 
-  private String processOwnerPlaceholders(String text, Npc owner) {
-    text = text.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
-    text = text.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
-    text = text.replace(PLACEHOLDER_POI_NAME, owner.getName());
-    text = text.replace(PLACEHOLDER_OWNER, owner.getName());
-    text = text.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
-    return text;
+  private String processOwnerPlaceholders(String any, Npc owner) {
+    any = any.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
+    any = any.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
+    any = any.replace(PLACEHOLDER_POI_NAME, owner.getName());
+    any = any.replace(PLACEHOLDER_OWNER, owner.getName());
+    any = any.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
+    return any;
   }
 
-  public String process(String text, EventDetails eventDetails) {
+  public String process(String any, EventDetails eventDetails) {
     var rewards = eventDetails.getRewards();
     if (rewards == null) {
-      return text.replace(PLACEHOLDER_REWARD, "none");
+      return any.replace(PLACEHOLDER_REWARD, "none");
     }
     var rewardsString = new StringBuilder();
     for (var reward : rewards) {
       rewardsString.append(reward.toString()).append(", ");
     }
     rewardsString.setLength(rewardsString.length() - 2);
-    return text.replace(PLACEHOLDER_REWARD, rewardsString);
+    return any.replace(PLACEHOLDER_REWARD, rewardsString);
   }
 
   /** Used to process Location and PointOfInterest names. */
