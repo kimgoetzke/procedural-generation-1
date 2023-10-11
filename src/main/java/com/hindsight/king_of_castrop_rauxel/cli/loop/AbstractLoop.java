@@ -23,13 +23,10 @@ public abstract class AbstractLoop {
   protected void printHeaders(boolean showPoi) {
     CliComponent.clearConsole();
     out.printf(
-        "%sSTATS: [ Gold: %s%s%s | Level: %s%s%s | Age: %s%s%s | Activity points left: %s%s%s ]%s%n",
+        "%sSTATS: [ Gold: %s%s%s | Age: %s%s%s | Activity points left: %s%s%s ]%s%n",
         CliComponent.FMT.DEFAULT_BOLD,
         CliComponent.FMT.YELLOW_BOLD,
         player.getGold(),
-        CliComponent.FMT.DEFAULT_BOLD,
-        CliComponent.FMT.BLUE_BOLD,
-        player.getLevel(),
         CliComponent.FMT.DEFAULT_BOLD,
         CliComponent.FMT.MAGENTA_BOLD,
         player.getAge(),

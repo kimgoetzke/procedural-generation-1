@@ -76,6 +76,9 @@ public interface Event {
       setCurrentDialogue(getDialogue(Event.State.COMPLETED));
       setCurrentInteraction(-1);
     }
+    if (getEventDetails().hasRewards()) {
+      getEventDetails().getRewards().forEach(r -> r.give(player));
+    }
     player.setCurrentEvent(null);
     player.setState(Player.State.AT_POI);
   }

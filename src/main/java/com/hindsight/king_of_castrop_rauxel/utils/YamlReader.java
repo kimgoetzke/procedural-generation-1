@@ -15,10 +15,10 @@ import org.yaml.snakeyaml.Yaml;
 @Slf4j
 public class YamlReader {
 
-  public static final String EVENT_GIVER = "eventGiver";
-  public static final String EVENT_TARGET = "eventTarget";
-  private final String folder;
+  private static final String EVENT_GIVER = "eventGiver";
+  private static final String EVENT_TARGET = "eventTarget";
   private static final String FILE_EXTENSION = ".yml";
+  private final String folder;
 
   public YamlReader(String folder) {
     this.folder = folder;

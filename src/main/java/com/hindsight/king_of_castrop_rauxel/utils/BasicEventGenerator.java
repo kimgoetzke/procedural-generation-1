@@ -54,7 +54,7 @@ public class BasicEventGenerator implements EventGenerator {
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var giverParticipant = new Participant(npc, giverNpcDialogues);
     var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
-    var targetPoi = attemptFindingPoi(npc);
+    var targetPoi = tryToFindAPoi(npc);
     if (targetPoi != null) {
       var targetNpc = targetPoi.getNpc();
       var targetParticipant = new Participant(targetNpc, targetNpcDialogues);
@@ -62,12 +62,13 @@ public class BasicEventGenerator implements EventGenerator {
       processPlaceholders(npc, targetNpc, eventDto);
       processPlaceholders(npc, targetNpc, giverNpcDialogues);
       processPlaceholders(npc, targetNpc, targetNpcDialogues);
+      processPlaceholders(eventDto, List.of(giverNpcDialogues, targetNpcDialogues));
       return new ReachEvent(eventDto.eventDetails, participants, targetPoi);
     }
     return null;
   }
 
-  private PointOfInterest attemptFindingPoi(Npc npc) {
+  private PointOfInterest tryToFindAPoi(Npc npc) {
     for (int i = 0; i < MAX_ATTEMPTS; i++) {
       var poi = findPoiInSameLocation(npc);
       if (poi != null) {
@@ -101,6 +102,16 @@ public class BasicEventGenerator implements EventGenerator {
       for (var interaction : dialogue.getInteractions()) {
         processText(npc, targetNpc, interaction);
         processActions(npc, targetNpc, interaction);
+      }
+    }
+  }
+
+  private void processPlaceholders(EventDto eventDto, List<List<Dialogue>> listOfLists) {
+    for (var dialogues : listOfLists) {
+      for (var dialogue : dialogues) {
+        for (var interaction : dialogue.getInteractions()) {
+          interaction.setText(processor.process(interaction.getText(), eventDto.eventDetails));
+        }
       }
     }
   }

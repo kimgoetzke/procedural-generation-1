@@ -1,13 +1,13 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import lombok.extern.slf4j.Slf4j;
+import static com.hindsight.king_of_castrop_rauxel.utils.BasicNameGenerator.FOLDER;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.event.EventDetails;
+import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.List;
 import java.util.Random;
-
-import static com.hindsight.king_of_castrop_rauxel.utils.BasicNameGenerator.FOLDER;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PlaceholderProcessor {
@@ -16,9 +16,12 @@ public class PlaceholderProcessor {
   private static final String PLACEHOLDER_LOCATION = "&L";
   private static final String PLACEHOLDER_POI_NAME = "&I";
   private static final String PLACEHOLDER_OWNER = "&O";
+  private static final String PLACEHOLDER_OWNER_FIRST_NAME = "&OF";
   private static final String PLACEHOLDER_TARGET_NPC = "&TO";
+  private static final String PLACEHOLDER_TARGET_NPC_FIRST_NAME = "&TOF";
   private static final String PLACEHOLDER_TARGET_POI = "&TI";
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
+  private static final String PLACEHOLDER_REWARD = "&R";
   public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
   private final TxtReader txtReader = new TxtReader(FOLDER);
   private Random random;
@@ -28,25 +31,42 @@ public class PlaceholderProcessor {
   }
 
   public String process(String text, Npc owner, Npc targetNpc) {
-    text = text.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
-    text = text.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
-    text = text.replace(PLACEHOLDER_POI_NAME, owner.getName());
-    text = text.replace(PLACEHOLDER_OWNER, owner.getName());
+    text = processOwnerPlaceholders(text, owner);
     text = text.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
+    text = text.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
     text = text.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
     text = text.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
     return text;
   }
 
   public String process(String text, Npc owner) {
+    return processOwnerPlaceholders(text, owner);
+  }
+
+  private String processOwnerPlaceholders(String text, Npc owner) {
     text = text.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
     text = text.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
     text = text.replace(PLACEHOLDER_POI_NAME, owner.getName());
     text = text.replace(PLACEHOLDER_OWNER, owner.getName());
+    text = text.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
     return text;
   }
 
-  public void processList(
+  public String process(String text, EventDetails eventDetails) {
+    var rewards = eventDetails.getRewards();
+    if (rewards == null) {
+      return text.replace(PLACEHOLDER_REWARD, "none");
+    }
+    var rewardsString = new StringBuilder();
+    for (var reward : rewards) {
+      rewardsString.append(reward.toString()).append(", ");
+    }
+    rewardsString.setLength(rewardsString.length() - 2);
+    return text.replace(PLACEHOLDER_REWARD, rewardsString);
+  }
+
+  /** Used to process Location and PointOfInterest names. */
+  public void process(
       List<String> words, String parentName, Npc inhabitant, AbstractAmenity amenity) {
     for (String word : words) {
       injectParentName(words, word, parentName);
@@ -67,7 +87,7 @@ public class PlaceholderProcessor {
       return;
     }
     if (inhabitant == null) {
-      var fallbackName = getFallbackName();
+      var fallbackName = getInhabitantFallbackName();
       words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, fallbackName));
       log.warn("Inhabitant was null when generating {}, using {} instead", word, fallbackName);
       return;
@@ -79,7 +99,7 @@ public class PlaceholderProcessor {
     words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, inhabitant.getFirstName()));
   }
 
-  private String getFallbackName() {
+  private String getInhabitantFallbackName() {
     var result = txtReader.read(PlaceholderProcessor.FALLBACK_INHABITANT);
     if (result.isEmpty()) {
       throw new IllegalStateException(

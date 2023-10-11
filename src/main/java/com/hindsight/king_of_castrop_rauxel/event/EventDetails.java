@@ -30,8 +30,12 @@ public final class EventDetails {
     this.rewards = List.of();
   }
 
+  public boolean hasRewards() {
+    return rewards != null && !rewards.isEmpty();
+  }
+
   @Override
   public String toString() {
-    return "EventDetails[id=" + id + ", eventType=" + eventType + ", rewards=" + rewards + "]";
+    return "EventDetails(id=" + id + ", eventType=" + eventType + ", rewards=" + rewards + ")";
   }
 }

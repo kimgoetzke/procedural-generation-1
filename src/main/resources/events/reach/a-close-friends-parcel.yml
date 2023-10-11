@@ -37,7 +37,7 @@ eventGiver:
   available:
     - text: Hey there, hey you! You look like someone who travels a lot. Are heading over to &TI by any chance? If you do, I need you to do something for me.
       i: 0
-    - text: I need you to get this small parcel to &TO at &TI. It's a bag of seeds and &TO is a good friend of mine. Can you do it? Please!
+    - text: I need you to get this small parcel to &TO at &TI. It's a bag of seeds and &TOF is a good friend of mine. Can you do it? Please!
       i: 1
       actions:
         - name: (Accept) Alright, I'll do it
@@ -52,7 +52,7 @@ eventGiver:
         - name: Thanks, I'll take good care of it.
           eventState: ACTIVE
           nextInteraction: 0
-    - text: Oh, that's a shame. I really need someone to deliver this parcel to &TO for me. I'll keep looking for someone else.
+    - text: Oh, that's a shame. I really need someone to deliver this parcel to &TOF for me. I'll keep looking for someone else.
       i: 3
       actions:
         - name: Sorry, I'll have to leave now.
@@ -77,7 +77,7 @@ eventGiver:
   declined:
     - text: Good news! I have found something else to deliver the parcel for me.
       actions:
-        - name: I'm happy for you and &TO. Goodbye!
+        - name: I'm happy for you and &TOF. Goodbye!
           playerState: AT_POI
 eventTarget:
   available:
@@ -87,9 +87,9 @@ eventTarget:
         - name: All good. Thank you.
           playerState: AT_POI
   active:
-    - text: This is a parcel from %O, you said? That's marvellous. I've been waiting for this for a while now. Thank you so much for delivering it to me.
+    - text: This is a parcel from &O, you said? That's marvellous. I've been waiting for this for a while now. Thank you so much for delivering it to me.
       i: 0
-    - text: Please accept this as a token of my appreciation.
+    - text: Please accept this as a token of my appreciation. (&R)
       actions:
         - name: Thank you, I appreciate it!
           eventState: COMPLETED
