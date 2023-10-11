@@ -123,7 +123,7 @@ public interface Event {
     getCurrentDialogue().rewindBy(relativeStep);
   }
 
-  default void completeDialogue() {
+  default void resetDialogue() {
     getCurrentDialogue().reset();
   }
 

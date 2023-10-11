@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.location;
+package com.hindsight.king_of_castrop_rauxel.world;
 
 public interface Generatable {
 

@@ -4,7 +4,6 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.location.Generatable;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import java.util.Random;
 import lombok.Getter;

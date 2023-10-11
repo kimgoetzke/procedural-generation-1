@@ -8,6 +8,8 @@ import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.world.Generatable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

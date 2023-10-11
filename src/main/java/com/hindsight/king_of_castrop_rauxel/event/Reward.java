@@ -1,17 +1,28 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import lombok.Builder;
+import com.hindsight.king_of_castrop_rauxel.world.Randomisable;
+
+import java.util.Random;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 
-@Builder
-public class Reward {
+public class Reward implements Randomisable {
 
-  private Type type;
-  private int minValue;
-  private int maxValue;
+  private final Type type;
   private int value;
+  private final int minValue;
+  private final int maxValue;
+
+  public Reward(Type type, int minValue, int maxValue) {
+    this.type = type;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+  }
+
+  public void load(Random random) {
+    this.value = random.nextInt(maxValue - minValue + 1) + minValue;
+  }
 
   public void give(Player player) {
     switch (type) {

@@ -74,6 +74,10 @@ public class Player implements Visitor {
     log.info("Updating CLI state to {}", state);
   }
 
+  public boolean hasCurrentEvent() {
+    return currentEvent != null;
+  }
+
   public List<Event> getActiveEvents() {
     return events.stream().filter(e -> e.getEventState() == Event.State.ACTIVE).toList();
   }
