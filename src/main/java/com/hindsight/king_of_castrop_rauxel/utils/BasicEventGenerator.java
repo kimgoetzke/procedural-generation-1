@@ -39,13 +39,30 @@ public class BasicEventGenerator implements EventGenerator {
     return new DialogueEvent(new EventDetails(), participants, true);
   }
 
+  private String readRandomLineFromFile(String pathName) {
+    var result = txtReader.read(pathName);
+    if (!result.isEmpty()) {
+      return txtReader.getRandom(result, random).trim();
+    }
+    throw new IllegalArgumentException("No file found for path name '%s'".formatted(pathName));
+  }
+
   @Override
   public Event multiStepDialogue(Npc npc) {
     var eventDto = yamlReader.read(MULTI_STEP_FOLDER + "a-close-friends-parcel");
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var participants = List.of(new Participant(npc, dialogues));
+    var eventDetails = eventDto.eventDetails;
+    initialiseRewards(eventDetails);
     processPlaceholders(npc, null, dialogues);
-    return new DialogueEvent(eventDto.eventDetails, participants, true);
+    return new DialogueEvent(eventDetails, participants, true);
+  }
+
+  private void initialiseRewards(EventDetails eventDetails) {
+    for (var reward : eventDetails.getRewards()) {
+      reward.load(random);
+      log.info("Initialised reward: {}", reward);
+    }
   }
 
   @Override
@@ -54,20 +71,22 @@ public class BasicEventGenerator implements EventGenerator {
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var giverParticipant = new Participant(npc, giverNpcDialogues);
     var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
-    var targetPoi = attemptFindingPoi(npc);
+    var targetPoi = tryToFindAPoi(npc);
     if (targetPoi != null) {
       var targetNpc = targetPoi.getNpc();
       var targetParticipant = new Participant(targetNpc, targetNpcDialogues);
       var participants = List.of(giverParticipant, targetParticipant);
+      initialiseRewards(eventDto.eventDetails);
       processPlaceholders(npc, targetNpc, eventDto);
       processPlaceholders(npc, targetNpc, giverNpcDialogues);
       processPlaceholders(npc, targetNpc, targetNpcDialogues);
+      processPlaceholders(eventDto, List.of(giverNpcDialogues, targetNpcDialogues));
       return new ReachEvent(eventDto.eventDetails, participants, targetPoi);
     }
     return null;
   }
 
-  private PointOfInterest attemptFindingPoi(Npc npc) {
+  private PointOfInterest tryToFindAPoi(Npc npc) {
     for (int i = 0; i < MAX_ATTEMPTS; i++) {
       var poi = findPoiInSameLocation(npc);
       if (poi != null) {
@@ -105,6 +124,16 @@ public class BasicEventGenerator implements EventGenerator {
     }
   }
 
+  private void processPlaceholders(EventDto eventDto, List<List<Dialogue>> listOfLists) {
+    for (var dialogues : listOfLists) {
+      for (var dialogue : dialogues) {
+        for (var interaction : dialogue.getInteractions()) {
+          interaction.setText(processor.process(interaction.getText(), eventDto.eventDetails));
+        }
+      }
+    }
+  }
+
   private void processText(Npc npc, Npc targetNpc, Interaction interaction) {
     String processedText;
     if (targetNpc == null) {
@@ -126,13 +155,5 @@ public class BasicEventGenerator implements EventGenerator {
       }
       action.setName(processedName);
     }
-  }
-
-  private String readRandomLineFromFile(String pathName) {
-    var result = txtReader.read(pathName);
-    if (!result.isEmpty()) {
-      return txtReader.getRandom(result, random).trim();
-    }
-    throw new IllegalArgumentException("No file found for path name '%s'".formatted(pathName));
   }
 }

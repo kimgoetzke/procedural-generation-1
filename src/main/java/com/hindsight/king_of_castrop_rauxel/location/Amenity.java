@@ -70,7 +70,7 @@ public class Amenity extends AbstractAmenity {
   }
 
   private void addSecondaryEvent(EventDetails details, Event event) {
-    var about = details.getAbout() == null ? "" : details.getAbout();
+    var about = details.getAbout() == null ? "" : "about " + details.getAbout();
     availableActions.add(
         EventAction.builder()
             .name("Speak with %s %s".formatted(npc.getName(), about))

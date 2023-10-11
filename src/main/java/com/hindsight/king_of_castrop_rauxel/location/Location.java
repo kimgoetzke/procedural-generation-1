@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
+import com.hindsight.king_of_castrop_rauxel.world.Generatable;
 import org.springframework.data.util.Pair;
 
 public interface Location extends Visitable, Generatable {

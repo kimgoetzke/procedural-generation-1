@@ -1,18 +1,49 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
-import lombok.Builder;
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.world.Randomisable;
 
-@Builder
-public class Reward {
+import java.util.Random;
 
-  private Type type;
-  private int minValue;
-  private int maxValue;
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+
+public class Reward implements Randomisable {
+
+  private final Type type;
   private int value;
+  private final int minValue;
+  private final int maxValue;
+
+  public Reward(Type type, int minValue, int maxValue) {
+    this.type = type;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+  }
+
+  public void load(Random random) {
+    this.value = random.nextInt(maxValue - minValue + 1) + minValue;
+  }
+
+  public void give(Player player) {
+    switch (type) {
+      case GOLD -> player.addGold(value);
+      case EXPERIENCE -> player.addExperience(value);
+    }
+  }
 
   public enum Type {
     GOLD,
-    EXPERIENCE,
-    ITEM
+    EXPERIENCE
+  }
+
+  @Override
+  public String toString() {
+    return switch (type) {
+      case GOLD, EXPERIENCE -> FMT.YELLOW_BOLD
+          + String.valueOf(value)
+          + FMT.RESET
+          + " "
+          + type.toString().toLowerCase();
+    };
   }
 }

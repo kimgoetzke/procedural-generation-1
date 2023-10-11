@@ -20,10 +20,10 @@ public class Player implements Visitor {
   private final Set<Location> visitedLocations = new LinkedHashSet<>();
   private final List<Event> events = new ArrayList<>();
   private final Coordinates coordinates;
-  @Setter private int gold = 100;
-  @Setter private int level;
-  @Setter private int age = 15;
-  @Setter private int activityPoints = 20;
+  private int gold = 100;
+  private int experience = 0;
+  private int age = 15;
+  private int activityPoints = 20;
   private State state = State.AT_LOCATION;
   private Location currentLocation;
   private PointOfInterest currentPoi;
@@ -61,9 +61,21 @@ public class Player implements Visitor {
     events.add(event);
   }
 
+  public void addGold(int amount) {
+    this.gold += amount;
+  }
+
+  public void addExperience(int amount) {
+    this.experience -= amount;
+  }
+
   public void setState(State state) {
     this.state = state;
     log.info("Updating CLI state to {}", state);
+  }
+
+  public boolean hasCurrentEvent() {
+    return currentEvent != null;
   }
 
   public List<Event> getActiveEvents() {

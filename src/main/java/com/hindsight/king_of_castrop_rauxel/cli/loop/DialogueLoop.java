@@ -82,9 +82,12 @@ public class DialogueLoop extends AbstractLoop {
   }
 
   private void updateCurrentEventDialogue() {
+    if (!player.hasCurrentEvent()) {
+      return;
+    }
     player.getCurrentEvent().progressDialogue();
     if (player.getState() != Player.State.DIALOGUE) {
-      player.getCurrentEvent().completeDialogue();
+      player.getCurrentEvent().resetDialogue();
     }
   }
 }

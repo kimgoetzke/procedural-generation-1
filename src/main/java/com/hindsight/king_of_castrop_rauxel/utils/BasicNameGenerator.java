@@ -60,7 +60,7 @@ public class BasicNameGenerator implements NameGenerator {
     setFallbackStringIfListEmpty(words, className);
 
     processFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
-    placeholderProcessor.processList(words, parentName, inhabitant, amenity);
+    placeholderProcessor.process(words, parentName, inhabitant, amenity);
     return String.join("", words);
   }
 

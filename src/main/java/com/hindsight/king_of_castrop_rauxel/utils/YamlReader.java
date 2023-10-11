@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.DialogueAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.*;
@@ -15,20 +14,21 @@ import org.yaml.snakeyaml.Yaml;
 @Slf4j
 public class YamlReader {
 
-  public static final String EVENT_GIVER = "eventGiver";
-  public static final String EVENT_TARGET = "eventTarget";
-  private final String folder;
+  private static final String EVENT_GIVER = "eventGiver";
+  private static final String EVENT_TARGET = "eventTarget";
   private static final String FILE_EXTENSION = ".yml";
+  private final String folder;
 
   public YamlReader(String folder) {
     this.folder = folder;
   }
 
+  @SuppressWarnings("unchecked")
   public EventDto read(String fileName) {
     var inputStream =
         this.getClass().getClassLoader().getResourceAsStream(folder + fileName + FILE_EXTENSION);
     var yaml = new Yaml();
-    Map<String, Object> data = yaml.load(inputStream);
+    var data = (Map<String, Object>) yaml.load(inputStream);
     var eventDetails = parseEventDetails(data);
     if (eventDetails != null) {
       return switch (eventDetails.getEventType()) {
@@ -45,7 +45,7 @@ public class YamlReader {
   private static EventDetails parseEventDetails(Map<String, Object> data) {
     var detailsData = (List<Map<String, Object>>) data.get("eventDetails");
     var eventTypeData = (String) detailsData.get(0).get("eventType");
-    Event.Type eventType = eventTypeData == null ? null : Event.Type.valueOf(eventTypeData);
+    var eventType = eventTypeData == null ? null : Event.Type.valueOf(eventTypeData);
     if (eventType == null) {
       return null;
     }
@@ -55,14 +55,8 @@ public class YamlReader {
     if (rewards != null) {
       for (Map<String, Object> r : rewards) {
         var rewardTypeData = (String) r.get("type");
-        Reward.Type rewardType =
-            rewardTypeData == null ? null : Reward.Type.valueOf(rewardTypeData);
-        Reward reward =
-            Reward.builder()
-                .type(rewardType)
-                .minValue((int) r.get("min"))
-                .minValue((int) r.get("max"))
-                .build();
+        var rewardType = rewardTypeData == null ? null : Reward.Type.valueOf(rewardTypeData);
+        var reward = new Reward(rewardType, (int) r.get("min"), (int) r.get("max"));
         rewardsList.add(reward);
       }
     }
@@ -125,12 +119,10 @@ public class YamlReader {
     if (actions != null) {
       for (Map<String, Object> a : actions) {
         var eventStateData = (String) a.get("eventState");
-        Event.State eventState =
-            eventStateData == null ? null : Event.State.valueOf(eventStateData);
+        var eventState = eventStateData == null ? null : Event.State.valueOf(eventStateData);
         var playerStateData = (String) a.get("playerState");
-        Player.State playerState =
-            playerStateData == null ? null : Player.State.valueOf(playerStateData);
-        Action action =
+        var playerState = playerStateData == null ? null : Player.State.valueOf(playerStateData);
+        var action =
             DialogueAction.builder()
                 .name((String) a.get("name"))
                 .eventState(eventState)
