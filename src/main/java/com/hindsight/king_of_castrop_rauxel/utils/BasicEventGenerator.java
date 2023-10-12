@@ -28,6 +28,10 @@ public class BasicEventGenerator implements EventGenerator {
     processor.setRandom(parentRandom);
   }
 
+  // TODO: Get a random file from the folder instead of hardcoding the file name
+  //  - Read number of files in relevant folder
+  //  - Select a random one to be read
+
   @Override
   public Event singleStepDialogue(Npc npc) {
     var pathName = SINGLE_STEP_FOLDER + "NPC-IDLE";
@@ -49,12 +53,12 @@ public class BasicEventGenerator implements EventGenerator {
 
   @Override
   public Event multiStepDialogue(Npc npc) {
-    var eventDto = yamlReader.read(MULTI_STEP_FOLDER + "a-close-friends-parcel");
+    var eventDto = yamlReader.read(MULTI_STEP_FOLDER + "the-obvious-question");
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var participants = List.of(new Participant(npc, dialogues));
     var eventDetails = eventDto.eventDetails;
     initialiseRewards(eventDetails);
-    process(dialogues, npc, null);
+    processPlaceholders(eventDto, participants);
     return new DialogueEvent(eventDetails, participants, true);
   }
 
@@ -67,7 +71,7 @@ public class BasicEventGenerator implements EventGenerator {
     var targetPoi = tryToFindAPoi(npc);
     if (targetPoi != null) {
       var targetNpc = targetPoi.getNpc();
-      var targetParticipant = new Participant(targetNpc, targetNpcDialogues);
+      var targetParticipant = new Participant(targetNpc, Role.EVENT_TARGET, targetNpcDialogues);
       var participants = List.of(giverParticipant, targetParticipant);
       initialiseRewards(eventDto.eventDetails);
       processPlaceholders(eventDto, participants);
@@ -152,7 +156,7 @@ public class BasicEventGenerator implements EventGenerator {
 
   private void process(Interaction toProcess, Npc npc, Npc targetNpc) {
     var actions = toProcess.getActions();
-    actions.forEach(action -> action.setName(processor.process(action.getName(), npc, targetNpc)));
+    actions.forEach(action -> action.setName(process(action.getName(), npc, targetNpc)));
   }
 
   private String process(String toProcess, Npc npc, Npc targetNpc) {

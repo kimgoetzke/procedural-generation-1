@@ -55,7 +55,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addAmenity(PoiType type) {
-    var npc = new Inhabitant(nameGenerator, eventGenerator);
+    var npc = new Inhabitant(random, new Generators(nameGenerator, eventGenerator));
     var amenity = new Amenity(type, npc, this);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);

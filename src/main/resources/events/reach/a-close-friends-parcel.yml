@@ -1,4 +1,7 @@
 # Step 1: What is the event about?
+# - 'eventType' (required, accepts any valid Event.State)
+# - 'about' (required, accepts: String) - appended to actions when displayed to the player
+# - 'reward' (optional, accepts: list of Reward objects)
 eventDetails:
   - eventType: REACH
     about: the parcel of &O

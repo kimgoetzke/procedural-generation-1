@@ -38,7 +38,7 @@ public class YamlReader {
       };
     }
     // If there are no eventDetails in the file, assume it's a multistep dialogue event
-    return readDialogueEvent(data, null);
+    return readDialogueEvent(data, new EventDetails());
   }
 
   @SuppressWarnings("unchecked")
@@ -65,8 +65,8 @@ public class YamlReader {
 
   /** Returns a list with 2 dialogues lists, one for the npc and one for the target npc. */
   private static EventDto readReachEvent(Map<String, Object> data, EventDetails eventDetails) {
-    var giverNpcDialogue = getDialoguesFor(data, eventDetails, EVENT_GIVER);
-    var targetNpcDialogue = getDialoguesFor(data, eventDetails, EVENT_TARGET);
+    var giverNpcDialogue = getDialoguesFor(EVENT_GIVER, data, eventDetails);
+    var targetNpcDialogue = getDialoguesFor(EVENT_TARGET, data, eventDetails);
     return new EventDto(
         eventDetails,
         Map.of(Role.EVENT_GIVER, giverNpcDialogue, Role.EVENT_TARGET, targetNpcDialogue));
@@ -77,15 +77,15 @@ public class YamlReader {
   }
 
   private static List<Dialogue> getDialoguesFor(
-      Map<String, Object> data, EventDetails eventDetails, String eventRole) {
-    var giverDialogueData = parseDataFrom(data, eventRole);
+    String eventRole, Map<String, Object> data, EventDetails eventDetails) {
+    var giverDialogueData = parseDataFor(eventRole, data);
     var giverNpcDialogue = getDialoguesFrom(giverDialogueData);
     giverNpcDialogue.get(0).setAbout(eventDetails.getAbout());
     return giverNpcDialogue;
   }
 
   @SuppressWarnings("unchecked")
-  private static Map<String, Object> parseDataFrom(Map<String, Object> data, String key) {
+  private static Map<String, Object> parseDataFor(String key, Map<String, Object> data) {
     return (Map<String, Object>) data.get(key);
   }
 

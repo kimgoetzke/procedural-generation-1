@@ -30,65 +30,66 @@ public class PlaceholderProcessor {
     random = parentRandom;
   }
 
-  public String process(String any, Npc owner, Npc targetNpc) {
-    any = processOwnerPlaceholders(any, owner);
-    any = any.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
-    any = any.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
-    any = any.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
-    any = any.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
-    return any;
+  public String process(String toProcess, Npc owner, Npc targetNpc) {
+    toProcess = processOwnerPlaceholders(toProcess, owner);
+    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
+    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
+    toProcess = toProcess.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
+    toProcess =
+        toProcess.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
+    return toProcess;
   }
 
-  public String process(String any, Npc owner) {
-    return processOwnerPlaceholders(any, owner);
+  public String process(String toProcess, Npc owner) {
+    return processOwnerPlaceholders(toProcess, owner);
   }
 
-  private String processOwnerPlaceholders(String any, Npc owner) {
-    any = any.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
-    any = any.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
-    any = any.replace(PLACEHOLDER_POI_NAME, owner.getName());
-    any = any.replace(PLACEHOLDER_OWNER, owner.getName());
-    any = any.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
-    return any;
+  private String processOwnerPlaceholders(String toProcess, Npc owner) {
+    toProcess = toProcess.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
+    toProcess = toProcess.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
+    toProcess = toProcess.replace(PLACEHOLDER_POI_NAME, owner.getName());
+    toProcess = toProcess.replace(PLACEHOLDER_OWNER, owner.getName());
+    toProcess = toProcess.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
+    return toProcess;
   }
 
-  public String process(String any, EventDetails eventDetails) {
+  public String process(String toProcess, EventDetails eventDetails) {
     var rewards = eventDetails.getRewards();
     if (rewards == null) {
-      return any.replace(PLACEHOLDER_REWARD, "none");
+      return toProcess.replace(PLACEHOLDER_REWARD, "none");
     }
     var rewardsString = new StringBuilder();
     for (var reward : rewards) {
       rewardsString.append(reward.toString()).append(", ");
     }
     rewardsString.setLength(rewardsString.length() - 2);
-    return any.replace(PLACEHOLDER_REWARD, rewardsString);
+    return toProcess.replace(PLACEHOLDER_REWARD, rewardsString);
   }
 
   /** Used to process Location and PointOfInterest names. */
   public void process(
-      List<String> words, String parentName, Npc inhabitant, AbstractAmenity amenity) {
-    for (String word : words) {
-      injectParentName(words, word, parentName);
-      injectInhabitantName(words, word, inhabitant, amenity);
+      List<String> toProcess, String parentName, Npc inhabitant, AbstractAmenity amenity) {
+    for (String word : toProcess) {
+      injectParentName(toProcess, word, parentName);
+      injectInhabitantName(toProcess, word, inhabitant, amenity);
     }
   }
 
-  private void injectParentName(List<String> words, String word, String parentName) {
+  private void injectParentName(List<String> toProcess, String word, String parentName) {
     if (word.contains(PLACEHOLDER_PARENT) && parentName != null) {
       log.info("Injecting parent class name '{}' into '{}'", parentName, word);
-      words.set(words.indexOf(word), word.replace(PLACEHOLDER_PARENT, parentName));
+      toProcess.set(toProcess.indexOf(word), word.replace(PLACEHOLDER_PARENT, parentName));
     }
   }
 
   private void injectInhabitantName(
-      List<String> words, String word, Npc inhabitant, AbstractAmenity amenity) {
+      List<String> toProcess, String word, Npc inhabitant, AbstractAmenity amenity) {
     if (!word.contains(PLACEHOLDER_OWNER)) {
       return;
     }
     if (inhabitant == null) {
       var fallbackName = getInhabitantFallbackName();
-      words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, fallbackName));
+      toProcess.set(toProcess.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, fallbackName));
       log.warn("Inhabitant was null when generating {}, using {} instead", word, fallbackName);
       return;
     } else if (inhabitant.getHome() != amenity) {
@@ -96,7 +97,8 @@ public class PlaceholderProcessor {
           "Inhabitant '" + inhabitant.getName() + "' already has a different home");
     }
     log.info("Injecting inhabitant first name '{}' into '{}'", inhabitant.getFirstName(), word);
-    words.set(words.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, inhabitant.getFirstName()));
+    toProcess.set(
+        toProcess.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, inhabitant.getFirstName()));
   }
 
   private String getInhabitantFallbackName() {
