@@ -23,7 +23,7 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 
   @EqualsAndHashCode.Include protected final String id;
   @EqualsAndHashCode.Include protected final long seed;
-  @ToString.Include protected final PoiType type;
+  @ToString.Include protected final Type type;
   protected final Location parent;
   protected final Npc npc;
   @ToString.Include @Setter protected String name;
@@ -31,7 +31,7 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
   @Setter private boolean isLoaded;
   protected Random random;
 
-  protected AbstractAmenity(PoiType type, Npc npc, Location parent) {
+  protected AbstractAmenity(Type type, Npc npc, Location parent) {
     this.id = "POI~" + UUID.randomUUID();
     this.seed = SeedBuilder.seedFrom(parent.getCoordinates().getGlobal());
     this.random = new Random(seed);
@@ -48,10 +48,11 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
     return "%s [ Type: %s | Located in %s ]".formatted(name, type, parent.getName());
   }
 
-  public enum PoiType {
+  public enum Type {
     ENTRANCE,
     MAIN_SQUARE,
     SHOP,
     QUEST_LOCATION,
+    DUNGEON
   }
 }

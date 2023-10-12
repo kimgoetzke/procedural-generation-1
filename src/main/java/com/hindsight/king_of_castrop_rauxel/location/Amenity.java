@@ -17,7 +17,7 @@ import java.util.Random;
 @ToString(callSuper = true)
 public class Amenity extends AbstractAmenity {
 
-  public Amenity(PoiType type, Npc npc, Location parent) {
+  public Amenity(Type type, Npc npc, Location parent) {
     super(type, npc, parent);
     load();
     logResult();

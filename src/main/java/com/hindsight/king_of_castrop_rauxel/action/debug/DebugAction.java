@@ -28,6 +28,6 @@ public class DebugAction implements Action {
   }
 
   public State getNextState() {
-    return State.DEBUG;
+    return State.DEBUGGING;
   }
 }

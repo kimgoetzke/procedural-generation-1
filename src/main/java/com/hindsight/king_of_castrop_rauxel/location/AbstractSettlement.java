@@ -46,7 +46,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   public PointOfInterest getDefaultPoi() {
     return pointsOfInterests.stream()
-        .filter(a -> a.getType() == AbstractAmenity.PoiType.MAIN_SQUARE)
+        .filter(a -> a.getType() == AbstractAmenity.Type.MAIN_SQUARE)
         .findFirst()
         .orElse(null);
   }

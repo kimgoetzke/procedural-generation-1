@@ -14,7 +14,7 @@ public interface PointOfInterest {
 
   String getDescription();
 
-  PoiType getType();
+  Type getType();
 
   Location getParent();
 

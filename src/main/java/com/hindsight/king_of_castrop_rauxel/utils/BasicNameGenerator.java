@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.Type;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
@@ -123,7 +123,7 @@ public class BasicNameGenerator implements NameGenerator {
     }
   }
 
-  private void processFileNamePlaceholders(List<String> words, String pathName, PoiType type) {
+  private void processFileNamePlaceholders(List<String> words, String pathName, Type type) {
     if (words.get(0).startsWith(HYPHEN)) {
       var result = txtReader.read(pathName + words.get(0));
       if (result.isEmpty()) {

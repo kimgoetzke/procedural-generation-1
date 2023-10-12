@@ -45,4 +45,14 @@ public class GameHandler {
       world.generateChunk(whereNext, map);
     }
   }
+
+  public void updateCurrentEventDialogue(Player player) {
+    if (!player.hasCurrentEvent()) {
+      return;
+    }
+    player.getCurrentEvent().progressDialogue();
+    if (player.getState() != Player.State.IN_DIALOGUE) {
+      player.getCurrentEvent().resetDialogue();
+    }
+  }
 }

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PlaceholderProcessor {
 
+  // TODO: Allow injecting player name in PlaceholderProcessor with &PL
   private static final String PLACEHOLDER_PARENT = "&P";
   private static final String PLACEHOLDER_LOCATION = "&L";
   private static final String PLACEHOLDER_POI_NAME = "&I";

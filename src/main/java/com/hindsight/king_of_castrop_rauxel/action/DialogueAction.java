@@ -24,10 +24,10 @@ public class DialogueAction implements Action {
     if (playerState != null) {
       switch (playerState) {
         case AT_LOCATION -> player.setState(Player.State.AT_LOCATION);
-        case CHOOSE_POI -> player.setState(Player.State.CHOOSE_POI);
+        case CHOOSING_POI -> player.setState(Player.State.CHOOSING_POI);
         case AT_POI -> player.setState(Player.State.AT_POI);
-        case DIALOGUE -> player.setState(Player.State.DIALOGUE);
-        case DEBUG -> player.setState(Player.State.DEBUG);
+        case IN_DIALOGUE -> player.setState(Player.State.IN_DIALOGUE);
+        case DEBUGGING -> player.setState(Player.State.DEBUGGING);
       }
     }
     if (eventState == Event.State.NONE && nextInteraction == null) {
@@ -48,6 +48,6 @@ public class DialogueAction implements Action {
 
   @Override
   public Player.State getNextState() {
-    return Player.State.DIALOGUE;
+    return Player.State.IN_DIALOGUE;
   }
 }

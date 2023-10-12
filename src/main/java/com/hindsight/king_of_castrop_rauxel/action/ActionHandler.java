@@ -24,7 +24,7 @@ public class ActionHandler {
   private void prepend(List<Action> actions, boolean showDebugMenu) {
     actions.clear();
     if (environmentResolver.isDev() && showDebugMenu) {
-      actions.add(new StateAction(1, "Show debug menu", DEBUG));
+      actions.add(new StateAction(1, "Show debug menu", DEBUGGING));
     }
   }
 
@@ -42,7 +42,7 @@ public class ActionHandler {
             actions.size() + 1,
             "Explore any of the %s point(s) of interest"
                 .formatted(currentLocation.getPointsOfInterest().size() - 1),
-            CHOOSE_POI));
+            CHOOSING_POI));
     addAllActions(currentLocation.getDefaultPoi().getAvailableActions(), actions);
     var neighbours = currentLocation.getNeighbours().stream().toList();
     addLocationActions(neighbours, actions, currentLocation, player);
@@ -76,6 +76,13 @@ public class ActionHandler {
     prepend(actions, false);
     var eventActions = player.getCurrentEvent().getCurrentActions();
     addAllActions(eventActions, actions);
+  }
+
+  public void getCombatActions(Player player, List<Action> actions) {
+    prepend(actions, false);
+    var poi = player.getCurrentPoi().getName();
+    actions.add(new StateAction(actions.size() + 1, "Continue fighting", IN_COMBAT));
+    actions.add(new StateAction(actions.size() + 1, "Leave " + poi, IN_COMBAT));
   }
 
   public void getDebugActions(Player player, List<Action> actions) {

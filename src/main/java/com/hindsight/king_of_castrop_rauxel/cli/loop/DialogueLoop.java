@@ -4,7 +4,6 @@ import static java.lang.System.out;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import java.io.IOException;
@@ -25,9 +24,6 @@ public class DialogueLoop extends AbstractLoop {
   private final GameHandler gameHandler;
   @Getter private final Scanner scanner;
 
-  // TODO: Fix invalid input handling for dialogues
-  // TODO: Remove "Press enter to continue..." after hitting enter
-  // TODO: Allow injecting player name in PlaceholderProcessor
   @Override
   public void execute(List<Action> actions) {
     printInteraction();
@@ -63,10 +59,10 @@ public class DialogueLoop extends AbstractLoop {
   }
 
   private void postProcess() {
-    gameHandler.updateWorld(player);
-    updateCurrentEventDialogue();
+    gameHandler.updateCurrentEventDialogue(player);
   }
 
+  // TODO: Remove "Press enter to continue..." after hitting enter
   @SuppressWarnings("ResultOfMethodCallIgnored")
   private void awaitEnterKeyPress() {
     try {
@@ -81,15 +77,5 @@ public class DialogueLoop extends AbstractLoop {
   protected void recoverInvalidAction() {
     log.info("Invalid action - recovering");
     player.getCurrentEvent().rewindBy(1);
-  }
-
-  private void updateCurrentEventDialogue() {
-    if (!player.hasCurrentEvent()) {
-      return;
-    }
-    player.getCurrentEvent().progressDialogue();
-    if (player.getState() != Player.State.DIALOGUE) {
-      player.getCurrentEvent().resetDialogue();
-    }
   }
 }

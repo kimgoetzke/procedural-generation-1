@@ -31,10 +31,11 @@ public class Player implements Visitor {
 
   public enum State {
     AT_LOCATION,
-    CHOOSE_POI,
+    CHOOSING_POI,
     AT_POI,
-    DIALOGUE,
-    DEBUG
+    IN_DIALOGUE,
+    IN_COMBAT,
+    DEBUGGING
   }
 
   public Player(

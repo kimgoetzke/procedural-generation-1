@@ -33,6 +33,6 @@ public class EventAction implements Action {
 
   @Override
   public Player.State getNextState() {
-    return Player.State.DIALOGUE;
+    return Player.State.IN_DIALOGUE;
   }
 }

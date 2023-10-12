@@ -40,10 +40,10 @@ public class CliGame {
     while (true) {
       switch (player.getState()) {
         case AT_LOCATION -> locationLoop.execute(actions);
-        case CHOOSE_POI -> choosePoiLoop.execute(actions);
+        case CHOOSING_POI -> choosePoiLoop.execute(actions);
         case AT_POI -> poiLoop.execute(actions);
-        case DIALOGUE -> dialogueLoop.execute(actions);
-        case DEBUG -> debugLoop.execute(actions);
+        case IN_DIALOGUE -> dialogueLoop.execute(actions);
+        case DEBUGGING -> debugLoop.execute(actions);
       }
     }
   }

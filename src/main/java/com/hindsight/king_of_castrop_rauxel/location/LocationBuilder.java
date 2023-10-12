@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.PoiType;
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.Type;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
@@ -49,35 +49,35 @@ public class LocationBuilder {
     l.area = L_AREA;
     xl.area = XL_AREA;
 
-    xs.amenities = new EnumMap<>(PoiType.class);
-    s.amenities = new EnumMap<>(PoiType.class);
-    m.amenities = new EnumMap<>(PoiType.class);
-    l.amenities = new EnumMap<>(PoiType.class);
-    xl.amenities = new EnumMap<>(PoiType.class);
+    xs.amenities = new EnumMap<>(Type.class);
+    s.amenities = new EnumMap<>(Type.class);
+    m.amenities = new EnumMap<>(Type.class);
+    l.amenities = new EnumMap<>(Type.class);
+    xl.amenities = new EnumMap<>(Type.class);
 
-    xs.amenities.put(PoiType.ENTRANCE, XS_AMENITIES_ENTRANCE);
-    s.amenities.put(PoiType.ENTRANCE, S_AMENITIES_ENTRANCE);
-    m.amenities.put(PoiType.ENTRANCE, M_AMENITIES_ENTRANCE);
-    l.amenities.put(PoiType.ENTRANCE, L_AMENITIES_ENTRANCE);
-    xl.amenities.put(PoiType.ENTRANCE, XL_AMENITIES_ENTRANCE);
+    xs.amenities.put(Type.ENTRANCE, XS_AMENITIES_ENTRANCE);
+    s.amenities.put(Type.ENTRANCE, S_AMENITIES_ENTRANCE);
+    m.amenities.put(Type.ENTRANCE, M_AMENITIES_ENTRANCE);
+    l.amenities.put(Type.ENTRANCE, L_AMENITIES_ENTRANCE);
+    xl.amenities.put(Type.ENTRANCE, XL_AMENITIES_ENTRANCE);
 
-    xs.amenities.put(PoiType.MAIN_SQUARE, XS_AMENITIES_MAIN_SQUARE);
-    s.amenities.put(PoiType.MAIN_SQUARE, S_AMENITIES_MAIN_SQUARE);
-    m.amenities.put(PoiType.MAIN_SQUARE, M_AMENITIES_MAIN_SQUARE);
-    l.amenities.put(PoiType.MAIN_SQUARE, L_AMENITIES_MAIN_SQUARE);
-    xl.amenities.put(PoiType.MAIN_SQUARE, XL_AMENITIES_MAIN_SQUARE);
+    xs.amenities.put(Type.MAIN_SQUARE, XS_AMENITIES_MAIN_SQUARE);
+    s.amenities.put(Type.MAIN_SQUARE, S_AMENITIES_MAIN_SQUARE);
+    m.amenities.put(Type.MAIN_SQUARE, M_AMENITIES_MAIN_SQUARE);
+    l.amenities.put(Type.MAIN_SQUARE, L_AMENITIES_MAIN_SQUARE);
+    xl.amenities.put(Type.MAIN_SQUARE, XL_AMENITIES_MAIN_SQUARE);
 
-    xs.amenities.put(PoiType.SHOP, XS_AMENITIES_SHOP);
-    s.amenities.put(PoiType.SHOP, S_AMENITIES_SHOP);
-    m.amenities.put(PoiType.SHOP, M_AMENITIES_SHOP);
-    l.amenities.put(PoiType.SHOP, L_AMENITIES_SHOP);
-    xl.amenities.put(PoiType.SHOP, XL_AMENITIES_SHOP);
+    xs.amenities.put(Type.SHOP, XS_AMENITIES_SHOP);
+    s.amenities.put(Type.SHOP, S_AMENITIES_SHOP);
+    m.amenities.put(Type.SHOP, M_AMENITIES_SHOP);
+    l.amenities.put(Type.SHOP, L_AMENITIES_SHOP);
+    xl.amenities.put(Type.SHOP, XL_AMENITIES_SHOP);
 
-    xs.amenities.put(PoiType.QUEST_LOCATION, XS_AMENITIES_QUEST_LOCATION);
-    s.amenities.put(PoiType.QUEST_LOCATION, S_AMENITIES_QUEST_LOCATION);
-    m.amenities.put(PoiType.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
-    l.amenities.put(PoiType.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
-    xl.amenities.put(PoiType.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
+    xs.amenities.put(Type.QUEST_LOCATION, XS_AMENITIES_QUEST_LOCATION);
+    s.amenities.put(Type.QUEST_LOCATION, S_AMENITIES_QUEST_LOCATION);
+    m.amenities.put(Type.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
+    l.amenities.put(Type.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
+    xl.amenities.put(Type.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
 
     SETTLEMENT_CONFIGS.put(Size.XS, xs);
     SETTLEMENT_CONFIGS.put(Size.S, s);
@@ -130,7 +130,7 @@ public class LocationBuilder {
   public static class SettlementConfig {
     private Bounds area;
     private Bounds inhabitants;
-    private Map<PoiType, Bounds> amenities;
+    private Map<Type, Bounds> amenities;
 
     @Override
     public String toString() {

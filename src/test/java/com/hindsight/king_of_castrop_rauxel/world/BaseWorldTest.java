@@ -104,35 +104,35 @@ public abstract class BaseWorldTest {
     l.setArea(L_AREA);
     xl.setArea(XL_AREA);
 
-    EnumMap<PoiType, Bounds> xsAmenities = new EnumMap<>(PoiType.class);
-    EnumMap<PoiType, Bounds> sAmenities = new EnumMap<>(PoiType.class);
-    EnumMap<PoiType, Bounds> mAmenities = new EnumMap<>(PoiType.class);
-    EnumMap<PoiType, Bounds> lAmenities = new EnumMap<>(PoiType.class);
-    EnumMap<PoiType, Bounds> xlAmenities = new EnumMap<>(PoiType.class);
+    EnumMap<Type, Bounds> xsAmenities = new EnumMap<>(Type.class);
+    EnumMap<Type, Bounds> sAmenities = new EnumMap<>(Type.class);
+    EnumMap<Type, Bounds> mAmenities = new EnumMap<>(Type.class);
+    EnumMap<Type, Bounds> lAmenities = new EnumMap<>(Type.class);
+    EnumMap<Type, Bounds> xlAmenities = new EnumMap<>(Type.class);
 
-    xsAmenities.put(PoiType.ENTRANCE, XS_AMENITIES_ENTRANCE);
-    sAmenities.put(PoiType.ENTRANCE, S_AMENITIES_ENTRANCE);
-    mAmenities.put(PoiType.ENTRANCE, M_AMENITIES_ENTRANCE);
-    lAmenities.put(PoiType.ENTRANCE, L_AMENITIES_ENTRANCE);
-    xlAmenities.put(PoiType.ENTRANCE, XL_AMENITIES_ENTRANCE);
+    xsAmenities.put(Type.ENTRANCE, XS_AMENITIES_ENTRANCE);
+    sAmenities.put(Type.ENTRANCE, S_AMENITIES_ENTRANCE);
+    mAmenities.put(Type.ENTRANCE, M_AMENITIES_ENTRANCE);
+    lAmenities.put(Type.ENTRANCE, L_AMENITIES_ENTRANCE);
+    xlAmenities.put(Type.ENTRANCE, XL_AMENITIES_ENTRANCE);
 
-    xsAmenities.put(PoiType.MAIN_SQUARE, XS_AMENITIES_MAIN_SQUARE);
-    sAmenities.put(PoiType.MAIN_SQUARE, S_AMENITIES_MAIN_SQUARE);
-    mAmenities.put(PoiType.MAIN_SQUARE, M_AMENITIES_MAIN_SQUARE);
-    lAmenities.put(PoiType.MAIN_SQUARE, L_AMENITIES_MAIN_SQUARE);
-    xlAmenities.put(PoiType.MAIN_SQUARE, XL_AMENITIES_MAIN_SQUARE);
+    xsAmenities.put(Type.MAIN_SQUARE, XS_AMENITIES_MAIN_SQUARE);
+    sAmenities.put(Type.MAIN_SQUARE, S_AMENITIES_MAIN_SQUARE);
+    mAmenities.put(Type.MAIN_SQUARE, M_AMENITIES_MAIN_SQUARE);
+    lAmenities.put(Type.MAIN_SQUARE, L_AMENITIES_MAIN_SQUARE);
+    xlAmenities.put(Type.MAIN_SQUARE, XL_AMENITIES_MAIN_SQUARE);
 
-    xsAmenities.put(PoiType.SHOP, XS_AMENITIES_SHOP);
-    sAmenities.put(PoiType.SHOP, S_AMENITIES_SHOP);
-    mAmenities.put(PoiType.SHOP, M_AMENITIES_SHOP);
-    lAmenities.put(PoiType.SHOP, L_AMENITIES_SHOP);
-    xlAmenities.put(PoiType.SHOP, XL_AMENITIES_SHOP);
+    xsAmenities.put(Type.SHOP, XS_AMENITIES_SHOP);
+    sAmenities.put(Type.SHOP, S_AMENITIES_SHOP);
+    mAmenities.put(Type.SHOP, M_AMENITIES_SHOP);
+    lAmenities.put(Type.SHOP, L_AMENITIES_SHOP);
+    xlAmenities.put(Type.SHOP, XL_AMENITIES_SHOP);
 
-    xsAmenities.put(PoiType.QUEST_LOCATION, XS_AMENITIES_QUEST_LOCATION);
-    sAmenities.put(PoiType.QUEST_LOCATION, S_AMENITIES_QUEST_LOCATION);
-    mAmenities.put(PoiType.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
-    lAmenities.put(PoiType.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
-    xlAmenities.put(PoiType.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
+    xsAmenities.put(Type.QUEST_LOCATION, XS_AMENITIES_QUEST_LOCATION);
+    sAmenities.put(Type.QUEST_LOCATION, S_AMENITIES_QUEST_LOCATION);
+    mAmenities.put(Type.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
+    lAmenities.put(Type.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
+    xlAmenities.put(Type.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
 
     xs.setAmenities(xsAmenities);
     s.setAmenities(sAmenities);
