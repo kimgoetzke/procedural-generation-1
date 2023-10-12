@@ -62,12 +62,13 @@ public class DialogueLoop extends AbstractLoop {
     gameHandler.updateCurrentEventDialogue(player);
   }
 
-  // TODO: Remove "Press enter to continue..." after hitting enter
   @SuppressWarnings("ResultOfMethodCallIgnored")
   private void awaitEnterKeyPress() {
     try {
-      out.println("Press enter to continue...");
+      var message = "Press enter to continue...";
+      out.print(message);
       System.in.read();
+      CliComponent.removeString(message, true);
     } catch (IOException e) {
       log.error("Could not read input from console", e);
     }

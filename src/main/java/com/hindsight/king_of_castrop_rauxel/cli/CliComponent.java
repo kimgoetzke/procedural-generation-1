@@ -134,4 +134,19 @@ public class CliComponent {
       }
     }
   }
+
+  public static void removeString(String toRemove, boolean previousLine) {
+    if (isUsingIntelliJ) {
+      out.println();
+      return;
+    }
+    if (previousLine) {
+      out.print("\033[F");
+    }
+    out.print("\r");
+    for (int i = 0; i < toRemove.length(); i++) {
+      out.print(" ");
+    }
+    out.println();
+  }
 }
