@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel;
 import com.hindsight.king_of_castrop_rauxel.cli.CliGame;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.fusesource.jansi.AnsiConsole;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,6 +15,7 @@ public class Application {
 
   public static void main(String[] args) {
     var context = SpringApplication.run(Application.class, args);
+    AnsiConsole.systemInstall();
     var newGame = context.getBean(CliGame.class);
     newGame.play();
   }
