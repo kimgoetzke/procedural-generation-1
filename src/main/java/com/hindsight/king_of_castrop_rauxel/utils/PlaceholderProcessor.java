@@ -55,7 +55,7 @@ public class PlaceholderProcessor {
 
   public String process(String toProcess, EventDetails eventDetails) {
     var rewards = eventDetails.getRewards();
-    if (rewards == null) {
+    if (rewards == null || rewards.isEmpty()) {
       return toProcess.replace(PLACEHOLDER_REWARD, "none");
     }
     var rewardsString = new StringBuilder();

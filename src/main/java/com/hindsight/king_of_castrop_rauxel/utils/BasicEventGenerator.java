@@ -2,11 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.*;
-
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.List;
 import java.util.Random;
-
-import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -118,7 +116,11 @@ public class BasicEventGenerator implements EventGenerator {
     process(eventDto, giverNpc, targetNpc);
     process(giverNpcDialogues, giverNpc, targetNpc);
     process(targetNpcDialogues, giverNpc, targetNpc);
-    process(List.of(giverNpcDialogues, targetNpcDialogues), eventDto);
+    var listOfDialogues =
+        targetNpcDialogues == null
+            ? List.of(giverNpcDialogues)
+            : List.of(giverNpcDialogues, targetNpcDialogues);
+    process(listOfDialogues, eventDto);
   }
 
   private Npc getNpc(List<Participant> participants, Role role) {
@@ -126,16 +128,22 @@ public class BasicEventGenerator implements EventGenerator {
         .filter(p -> p.role() == role)
         .map(Participant::npc)
         .findFirst()
-        .orElseThrow();
+        .orElse(null);
   }
 
   private void process(EventDto toProcess, Npc npc, Npc targetNpc) {
     var eventDetails = toProcess.eventDetails;
+    if (eventDetails.getAbout() == null) {
+      return;
+    }
     var about = processor.process(eventDetails.getAbout(), npc, targetNpc);
     eventDetails.setAbout(about);
   }
 
   private void process(List<Dialogue> toProcess, Npc npc, Npc targetNpc) {
+    if (toProcess == null) {
+      return;
+    }
     for (var dialogue : toProcess) {
       for (var interaction : dialogue.getInteractions()) {
         interaction.setText(process(interaction.getText(), npc, targetNpc));

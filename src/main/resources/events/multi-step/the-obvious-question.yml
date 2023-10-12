@@ -17,7 +17,7 @@ available:
   - text: I wish I was a traveller. Always wanted to see the world. But I'm stuck here, working me arse off to survive.
     i: 3
     actions:
-      - name: Thanks, I'll take good care of it.
+      - name: Nice to meet you too, &OF
         eventState: ACTIVE
         nextInteraction: 0
   - text: You're lying, mate. I can tell. You're not from here. You're a traveller. (&O is visibly getting angry.)

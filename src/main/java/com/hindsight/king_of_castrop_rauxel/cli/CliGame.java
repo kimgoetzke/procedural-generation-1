@@ -48,7 +48,6 @@ public class CliGame {
     }
   }
 
-  // TODO: Add single-step dialogue, multi-step dialogue, kill quest and go-to quest
   private void initialise() {
     world.generateChunk(world.getCentreCoords(), map);
     world.setCurrentChunk(world.getCentreCoords());

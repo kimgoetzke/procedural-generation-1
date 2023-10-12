@@ -26,6 +26,8 @@ public class DialogueLoop extends AbstractLoop {
   @Getter private final Scanner scanner;
 
   // TODO: Fix invalid input handling for dialogues
+  // TODO: Remove "Press enter to continue..." after hitting enter
+  // TODO: Allow injecting player name in PlaceholderProcessor
   @Override
   public void execute(List<Action> actions) {
     printInteraction();
