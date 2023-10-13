@@ -31,6 +31,7 @@ public class PlaceholderProcessor {
     random = parentRandom;
   }
 
+  /** Used to process events. */
   public String process(String toProcess, Npc owner, Npc targetNpc) {
     toProcess = processOwnerPlaceholders(toProcess, owner);
     toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
@@ -41,6 +42,7 @@ public class PlaceholderProcessor {
     return toProcess;
   }
 
+  /** Used to process events. */
   public String process(String toProcess, Npc owner) {
     return processOwnerPlaceholders(toProcess, owner);
   }
