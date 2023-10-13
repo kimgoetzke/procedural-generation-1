@@ -9,6 +9,8 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Slf4j
 public class BasicEventGenerator implements EventGenerator {
@@ -24,7 +26,7 @@ public class BasicEventGenerator implements EventGenerator {
   private TxtReader txtReader;
   private Random random;
   private String fileSeparator;
-  private Map<Event.Type, List<Path>> eventFilePaths;
+  private Map<Event.Type, List<String>> eventFilePaths;
 
   public void setRandom(Random parentRandom) {
     random = parentRandom;
@@ -217,38 +219,35 @@ public class BasicEventGenerator implements EventGenerator {
     }
   }
 
-  private List<Path> getAllFilesFrom(String folder) throws URISyntaxException {
+  private List<String> getAllFilesFrom(String folder) throws URISyntaxException {
     if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
-      var resource = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-      System.out.println("JAR raw path: " + resource);
-      var pathString = (resource + folder).replace("file:/", "");
-      System.out.println("JAR processed path string: " + resource);
-      var processed = Paths.get(pathString);
-      System.out.println("JAR final path: " + processed);
-      try (var fs = FileSystems.newFileSystem(processed)) {
-        try (var stream = Files.walk(fs.getPath(folder))) {
-          return stream.filter(Files::isRegularFile).toList();
+      var resolver = new PathMatchingResourcePatternResolver();
+      try {
+        var resources = resolver.getResources("classpath*:%s*.yml".formatted(folder));
+        for (Resource resource : resources) {
+          System.out.println(" - " + resource.getFilename());
         }
+        return Arrays.stream(resources).map(Resource::getFilename).toList();
       } catch (IOException e) {
-        throw new IllegalArgumentException("Folder '%s' not found".formatted(folder), e);
+        e.printStackTrace();
       }
     } else {
       var resource = getClass().getClassLoader().getResource(folder);
       if (resource != null) {
         var startPath = Paths.get(resource.toURI());
         try (var stream = Files.walk(startPath)) {
-          return stream.filter(Files::isRegularFile).toList();
+          return stream.filter(Files::isRegularFile).map(a -> a.getFileName().toString()).toList();
         } catch (IOException e) {
           e.printStackTrace();
         }
       }
-      throw new IllegalArgumentException("Folder '%s' not found".formatted(folder));
     }
+    throw new IllegalArgumentException("Folder '%s' not found".formatted(folder));
   }
 
   private String getRandomEventPath(Event.Type type) {
     var paths = eventFilePaths.get(type);
     var randomIndex = random.nextInt(0, paths.size());
-    return paths.get(randomIndex).toString();
+    return paths.get(randomIndex);
   }
 }
