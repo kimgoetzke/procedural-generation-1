@@ -3,8 +3,12 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
-import java.util.List;
-import java.util.Random;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,20 +20,30 @@ public class BasicEventGenerator implements EventGenerator {
   private static final String REACH_FOLDER = "reach" + LINE_SEPARATOR;
   private static final String SINGLE_STEP_FOLDER = "single-step" + LINE_SEPARATOR;
   private static final int MAX_ATTEMPTS = 3;
+  public static final String FALLBACK_ONE_LINER = "Hum?";
   private final TxtReader txtReader = new TxtReader(BASE_FOLDER);
   private final YamlReader yamlReader = new YamlReader(BASE_FOLDER);
   private final PlaceholderProcessor processor = new PlaceholderProcessor();
   private Random random;
+  private Map<Event.Type, List<Path>> eventFilePaths;
 
   public void setRandom(Random parentRandom) {
     random = parentRandom;
     processor.setRandom(parentRandom);
+    loadEventFilesMap();
+    System.out.println("Random DIALOGUE: " + getRandomEventPath(Event.Type.DIALOGUE));
+    System.out.println("Random REACH: " + getRandomEventPath(Event.Type.REACH));
   }
 
   // TODO: Get a random file from the folder instead of hardcoding the file name
   //  - Read number of files in relevant folder
   //  - Select a random one to be read
+  //  - Move file reading into separate @Component fileReader
+  //  - Rename YamlReader and TxtReader to _Processor and accept files/streams instead
 
+  // TODO: Think through how one-line responses should be handled
+  //  - Should they be events?
+  //  - How to categorise them? Dismissive? Friendly? Neutral? Desperate?
   @Override
   public Event singleStepDialogue(Npc npc) {
     var pathName = SINGLE_STEP_FOLDER + "NPC-IDLE";
@@ -46,7 +60,8 @@ public class BasicEventGenerator implements EventGenerator {
     if (!result.isEmpty()) {
       return txtReader.getRandom(result, random).trim();
     }
-    throw new IllegalArgumentException("No file found for path name '%s'".formatted(pathName));
+    log.error("No file found for path name '%s%s'".formatted(BASE_FOLDER, pathName));
+    return FALLBACK_ONE_LINER;
   }
 
   @Override
@@ -173,5 +188,48 @@ public class BasicEventGenerator implements EventGenerator {
     } else {
       return processor.process(toProcess, npc, targetNpc);
     }
+  }
+
+  @SuppressWarnings("SwitchStatementWithTooFewBranches")
+  private void loadEventFilesMap() {
+    eventFilePaths = new EnumMap<>(Event.Type.class);
+    for (var t : Event.Type.values()) {
+      var subFolder =
+          switch (t) {
+            case REACH -> REACH_FOLDER;
+            default -> MULTI_STEP_FOLDER;
+          };
+      var path = BASE_FOLDER + subFolder;
+      try {
+        var paths = getAllFilesFrom(path);
+        eventFilePaths.put(t, paths);
+      } catch (URISyntaxException e) {
+        e.printStackTrace();
+      }
+    }
+    for (var e : eventFilePaths.entrySet()) {
+      System.out.println("Key: " + e.getKey());
+      System.out.println("Values: ");
+      e.getValue().forEach(x -> System.out.println(" - " + x));
+    }
+  }
+
+  private List<Path> getAllFilesFrom(String folder) throws URISyntaxException {
+    var resource = getClass().getClassLoader().getResource(folder);
+    if (resource != null) {
+      var startUri = Paths.get(resource.toURI());
+      try (var stream = Files.walk(startUri)) {
+        return stream.filter(Files::isRegularFile).toList();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    throw new IllegalArgumentException("Folder '%s' not found".formatted(folder));
+  }
+
+  private String getRandomEventPath(Event.Type type) {
+    var paths = eventFilePaths.get(type);
+    var randomIndex = random.nextInt(0, paths.size());
+    return paths.get(randomIndex).toString();
   }
 }
