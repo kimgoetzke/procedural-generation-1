@@ -12,19 +12,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Slf4j
-public class FileReader {
+public class FolderReader {
 
-  static final String BASE_FOLDER = "events";
-  static final String SINGLE_STEP_FOLDER = "single-step";
+  private static final String SINGLE_STEP_FOLDER = "single-step";
+  private static final String BASE_FOLDER = "events";
   private static final String MULTI_STEP_FOLDER = "multi-step";
   private static final String REACH_FOLDER = "reach";
 
   @Getter public String fileSeparator;
   private Map<Event.Type, List<String>> eventFilePaths;
 
-  public FileReader() {
+  public FolderReader() {
     fileSeparator = CliComponent.getFileSeparator();
     loadEventFilesMap();
+  }
+
+  public String getBaseFolder() {
+    return BASE_FOLDER + fileSeparator;
+  }
+
+  public String getSingleStepFolder() {
+    return BASE_FOLDER + fileSeparator + SINGLE_STEP_FOLDER + fileSeparator;
   }
 
   public String getRandomEventPath(Event.Type type, Random random) {
@@ -73,9 +81,9 @@ public class FileReader {
       var resolver = new PathMatchingResourcePatternResolver();
       var resources = resolver.getResources("classpath*:%s*.yml".formatted(folder));
       return Arrays.stream(resources)
-        .filter(resource -> resource != null && resource.getFilename() != null)
-        .map(resource -> folder.concat(resource.getFilename()))
-        .toList();
+          .filter(resource -> resource != null && resource.getFilename() != null)
+          .map(resource -> folder.concat(resource.getFilename()))
+          .toList();
     } catch (IOException e) {
       e.printStackTrace();
     }

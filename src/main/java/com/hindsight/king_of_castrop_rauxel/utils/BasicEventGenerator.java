@@ -1,7 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.utils.FileReader.*;
-import static com.hindsight.king_of_castrop_rauxel.utils.FileReader.BASE_FOLDER;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.*;
@@ -15,25 +13,22 @@ public class BasicEventGenerator implements EventGenerator {
   private static final int MAX_ATTEMPTS = 3;
   private static final String FALLBACK_ONE_LINER = "Hum?";
   private final PlaceholderProcessor processor = new PlaceholderProcessor();
-  private final YamlProcessor yamlProcessor = new YamlProcessor();
-  private final FileReader fileReader;
-  private TxtProcessor txtProcessor;
+  private final YamlReader yamlReader = new YamlReader();
+  private final TxtReader txtReader;
+  private final FolderReader folderReader;
   private Random random;
 
-  public BasicEventGenerator(FileReader fileReader) {
-    this.fileReader = fileReader;
+  public BasicEventGenerator(FolderReader folderReader) {
+    this.folderReader = folderReader;
+    this.txtReader = new TxtReader(folderReader.getBaseFolder());
   }
 
   public void setRandom(Random parentRandom) {
     random = parentRandom;
-    txtProcessor = new TxtProcessor(BASE_FOLDER + fileReader.getFileSeparator());
     processor.setRandom(parentRandom);
   }
 
   // TODO: Get a random file from the folder instead of hardcoding the file name
-  //  - Read number of files in relevant folder
-  //  - Select a random one to be read
-  //  - Move file reading into separate @Component fileReader
   //  - Rename YamlReader and TxtReader to _Processor and accept files/streams instead
 
   // TODO: Think through how one-line responses should be handled
@@ -41,7 +36,7 @@ public class BasicEventGenerator implements EventGenerator {
   //  - How to categorise them? Dismissive? Friendly? Neutral? Desperate?
   @Override
   public Event singleStepDialogue(Npc npc) {
-    var pathName = SINGLE_STEP_FOLDER + fileReader.getFileSeparator() + "NPC-IDLE";
+    var pathName = folderReader.getSingleStepFolder() + "NPC-IDLE";
     var text = readRandomLineFromFile(pathName);
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
@@ -51,20 +46,18 @@ public class BasicEventGenerator implements EventGenerator {
   }
 
   private String readRandomLineFromFile(String pathName) {
-    var result = txtProcessor.read(pathName);
+    var result = txtReader.read(pathName);
     if (!result.isEmpty()) {
-      return txtProcessor.getRandom(result, random).trim();
+      return txtReader.getRandom(result, random).trim();
     }
-    log.error(
-        "No file found for path name '%s%s'"
-            .formatted(BASE_FOLDER + fileReader.getFileSeparator(), pathName));
+    log.error("No file found for path name '%s'".formatted(pathName));
     return FALLBACK_ONE_LINER;
   }
 
   @Override
   public Event multiStepDialogue(Npc npc) {
-    var eventPath = fileReader.getRandomEventPath(Event.Type.DIALOGUE, random);
-    var eventDto = yamlProcessor.read(eventPath);
+    var eventPath = folderReader.getRandomEventPath(Event.Type.DIALOGUE, random);
+    var eventDto = yamlReader.read(eventPath);
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var participants = List.of(new Participant(npc, dialogues));
     var eventDetails = eventDto.eventDetails;
@@ -75,8 +68,8 @@ public class BasicEventGenerator implements EventGenerator {
 
   @Override
   public Event deliveryEvent(Npc npc) {
-    var eventPath = fileReader.getRandomEventPath(Event.Type.REACH, random);
-    var eventDto = yamlProcessor.read(eventPath);
+    var eventPath = folderReader.getRandomEventPath(Event.Type.REACH, random);
+    var eventDto = yamlReader.read(eventPath);
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var giverParticipant = new Participant(npc, giverNpcDialogues);
     var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
@@ -123,18 +116,15 @@ public class BasicEventGenerator implements EventGenerator {
   }
 
   private void processPlaceholders(EventDto eventDto, List<Participant> participants) {
-    var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
-    var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
     var giverNpc = getNpc(participants, Role.EVENT_GIVER);
     var targetNpc = getNpc(participants, Role.EVENT_TARGET);
+    var gDialogue = eventDto.participantData.get(Role.EVENT_GIVER);
+    var tDialogue = eventDto.participantData.get(Role.EVENT_TARGET);
     process(eventDto, giverNpc, targetNpc);
-    process(giverNpcDialogues, giverNpc, targetNpc);
-    process(targetNpcDialogues, giverNpc, targetNpc);
-    var listOfDialogues =
-        targetNpcDialogues == null
-            ? List.of(giverNpcDialogues)
-            : List.of(giverNpcDialogues, targetNpcDialogues);
-    process(listOfDialogues, eventDto);
+    process(gDialogue, giverNpc, targetNpc);
+    process(tDialogue, giverNpc, targetNpc);
+    var dialoguesList = tDialogue == null ? List.of(gDialogue) : List.of(gDialogue, tDialogue);
+    process(dialoguesList, eventDto);
   }
 
   private Npc getNpc(List<Participant> participants, Role role) {

@@ -9,12 +9,14 @@ import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class TxtProcessor {
+public class TxtReader {
 
   private static final String FILE_EXTENSION = ".txt";
   private final String folder;
 
-  public TxtProcessor(String folder) {
+  // TODO: Remove this and provide fully qualified paths as params instead
+  //  - BasicEventGenerator.readRandomLineFromFile() already provides this so it's broken
+  public TxtReader(String folder) {
     this.folder = folder;
   }
 

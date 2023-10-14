@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
 @Slf4j
-public class YamlProcessor {
+public class YamlReader {
 
   private static final String EVENT_GIVER = "eventGiver";
   private static final String EVENT_TARGET = "eventTarget";
