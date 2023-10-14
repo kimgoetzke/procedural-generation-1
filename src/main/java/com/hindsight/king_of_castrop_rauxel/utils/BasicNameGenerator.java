@@ -19,8 +19,8 @@ public class BasicNameGenerator implements NameGenerator {
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
-  private static final String FIRST_NAME = "FIRST_NAME";
-  private static final String LAST_NAME = "LAST_NAME";
+  private static final String FIRST_NAME = "first_name";
+  private static final String LAST_NAME = "last_name";
   private final TxtReader txtReader;
   private final PlaceholderProcessor processor;
   private Random random;
@@ -44,9 +44,9 @@ public class BasicNameGenerator implements NameGenerator {
   public String locationNameFrom(
       AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz) {
     var type = amenity == null ? null : amenity.getType();
-    var withType = type == null ? "" : HYPHEN + type.name().toUpperCase();
-    var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toUpperCase();
-    var className = clazz.getSimpleName().toUpperCase();
+    var withType = type == null ? "" : HYPHEN + type.name().toLowerCase();
+    var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toLowerCase();
+    var className = clazz.getSimpleName().toLowerCase();
     var pathNameWithTypeAndSize = "%s%s%s".formatted(className, withType, withSize);
     var pathNameWithTypeOnly = "%s%s".formatted(className, withType);
     log.debug(
@@ -79,7 +79,7 @@ public class BasicNameGenerator implements NameGenerator {
 
   @Override
   public String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
-    var className = clazz.getSimpleName().toUpperCase();
+    var className = clazz.getSimpleName().toLowerCase();
     log.debug(
         "Attempting to generate {} {} {} for class {}",
         firstName && lastName ? "first and last name" : "",

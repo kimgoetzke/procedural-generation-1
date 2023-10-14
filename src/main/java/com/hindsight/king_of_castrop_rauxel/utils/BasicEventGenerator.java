@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BasicEventGenerator implements EventGenerator {
 
   private static final int MAX_ATTEMPTS = 3;
+  public static final String NPC_DISMISSIVE = "npc-dismissive";
   private static final String FALLBACK_ONE_LINER = "Hum?";
   private final FolderReader folderReader;
   private final TxtReader txtReader;
@@ -28,7 +29,7 @@ public class BasicEventGenerator implements EventGenerator {
 
   @Override
   public Event singleStepDialogue(Npc npc) {
-    var text = readRandomLineFromFile("NPC-DISMISSIVE");
+    var text = readRandomLineFromFile(NPC_DISMISSIVE);
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
     var participants = List.of(new Participant(npc, dialogues));
