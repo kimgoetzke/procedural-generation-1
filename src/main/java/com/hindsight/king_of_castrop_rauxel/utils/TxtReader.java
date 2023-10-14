@@ -19,13 +19,14 @@ public class TxtReader {
   }
 
   List<String> read(String fileName) {
-    var inputStream =
-        this.getClass().getClassLoader().getResourceAsStream(folder + fileName + FILE_EXTENSION);
+    var uri = folder + fileName + FILE_EXTENSION;
+    var inputStream = getClass().getClassLoader().getResourceAsStream(uri);
     if (inputStream != null) {
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+      try (var reader = new BufferedReader(new InputStreamReader(inputStream))) {
         return reader.lines().map(String::trim).toList();
       } catch (IOException e) {
-        log.warn("File '{}' not found", fileName);
+        log.error("File '{}' exists but there was an error reading it", fileName, e);
+        return new ArrayList<>();
       }
     }
     return new ArrayList<>();

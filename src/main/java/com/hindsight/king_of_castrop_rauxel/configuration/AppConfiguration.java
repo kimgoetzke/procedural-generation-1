@@ -20,12 +20,17 @@ public class AppConfiguration {
 
   @Bean
   public NameGenerator nameGenerator() {
-    return new BasicNameGenerator();
+    return new BasicNameGenerator(folderReader());
+  }
+
+  @Bean
+  public FolderReader folderReader() {
+    return new FolderReader();
   }
 
   @Bean
   public EventGenerator eventGenerator() {
-    return new BasicEventGenerator();
+    return new BasicEventGenerator(folderReader());
   }
 
   @Bean

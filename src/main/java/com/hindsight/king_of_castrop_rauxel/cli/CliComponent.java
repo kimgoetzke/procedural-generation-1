@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 import static java.lang.System.out;
 
 @Slf4j
@@ -13,6 +15,8 @@ public class CliComponent {
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
 
   @Getter private static boolean isUsingIntelliJ = true;
+  @Getter private static Boolean isRunningAsJar = null;
+  @Getter private static String fileSeparator;
 
   public enum FMT {
     RESET("\033[0m"),
@@ -102,6 +106,23 @@ public class CliComponent {
   }
 
   static {
+    determineRuntimeEnvironment();
+    determineIfInIntelliJ();
+  }
+
+  private static void determineRuntimeEnvironment() {
+    var protocol = CliComponent.class.getResource(CliComponent.class.getSimpleName() + ".class");
+    switch (Objects.requireNonNull(protocol).getProtocol()) {
+      case "jar" -> isRunningAsJar = true;
+      case "file" -> isRunningAsJar = false;
+      default -> log.error("Cannot determine runtime environment (JAR vs IDE)");
+    }
+    if (isRunningAsJar != null) {
+      log.info("Running " + (Boolean.TRUE.equals(isRunningAsJar) ? "as JAR" : "inside IDE"));
+    }
+  }
+
+  private static void determineIfInIntelliJ() {
     try {
       isUsingIntelliJ =
           CliComponent.class
