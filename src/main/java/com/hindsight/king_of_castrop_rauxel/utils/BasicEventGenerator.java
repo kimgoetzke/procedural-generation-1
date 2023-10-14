@@ -1,42 +1,33 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
+import static com.hindsight.king_of_castrop_rauxel.utils.FileReader.*;
+import static com.hindsight.king_of_castrop_rauxel.utils.FileReader.BASE_FOLDER;
+
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.*;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Slf4j
 public class BasicEventGenerator implements EventGenerator {
 
-  private static final String BASE_FOLDER = "events";
-  private static final String MULTI_STEP_FOLDER = "multi-step";
-  private static final String REACH_FOLDER = "reach";
-  private static final String SINGLE_STEP_FOLDER = "single-step";
   private static final int MAX_ATTEMPTS = 3;
   private static final String FALLBACK_ONE_LINER = "Hum?";
   private final PlaceholderProcessor processor = new PlaceholderProcessor();
-  private YamlReader yamlReader;
-  private TxtReader txtReader;
+  private final YamlProcessor yamlProcessor = new YamlProcessor();
+  private final FileReader fileReader;
+  private TxtProcessor txtProcessor;
   private Random random;
-  private String fileSeparator;
-  private Map<Event.Type, List<String>> eventFilePaths;
+
+  public BasicEventGenerator(FileReader fileReader) {
+    this.fileReader = fileReader;
+  }
 
   public void setRandom(Random parentRandom) {
     random = parentRandom;
-    txtReader = new TxtReader(BASE_FOLDER + fileSeparator);
-    yamlReader = new YamlReader(BASE_FOLDER + fileSeparator);
+    txtProcessor = new TxtProcessor(BASE_FOLDER + fileReader.getFileSeparator());
     processor.setRandom(parentRandom);
-    fileSeparator = CliComponent.getFileSeparator();
-    loadEventFilesMap();
-    System.out.println("Random DIALOGUE: " + getRandomEventPath(Event.Type.DIALOGUE));
-    System.out.println("Random REACH: " + getRandomEventPath(Event.Type.REACH));
   }
 
   // TODO: Get a random file from the folder instead of hardcoding the file name
@@ -50,7 +41,7 @@ public class BasicEventGenerator implements EventGenerator {
   //  - How to categorise them? Dismissive? Friendly? Neutral? Desperate?
   @Override
   public Event singleStepDialogue(Npc npc) {
-    var pathName = SINGLE_STEP_FOLDER + fileSeparator + "NPC-IDLE";
+    var pathName = SINGLE_STEP_FOLDER + fileReader.getFileSeparator() + "NPC-IDLE";
     var text = readRandomLineFromFile(pathName);
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
@@ -60,18 +51,20 @@ public class BasicEventGenerator implements EventGenerator {
   }
 
   private String readRandomLineFromFile(String pathName) {
-    var result = txtReader.read(pathName);
+    var result = txtProcessor.read(pathName);
     if (!result.isEmpty()) {
-      return txtReader.getRandom(result, random).trim();
+      return txtProcessor.getRandom(result, random).trim();
     }
     log.error(
-        "No file found for path name '%s%s'".formatted(BASE_FOLDER + fileSeparator, pathName));
+        "No file found for path name '%s%s'"
+            .formatted(BASE_FOLDER + fileReader.getFileSeparator(), pathName));
     return FALLBACK_ONE_LINER;
   }
 
   @Override
   public Event multiStepDialogue(Npc npc) {
-    var eventDto = yamlReader.read(MULTI_STEP_FOLDER + fileSeparator + "the-obvious-question");
+    var eventPath = fileReader.getRandomEventPath(Event.Type.DIALOGUE, random);
+    var eventDto = yamlProcessor.read(eventPath);
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var participants = List.of(new Participant(npc, dialogues));
     var eventDetails = eventDto.eventDetails;
@@ -82,7 +75,8 @@ public class BasicEventGenerator implements EventGenerator {
 
   @Override
   public Event deliveryEvent(Npc npc) {
-    var eventDto = yamlReader.read(REACH_FOLDER + fileSeparator + "a-close-friends-parcel");
+    var eventPath = fileReader.getRandomEventPath(Event.Type.REACH, random);
+    var eventDto = yamlProcessor.read(eventPath);
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var giverParticipant = new Participant(npc, giverNpcDialogues);
     var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
@@ -193,61 +187,5 @@ public class BasicEventGenerator implements EventGenerator {
     } else {
       return processor.process(toProcess, npc, targetNpc);
     }
-  }
-
-  @SuppressWarnings("SwitchStatementWithTooFewBranches")
-  private void loadEventFilesMap() {
-    eventFilePaths = new EnumMap<>(Event.Type.class);
-    for (var t : Event.Type.values()) {
-      var subFolder =
-          switch (t) {
-            case REACH -> REACH_FOLDER + fileSeparator;
-            default -> MULTI_STEP_FOLDER + fileSeparator;
-          };
-      var path = BASE_FOLDER + fileSeparator + subFolder;
-      try {
-        var paths = getAllFilesFrom(path);
-        eventFilePaths.put(t, paths);
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-      }
-    }
-    for (var e : eventFilePaths.entrySet()) {
-      System.out.println("Key: " + e.getKey());
-      System.out.println("Values: ");
-      e.getValue().forEach(x -> System.out.println(" - " + x));
-    }
-  }
-
-  private List<String> getAllFilesFrom(String folder) throws URISyntaxException {
-    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
-      var resolver = new PathMatchingResourcePatternResolver();
-      try {
-        var resources = resolver.getResources("classpath*:%s*.yml".formatted(folder));
-        for (Resource resource : resources) {
-          System.out.println(" - " + resource.getFilename());
-        }
-        return Arrays.stream(resources).map(Resource::getFilename).toList();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    } else {
-      var resource = getClass().getClassLoader().getResource(folder);
-      if (resource != null) {
-        var startPath = Paths.get(resource.toURI());
-        try (var stream = Files.walk(startPath)) {
-          return stream.filter(Files::isRegularFile).map(a -> a.getFileName().toString()).toList();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    throw new IllegalArgumentException("Folder '%s' not found".formatted(folder));
-  }
-
-  private String getRandomEventPath(Event.Type type) {
-    var paths = eventFilePaths.get(type);
-    var randomIndex = random.nextInt(0, paths.size());
-    return paths.get(randomIndex);
   }
 }

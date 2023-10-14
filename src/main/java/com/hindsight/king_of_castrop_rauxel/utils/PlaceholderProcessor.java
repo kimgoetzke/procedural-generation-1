@@ -24,7 +24,7 @@ public class PlaceholderProcessor {
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
   private static final String PLACEHOLDER_REWARD = "&R";
   public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
-  private final TxtReader txtReader = new TxtReader(FOLDER);
+  private final TxtProcessor txtProcessor = new TxtProcessor(FOLDER);
   private Random random;
 
   public void setRandom(Random parentRandom) {
@@ -105,12 +105,12 @@ public class PlaceholderProcessor {
   }
 
   private String getInhabitantFallbackName() {
-    var result = txtReader.read(PlaceholderProcessor.FALLBACK_INHABITANT);
+    var result = txtProcessor.read(PlaceholderProcessor.FALLBACK_INHABITANT);
     if (result.isEmpty()) {
       throw new IllegalStateException(
           "Failed to find fallback name in '%s'"
               .formatted(PlaceholderProcessor.FALLBACK_INHABITANT));
     }
-    return txtReader.getRandom(result, random);
+    return txtProcessor.getRandom(result, random);
   }
 }

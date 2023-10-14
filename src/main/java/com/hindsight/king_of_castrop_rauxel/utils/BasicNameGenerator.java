@@ -23,7 +23,7 @@ public class BasicNameGenerator implements NameGenerator {
   private static final String HYPHEN = "-";
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
-  private final TxtReader txtReader = new TxtReader(FOLDER);
+  private final TxtProcessor txtProcessor = new TxtProcessor(FOLDER);
   private final PlaceholderProcessor placeholderProcessor = new PlaceholderProcessor();
   private Random random;
 
@@ -99,9 +99,9 @@ public class BasicNameGenerator implements NameGenerator {
   private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {
     if (words.isEmpty()) {
       for (String suffix : SUFFIXES) {
-        var result = txtReader.read(pathName + suffix);
+        var result = txtProcessor.read(pathName + suffix);
         if (!result.isEmpty() && (!suffix.equals(SUFFIX_MIDDLE) || random.nextInt(3) == 0)) {
-          words.add(txtReader.getRandom(result, random));
+          words.add(txtProcessor.getRandom(result, random));
         }
       }
     }
@@ -109,9 +109,9 @@ public class BasicNameGenerator implements NameGenerator {
 
   private void loopThroughFilesWithoutSuffix(List<String> words, String pathName) {
     if (words.isEmpty()) {
-      var result = txtReader.read(pathName);
+      var result = txtProcessor.read(pathName);
       if (!result.isEmpty()) {
-        words.add(txtReader.getRandom(result, random));
+        words.add(txtProcessor.getRandom(result, random));
       }
     }
   }
@@ -125,13 +125,13 @@ public class BasicNameGenerator implements NameGenerator {
 
   private void processFileNamePlaceholders(List<String> words, String pathName, Type type) {
     if (words.get(0).startsWith(HYPHEN)) {
-      var result = txtReader.read(pathName + words.get(0));
+      var result = txtProcessor.read(pathName + words.get(0));
       if (result.isEmpty()) {
         log.warn("Failed to replace '{}' at path '{}'", words.get(0), pathName);
         var fallbackName = type != null ? type.name() : pathName;
         words.set(0, NONDESCRIPT + fallbackName + " " + RandomStringUtils.randomNumeric(3));
       } else {
-        var randomWord = txtReader.getRandom(result, random);
+        var randomWord = txtProcessor.getRandom(result, random);
         log.info("Replacing '{}' with word '{}'", words.get(0), randomWord);
         words.set(0, randomWord);
       }

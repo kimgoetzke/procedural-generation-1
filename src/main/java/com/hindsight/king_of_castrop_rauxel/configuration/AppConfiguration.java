@@ -24,8 +24,13 @@ public class AppConfiguration {
   }
 
   @Bean
+  public FileReader fileReader() {
+    return new FileReader();
+  }
+
+  @Bean
   public EventGenerator eventGenerator() {
-    return new BasicEventGenerator();
+    return new BasicEventGenerator(fileReader());
   }
 
   @Bean

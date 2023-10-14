@@ -9,12 +9,12 @@ import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class TxtReader {
+public class TxtProcessor {
 
   private static final String FILE_EXTENSION = ".txt";
   private final String folder;
 
-  public TxtReader(String folder) {
+  public TxtProcessor(String folder) {
     this.folder = folder;
   }
 

@@ -62,6 +62,7 @@ public class DialogueLoop extends AbstractLoop {
     gameHandler.updateCurrentEventDialogue(player);
   }
 
+  // TODO: Fix endless loop when having a one-line dialogue
   @SuppressWarnings("ResultOfMethodCallIgnored")
   private void awaitEnterKeyPress() {
     try {

@@ -12,21 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
 @Slf4j
-public class YamlReader {
+public class YamlProcessor {
 
   private static final String EVENT_GIVER = "eventGiver";
   private static final String EVENT_TARGET = "eventTarget";
-  private static final String FILE_EXTENSION = ".yml";
-  private final String folder;
-
-  public YamlReader(String folder) {
-    this.folder = folder;
-  }
 
   @SuppressWarnings("unchecked")
   public EventDto read(String fileName) {
-    var inputStream =
-        getClass().getClassLoader().getResourceAsStream(folder + fileName + FILE_EXTENSION);
+    var inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
     var yaml = new Yaml();
     var data = (Map<String, Object>) yaml.load(inputStream);
     var eventDetails = parseEventDetails(data);
