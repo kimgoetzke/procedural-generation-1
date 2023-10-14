@@ -14,8 +14,6 @@ public class TxtReader {
   private static final String FILE_EXTENSION = ".txt";
   private final String folder;
 
-  // TODO: Remove this and provide fully qualified paths as params instead
-  //  - BasicEventGenerator.readRandomLineFromFile() already provides this so it's broken
   public TxtReader(String folder) {
     this.folder = folder;
   }

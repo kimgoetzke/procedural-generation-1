@@ -8,12 +8,11 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import lombok.NoArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
-@NoArgsConstructor
 public class BasicNameGenerator implements NameGenerator {
 
   public static final String FOLDER = "names" + System.getProperty("file.separator");
@@ -23,12 +22,16 @@ public class BasicNameGenerator implements NameGenerator {
   private static final String HYPHEN = "-";
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
-  private final TxtReader txtReader = new TxtReader(FOLDER);
+  private final TxtReader txtReader;
   private final PlaceholderProcessor placeholderProcessor = new PlaceholderProcessor();
   private Random random;
 
+  public BasicNameGenerator(FolderReader folderReader) {
+    this.txtReader = new TxtReader(folderReader.getNamesFolder());
+  }
+
   public void setRandom(Random parentRandom) {
-    random = parentRandom;
+    this.random = parentRandom;
     placeholderProcessor.setRandom(parentRandom);
   }
 

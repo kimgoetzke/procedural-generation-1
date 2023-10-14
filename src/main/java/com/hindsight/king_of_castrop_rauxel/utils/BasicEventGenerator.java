@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
@@ -20,7 +19,7 @@ public class BasicEventGenerator implements EventGenerator {
 
   public BasicEventGenerator(FolderReader folderReader) {
     this.folderReader = folderReader;
-    this.txtReader = new TxtReader(folderReader.getBaseFolder());
+    this.txtReader = new TxtReader(folderReader.getSingleStepEventFolder());
   }
 
   public void setRandom(Random parentRandom) {
@@ -28,16 +27,9 @@ public class BasicEventGenerator implements EventGenerator {
     processor.setRandom(parentRandom);
   }
 
-  // TODO: Get a random file from the folder instead of hardcoding the file name
-  //  - Rename YamlReader and TxtReader to _Processor and accept files/streams instead
-
-  // TODO: Think through how one-line responses should be handled
-  //  - Should they be events?
-  //  - How to categorise them? Dismissive? Friendly? Neutral? Desperate?
   @Override
   public Event singleStepDialogue(Npc npc) {
-    var pathName = folderReader.getSingleStepFolder() + "NPC-IDLE";
-    var text = readRandomLineFromFile(pathName);
+    var text = readRandomLineFromFile("NPC-DISMISSIVE");
     var interactions = List.of(new Interaction(text, List.of(), null));
     var dialogues = List.of(new Dialogue(interactions));
     var participants = List.of(new Participant(npc, dialogues));
@@ -45,12 +37,12 @@ public class BasicEventGenerator implements EventGenerator {
     return new DialogueEvent(new EventDetails(), participants, true);
   }
 
-  private String readRandomLineFromFile(String pathName) {
-    var result = txtReader.read(pathName);
+  private String readRandomLineFromFile(String fileName) {
+    var result = txtReader.read(fileName);
     if (!result.isEmpty()) {
       return txtReader.getRandom(result, random).trim();
     }
-    log.error("No file found for path name '%s'".formatted(pathName));
+    log.error("No file found for path name '%s'".formatted(fileName));
     return FALLBACK_ONE_LINER;
   }
 

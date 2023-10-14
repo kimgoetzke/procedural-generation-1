@@ -107,7 +107,6 @@ public class CliComponent {
 
   static {
     determineRuntimeEnvironment();
-    determineCorrectFileSeparator();
     determineIfInIntelliJ();
   }
 
@@ -121,15 +120,6 @@ public class CliComponent {
     if (isRunningAsJar != null) {
       log.info("Running " + (Boolean.TRUE.equals(isRunningAsJar) ? "as JAR" : "inside IDE"));
     }
-  }
-
-  private static void determineCorrectFileSeparator() {
-    if (getIsRunningAsJar()) {
-      fileSeparator = "/";
-    } else {
-      fileSeparator = System.getProperty("file.separator");
-    }
-    log.info("File separator: '{}'", fileSeparator);
   }
 
   private static void determineIfInIntelliJ() {

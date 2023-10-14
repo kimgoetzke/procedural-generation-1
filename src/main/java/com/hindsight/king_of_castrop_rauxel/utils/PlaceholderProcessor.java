@@ -16,10 +16,10 @@ public class PlaceholderProcessor {
   private static final String PLACEHOLDER_PARENT = "&P";
   private static final String PLACEHOLDER_LOCATION = "&L";
   private static final String PLACEHOLDER_POI_NAME = "&I";
-  private static final String PLACEHOLDER_OWNER = "&O";
   private static final String PLACEHOLDER_OWNER_FIRST_NAME = "&OF";
-  private static final String PLACEHOLDER_TARGET_NPC = "&TO";
+  private static final String PLACEHOLDER_OWNER = "&O";
   private static final String PLACEHOLDER_TARGET_NPC_FIRST_NAME = "&TOF";
+  private static final String PLACEHOLDER_TARGET_NPC = "&TO";
   private static final String PLACEHOLDER_TARGET_POI = "&TI";
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
   private static final String PLACEHOLDER_REWARD = "&R";
@@ -34,8 +34,8 @@ public class PlaceholderProcessor {
   /** Used to process events. */
   public String process(String toProcess, Npc owner, Npc targetNpc) {
     toProcess = processOwnerPlaceholders(toProcess, owner);
-    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
     toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
+    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
     toProcess = toProcess.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
     toProcess =
         toProcess.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
@@ -51,8 +51,8 @@ public class PlaceholderProcessor {
     toProcess = toProcess.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
     toProcess = toProcess.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
     toProcess = toProcess.replace(PLACEHOLDER_POI_NAME, owner.getName());
-    toProcess = toProcess.replace(PLACEHOLDER_OWNER, owner.getName());
     toProcess = toProcess.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
+    toProcess = toProcess.replace(PLACEHOLDER_OWNER, owner.getName());
     return toProcess;
   }
 

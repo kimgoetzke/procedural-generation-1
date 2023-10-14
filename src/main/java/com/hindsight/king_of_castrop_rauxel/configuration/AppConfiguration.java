@@ -20,7 +20,7 @@ public class AppConfiguration {
 
   @Bean
   public NameGenerator nameGenerator() {
-    return new BasicNameGenerator();
+    return new BasicNameGenerator(folderReader());
   }
 
   @Bean

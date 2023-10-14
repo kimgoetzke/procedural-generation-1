@@ -14,25 +14,35 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 @Slf4j
 public class FolderReader {
 
+  private static final String BASE_EVENT_FOLDER = "events";
   private static final String SINGLE_STEP_FOLDER = "single-step";
-  private static final String BASE_FOLDER = "events";
   private static final String MULTI_STEP_FOLDER = "multi-step";
   private static final String REACH_FOLDER = "reach";
+  private static final String BASE_NAME_FOLDER = "names";
 
   @Getter public String fileSeparator;
   private Map<Event.Type, List<String>> eventFilePaths;
 
   public FolderReader() {
-    fileSeparator = CliComponent.getFileSeparator();
+    determineCorrectFileSeparator();
     loadEventFilesMap();
   }
 
-  public String getBaseFolder() {
-    return BASE_FOLDER + fileSeparator;
+  private void determineCorrectFileSeparator() {
+    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
+      fileSeparator = "/";
+    } else {
+      fileSeparator = System.getProperty("file.separator");
+    }
+    log.info("File separator: '{}'", fileSeparator);
   }
 
-  public String getSingleStepFolder() {
-    return BASE_FOLDER + fileSeparator + SINGLE_STEP_FOLDER + fileSeparator;
+  public String getNamesFolder() {
+    return BASE_NAME_FOLDER + fileSeparator;
+  }
+
+  public String getSingleStepEventFolder() {
+    return BASE_EVENT_FOLDER + fileSeparator + SINGLE_STEP_FOLDER + fileSeparator;
   }
 
   public String getRandomEventPath(Event.Type type, Random random) {
@@ -50,7 +60,7 @@ public class FolderReader {
             case REACH -> REACH_FOLDER + fileSeparator;
             default -> MULTI_STEP_FOLDER + fileSeparator;
           };
-      var folder = BASE_FOLDER + fileSeparator + subFolder;
+      var folder = BASE_EVENT_FOLDER + fileSeparator + subFolder;
       var result = getAllFileNamesInside(folder);
       eventFilePaths.put(t, result);
     }
@@ -70,7 +80,7 @@ public class FolderReader {
         return readFromResourceFolder(folder);
       } catch (URISyntaxException e) {
         e.printStackTrace();
-        throw new IllegalStateException("Couldn't read files from resource folder", e);
+        throw new IllegalStateException("Couldn't read files from non-JAR env. resource folder", e);
       }
     }
   }

@@ -24,7 +24,7 @@ eventGiver:
         - name: I'm on my way.
           eventState: ACTIVE
           nextInteraction: 0
-    - text: Well, your loss, friend. &TOF won't be please, I'll tell ya that.
+    - text: Well, your loss, friend. &TOF won't be pleased, I'll tell ya that.
       i: 3
       actions:
         - name: Sorry, I'll have to leave now.
