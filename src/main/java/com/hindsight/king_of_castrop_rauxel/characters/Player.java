@@ -24,6 +24,7 @@ public class Player implements Visitor {
   private int experience = 0;
   private int level = 1;
   private int activityPoints = 20;
+  private State previousState = State.AT_LOCATION;
   private State state = State.AT_LOCATION;
   private Location currentLocation;
   private PointOfInterest currentPoi;
@@ -71,6 +72,7 @@ public class Player implements Visitor {
   }
 
   public void setState(State state) {
+    this.previousState = this.state;
     this.state = state;
     log.info("Updating CLI state to {}", state);
   }

@@ -58,11 +58,6 @@ public class DialogueLoop extends AbstractLoop {
     actionHandler.getDialogueActions(player, actions);
   }
 
-  private void postProcess() {
-    gameHandler.updateCurrentEventDialogue(player);
-  }
-
-  // TODO: Fix endless loop when having a one-line dialogue
   @SuppressWarnings("ResultOfMethodCallIgnored")
   private void awaitEnterKeyPress() {
     try {
@@ -70,6 +65,7 @@ public class DialogueLoop extends AbstractLoop {
       out.print(message);
       System.in.read();
       CliComponent.removeString(message, true);
+      player.setState(player.getPreviousState());
     } catch (IOException e) {
       log.error("Could not read input from console", e);
     }
@@ -79,5 +75,9 @@ public class DialogueLoop extends AbstractLoop {
   protected void recoverInvalidAction() {
     log.info("Invalid action - recovering");
     player.getCurrentEvent().rewindBy(1);
+  }
+
+  private void postProcess() {
+    gameHandler.updateCurrentEventDialogue(player);
   }
 }
