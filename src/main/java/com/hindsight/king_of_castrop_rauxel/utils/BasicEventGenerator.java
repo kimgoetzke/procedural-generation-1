@@ -11,10 +11,10 @@ public class BasicEventGenerator implements EventGenerator {
 
   private static final int MAX_ATTEMPTS = 3;
   private static final String FALLBACK_ONE_LINER = "Hum?";
-  private final PlaceholderProcessor processor = new PlaceholderProcessor();
-  private final YamlReader yamlReader = new YamlReader();
-  private final TxtReader txtReader;
   private final FolderReader folderReader;
+  private final TxtReader txtReader;
+  private final YamlReader yamlReader = new YamlReader();
+  private final PlaceholderProcessor processor = new PlaceholderProcessor();
   private Random random;
 
   public BasicEventGenerator(FolderReader folderReader) {
@@ -22,9 +22,8 @@ public class BasicEventGenerator implements EventGenerator {
     this.txtReader = new TxtReader(folderReader.getSingleStepEventFolder());
   }
 
-  public void setRandom(Random parentRandom) {
+  public void initialise(Random parentRandom) {
     random = parentRandom;
-    processor.setRandom(parentRandom);
   }
 
   @Override

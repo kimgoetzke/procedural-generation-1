@@ -36,8 +36,8 @@ public abstract class AbstractSettlement extends AbstractLocation {
     super(worldCoords, chunkCoords);
     this.nameGenerator = generators.nameGenerator();
     this.eventGenerator = generators.eventGenerator();
-    nameGenerator.setRandom(random);
-    eventGenerator.setRandom(random);
+    nameGenerator.initialise(random);
+    eventGenerator.initialise(random);
   }
 
   public void addNeighbour(Location neighbour) {

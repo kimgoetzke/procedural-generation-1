@@ -1,12 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.utils.BasicNameGenerator.FOLDER;
-
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.EventDetails;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.List;
-import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,13 +20,6 @@ public class PlaceholderProcessor {
   private static final String PLACEHOLDER_TARGET_POI = "&TI";
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
   private static final String PLACEHOLDER_REWARD = "&R";
-  public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
-  private final TxtReader txtReader = new TxtReader(FOLDER);
-  private Random random;
-
-  public void setRandom(Random parentRandom) {
-    random = parentRandom;
-  }
 
   /** Used to process events. */
   public String process(String toProcess, Npc owner, Npc targetNpc) {
@@ -91,26 +81,12 @@ public class PlaceholderProcessor {
       return;
     }
     if (inhabitant == null) {
-      var fallbackName = getInhabitantFallbackName();
-      toProcess.set(toProcess.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, fallbackName));
-      log.warn("Inhabitant was null when generating {}, using {} instead", word, fallbackName);
-      return;
+      throw new IllegalStateException("No inhabitant at: %s".formatted(amenity.getSummary()));
     } else if (inhabitant.getHome() != amenity) {
-      throw new IllegalStateException(
-          "Inhabitant '" + inhabitant.getName() + "' already has a different home");
+      throw new IllegalStateException("'%s' already has a home".formatted(inhabitant.getName()));
     }
     log.info("Injecting inhabitant first name '{}' into '{}'", inhabitant.getFirstName(), word);
     toProcess.set(
         toProcess.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, inhabitant.getFirstName()));
-  }
-
-  private String getInhabitantFallbackName() {
-    var result = txtReader.read(PlaceholderProcessor.FALLBACK_INHABITANT);
-    if (result.isEmpty()) {
-      throw new IllegalStateException(
-          "Failed to find fallback name in '%s'"
-              .formatted(PlaceholderProcessor.FALLBACK_INHABITANT));
-    }
-    return txtReader.getRandom(result, random);
   }
 }

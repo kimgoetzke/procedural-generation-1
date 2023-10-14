@@ -15,7 +15,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 @Slf4j
 public class BasicNameGenerator implements NameGenerator {
 
-  public static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
   private static final String NONDESCRIPT = "Nondescript ";
@@ -23,16 +22,16 @@ public class BasicNameGenerator implements NameGenerator {
   private static final String FIRST_NAME = "FIRST_NAME";
   private static final String LAST_NAME = "LAST_NAME";
   private final TxtReader txtReader;
-  private final PlaceholderProcessor placeholderProcessor = new PlaceholderProcessor();
+  private final PlaceholderProcessor processor;
   private Random random;
 
   public BasicNameGenerator(FolderReader folderReader) {
     this.txtReader = new TxtReader(folderReader.getNamesFolder());
+    processor = new PlaceholderProcessor();
   }
 
-  public void setRandom(Random parentRandom) {
+  public void initialise(Random parentRandom) {
     this.random = parentRandom;
-    placeholderProcessor.setRandom(parentRandom);
   }
 
   @Override
@@ -63,7 +62,7 @@ public class BasicNameGenerator implements NameGenerator {
     setFallbackStringIfListEmpty(words, className);
 
     processFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
-    placeholderProcessor.process(words, parentName, inhabitant, amenity);
+    processor.process(words, parentName, inhabitant, amenity);
     return String.join("", words);
   }
 
