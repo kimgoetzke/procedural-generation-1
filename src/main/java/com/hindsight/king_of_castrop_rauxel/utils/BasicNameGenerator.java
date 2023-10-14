@@ -39,7 +39,6 @@ public class BasicNameGenerator implements NameGenerator {
     return locationNameFrom(null, null, null, null, clazz);
   }
 
-  // TODO: Fix reading amenity names from file which is not working when running in JAR
   @Override
   public String locationNameFrom(
       AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz) {
