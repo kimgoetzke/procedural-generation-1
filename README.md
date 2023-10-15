@@ -2,6 +2,15 @@
 
 This project was my first attempt to procedurally generate, well, anything really. I didn't know anything about this topic but  ended up with an old-school text-based adventure game world where the player can travel between locations, interact with non-player characters, and engage in combat.
 
+### How to run
+
+Run JAR with:
+```shell
+cd build\libs 
+java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.1.jar
+```
+
+
 ### Features
 #### Procedural generation
 

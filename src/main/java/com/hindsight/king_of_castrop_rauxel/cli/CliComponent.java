@@ -122,6 +122,7 @@ public class CliComponent {
     }
   }
 
+  // TODO: Fix determineIfInIntelliJ() - doesn't work inside JAR
   private static void determineIfInIntelliJ() {
     try {
       isUsingIntelliJ =
