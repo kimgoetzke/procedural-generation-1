@@ -24,7 +24,6 @@ public class ProgressBar {
        @- %.       .#  @:
       -  *          :    +
     #     *         +
-                    :
     """;
 
   private static final String HORSE_2 =
@@ -49,7 +48,6 @@ public class ProgressBar {
 ::       =@@@%@@@@@@@@@=:
           #+        .+  ..
           *= .-          :
-            :
   """;
 
   private static final String HORSE_4 =
