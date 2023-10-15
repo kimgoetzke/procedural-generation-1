@@ -16,7 +16,6 @@ public class CliComponent {
 
   @Getter private static boolean isUsingIntelliJ = true;
   @Getter private static Boolean isRunningAsJar = null;
-  @Getter private static String fileSeparator;
 
   public enum FMT {
     RESET("\033[0m"),
@@ -122,8 +121,10 @@ public class CliComponent {
     }
   }
 
-  // TODO: Fix determineIfInIntelliJ() - doesn't work inside JAR
   private static void determineIfInIntelliJ() {
+    if (Boolean.TRUE.equals(isRunningAsJar)) {
+      isUsingIntelliJ = false;
+    }
     try {
       isUsingIntelliJ =
           CliComponent.class
