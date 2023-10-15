@@ -65,7 +65,6 @@ public class DialogueLoop extends AbstractLoop {
       out.print(message);
       System.in.read();
       CliComponent.removeString(message, true);
-      player.setState(player.getPreviousState());
     } catch (IOException e) {
       log.error("Could not read input from console", e);
     }

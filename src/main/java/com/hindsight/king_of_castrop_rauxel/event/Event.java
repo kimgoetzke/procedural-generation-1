@@ -166,6 +166,10 @@ public interface Event {
     return getCurrentInteraction().getActions();
   }
 
+  default boolean hasNextInteraction() {
+    return getCurrentDialogue().hasNextInteraction();
+  }
+
   @Getter
   @Slf4j
   enum State {

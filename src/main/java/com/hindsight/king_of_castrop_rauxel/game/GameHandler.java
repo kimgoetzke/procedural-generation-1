@@ -50,9 +50,14 @@ public class GameHandler {
     if (!player.hasCurrentEvent()) {
       return;
     }
-    player.getCurrentEvent().progressDialogue();
+    var currentEvent = player.getCurrentEvent();
+    currentEvent.progressDialogue();
     if (player.getState() != Player.State.IN_DIALOGUE) {
-      player.getCurrentEvent().resetDialogue();
+      currentEvent.resetDialogue();
+      return;
+    }
+    if (!currentEvent.hasNextInteraction()) {
+      player.setState(player.getPreviousState());
     }
   }
 }

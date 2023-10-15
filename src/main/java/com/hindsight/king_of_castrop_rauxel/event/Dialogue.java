@@ -40,6 +40,10 @@ public final class Dialogue {
     return current == 0;
   }
 
+  boolean hasNextInteraction() {
+    return current < interactions.size() - 1;
+  }
+
   void progress() {
     var next = hasCurrentInteraction() ? getCurrentInteraction().getNextInteraction() : null;
     if (next == null) {
