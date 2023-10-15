@@ -10,15 +10,16 @@ This project was my first attempt to procedurally generate, well, anything reall
 - Each `Chunk` holds an `int[][]`:
   - Based on `int density`, a number of `Location`s are placed in the `Chunk`
   - `Location`s are connected using various, configurable strategies which result in the `WorldHandler`s `Graph<Location>`
-- The only `Location` implemented at this stage is called `Settlement`:
-  - The most important feature of a `Location` is its `Size` which determines the`PointOfInterest` count and, for a `Settlement`, also the `Inhabitant` count
+- A `Location` (interface) contains reference to neighbouring locations, points of interest inside it, and its location within the chunk and world
+  - The only `Location` available at this stage is a `Settlement`
+  - For generation, the most important feature of a `Location` is its `Size` which determines the `PointOfInterest` count and, for a `Settlement`, also the `Inhabitant` count
   - Each `Location` holds a `List<PointOfInterest>` which the player can visit
-- The key object players interact with/within are `PointOfInterest` (**POI**):
+- The key object a player interacts with/within is a `PointOfInterest` (**POI**):
+  - A POIs features are determined by its `Type`
   - Currently implemented are the following `Type`s: `ENTRANCE`, `MAIN_SQUARE`, `SHOP`, `QUEST_LOCATION` and `DUNGEON`
-  - A POIs features are determined by its `Type` 
   - At a POI, the player can engage in dialogues with non-player characters (**NPC**) other events (e.g. "delivery" or "kill" quests), engage in combat, or take other actions
 - Each object of each layer (i.e. `World`, `Chunk`, `Location` and `PointOfInterest`) can be located using `Coordinate`
-- The web of connections and the distance between each (both of which stored in `Graph<Location>`) play an important role including the increasing difficulty of the events/danger of travelling long distances
+- The web of connections and the distance between each (both of which stored in the `WorldHandler`s `Graph<Location>`) play an important role e.g. where a player can travel to and how long it takes
 
 #### Player loop
 
