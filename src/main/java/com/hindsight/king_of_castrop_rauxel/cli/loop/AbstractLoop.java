@@ -1,10 +1,15 @@
 package com.hindsight.king_of_castrop_rauxel.cli.loop;
 
 import static java.lang.System.out;
-
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import de.codeshelf.consoleui.prompt.ConsolePrompt;
+import de.codeshelf.consoleui.prompt.PromtResultItemIF;
+import jline.TerminalFactory;
+
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -53,7 +58,25 @@ public abstract class AbstractLoop {
     if (prompt != null) {
       out.printf("%s%s%s%n", CliComponent.FMT.DEFAULT_BOLD, prompt, CliComponent.FMT.RESET);
     }
-    actions.forEach(a -> out.println(a.print()));
+    //    System.out.println(ansi().eraseScreen().render("Simple list example:"));
+    var p = new ConsolePrompt();
+    var promptBuilder = p.getPromptBuilder();
+    var list = promptBuilder.createListPrompt();
+    list.name("asd").message("asd");
+    actions.forEach(a -> list.newItem(String.valueOf(a.getIndex())).text(a.getName()).add());
+    list.addPrompt();
+    try {
+      HashMap<String, ? extends PromtResultItemIF> result = p.prompt(promptBuilder.build());
+      System.out.println("result = " + result);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        TerminalFactory.get().restore();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
     out.printf("%n%s>%s ", CliComponent.FMT.WHITE_BOLD_BRIGHT, CliComponent.FMT.RESET);
   }
 
