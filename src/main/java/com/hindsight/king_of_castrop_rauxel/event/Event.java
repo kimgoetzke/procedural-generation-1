@@ -127,12 +127,12 @@ public interface Event {
     getCurrentDialogue().reset();
   }
 
-  /** Returns true if the current interaction is the first interaction of the first dialogue. */
+  /**
+   * Returns true if the current interaction is the first interaction of the dialogue, regardless of
+   * the state.
+   */
   default boolean isBeginningOfDialogue() {
-    var currentDialogue = getCurrentDialogue();
-    return (currentDialogue.getState() == Event.State.AVAILABLE
-            || currentDialogue.getState() == Event.State.NONE)
-        && currentDialogue.isFirstInteraction();
+    return getCurrentDialogue().isFirstInteraction();
   }
 
   default boolean isDisplayable(Npc npc) {

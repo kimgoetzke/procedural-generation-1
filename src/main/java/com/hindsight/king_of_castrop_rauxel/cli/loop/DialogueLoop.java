@@ -35,7 +35,7 @@ public class DialogueLoop extends AbstractLoop {
   private void printInteraction() {
     var dialogue = player.getCurrentEvent();
     if (dialogue.hasCurrentInteraction()) {
-      if (dialogue.isBeginningOfDialogue()) {
+      if (dialogue.isBeginningOfDialogue()) { // TODO: Doesn't work when accepting reward
         CliComponent.clearConsole();
       }
       out.printf(
@@ -51,7 +51,7 @@ public class DialogueLoop extends AbstractLoop {
   private void prepareActions(List<Action> actions) {
     if (player.getCurrentEvent().getCurrentActions().isEmpty()) {
       actionHandler.getNone(actions);
-      awaitEnterKeyPress();
+      awaitEnterKeyPress(); // TODO: Doesn't work when multiple text lines in dialogue
       return;
     }
     actionHandler.getDialogueActions(player, actions);
