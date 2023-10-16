@@ -121,6 +121,8 @@ public class CliComponent {
     }
   }
 
+  // TODO: Fix or remove determineIfInIntelliJ() as it doesn't work reliably
+  // TODO: Remove workaround "Boolean.TRUE.equals(isRunningAsJar)" once I have a better solution
   private static void determineIfInIntelliJ() {
     if (Boolean.TRUE.equals(isRunningAsJar)) {
       isUsingIntelliJ = false;

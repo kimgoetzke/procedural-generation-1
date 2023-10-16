@@ -5,11 +5,10 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
-import de.codeshelf.consoleui.prompt.PromtResultItemIF;
+import de.codeshelf.consoleui.prompt.ListResult;
 import jline.TerminalFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -51,23 +50,32 @@ public abstract class AbstractLoop {
     }
   }
 
-  protected void printActions(List<Action> actions, String prompt) {
+  protected void promptPlayer(List<Action> actions, String message) {
     if (actions.isEmpty()) {
       return;
     }
-    if (prompt != null) {
-      out.printf("%s%s%s%n", CliComponent.FMT.DEFAULT_BOLD, prompt, CliComponent.FMT.RESET);
+    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
+      useConsoleUi(actions, message);
+      return;
     }
-    //    System.out.println(ansi().eraseScreen().render("Simple list example:"));
-    var p = new ConsolePrompt();
-    var promptBuilder = p.getPromptBuilder();
-    var list = promptBuilder.createListPrompt();
-    list.name("asd").message("asd");
-    actions.forEach(a -> list.newItem(String.valueOf(a.getIndex())).text(a.getName()).add());
-    list.addPrompt();
+    useSystemOut(actions, message);
+  }
+
+  @SuppressWarnings("CallToPrintStackTrace")
+  private void useConsoleUi(List<Action> actions, String message) {
+    out.println();
+    message = message == null ? "Your response:" : message;
+    var prompt = new ConsolePrompt();
+    var promptBuilder = prompt.getPromptBuilder();
+    var listPrompt = promptBuilder.createListPrompt();
+    listPrompt.name("prompt").message(message);
+    actions.forEach(a -> listPrompt.newItem(String.valueOf(a.getIndex())).text(a.getName()).add());
+    listPrompt.addPrompt();
     try {
-      HashMap<String, ? extends PromtResultItemIF> result = p.prompt(promptBuilder.build());
-      System.out.println("result = " + result);
+      var result = prompt.prompt(promptBuilder.build());
+      var selectedIndex = ((ListResult) result.get("prompt")).getSelectedId();
+      var action = getValidActionOrThrow(Integer.parseInt(selectedIndex), actions);
+      action.execute(player);
     } catch (IOException e) {
       e.printStackTrace();
     } finally {
@@ -77,7 +85,15 @@ public abstract class AbstractLoop {
         e.printStackTrace();
       }
     }
+  }
+
+  private void useSystemOut(List<Action> actions, String message) {
+    if (message != null) {
+      out.printf("%s%s%s%n", CliComponent.FMT.DEFAULT_BOLD, message, CliComponent.FMT.RESET);
+    }
+    actions.forEach(a -> out.println(a.print()));
     out.printf("%n%s>%s ", CliComponent.FMT.WHITE_BOLD_BRIGHT, CliComponent.FMT.RESET);
+    takeAction(actions);
   }
 
   protected void takeAction(List<Action> actions) {

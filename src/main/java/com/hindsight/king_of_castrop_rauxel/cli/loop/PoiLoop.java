@@ -24,8 +24,7 @@ public class PoiLoop extends AbstractLoop {
   public void execute(List<Action> actions) {
     printHeaders(true);
     prepareActions(actions);
-    printActions(actions, "What's next?");
-    takeAction(actions);
+    promptPlayer(actions, "What's next?");
     postProcess();
   }
 
