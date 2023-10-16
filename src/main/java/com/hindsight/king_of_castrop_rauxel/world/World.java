@@ -140,7 +140,7 @@ public class World {
     }
     currentChunk = chunk;
     log.info("Set current chunk to: {}", chunk.getSummary());
-    if (appProperties.getAutoUnload().isWorld()) {
+    if (appProperties.getAutoUnload().world()) {
       unloadChunks();
     }
   }

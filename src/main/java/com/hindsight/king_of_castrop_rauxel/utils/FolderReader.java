@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -29,7 +29,7 @@ public class FolderReader {
   }
 
   private void determineCorrectFileSeparator() {
-    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
+    if (Boolean.TRUE.equals(AppProperties.getIsRunningAsJar())) {
       fileSeparator = "/";
     } else {
       fileSeparator = System.getProperty("file.separator");
@@ -73,7 +73,7 @@ public class FolderReader {
 
   @SuppressWarnings("CallToPrintStackTrace")
   private List<String> getAllFileNamesInside(String folder) {
-    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
+    if (Boolean.TRUE.equals(AppProperties.getIsRunningAsJar())) {
       return readFromJar(folder);
     } else {
       try {

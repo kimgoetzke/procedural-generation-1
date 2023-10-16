@@ -2,8 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 
 import static java.lang.System.out;
 
-import java.util.Objects;
-import lombok.Getter;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
-  @Getter private static Boolean isRunningAsJar = null;
 
   public enum FMT {
     RESET("\033[0m"),
@@ -101,26 +99,7 @@ public class CliComponent {
     }
   }
 
-  static {
-    determineRuntimeEnvironment();
-  }
-
-  private static void determineRuntimeEnvironment() {
-    var protocol = CliComponent.class.getResource(CliComponent.class.getSimpleName() + ".class");
-    switch (Objects.requireNonNull(protocol).getProtocol()) {
-      case "jar" -> isRunningAsJar = true;
-      case "file" -> isRunningAsJar = false;
-      default -> log.error("Cannot determine runtime environment (JAR vs IDE)");
-    }
-    if (isRunningAsJar != null) {
-      log.info("Running " + (Boolean.TRUE.equals(isRunningAsJar) ? "as JAR" : "inside IDE"));
-    }
-  }
-
   public static void clearConsole() {
-    if (Boolean.FALSE.equals(isRunningAsJar)) {
-      return;
-    }
     try {
       if (WINDOWS) {
         new ProcessBuilder("cmd.exe", "/c", "cls").inheritIO().start().waitFor();
@@ -137,7 +116,7 @@ public class CliComponent {
   }
 
   public static void removeString(String toRemove, boolean previousLine) {
-    if (Boolean.FALSE.equals(isRunningAsJar)) {
+    if (Boolean.FALSE.equals(AppProperties.getIsRunningAsJar())) {
       out.println();
       return;
     }

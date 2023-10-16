@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +55,7 @@ public class ProgressBar {
   }
 
   private static void prepareCli() {
-    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
+    if (Boolean.TRUE.equals(AppProperties.getIsRunningAsJar())) {
       CliComponent.clearConsole();
       out.printf("%n");
     } else {

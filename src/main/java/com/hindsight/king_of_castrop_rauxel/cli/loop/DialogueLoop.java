@@ -5,6 +5,7 @@ import static java.lang.System.out;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +24,7 @@ public class DialogueLoop extends AbstractLoop {
   private final ActionHandler actionHandler;
   private final GameHandler gameHandler;
   @Getter private final Scanner scanner;
+  @Getter private final AppProperties appProperties;
 
   @Override
   public void execute(List<Action> actions) {

@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel;
 
-import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.cli.CliGame;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ public class Application {
 
   public static void main(String[] args) {
     var context = SpringApplication.run(Application.class, args);
-    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
+    if (Boolean.TRUE.equals(AppProperties.getIsRunningAsJar())) {
       AnsiConsole.systemInstall();
     }
     var newGame = context.getBean(CliGame.class);

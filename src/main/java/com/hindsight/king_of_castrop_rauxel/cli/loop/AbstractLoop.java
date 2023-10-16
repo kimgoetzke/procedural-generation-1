@@ -1,22 +1,25 @@
 package com.hindsight.king_of_castrop_rauxel.cli.loop;
 
 import static java.lang.System.out;
+
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.ListResult;
-import jline.TerminalFactory;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import jline.TerminalFactory;
 
 public abstract class AbstractLoop {
 
   protected Player player;
 
   protected abstract Scanner getScanner();
+
+  protected abstract AppProperties getAppProperties();
 
   public void initialise(Player player) {
     this.player = player;
@@ -25,7 +28,9 @@ public abstract class AbstractLoop {
   public abstract void execute(List<Action> actions);
 
   protected void printHeaders(boolean showPoi) {
-    CliComponent.clearConsole();
+    if (getAppProperties().getEnvironment().clearConsole()) {
+      CliComponent.clearConsole();
+    }
     out.printf(
         "%sSTATS: [ Gold: %s%s%s%s | Level: %s%s%s%s | Activity points left: %s%s%s%s ]%s%n",
         CliComponent.FMT.DEFAULT_BOLD,
@@ -57,7 +62,7 @@ public abstract class AbstractLoop {
     if (actions.isEmpty()) {
       return;
     }
-    if (Boolean.TRUE.equals(CliComponent.getIsRunningAsJar())) {
+    if (getAppProperties().getEnvironment().useConsoleUi()) {
       useConsoleUi(actions, message);
       return;
     }

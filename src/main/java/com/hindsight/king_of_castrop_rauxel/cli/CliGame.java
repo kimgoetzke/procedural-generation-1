@@ -63,5 +63,6 @@ public class CliGame {
     poiLoop.initialise(player);
     choosePoiLoop.initialise(player);
     debugLoop.initialise(player);
+    combatLoop.initialise(player);
   }
 }
