@@ -11,7 +11,7 @@ available:
         nextInteraction: 2
       - name: No, I live here
         eventState: NONE
-        nextInteraction: 3
+        nextInteraction: 4
   - text: Thought so. Well, I'm &O. Nice to meet you.
     i: 2
   - text: I wish I was a traveller. Always wanted to see the world. But I'm stuck here, working me arse off to survive.
@@ -21,7 +21,7 @@ available:
         eventState: ACTIVE
         nextInteraction: 0
   - text: You're lying, mate. I can tell. You're not from here. You're a traveller. (&O is visibly getting angry.)
-    i: 3
+    i: 4
     actions:
       - name: I'll better leave now - bye!
         eventState: DECLINED

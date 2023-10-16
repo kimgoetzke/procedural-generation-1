@@ -94,6 +94,6 @@ public abstract class AbstractSettlement extends AbstractLocation {
   }
 
   private String getPopulationDensity() {
-    return String.format("%.1f", (float) inhabitants.size() / area) + "/km²";
+    return String.format("%.1f", (float) inhabitants.size() / area) + "/sq. km";
   }
 }

@@ -24,8 +24,7 @@ public class CombatLoop extends AbstractLoop {
   public void execute(List<Action> actions) {
     printHeaders(true);
     prepareActions(actions);
-    printActions(actions, "What now?");
-    takeAction(actions);
+    promptPlayer(actions, "What now?");
     postProcess();
   }
 

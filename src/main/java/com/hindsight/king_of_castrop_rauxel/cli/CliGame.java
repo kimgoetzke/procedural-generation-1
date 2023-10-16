@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
 public class CliGame {
 
+  // https://github.com/awegmann/consoleui/blob/master/doc/howto.md
+
   private final EnvironmentResolver environmentResolver;
   private final World world;
   private final Graph<AbstractLocation> map;
@@ -26,6 +28,7 @@ public class CliGame {
   private final ChoosePoiLoop choosePoiLoop;
   private final PoiLoop poiLoop;
   private final DialogueLoop dialogueLoop;
+  private final CombatLoop combatLoop;
   private final DebugLoop debugLoop;
   private Player player;
 
@@ -43,6 +46,7 @@ public class CliGame {
         case CHOOSING_POI -> choosePoiLoop.execute(actions);
         case AT_POI -> poiLoop.execute(actions);
         case IN_DIALOGUE -> dialogueLoop.execute(actions);
+        case IN_COMBAT -> combatLoop.execute(actions);
         case DEBUGGING -> debugLoop.execute(actions);
       }
     }

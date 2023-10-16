@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.google.guava:guava:32.1.2-jre'
     implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'de.codeshelf.consoleui:consoleui:0.0.13'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'

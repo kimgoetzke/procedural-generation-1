@@ -24,8 +24,7 @@ public class DebugLoop extends AbstractLoop {
   public void execute(List<Action> actions) {
     printHeaders(false);
     prepareActions(actions);
-    printActions(actions, "What would you like to do?");
-    takeAction(actions);
+    promptPlayer(actions, "What would you like to do?");
     postProcess();
   }
 
