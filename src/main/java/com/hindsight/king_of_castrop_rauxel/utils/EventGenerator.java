@@ -7,7 +7,7 @@ import java.util.Random;
 
 public interface EventGenerator {
 
-  void setRandom(Random random);
+  void initialise(Random random);
 
   Event singleStepDialogue(Npc npc);
 

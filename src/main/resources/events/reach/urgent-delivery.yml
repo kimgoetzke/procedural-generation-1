@@ -1,0 +1,82 @@
+eventDetails:
+  - eventType: REACH
+    about: the delivery from &O
+    reward:
+      - type: GOLD
+        min: 10
+        max: 15
+eventGiver:
+  available:
+    - text: Hey, sht! Come over here. I need you to do something for me.
+      i: 0
+    - text: I need you to get this small parcel to &TO at &TI. Don't ask questions and I'll pay you well. You in?
+      i: 1
+      actions:
+        - name: (Accept) Alright, I'll do it.
+          eventState: NONE
+          nextInteraction: 2
+        - name: (Decline) I'm sorry, I can't.
+          eventState: NONE
+          nextInteraction: 3
+    - text: Good, good. Off you go then!
+      i: 2
+      actions:
+        - name: I'm on my way.
+          eventState: ACTIVE
+          nextInteraction: 0
+    - text: Well, your loss, friend. &TOF won't be pleased, I'll tell ya that.
+      i: 3
+      actions:
+        - name: Sorry, I'll have to leave now.
+          eventState: DECLINED
+          playerState: AT_POI
+          nextInteraction: 0
+  active:
+    - text: Please, hurry! Don't just stand around here.
+      actions:
+        - name: All good, mate. Goodbye!
+          playerState: AT_POI
+  ready:
+    - text: Nice one, I heard you delivered the parcel. Here, take this. (&R)
+      actions:
+        - name: Thanks. Goodbye!
+          eventState: COMPLETED
+          playerState: AT_POI
+  completed:
+    - text: What? I don't think we've got anything else to talk about.
+      actions:
+        - name: Alright. Goodbye!
+          playerState: AT_POI
+  declined:
+    - text: What? I don't think we've got anything else to talk about.
+      actions:
+        - name: Alright. Goodbye!
+          playerState: AT_POI
+eventTarget:
+  available:
+    - text: Hey there, how can I help?
+      i: 0
+      actions:
+        - name: All good. Thank you.
+          playerState: AT_POI
+  active:
+    - text: A delivery? From &O? Good. Thanks, now please leave. Go back to &O.
+      actions:
+        - name: Alright, bye.
+          eventState: READY
+          playerState: AT_POI
+  ready:
+    - text: Hey there, how can I help?
+      actions:
+        - name: All good, mate. Goodbye!
+          playerState: AT_POI
+  completed:
+    - text: Thanks again. I'll better get back to it. Have a good day.
+      actions:
+        - name: All good, mate. Goodbye!
+          playerState: AT_POI
+  declined:
+    - text: Hey there, how can I help?
+      actions:
+        - name: Goodbye!
+          playerState: AT_POI

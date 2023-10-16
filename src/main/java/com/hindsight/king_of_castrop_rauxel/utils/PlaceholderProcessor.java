@@ -1,12 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.utils.BasicNameGenerator.FOLDER;
-
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.EventDetails;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.List;
-import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,31 +13,26 @@ public class PlaceholderProcessor {
   private static final String PLACEHOLDER_PARENT = "&P";
   private static final String PLACEHOLDER_LOCATION = "&L";
   private static final String PLACEHOLDER_POI_NAME = "&I";
-  private static final String PLACEHOLDER_OWNER = "&O";
   private static final String PLACEHOLDER_OWNER_FIRST_NAME = "&OF";
-  private static final String PLACEHOLDER_TARGET_NPC = "&TO";
+  private static final String PLACEHOLDER_OWNER = "&O";
   private static final String PLACEHOLDER_TARGET_NPC_FIRST_NAME = "&TOF";
+  private static final String PLACEHOLDER_TARGET_NPC = "&TO";
   private static final String PLACEHOLDER_TARGET_POI = "&TI";
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
   private static final String PLACEHOLDER_REWARD = "&R";
-  public static final String FALLBACK_INHABITANT = "INHABITANT--fallback";
-  private final TxtReader txtReader = new TxtReader(FOLDER);
-  private Random random;
 
-  public void setRandom(Random parentRandom) {
-    random = parentRandom;
-  }
-
+  /** Used to process events. */
   public String process(String toProcess, Npc owner, Npc targetNpc) {
     toProcess = processOwnerPlaceholders(toProcess, owner);
-    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
     toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
+    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
     toProcess = toProcess.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
     toProcess =
         toProcess.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
     return toProcess;
   }
 
+  /** Used to process events. */
   public String process(String toProcess, Npc owner) {
     return processOwnerPlaceholders(toProcess, owner);
   }
@@ -49,8 +41,8 @@ public class PlaceholderProcessor {
     toProcess = toProcess.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
     toProcess = toProcess.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
     toProcess = toProcess.replace(PLACEHOLDER_POI_NAME, owner.getName());
-    toProcess = toProcess.replace(PLACEHOLDER_OWNER, owner.getName());
     toProcess = toProcess.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
+    toProcess = toProcess.replace(PLACEHOLDER_OWNER, owner.getName());
     return toProcess;
   }
 
@@ -89,26 +81,12 @@ public class PlaceholderProcessor {
       return;
     }
     if (inhabitant == null) {
-      var fallbackName = getInhabitantFallbackName();
-      toProcess.set(toProcess.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, fallbackName));
-      log.warn("Inhabitant was null when generating {}, using {} instead", word, fallbackName);
-      return;
+      throw new IllegalStateException("No inhabitant at: %s".formatted(amenity.getSummary()));
     } else if (inhabitant.getHome() != amenity) {
-      throw new IllegalStateException(
-          "Inhabitant '" + inhabitant.getName() + "' already has a different home");
+      throw new IllegalStateException("'%s' already has a home".formatted(inhabitant.getName()));
     }
     log.info("Injecting inhabitant first name '{}' into '{}'", inhabitant.getFirstName(), word);
     toProcess.set(
         toProcess.indexOf(word), word.replaceFirst(PLACEHOLDER_OWNER, inhabitant.getFirstName()));
-  }
-
-  private String getInhabitantFallbackName() {
-    var result = txtReader.read(PlaceholderProcessor.FALLBACK_INHABITANT);
-    if (result.isEmpty()) {
-      throw new IllegalStateException(
-          "Failed to find fallback name in '%s'"
-              .formatted(PlaceholderProcessor.FALLBACK_INHABITANT));
-    }
-    return txtReader.getRandom(result, random);
   }
 }

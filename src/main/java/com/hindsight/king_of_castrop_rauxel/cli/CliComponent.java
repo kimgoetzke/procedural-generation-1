@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 import static java.lang.System.out;
 
 @Slf4j
@@ -13,6 +15,7 @@ public class CliComponent {
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
 
   @Getter private static boolean isUsingIntelliJ = true;
+  @Getter private static Boolean isRunningAsJar = null;
 
   public enum FMT {
     RESET("\033[0m"),
@@ -102,6 +105,26 @@ public class CliComponent {
   }
 
   static {
+    determineRuntimeEnvironment();
+    determineIfInIntelliJ();
+  }
+
+  private static void determineRuntimeEnvironment() {
+    var protocol = CliComponent.class.getResource(CliComponent.class.getSimpleName() + ".class");
+    switch (Objects.requireNonNull(protocol).getProtocol()) {
+      case "jar" -> isRunningAsJar = true;
+      case "file" -> isRunningAsJar = false;
+      default -> log.error("Cannot determine runtime environment (JAR vs IDE)");
+    }
+    if (isRunningAsJar != null) {
+      log.info("Running " + (Boolean.TRUE.equals(isRunningAsJar) ? "as JAR" : "inside IDE"));
+    }
+  }
+
+  private static void determineIfInIntelliJ() {
+    if (Boolean.TRUE.equals(isRunningAsJar)) {
+      isUsingIntelliJ = false;
+    }
     try {
       isUsingIntelliJ =
           CliComponent.class
@@ -133,5 +156,20 @@ public class CliComponent {
         Thread.currentThread().interrupt();
       }
     }
+  }
+
+  public static void removeString(String toRemove, boolean previousLine) {
+    if (isUsingIntelliJ) {
+      out.println();
+      return;
+    }
+    if (previousLine) {
+      out.print("\033[F");
+    }
+    out.print("\r");
+    for (int i = 0; i < toRemove.length(); i++) {
+      out.print(" ");
+    }
+    out.println();
   }
 }

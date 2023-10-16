@@ -8,28 +8,30 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import lombok.NoArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
-@NoArgsConstructor
 public class BasicNameGenerator implements NameGenerator {
 
-  public static final String FOLDER = "names" + System.getProperty("file.separator");
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
-  private static final String FIRST_NAME = "FIRST_NAME";
-  private static final String LAST_NAME = "LAST_NAME";
-  private final TxtReader txtReader = new TxtReader(FOLDER);
-  private final PlaceholderProcessor placeholderProcessor = new PlaceholderProcessor();
+  private static final String FIRST_NAME = "first_name";
+  private static final String LAST_NAME = "last_name";
+  private final TxtReader txtReader;
+  private final PlaceholderProcessor processor;
   private Random random;
 
-  public void setRandom(Random parentRandom) {
-    random = parentRandom;
-    placeholderProcessor.setRandom(parentRandom);
+  public BasicNameGenerator(FolderReader folderReader) {
+    this.txtReader = new TxtReader(folderReader.getNamesFolder());
+    processor = new PlaceholderProcessor();
+  }
+
+  public void initialise(Random parentRandom) {
+    this.random = parentRandom;
   }
 
   @Override
@@ -41,9 +43,9 @@ public class BasicNameGenerator implements NameGenerator {
   public String locationNameFrom(
       AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz) {
     var type = amenity == null ? null : amenity.getType();
-    var withType = type == null ? "" : HYPHEN + type.name().toUpperCase();
-    var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toUpperCase();
-    var className = clazz.getSimpleName().toUpperCase();
+    var withType = type == null ? "" : HYPHEN + type.name().toLowerCase();
+    var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toLowerCase();
+    var className = clazz.getSimpleName().toLowerCase();
     var pathNameWithTypeAndSize = "%s%s%s".formatted(className, withType, withSize);
     var pathNameWithTypeOnly = "%s%s".formatted(className, withType);
     log.debug(
@@ -60,7 +62,7 @@ public class BasicNameGenerator implements NameGenerator {
     setFallbackStringIfListEmpty(words, className);
 
     processFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
-    placeholderProcessor.process(words, parentName, inhabitant, amenity);
+    processor.process(words, parentName, inhabitant, amenity);
     return String.join("", words);
   }
 
@@ -76,7 +78,7 @@ public class BasicNameGenerator implements NameGenerator {
 
   @Override
   public String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
-    var className = clazz.getSimpleName().toUpperCase();
+    var className = clazz.getSimpleName().toLowerCase();
     log.debug(
         "Attempting to generate {} {} {} for class {}",
         firstName && lastName ? "first and last name" : "",
