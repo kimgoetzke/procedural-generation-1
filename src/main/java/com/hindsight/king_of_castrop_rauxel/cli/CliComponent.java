@@ -1,20 +1,17 @@
 package com.hindsight.king_of_castrop_rauxel.cli;
 
+import static java.lang.System.out;
+
+import java.util.Objects;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
-
-import static java.lang.System.out;
 
 @Slf4j
 @Component
 public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
-
-  @Getter private static boolean isUsingIntelliJ = true;
   @Getter private static Boolean isRunningAsJar = null;
 
   public enum FMT {
@@ -106,7 +103,6 @@ public class CliComponent {
 
   static {
     determineRuntimeEnvironment();
-    determineIfInIntelliJ();
   }
 
   private static void determineRuntimeEnvironment() {
@@ -121,28 +117,8 @@ public class CliComponent {
     }
   }
 
-  // TODO: Fix or remove determineIfInIntelliJ() as it doesn't work reliably
-  // TODO: Remove workaround "Boolean.TRUE.equals(isRunningAsJar)" once I have a better solution
-  private static void determineIfInIntelliJ() {
-    if (Boolean.TRUE.equals(isRunningAsJar)) {
-      isUsingIntelliJ = false;
-    }
-    try {
-      isUsingIntelliJ =
-          CliComponent.class
-                  .getClassLoader()
-                  .loadClass("com.intellij.rt.execution.application.AppMainV2")
-              != null;
-    } catch (ClassNotFoundException ignored) {
-      // Not running from IntelliJ so horse animation can be displayed - running the application
-      // via IntelliJ will not allow the console to be cleared which is required for the animation
-      // to work
-    }
-    log.info("Running from IntelliJ: " + isUsingIntelliJ);
-  }
-
   public static void clearConsole() {
-    if (isUsingIntelliJ) {
+    if (Boolean.FALSE.equals(isRunningAsJar)) {
       return;
     }
     try {
@@ -161,7 +137,7 @@ public class CliComponent {
   }
 
   public static void removeString(String toRemove, boolean previousLine) {
-    if (isUsingIntelliJ) {
+    if (Boolean.FALSE.equals(isRunningAsJar)) {
       out.println();
       return;
     }
