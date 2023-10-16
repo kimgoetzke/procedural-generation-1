@@ -51,7 +51,7 @@ public class DialogueLoop extends AbstractLoop {
   private void prepareActions(List<Action> actions) {
     if (player.getCurrentEvent().getCurrentActions().isEmpty()) {
       actionHandler.getNone(actions);
-      awaitEnterKeyPress(); // TODO: Doesn't work when multiple text lines in dialogue
+      awaitEnterKeyPress(); // TODO: Doesn't work in JAR when multiple text lines in dialogue
       return;
     }
     actionHandler.getDialogueActions(player, actions);
