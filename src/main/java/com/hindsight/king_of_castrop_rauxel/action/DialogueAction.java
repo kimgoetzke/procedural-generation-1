@@ -22,13 +22,7 @@ public class DialogueAction implements Action {
       throw new IllegalStateException("DialogueAction must have a playerState or eventState");
     }
     if (playerState != null) {
-      switch (playerState) {
-        case AT_LOCATION -> player.setState(Player.State.AT_LOCATION);
-        case CHOOSING_POI -> player.setState(Player.State.CHOOSING_POI);
-        case AT_POI -> player.setState(Player.State.AT_POI);
-        case IN_DIALOGUE -> player.setState(Player.State.IN_DIALOGUE);
-        case DEBUGGING -> player.setState(Player.State.DEBUGGING);
-      }
+      player.setState(playerState);
     }
     if (eventState == Event.State.NONE && nextInteraction == null) {
       throw new IllegalStateException("DialogueAction must have an eventState or nextInteraction");
@@ -37,11 +31,8 @@ public class DialogueAction implements Action {
       switch (eventState) {
           // Subtract 1 because the dialogue will progress after this action is executed.
         case NONE -> player.getCurrentEvent().setCurrentInteraction(nextInteraction - 1);
-        case AVAILABLE -> player.getCurrentEvent().progressEvent(Event.State.AVAILABLE);
-        case ACTIVE -> player.getCurrentEvent().progressEvent(Event.State.ACTIVE);
-        case READY -> player.getCurrentEvent().progressEvent(Event.State.READY);
         case COMPLETED -> player.getCurrentEvent().completeEvent(player);
-        case DECLINED -> player.getCurrentEvent().progressEvent(Event.State.DECLINED);
+        default -> player.getCurrentEvent().progressEvent(eventState);
       }
     }
   }

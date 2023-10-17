@@ -14,10 +14,19 @@ public class Reward implements Randomisable {
   private final int minValue;
   private final int maxValue;
 
+  /** Used to create a reward with a random value e.g. by events. */
   public Reward(Type type, int minValue, int maxValue) {
     this.type = type;
     this.minValue = minValue;
     this.maxValue = maxValue;
+  }
+
+  /** Used to create a reward with a random value e.g. by events. */
+  public Reward(Type type, int actualValue) {
+    this.type = type;
+    this.minValue = actualValue;
+    this.maxValue = actualValue;
+    this.value = actualValue;
   }
 
   public void load(Random random) {

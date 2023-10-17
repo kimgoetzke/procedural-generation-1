@@ -37,7 +37,8 @@ public class DialogueLoop extends AbstractLoop {
   private void printInteraction() {
     var dialogue = player.getCurrentEvent();
     if (dialogue.hasCurrentInteraction()) {
-      if (dialogue.isBeginningOfDialogue()) { // TODO: Doesn't work when accepting reward
+      // TODO: Fix dialogue.isBeginningOfDialogue() as it doesn't work when accepting reward
+      if (dialogue.isBeginningOfDialogue() && appProperties.getEnvironment().clearConsole()) {
         CliComponent.clearConsole();
       }
       out.printf(
@@ -53,12 +54,13 @@ public class DialogueLoop extends AbstractLoop {
   private void prepareActions(List<Action> actions) {
     if (player.getCurrentEvent().getCurrentActions().isEmpty()) {
       actionHandler.getNone(actions);
-      awaitEnterKeyPress(); // TODO: Doesn't work in JAR when multiple text lines in dialogue
+      awaitEnterKeyPress();
       return;
     }
     actionHandler.getDialogueActions(player, actions);
   }
 
+  // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue
   @SuppressWarnings("ResultOfMethodCallIgnored")
   private void awaitEnterKeyPress() {
     try {

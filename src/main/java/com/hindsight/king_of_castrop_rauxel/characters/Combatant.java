@@ -1,10 +1,11 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
+import org.springframework.data.util.Pair;
 
 import java.util.List;
 
-public interface Enemy {
+public interface Combatant {
 
   String getName();
 
@@ -12,13 +13,13 @@ public interface Enemy {
 
   void setHealth(int health);
 
-  int getDamage();
+  Pair<Integer, Integer> getDamageRange();
 
   int getLevel();
 
   List<Reward> getReward();
 
-  void attack(Player player);
+  void attack(Combatant other);
 
   default void takeDamage(int damage) {
     var newHealth = getHealth() - damage;
