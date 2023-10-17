@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.Type;
+import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
@@ -78,6 +78,12 @@ public class LocationBuilder {
     m.amenities.put(Type.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
     l.amenities.put(Type.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
     xl.amenities.put(Type.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
+
+    xs.amenities.put(Type.DUNGEON, XS_AMENITIES_DUNGEON);
+    s.amenities.put(Type.DUNGEON, S_AMENITIES_DUNGEON);
+    m.amenities.put(Type.DUNGEON, M_AMENITIES_DUNGEON);
+    l.amenities.put(Type.DUNGEON, L_AMENITIES_DUNGEON);
+    xl.amenities.put(Type.DUNGEON, XL_AMENITIES_DUNGEON);
 
     SETTLEMENT_CONFIGS.put(Size.XS, xs);
     SETTLEMENT_CONFIGS.put(Size.S, s);

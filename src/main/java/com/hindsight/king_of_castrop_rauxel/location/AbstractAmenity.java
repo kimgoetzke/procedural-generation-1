@@ -50,14 +50,6 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
     return "%s [ Type: %s | Located in %s ]".formatted(name, type, parent.getName());
   }
 
-  public enum Type {
-    ENTRANCE,
-    MAIN_SQUARE,
-    SHOP,
-    QUEST_LOCATION,
-    DUNGEON
-  }
-
   @Override
   public void addAvailableAction(Event event) {
     var isPrimaryEvent = event.equals(npc.getPrimaryEvent());

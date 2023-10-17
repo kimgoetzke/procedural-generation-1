@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.Type;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -30,7 +30,7 @@ public class Settlement extends AbstractSettlement {
     var startTime = System.currentTimeMillis();
     log.info("Generating full settlement '{}'...", id);
     LocationBuilder.throwIfRepeatedRequest(this, true);
-    loadAmenities();
+    loadPois();
     loadEvents();
     loadInhabitants();
     loadPlayerActions();
@@ -45,12 +45,17 @@ public class Settlement extends AbstractSettlement {
     name = nameGenerator.locationNameFrom(this.getClass());
   }
 
-  private void loadAmenities() {
+  private void loadPois() {
     var amenities = LocationBuilder.getSettlementConfig(size).getAmenities();
     for (var amenity : amenities.entrySet()) {
       var bounds = amenity.getValue();
       var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
-      IntStream.range(0, count).forEach(i -> addAmenity(amenity.getKey()));
+      var type = amenity.getKey();
+      if (type == Type.DUNGEON) {
+        IntStream.range(0, count).forEach(i -> addDungeon(type));
+      } else {
+        IntStream.range(0, count).forEach(i -> addAmenity(type));
+      }
     }
   }
 
@@ -61,10 +66,27 @@ public class Settlement extends AbstractSettlement {
       pointsOfInterests.add(amenity);
       inhabitants.add(npc);
     } else {
-      amenity.getNpc().setHome(null);
-      log.info("Skipping duplicate amenity '{}' and generating alternative", amenity.getName());
+      undoDuplicate(amenity);
       addAmenity(type);
     }
+  }
+
+  private void addDungeon(Type type) {
+    var npc = new Inhabitant(random, new Generators(nameGenerator, eventGenerator));
+    var dungeon = new Dungeon(type, npc, this);
+    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(dungeon.getName()))) {
+      pointsOfInterests.add(dungeon);
+      inhabitants.add(npc);
+    } else {
+      undoDuplicate(dungeon);
+      addDungeon(type);
+    }
+  }
+
+  private void undoDuplicate(PointOfInterest poi) {
+    poi.getNpc().setHome(null);
+    log.info(
+        "Skipping duplicate {} POI '{}' and generating alternative", poi.getType(), poi.getName());
   }
 
   /**

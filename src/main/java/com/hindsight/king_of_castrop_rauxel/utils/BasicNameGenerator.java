@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.Type;
+import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;

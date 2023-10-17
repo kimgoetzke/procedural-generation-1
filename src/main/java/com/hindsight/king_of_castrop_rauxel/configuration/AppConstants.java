@@ -31,9 +31,9 @@ public final class AppConstants {
   public static final Bounds XL_AREA = new Bounds(15, 40);
   public static final Bounds XS_AMENITIES_ENTRANCE = new Bounds(0, 0);
   public static final Bounds S_AMENITIES_ENTRANCE = new Bounds(0, 1);
-  public static final Bounds M_AMENITIES_ENTRANCE = new Bounds(2, 4);
-  public static final Bounds L_AMENITIES_ENTRANCE = new Bounds(1, 1);
-  public static final Bounds XL_AMENITIES_ENTRANCE = new Bounds(4, 8);
+  public static final Bounds M_AMENITIES_ENTRANCE = new Bounds(1, 1);
+  public static final Bounds L_AMENITIES_ENTRANCE = new Bounds(2, 3);
+  public static final Bounds XL_AMENITIES_ENTRANCE = new Bounds(4, 5);
   public static final Bounds XS_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
   public static final Bounds S_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
   public static final Bounds M_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
@@ -41,12 +41,17 @@ public final class AppConstants {
   public static final Bounds XL_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
   public static final Bounds XS_AMENITIES_SHOP = new Bounds(0, 1);
   public static final Bounds S_AMENITIES_SHOP = new Bounds(1, 3);
-  public static final Bounds M_AMENITIES_SHOP = new Bounds(3, 6);
-  public static final Bounds L_AMENITIES_SHOP = new Bounds(5, 10);
-  public static final Bounds XL_AMENITIES_SHOP = new Bounds(8, 14);
+  public static final Bounds M_AMENITIES_SHOP = new Bounds(3, 5);
+  public static final Bounds L_AMENITIES_SHOP = new Bounds(5, 9);
+  public static final Bounds XL_AMENITIES_SHOP = new Bounds(8, 12);
   public static final Bounds XS_AMENITIES_QUEST_LOCATION = new Bounds(0, 2);
   public static final Bounds S_AMENITIES_QUEST_LOCATION = new Bounds(2, 5);
-  public static final Bounds M_AMENITIES_QUEST_LOCATION = new Bounds(3, 8);
-  public static final Bounds L_AMENITIES_QUEST_LOCATION = new Bounds(6, 12);
-  public static final Bounds XL_AMENITIES_QUEST_LOCATION = new Bounds(10, 20);
+  public static final Bounds M_AMENITIES_QUEST_LOCATION = new Bounds(3, 6);
+  public static final Bounds L_AMENITIES_QUEST_LOCATION = new Bounds(7, 10);
+  public static final Bounds XL_AMENITIES_QUEST_LOCATION = new Bounds(9, 14);
+  public static final Bounds XS_AMENITIES_DUNGEON = new Bounds(0, 1);
+  public static final Bounds S_AMENITIES_DUNGEON = new Bounds(0, 1);
+  public static final Bounds M_AMENITIES_DUNGEON = new Bounds(1, 2);
+  public static final Bounds L_AMENITIES_DUNGEON = new Bounds(2, 3);
+  public static final Bounds XL_AMENITIES_DUNGEON = new Bounds(3, 4);
 }

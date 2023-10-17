@@ -1,7 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
-
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
@@ -25,4 +23,12 @@ public interface PointOfInterest {
   Npc getNpc();
 
   String getSummary();
+
+  enum Type {
+    ENTRANCE,
+    MAIN_SQUARE,
+    SHOP,
+    QUEST_LOCATION,
+    DUNGEON
+  }
 }

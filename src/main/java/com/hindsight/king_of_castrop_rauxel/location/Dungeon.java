@@ -1,10 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.event.Event;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Random;
 import lombok.EqualsAndHashCode;
@@ -39,7 +37,7 @@ public class Dungeon extends AbstractAmenity {
 
   @Override
   public void unload() {
-    LocationBuilder.throwIfRepeatedRequest(this, true);
+    LocationBuilder.throwIfRepeatedRequest(this, false);
     random = new Random(seed);
     availableActions.clear();
     setLoaded(false);
