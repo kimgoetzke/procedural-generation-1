@@ -21,9 +21,9 @@ public class Player implements Visitor {
   private final List<Event> events = new ArrayList<>();
   private final Coordinates coordinates;
   private int gold = 100;
+  private int health = 100;
   private int experience = 0;
   private int level = 1;
-  private int activityPoints = 20;
   private State previousState = State.AT_LOCATION;
   private State state = State.AT_LOCATION;
   private Location currentLocation;

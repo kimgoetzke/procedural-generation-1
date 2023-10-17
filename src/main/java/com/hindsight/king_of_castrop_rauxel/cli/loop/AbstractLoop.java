@@ -32,7 +32,7 @@ public abstract class AbstractLoop {
       CliComponent.clearConsole();
     }
     out.printf(
-        "%sSTATS: [ Gold: %s%s%s%s | Level: %s%s%s%s | Activity points left: %s%s%s%s ]%s%n",
+        "%sSTATS: [ Gold: %s%s%s%s | Level: %s%s%s%s | Experience: %s%s%s%s | Health: %s%s%s%s ]%s%n",
         CliComponent.FMT.DEFAULT_BOLD,
         CliComponent.FMT.YELLOW_BOLD,
         player.getGold(),
@@ -42,8 +42,12 @@ public abstract class AbstractLoop {
         player.getLevel(),
         CliComponent.FMT.RESET,
         CliComponent.FMT.DEFAULT_BOLD,
-        CliComponent.FMT.GREEN_BOLD,
-        player.getActivityPoints(),
+        CliComponent.FMT.BLUE_BOLD,
+        player.getExperience(),
+        CliComponent.FMT.RESET,
+        CliComponent.FMT.DEFAULT_BOLD,
+        CliComponent.FMT.RED_BOLD,
+        player.getHealth(),
         CliComponent.FMT.RESET,
         CliComponent.FMT.DEFAULT_BOLD,
         CliComponent.FMT.RESET);

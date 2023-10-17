@@ -78,11 +78,10 @@ public class ActionHandler {
     addAllActions(eventActions, actions);
   }
 
-  public void getCombatActions(Player player, List<Action> actions) {
+  public void getCombatActions(List<Action> actions) {
     prepend(actions, false);
-    var poi = player.getCurrentPoi().getName();
-    actions.add(new StateAction(actions.size() + 1, "Continue fighting", IN_COMBAT));
-    actions.add(new StateAction(actions.size() + 1, "Leave " + poi, IN_COMBAT));
+    actions.add(new StateAction(actions.size() + 1, "Progress further", IN_COMBAT));
+    actions.add(new StateAction(actions.size() + 1, "Retreat (for now)", AT_POI));
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
