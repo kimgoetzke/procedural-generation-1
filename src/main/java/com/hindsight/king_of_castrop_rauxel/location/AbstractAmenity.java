@@ -1,7 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.ArrayList;
@@ -54,5 +56,34 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
     SHOP,
     QUEST_LOCATION,
     DUNGEON
+  }
+
+  @Override
+  public void addAvailableAction(Event event) {
+    var isPrimaryEvent = event.equals(npc.getPrimaryEvent());
+    if (!isPrimaryEvent) {
+      var about = event.getEventDetails().getAbout();
+      var appendAbout = about == null ? "" : " about " + about;
+      addEventAction(event, appendAbout);
+      return;
+    }
+    if (type == Type.QUEST_LOCATION || type == Type.SHOP) {
+      addEventAction(event, "");
+    }
+  }
+
+  protected void addEventAction(Event event, String append) {
+    var action =
+        EventAction.builder()
+            .name("Speak with %s%s".formatted(npc.getName(), append))
+            .index(availableActions.size() + 1)
+            .event(event)
+            .npc(npc)
+            .build();
+    if (availableActions.stream().anyMatch(a -> a.getName().equals(action.getName()))) {
+      throw new IllegalStateException(
+          "Duplicate action '%s' for event '%s'".formatted(action, event));
+    }
+    availableActions.add(action);
   }
 }

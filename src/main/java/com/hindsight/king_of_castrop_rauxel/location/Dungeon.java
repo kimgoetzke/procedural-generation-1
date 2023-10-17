@@ -4,20 +4,19 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(callSuper = true)
-public class Amenity extends AbstractAmenity {
+public class Dungeon extends AbstractAmenity {
 
-  public Amenity(Type type, Npc npc, Location parent) {
+  public Dungeon(Type type, Npc npc, Location parent) {
     super(type, npc, parent);
     load();
     logResult();
@@ -34,14 +33,8 @@ public class Amenity extends AbstractAmenity {
 
   @Override
   public List<Action> getAvailableActions() {
-    var processedActions = new ArrayList<Action>();
-    for (var action : availableActions) {
-      if (action instanceof EventAction eventAction && !eventAction.getEvent().isDisplayable(npc)) {
-        continue;
-      }
-      processedActions.add(action);
-    }
-    return processedActions;
+    // Add dungeon-specific actions
+    return availableActions;
   }
 
   @Override

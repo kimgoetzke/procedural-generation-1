@@ -136,7 +136,11 @@ public interface Event {
   }
 
   default boolean isDisplayable(Npc npc) {
-    if (npc.getPrimaryEvent().getEventDetails() == getEventDetails()) {
+    var primaryEvent = npc.getPrimaryEvent();
+    if (primaryEvent == null) {
+      return false;
+    }
+    if (primaryEvent.getEventDetails() == getEventDetails()) {
       return true;
     }
     return getEventState() == Event.State.ACTIVE
