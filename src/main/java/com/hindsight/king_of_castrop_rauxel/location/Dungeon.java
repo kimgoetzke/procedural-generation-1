@@ -27,6 +27,8 @@ public class Dungeon extends AbstractAmenity {
             .getNameGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
     setLoaded(true);
+    // Determine encounters
+    // Load them into some kind of list/sequence
   }
 
   @Override

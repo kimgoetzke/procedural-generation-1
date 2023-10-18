@@ -32,6 +32,7 @@ public class Player implements Visitor, Combatant {
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
+  @Setter private Combatant target;
 
   public enum State {
     AT_LOCATION,
@@ -84,11 +85,12 @@ public class Player implements Visitor, Combatant {
   }
 
   @Override
-  public void attack(Combatant other) {
+  public int attack(Combatant other) {
     var damage =
         random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
             + damageRange.getFirst();
     other.takeDamage(damage);
+    return damage;
   }
 
   @Override

@@ -7,7 +7,13 @@ import java.util.List;
 
 public interface Combatant {
 
+  String getId();
+
   String getName();
+
+  default boolean isAlive() {
+    return getHealth() > 0;
+  }
 
   int getHealth();
 
@@ -19,7 +25,19 @@ public interface Combatant {
 
   List<Reward> getReward();
 
-  void attack(Combatant other);
+  default boolean hasTarget() {
+    return getTarget() != null || getTarget().getHealth() <= 0;
+  }
+
+  void setTarget(Combatant target);
+
+  Combatant getTarget();
+
+  default int attack() {
+    return attack(getTarget());
+  }
+
+  int attack(Combatant target);
 
   default void takeDamage(int damage) {
     var newHealth = getHealth() - damage;
