@@ -21,6 +21,7 @@ public class Player implements Visitor, Combatant {
   private final Set<Location> visitedLocations = new LinkedHashSet<>();
   private final List<Event> events = new ArrayList<>();
   private final Coordinates coordinates;
+  private final Pair<Integer, Integer> startCoordinates;
   private final Random random = new Random();
   private int gold = 100;
   private int health = 100;
@@ -48,6 +49,7 @@ public class Player implements Visitor, Combatant {
     this.name = name;
     this.id = "PLA~" + UUID.randomUUID();
     this.coordinates = new Coordinates(worldCoords, currentLocation.getCoordinates().getChunk());
+    this.startCoordinates = coordinates.getGlobal();
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
     visitedLocations.add(currentLocation);
