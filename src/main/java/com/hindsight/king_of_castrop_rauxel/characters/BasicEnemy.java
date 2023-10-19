@@ -1,0 +1,43 @@
+package com.hindsight.king_of_castrop_rauxel.characters;
+
+import com.hindsight.king_of_castrop_rauxel.cli.combat.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.event.Reward;
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
+import java.util.List;
+import java.util.Random;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.util.Pair;
+
+@Getter
+public class BasicEnemy implements Combatant {
+
+  private final String id;
+  private final String name;
+  private final int level;
+  private final Pair<Integer, Integer> damageRange;
+  private final List<Reward> reward;
+  @Setter private int health;
+  @Setter private Combatant target;
+  private final Random random = new Random();
+
+  // TODO: Procedurally generate all relevant enemy stats
+  public BasicEnemy(DungeonDetails details) {
+    var type = details.enemyType();
+    this.id = IdBuilder.idFrom(this.getClass());
+    this.name = type.name();
+    this.health = 10;
+    this.level = details.level();
+    this.damageRange = Pair.of(1, 4);
+    this.reward = List.of(new Reward(Reward.Type.GOLD, 10));
+  }
+
+  @Override
+  public int attack(Combatant target) {
+    var damage =
+        random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
+            + damageRange.getFirst();
+    target.takeDamage(damage);
+    return damage;
+  }
+}

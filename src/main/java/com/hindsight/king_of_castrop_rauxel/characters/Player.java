@@ -84,21 +84,17 @@ public class Player implements Visitor, Combatant {
 
   @Override
   public List<Reward> getReward() {
+    gold = 0;
     return List.of(new Reward(Reward.Type.GOLD, gold));
   }
 
   @Override
-  public int attack(Combatant other) {
+  public int attack(Combatant target) {
     var damage =
         random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
             + damageRange.getFirst();
-    other.takeDamage(damage);
+    target.takeDamage(damage);
     return damage;
-  }
-
-  @Override
-  public void die() {
-    // Nothing to do here for the Player class, handled by Dungeon
   }
 
   public void setState(State state) {

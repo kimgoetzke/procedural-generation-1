@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
+  public static final String LABEL_FORMAT = "%s(%s)%s";
 
   public enum FMT {
     RESET("\033[0m"),
@@ -117,7 +118,7 @@ public class CliComponent {
   }
 
   public static String label(String label, FMT format) {
-    return "(%s%s%s)".formatted(format, label, FMT.RESET);
+    return LABEL_FORMAT.formatted(format, label, FMT.RESET);
   }
 
   public static String label(PointOfInterest.Type type) {
@@ -129,7 +130,7 @@ public class CliComponent {
           default -> "";
         };
     if (!label.isEmpty()) {
-      return "%s(%s)%s".formatted(FMT.BLUE, label, FMT.RESET);
+      return LABEL_FORMAT.formatted(FMT.BLUE, label, FMT.RESET);
     }
     return label;
   }

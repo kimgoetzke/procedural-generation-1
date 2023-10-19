@@ -1,11 +1,16 @@
 package com.hindsight.king_of_castrop_rauxel.cli.combat;
 
+import com.hindsight.king_of_castrop_rauxel.characters.BasicEnemy;
+import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
+import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.world.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,25 +38,31 @@ public class EncounterSequence implements Generatable {
     load();
   }
 
-  public void execute() {
-    inProgress = true;
-    while (currentEncounter < dungeonDetails.encounters()) {
-
-      encounters.get(currentEncounter).execute();
-      currentEncounter++;
-    }
+  public void execute(Player player) {
+    execute(player, true);
   }
 
+  public void execute(Player player, boolean hasTheInitiative) {
+    inProgress = true;
+    while (player.isAlive() && currentEncounter < dungeonDetails.encounters()) {
+      encounters.get(currentEncounter).execute(player, hasTheInitiative);
+      currentEncounter++;
+    }
+    inProgress = false;
+    System.out.println("The sequence is over.");
+  }
+
+  // TODO: Procedurally generate and abstract away everything necessary
   @Override
   public void load() {
     LocationBuilder.throwIfRepeatedRequest(this, true);
     var targetLevel = calculateTargetLevel();
     this.dungeonDetails = DungeonDetails.load(random, targetLevel);
     for (int i = 0; i < dungeonDetails.encounters(); i++) {
-      // Generate enemies
-      // Make level mean something
-      // Fix calculateTargetLevel as currently way to high
-      encounters.add(new Encounter());
+      var count = random.nextInt(3 - 1 + 1) + 1;
+      var enemies = new ArrayList<Combatant>();
+      IntStream.range(0, count).forEach(j -> enemies.add(new BasicEnemy(dungeonDetails)));
+      encounters.add(new Encounter(null, enemies));
     }
     setLoaded(true);
   }

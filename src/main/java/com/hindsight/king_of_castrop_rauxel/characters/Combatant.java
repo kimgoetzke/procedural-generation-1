@@ -26,7 +26,7 @@ public interface Combatant {
   List<Reward> getReward();
 
   default boolean hasTarget() {
-    return getTarget() != null || getTarget().getHealth() <= 0;
+    return getTarget() != null && getTarget().getHealth() > 0;
   }
 
   void setTarget(Combatant target);
@@ -43,11 +43,8 @@ public interface Combatant {
     var newHealth = getHealth() - damage;
     if (newHealth <= 0) {
       setHealth(0);
-      die();
       return;
     }
     setHealth(newHealth);
   }
-
-  void die();
 }

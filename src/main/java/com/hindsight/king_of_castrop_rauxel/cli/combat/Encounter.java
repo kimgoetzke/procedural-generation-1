@@ -14,52 +14,62 @@ public class Encounter {
 
   private final Random random = new Random();
   private Player player;
-  List<Combatant> attackers;
-  List<Combatant> defenders;
+  List<Combatant> allies;
+  List<Combatant> enemies;
   List<Reward> loot;
   private boolean isOver = false;
 
-  public void initiate(
-      Player player, List<Combatant> allies, List<Combatant> enemies, boolean isPlayerAttacker) {
-    this.player = player;
-    var alliedCombatants = new ArrayList<Combatant>();
-    alliedCombatants.add(player);
-    if (allies != null) {
-      alliedCombatants.addAll(allies);
-    }
-    if (isPlayerAttacker) {
-      attackers = alliedCombatants;
-      defenders = enemies;
-      System.out.println("You have the initiative.");
-    } else {
-      attackers = enemies;
-      defenders = alliedCombatants;
-      System.out.println("You are being surprised.");
-    }
-    System.out.println("A fight has started:");
+  public Encounter(List<Combatant> allies, List<Combatant> enemies) {
+    this.allies = allies;
+    this.enemies = enemies;
   }
 
-  public void execute() {
-    complete();
+  public void execute(Player player, boolean hasTheInitiative) {
+    this.player = player;
+    var attackers = new ArrayList<Combatant>();
+    var defenders = new ArrayList<Combatant>();
+    initialise(hasTheInitiative, attackers, defenders);
+    complete(attackers, defenders);
     wrapUp();
   }
 
-  private void complete() {
-    while (!isOver) {
-      for (var attacker : attackers) {
-        getTarget(attacker, defenders);
-        var aDamage = attacker.attack();
-        printAttack(attacker, attacker.getTarget(), aDamage);
-      }
-      evaluate(defenders);
-
-      for (var defender : defenders) {
-        getTarget(defender, attackers);
-        var dDamage = defender.attack();
-        printAttack(defender, defender.getTarget(), dDamage);
-      }
-      evaluate(attackers);
+  private void initialise(
+      boolean hasTheInitiative, ArrayList<Combatant> attackers, ArrayList<Combatant> defenders) {
+    if (hasTheInitiative) {
+      attackers.add(player);
+      addAlliesTo(attackers);
+      defenders.addAll(enemies);
+    } else {
+      attackers.addAll(enemies);
+      defenders.add(player);
+      addAlliesTo(defenders);
     }
+    System.out.print("A fight has started. ");
+    System.out.printf(
+        "You %s%n", hasTheInitiative ? "have the initiative." : "are being surprised.");
+  }
+
+  private void addAlliesTo(ArrayList<Combatant> combatants) {
+    if (allies != null) {
+      combatants.addAll(allies);
+    }
+  }
+
+  private void complete(ArrayList<Combatant> attackers, ArrayList<Combatant> defenders) {
+    while (!isOver) {
+      attackAndEvaluate(attackers, defenders);
+      attackAndEvaluate(defenders, attackers);
+    }
+  }
+
+  private void attackAndEvaluate(
+      ArrayList<Combatant> attackingGroup, ArrayList<Combatant> defendingGroup) {
+    for (var attacker : attackingGroup) {
+      getTarget(attacker, defendingGroup);
+      var damage = attacker.attack();
+      printAttack(attacker, attacker.getTarget(), damage);
+    }
+    evaluateAttack(defendingGroup);
   }
 
   private void wrapUp() {
@@ -78,7 +88,7 @@ public class Encounter {
     var attackerColour = isPlayer(attacker) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     var targetColour = isPlayer(target) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     System.out.printf(
-        "- %s%s%s is attacked by %s%s%s, taking %s%d%s damage%n (%s%d%s health remaining)%n",
+        "- %s%s%s is attacked by %s%s%s, taking %s%d%s damage (%s%d%s health remaining)%n",
         targetColour,
         target.getName(),
         FMT.RESET,
@@ -93,7 +103,7 @@ public class Encounter {
         FMT.RESET);
   }
 
-  private void evaluate(List<Combatant> combatants) {
+  private void evaluateAttack(List<Combatant> combatants) {
     for (var combatant : combatants) {
       if (combatant.isAlive()) {
         continue;
