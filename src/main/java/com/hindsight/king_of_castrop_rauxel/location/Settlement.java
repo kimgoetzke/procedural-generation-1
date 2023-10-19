@@ -4,7 +4,6 @@ import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
-import java.util.Random;
 import java.util.stream.IntStream;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -129,17 +128,6 @@ public class Settlement extends AbstractSettlement {
               .poi(pointsOfInterests.get(i))
               .build());
     }
-  }
-
-  @Override
-  public void unload() {
-    LocationBuilder.throwIfRepeatedRequest(this, false);
-    random = new Random(seed);
-    inhabitants.clear();
-    pointsOfInterests.clear();
-    availableActions.clear();
-    setLoaded(false);
-    logResult();
   }
 
   @Override

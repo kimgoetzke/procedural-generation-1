@@ -3,13 +3,11 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
@@ -24,6 +22,7 @@ public class Amenity extends AbstractAmenity {
 
   @Override
   public void load() {
+    LocationBuilder.throwIfRepeatedRequest(this, true);
     this.name =
         parent
             .getNameGenerator()
@@ -41,15 +40,6 @@ public class Amenity extends AbstractAmenity {
       processedActions.add(action);
     }
     return processedActions;
-  }
-
-  @Override
-  public void unload() {
-    LocationBuilder.throwIfRepeatedRequest(this, true);
-    random = new Random(seed);
-    availableActions.clear();
-    setLoaded(false);
-    log.info("Unloaded: {}", this);
   }
 
   @Override

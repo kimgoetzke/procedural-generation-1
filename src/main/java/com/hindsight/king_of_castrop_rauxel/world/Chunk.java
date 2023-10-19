@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-public class Chunk implements Generatable {
+public class Chunk implements Generatable, Unloadable {
 
   private final WorldHandler worldHandler;
 

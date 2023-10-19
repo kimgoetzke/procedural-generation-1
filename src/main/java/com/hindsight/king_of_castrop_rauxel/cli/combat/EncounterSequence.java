@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.cli.combat;
 
+import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.world.*;
 import java.util.ArrayList;
@@ -16,15 +17,16 @@ public class EncounterSequence implements Generatable {
 
   @Getter private final String id;
   @Getter @Setter private boolean isLoaded;
-  private final Random random;
+  private final long seed;
   private final Coordinates coordinates;
+  private final Random random;
   private DungeonDetails dungeonDetails;
   List<Encounter> encounters = new ArrayList<>();
 
   public EncounterSequence(PointOfInterest parent) {
     var parentCoords = parent.getParent().getCoordinates();
-    var seed = SeedBuilder.seedFrom(parentCoords.getGlobal());
     this.coordinates = parentCoords;
+    this.seed = SeedBuilder.seedFrom(parentCoords.getGlobal());
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), parent.getId());
     load();
@@ -32,6 +34,7 @@ public class EncounterSequence implements Generatable {
 
   @Override
   public void load() {
+    LocationBuilder.throwIfRepeatedRequest(this, true);
     var targetLevel = calculateTargetLevel();
     this.dungeonDetails = DungeonDetails.load(random, targetLevel);
     for (int i = 0; i < dungeonDetails.encounters(); i++) {
@@ -45,13 +48,6 @@ public class EncounterSequence implements Generatable {
 
   private int calculateTargetLevel() {
     return coordinates.distanceTo(World.getCentreCoords());
-  }
-
-  @Override
-  public void unload() {
-    // To implement...
-    setLoaded(false);
-    logResult();
   }
 
   @Override
