@@ -1,9 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.event.Event;
-import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,11 +13,11 @@ public class CombatAction implements Action {
 
   @Setter private int index;
   @Setter private String name;
-  private Event event;
-  private PointOfInterest poi;
+  private EncounterSequence sequence;
 
   @Override
   public void execute(Player player) {
+    sequence.execute();
     nextState(player);
     throw new IllegalStateException("CombatAction has not been implemented yet.");
   }

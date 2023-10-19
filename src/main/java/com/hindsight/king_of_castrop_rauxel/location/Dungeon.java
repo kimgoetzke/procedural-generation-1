@@ -1,8 +1,12 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.action.CombatAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
+
+import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -13,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(callSuper = true)
 public class Dungeon extends AbstractAmenity {
 
-  private EncounterSequence encounterSequence;
+  public static final String LABEL_FOR_USER = CliComponent.label("Combat", CliComponent.FMT.RED);
+  private EncounterSequence sequence;
 
   public Dungeon(Type type, Npc npc, Location parent) {
     super(type, npc, parent);
@@ -27,14 +32,22 @@ public class Dungeon extends AbstractAmenity {
         parent
             .getNameGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
-    encounterSequence = new EncounterSequence(this);
+    sequence = new EncounterSequence(this);
     setLoaded(true);
   }
 
   @Override
   public List<Action> getAvailableActions() {
-    // Add dungeon-specific actions
-    return availableActions;
+    var processedActions = new ArrayList<>(availableActions);
+    processedActions.add(
+        CombatAction.builder()
+            .name(
+                "Enter %s %s%s"
+                    .formatted(name, sequence.isInProgress() ? "again " : "", LABEL_FOR_USER))
+            .index(availableActions.size() + 1)
+            .sequence(sequence)
+            .build());
+    return processedActions;
   }
 
   @Override

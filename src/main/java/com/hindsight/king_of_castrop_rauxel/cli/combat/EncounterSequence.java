@@ -16,20 +16,30 @@ import lombok.extern.slf4j.Slf4j;
 public class EncounterSequence implements Generatable {
 
   @Getter private final String id;
-  @Getter @Setter private boolean isLoaded;
-  private final long seed;
-  private final Coordinates coordinates;
   private final Random random;
+  private final List<Encounter> encounters = new ArrayList<>();
+  private final Coordinates coordinates;
+  @Getter @Setter private boolean isLoaded;
   private DungeonDetails dungeonDetails;
-  List<Encounter> encounters = new ArrayList<>();
+  private int currentEncounter = 0;
+  @Getter private boolean inProgress = false;
 
   public EncounterSequence(PointOfInterest parent) {
     var parentCoords = parent.getParent().getCoordinates();
+    var seed = SeedBuilder.seedFrom(parentCoords.getGlobal());
     this.coordinates = parentCoords;
-    this.seed = SeedBuilder.seedFrom(parentCoords.getGlobal());
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), parent.getId());
     load();
+  }
+
+  public void execute() {
+    inProgress = true;
+    while (currentEncounter < dungeonDetails.encounters()) {
+
+      encounters.get(currentEncounter).execute();
+      currentEncounter++;
+    }
   }
 
   @Override

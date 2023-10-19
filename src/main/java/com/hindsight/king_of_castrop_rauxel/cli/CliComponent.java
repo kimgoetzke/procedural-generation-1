@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import static java.lang.System.out;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -113,6 +114,24 @@ public class CliComponent {
         Thread.currentThread().interrupt();
       }
     }
+  }
+
+  public static String label(String label, FMT format) {
+    return "(%s%s%s)".formatted(format, label, FMT.RESET);
+  }
+
+  public static String label(PointOfInterest.Type type) {
+    var label =
+        switch (type) {
+          case MAIN_SQUARE -> "Main Square";
+          case SHOP -> "Shop";
+          case DUNGEON -> "Dungeon";
+          default -> "";
+        };
+    if (!label.isEmpty()) {
+      return "%s(%s)%s".formatted(FMT.BLUE, label, FMT.RESET);
+    }
+    return label;
   }
 
   public static void removeString(String toRemove, boolean previousLine) {

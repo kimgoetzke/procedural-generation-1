@@ -19,14 +19,7 @@ public class Encounter {
   List<Reward> loot;
   private boolean isOver = false;
 
-  public void execute(
-      Player player, List<Combatant> allies, List<Combatant> enemies, boolean isPlayerAttacker) {
-    initiate(player, allies, enemies, isPlayerAttacker);
-    complete();
-    wrapUp();
-  }
-
-  private void initiate(
+  public void initiate(
       Player player, List<Combatant> allies, List<Combatant> enemies, boolean isPlayerAttacker) {
     this.player = player;
     var alliedCombatants = new ArrayList<Combatant>();
@@ -44,6 +37,11 @@ public class Encounter {
       System.out.println("You are being surprised.");
     }
     System.out.println("A fight has started:");
+  }
+
+  public void execute() {
+    complete();
+    wrapUp();
   }
 
   private void complete() {

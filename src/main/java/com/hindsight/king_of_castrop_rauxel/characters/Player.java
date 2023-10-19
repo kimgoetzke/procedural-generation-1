@@ -98,8 +98,7 @@ public class Player implements Visitor, Combatant {
 
   @Override
   public void die() {
-    System.out.println("You died!");
-    System.exit(0);
+    // Nothing to do here for the Player class, handled by Dungeon
   }
 
   public void setState(State state) {

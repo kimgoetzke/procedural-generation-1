@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.stream.IntStream;
@@ -124,7 +125,11 @@ public class Settlement extends AbstractSettlement {
       availableActions.add(
           PoiAction.builder()
               .index(i)
-              .name("Go to %s".formatted(pointsOfInterests.get(i).getName()))
+              .name(
+                  "Go to %s %s"
+                      .formatted(
+                          pointsOfInterests.get(i).getName(),
+                          CliComponent.label(pointsOfInterests.get(i).getType())))
               .poi(pointsOfInterests.get(i))
               .build());
     }
