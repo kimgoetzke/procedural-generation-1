@@ -66,7 +66,7 @@ public class Settlement extends AbstractSettlement {
       pointsOfInterests.add(amenity);
       inhabitants.add(npc);
     } else {
-      undoDuplicate(amenity);
+      revert(amenity);
       addAmenity(type);
     }
   }
@@ -78,12 +78,12 @@ public class Settlement extends AbstractSettlement {
       pointsOfInterests.add(dungeon);
       inhabitants.add(npc);
     } else {
-      undoDuplicate(dungeon);
+      revert(dungeon);
       addDungeon(type);
     }
   }
 
-  private void undoDuplicate(PointOfInterest poi) {
+  private void revert(PointOfInterest poi) {
     poi.getNpc().setHome(null);
     log.info(
         "Skipping duplicate {} POI '{}' and generating alternative", poi.getType(), poi.getName());

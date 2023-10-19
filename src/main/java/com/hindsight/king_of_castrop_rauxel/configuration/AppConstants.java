@@ -54,4 +54,10 @@ public final class AppConstants {
   public static final Bounds M_AMENITIES_DUNGEON = new Bounds(1, 2);
   public static final Bounds L_AMENITIES_DUNGEON = new Bounds(2, 3);
   public static final Bounds XL_AMENITIES_DUNGEON = new Bounds(3, 4);
+
+  // POINTS OF INTEREST
+  // Dungeons
+
+  public static final int DUNGEON_LEVEL_RANGE = 2;
+  public static final Bounds DUNGEON_ENCOUNTERS_RANGE = new Bounds(2, 6);
 }

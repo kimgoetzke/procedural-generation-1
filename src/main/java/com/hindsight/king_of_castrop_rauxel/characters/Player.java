@@ -8,6 +8,7 @@ import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 
 import java.util.*;
 
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -47,9 +48,9 @@ public class Player implements Visitor, Combatant {
   public Player(
       String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoords) {
     this.name = name;
-    this.id = "PLA~" + UUID.randomUUID();
     this.coordinates = new Coordinates(worldCoords, currentLocation.getCoordinates().getChunk());
     this.startCoordinates = coordinates.getGlobal();
+    this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
     visitedLocations.add(currentLocation);

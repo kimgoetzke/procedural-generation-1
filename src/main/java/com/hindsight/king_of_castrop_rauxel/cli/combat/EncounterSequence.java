@@ -1,47 +1,62 @@
 package com.hindsight.king_of_castrop_rauxel.cli.combat;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.world.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
-public class EncounterSequence {
+@Slf4j
+@ToString(exclude = {"random", "isLoaded", "encounters"})
+public class EncounterSequence implements Generatable {
 
+  @Getter private final String id;
+  @Getter @Setter private boolean isLoaded;
   private final Random random;
+  private final Coordinates coordinates;
+  private DungeonDetails dungeonDetails;
   List<Encounter> encounters = new ArrayList<>();
-  DungeonDetails.DungeonType type;
 
-  public EncounterSequence(Location parent, Player player, DungeonDetails.DungeonType type) {
-    var coordinates = parent.getCoordinates();
-    var seed = SeedBuilder.seedFrom(coordinates.getGlobal());
+  public EncounterSequence(PointOfInterest parent) {
+    var parentCoords = parent.getParent().getCoordinates();
+    var seed = SeedBuilder.seedFrom(parentCoords.getGlobal());
+    this.coordinates = parentCoords;
     this.random = new Random(seed);
-    this.type = type;
-    var targetLevel = calculateTargetLevel(coordinates, player);
-    var details = DungeonDetails.random(random, type, targetLevel, 2);
-    for (int i = 0; i < details.encounters(); i++) {
+    this.id = IdBuilder.idFrom(this.getClass(), parent.getId());
+    load();
+  }
+
+  @Override
+  public void load() {
+    var targetLevel = calculateTargetLevel();
+    this.dungeonDetails = DungeonDetails.load(random, targetLevel);
+    for (int i = 0; i < dungeonDetails.encounters(); i++) {
       // Generate enemies
+      // Make level mean something
+      // Fix calculateTargetLevel as currently way to high
       encounters.add(new Encounter());
     }
+    setLoaded(true);
   }
 
-  private int calculateTargetLevel(Coordinates coordinates, Player player) {
-    var distance = coordinates.distanceTo(player.getStartCoordinates());
-    if (distance < 275) {
-      return 1;
-    } else if (distance < 550) {
-      return 2;
-    } else if (distance < 800) {
-      return 3;
-    } else if (distance < 1000) {
-      return 4;
-    } else {
-      return 5;
-    }
+  private int calculateTargetLevel() {
+    return coordinates.distanceTo(World.getCentreCoords());
   }
 
-  public void execute() {
+  @Override
+  public void unload() {
     // To implement...
+    setLoaded(false);
+    logResult();
+  }
+
+  @Override
+  public void logResult() {
+    var action = isLoaded ? "Generated" : "Unloaded";
+    log.info("{}: {}", action, this);
   }
 }

@@ -80,7 +80,7 @@ public class BasicEventGenerator implements EventGenerator {
   private void initialiseRewards(EventDetails eventDetails) {
     for (var reward : eventDetails.getRewards()) {
       reward.load(random);
-      log.info("Initialised reward: {}", reward);
+      log.info("Initialised reward of {} for {}", reward, eventDetails.getId());
     }
   }
 

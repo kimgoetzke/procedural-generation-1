@@ -5,12 +5,11 @@ import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
-
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +33,7 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
   protected Random random;
 
   protected AbstractAmenity(Type type, Npc npc, Location parent) {
-    this.id = "POI~" + UUID.randomUUID();
+    this.id = IdBuilder.idFrom(this.getClass());
     this.seed = SeedBuilder.seedFrom(parent.getCoordinates().getGlobal());
     this.random = new Random(seed);
     this.type = type;

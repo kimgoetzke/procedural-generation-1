@@ -74,7 +74,7 @@ public class World {
   }
 
   /** Returns the world coordinates of the chunk in the center of the world. */
-  public Pair<Integer, Integer> getCentreCoords() {
+  public static Pair<Integer, Integer> getCentreCoords() {
     return Pair.of(WORLD_SIZE / 2, WORLD_SIZE / 2);
   }
 
@@ -90,7 +90,6 @@ public class World {
     var stats = worldHandler.getStats(map);
     var chunk = new Chunk(worldCoords, worldHandler);
     place(chunk);
-    chunk.logResult();
     worldHandler.logOutcome(stats, map, this.getClass());
   }
 

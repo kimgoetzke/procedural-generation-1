@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.*;
 
@@ -32,7 +33,7 @@ public abstract class AbstractLocation implements Location {
     this.coordinates = new Coordinates(worldCoords, chunkCoords);
     this.seed = SeedBuilder.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
-    this.id = "LOC~" + coordinates.gX() + coordinates.gY();
+    this.id = IdBuilder.idFrom(this.getClass(), coordinates);
   }
 
   @Override

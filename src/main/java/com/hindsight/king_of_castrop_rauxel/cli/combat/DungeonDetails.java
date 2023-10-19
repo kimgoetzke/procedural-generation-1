@@ -2,18 +2,17 @@ package com.hindsight.king_of_castrop_rauxel.cli.combat;
 
 import java.util.Random;
 
-public record DungeonDetails(int level, DungeonType type, EnemyType enemyType, int encounters) {
-  public static DungeonDetails random(
-      Random random, DungeonType type, int targetLevel, int levelRange) {
-    return new DungeonDetails(
-        Math.max(targetLevel + random.nextInt(levelRange) - levelRange, 0), // Wrong
-        type,
-        EnemyType.values()[(random.nextInt(EnemyType.values().length))],
-        random.nextInt(6 - 2 + 1) + 2);
-  }
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DUNGEON_ENCOUNTERS_RANGE;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DUNGEON_LEVEL_RANGE;
 
-  public enum DungeonType {
-    AMENITY
+public record DungeonDetails(int level, int encounters, EnemyType enemyType) {
+  public static DungeonDetails load(Random random, int targetLevel) {
+    var lower = DUNGEON_ENCOUNTERS_RANGE.getLower();
+    var upper = DUNGEON_ENCOUNTERS_RANGE.getUpper();
+    return new DungeonDetails(
+        Math.max(targetLevel - DUNGEON_LEVEL_RANGE + (2 * random.nextInt(DUNGEON_LEVEL_RANGE)), 0),
+        random.nextInt(upper - lower + 1) + lower,
+        EnemyType.values()[(random.nextInt(EnemyType.values().length))]);
   }
 
   public enum EnemyType {

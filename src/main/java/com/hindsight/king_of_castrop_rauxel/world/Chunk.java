@@ -38,7 +38,7 @@ public class Chunk implements Generatable {
     this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
     this.density = ChunkBuilder.randomDensity(random);
-    this.id = "CHU~" + coordinates.getWorld().getFirst() + coordinates.getWorld().getSecond();
+    this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.worldHandler = worldHandler;
     this.strategy = strategy;
     load();
@@ -49,7 +49,7 @@ public class Chunk implements Generatable {
     this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
     this.density = ChunkBuilder.randomDensity(random);
-    this.id = "CHU~" + coordinates.getWorld().getFirst() + coordinates.getWorld().getSecond();
+    this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.worldHandler = worldHandler;
     this.strategy = WorldHandler.Strategy.DEFAULT;
     load();

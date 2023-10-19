@@ -5,6 +5,8 @@ import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 
 import java.util.List;
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(callSuper = true)
 public class Dungeon extends AbstractAmenity {
+
+  private EncounterSequence encounterSequence;
 
   public Dungeon(Type type, Npc npc, Location parent) {
     super(type, npc, parent);
@@ -27,8 +31,11 @@ public class Dungeon extends AbstractAmenity {
             .getNameGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
     setLoaded(true);
-    // Determine encounters
-    // Load them into some kind of list/sequence
+    loadEncounterSequence();
+  }
+
+  private void loadEncounterSequence() {
+    encounterSequence = new EncounterSequence(this);
   }
 
   @Override

@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface PointOfInterest {
 
+  String getId();
+
   String getName();
 
   String getDescription();
