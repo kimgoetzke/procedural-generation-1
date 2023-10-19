@@ -28,12 +28,15 @@ public class BasicEnemy implements Combatant {
     this.name = type.name();
     this.health = 10;
     this.level = details.level();
-    this.damageRange = Pair.of(1, 4);
+    this.damageRange = Pair.of(0, 3);
     this.reward = List.of(new Reward(Reward.Type.GOLD, 10));
   }
 
   @Override
   public int attack(Combatant target) {
+    if (target == null) {
+      return 0;
+    }
     var damage =
         random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
             + damageRange.getFirst();

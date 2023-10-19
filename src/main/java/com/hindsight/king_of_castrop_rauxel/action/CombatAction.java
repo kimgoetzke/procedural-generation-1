@@ -17,9 +17,8 @@ public class CombatAction implements Action {
 
   @Override
   public void execute(Player player) {
-    sequence.execute(player);
     nextState(player);
-    throw new IllegalStateException("CombatAction has not been implemented yet.");
+    sequence.execute(player);
   }
 
   @Override

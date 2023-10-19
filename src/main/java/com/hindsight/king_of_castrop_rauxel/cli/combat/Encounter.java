@@ -16,7 +16,7 @@ public class Encounter {
   private Player player;
   List<Combatant> allies;
   List<Combatant> enemies;
-  List<Reward> loot;
+  List<Reward> loot = new ArrayList<>();
   private boolean isOver = false;
 
   public Encounter(List<Combatant> allies, List<Combatant> enemies) {
@@ -75,27 +75,44 @@ public class Encounter {
   private void wrapUp() {
     System.out.println("The fight is over!");
     if (player.isAlive()) {
-      System.out.println("You have won!");
-      System.out.println("You have gained:");
+      System.out.println("You have won! You have gained:");
       System.out.println(loot);
-      // Apply loot
+      loot.forEach(reward -> reward.give(player));
     } else {
-      System.out.println("You have died!");
+      System.out.printf("You have died!%nGame over. Thanks for playing!%n");
+      System.exit(0);
     }
   }
 
   private void printAttack(Combatant attacker, Combatant target, int damage) {
     var attackerColour = isPlayer(attacker) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     var targetColour = isPlayer(target) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
+    if (isEnemy(attacker)) {
+      System.out.printf(
+          "- %s%s%s is attacked by %s%s%s  %s-%d%s -> %s%d%s health%n",
+          targetColour,
+          target.getName().toUpperCase(),
+          FMT.RESET,
+          attackerColour,
+          attacker.getName().toUpperCase(),
+          FMT.RESET,
+          FMT.RED,
+          damage,
+          FMT.RESET,
+          FMT.GREEN,
+          target.getHealth(),
+          FMT.RESET);
+      return;
+    }
     System.out.printf(
-        "- %s%s%s is attacked by %s%s%s, taking %s%d%s damage (%s%d%s health remaining)%n",
-        targetColour,
-        target.getName(),
-        FMT.RESET,
+        "- %s%s%s attacks %s%s%s  %s+%d%s -> %s%d%s health%n",
         attackerColour,
-        attacker.getName(),
+        attacker.getName().toUpperCase(),
         FMT.RESET,
-        FMT.RED,
+        targetColour,
+        target.getName().toUpperCase(),
+        FMT.RESET,
+        FMT.GREEN,
         damage,
         FMT.RESET,
         FMT.RED,
@@ -109,15 +126,17 @@ public class Encounter {
         continue;
       }
       var droppedLoot = combatant.getReward();
-      this.loot.addAll(droppedLoot);
+      loot.addAll(droppedLoot);
       printDeath(combatant, droppedLoot);
+      combatants.remove(combatant);
     }
   }
 
   private void printDeath(Combatant combatant, List<Reward> loot) {
     var colour = isPlayer(combatant) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     System.out.printf(
-        "- %s%s%s has died, dropping %s%n", colour, combatant.getName(), FMT.RESET, loot);
+        "- %s%s%s has died, dropping %s%n",
+        colour, combatant.getName().toUpperCase(), FMT.RESET, loot);
   }
 
   private void getTarget(Combatant combatant, List<Combatant> opposingCombatants) {
@@ -149,5 +168,9 @@ public class Encounter {
 
   private boolean isPlayer(Combatant combatant) {
     return combatant.getId().equals(player.getId());
+  }
+
+  private boolean isEnemy(Combatant combatant) {
+    return enemies.contains(combatant);
   }
 }

@@ -59,7 +59,7 @@ public class EncounterSequence implements Generatable {
     var targetLevel = calculateTargetLevel();
     this.dungeonDetails = DungeonDetails.load(random, targetLevel);
     for (int i = 0; i < dungeonDetails.encounters(); i++) {
-      var count = random.nextInt(3 - 1 + 1) + 1;
+      var count = random.nextInt(3) + 1;
       var enemies = new ArrayList<Combatant>();
       IntStream.range(0, count).forEach(j -> enemies.add(new BasicEnemy(dungeonDetails)));
       encounters.add(new Encounter(null, enemies));

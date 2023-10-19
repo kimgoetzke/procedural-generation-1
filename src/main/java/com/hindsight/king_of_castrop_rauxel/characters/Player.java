@@ -90,6 +90,9 @@ public class Player implements Visitor, Combatant {
 
   @Override
   public int attack(Combatant target) {
+    if (target == null) {
+      return 0;
+    }
     var damage =
         random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
             + damageRange.getFirst();

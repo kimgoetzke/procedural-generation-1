@@ -42,7 +42,7 @@ public class Dungeon extends AbstractAmenity {
     processedActions.add(
         CombatAction.builder()
             .name(
-                "Enter %s %s%s"
+                "Storm the %s %s%s"
                     .formatted(name, sequence.isInProgress() ? "again " : "", LABEL_FOR_USER))
             .index(availableActions.size() + 1)
             .sequence(sequence)
