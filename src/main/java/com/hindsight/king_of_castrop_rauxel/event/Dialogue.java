@@ -35,7 +35,7 @@ public final class Dialogue {
   }
 
   boolean hasNextInteraction() {
-    return current < interactions.size() - 1;
+    return current < interactions.size();
   }
 
   void progress() {
