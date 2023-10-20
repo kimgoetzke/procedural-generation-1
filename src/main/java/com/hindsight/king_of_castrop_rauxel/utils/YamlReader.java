@@ -17,11 +17,11 @@ public class YamlReader {
     var inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
     var options = new LoaderOptions();
 
-    // Allow using parameters in the Yaml file that are not being parsed to Java objects
+    // Skip unknown parameters when parsing to a Java object
     var representer = new Representer(new DumperOptions());
     representer.getPropertyUtils().setSkipMissingProperties(true);
 
-    // Allow using custom tags in the Yaml file to ensure parsing to the correct class
+    // Set custom tags in the Yaml file that ensure parsing to the correct class
     var constructor = new Constructor(EventDto.class, options);
     constructor.addTypeDescription(new TypeDescription(Dialogue.class, "!dialogue"));
     constructor.addTypeDescription(new TypeDescription(DialogueAction.class, "!action"));
