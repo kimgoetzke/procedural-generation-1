@@ -6,12 +6,15 @@ import lombok.*;
 
 /** This action is used in dialogue and allows branching logic. */
 @Getter
+@Setter
 @Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class DialogueAction implements Action {
 
-  @EqualsAndHashCode.Exclude @Setter private int index;
-  @Setter private String name;
+  @EqualsAndHashCode.Exclude private int index;
+  private String name;
   private Event.State eventState;
   private Player.State playerState;
   private Integer nextInteraction;

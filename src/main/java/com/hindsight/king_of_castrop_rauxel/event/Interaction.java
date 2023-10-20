@@ -2,21 +2,25 @@ package com.hindsight.king_of_castrop_rauxel.event;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class Interaction {
 
-  private final List<Action> actions;
-  private final Integer nextInteraction;
+  private List<Action> actions = new ArrayList<>();
+  private Integer nextInteraction;
   @Setter private String text;
 
-  public Interaction(String text, List<Action> actions, Integer nextInteraction) {
+  public Interaction(String text, List<Action> actions) {
     this.text = text;
     this.actions = actions;
-    this.nextInteraction = nextInteraction;
+    this.nextInteraction = null;
   }
 
   @Override

@@ -3,25 +3,19 @@ package com.hindsight.king_of_castrop_rauxel.event;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 public final class Dialogue {
 
-  @Getter private final List<Interaction> interactions;
-  @Getter private final Event.State state;
-  @Getter @Setter private String about;
+  @Setter @Getter private List<Interaction> interactions = new ArrayList<>();
+  @Setter @Getter private Event.State state;
   private int current = 0;
 
   public Dialogue(List<Interaction> interactions) {
-    this.interactions = interactions;
+    this.interactions.addAll(interactions);
     this.state = Event.State.NONE;
-    this.about = "";
-  }
-
-  public Dialogue(Event.State state) {
-    this.interactions = new ArrayList<>();
-    this.state = state;
-    this.about = "";
   }
 
   boolean hasCurrentInteraction() {

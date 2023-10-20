@@ -3,12 +3,12 @@
 # - 'about' (required, accepts: String) - appended to actions when displayed to the player
 # - 'reward' (optional, accepts: list of Reward objects)
 eventDetails:
-  - eventType: REACH
-    about: the parcel of &O
-    reward:
-      - type: GOLD
-        min: 2
-        max: 15
+  eventType: REACH
+  about: the parcel of &O
+  rewards:
+    - type: GOLD
+      minValue: 2
+      maxValue: 15
 # Step 2: Who is involved?
 # If you only have a single NPC involved in the event, skip this step. If you have two NPCs involved, use 'npc' and
 # 'targetNpc' to define the dialogue for the "event giver" and the target NPC respectively.
@@ -36,79 +36,111 @@ eventDetails:
 # - 'nextInteraction' (optional, accepts: int >= 0 and <= size of interactions in dialogue)
 #   Used in combination with 'eventState: NONE' to indicate the next interaction; this is how you branch the
 #   dialogue based on player decisions.
-eventGiver:
-  available:
-    - text: Hey there, hey you! You look like someone who travels a lot. Are heading over to &TI by any chance? If you do, I need you to do something for me.
-      i: 0
-    - text: I need you to get this small parcel to &TO at &TI. It's a bag of seeds and &TOF is a good friend of mine. Can you do it? Please!
-      i: 1
-      actions:
-        - name: (Accept) Alright, I'll do it
-          eventState: NONE
-          nextInteraction: 2
-        - name: (Decline) I'm sorry, I can't
-          eventState: NONE
-          nextInteraction: 3
-    - text: You are amazing - thank you so much! Here, take the parcel. Please, don't lose it!
-      i: 2
-      actions:
-        - name: Thanks, I'll take good care of it.
-          eventState: ACTIVE
-          nextInteraction: 0
-    - text: Oh, that's a shame. I really need someone to deliver this parcel to &TOF for me. I'll keep looking for someone else.
-      i: 3
-      actions:
-        - name: Sorry, I'll have to leave now.
-          eventState: DECLINED
-          playerState: AT_POI
-          nextInteraction: 0
-  active:
-    - text: Really appreciate you doing this for me! Safe travels.
-      actions:
-        - name: All good, mate. Goodbye!
-          playerState: AT_POI
-  ready:
-    - text: Really appreciate you doing this for me! Safe travels.
-      actions:
-        - name: All good, mate. Goodbye!
-          playerState: AT_POI
-  completed:
-    - text: Thank you so much for delivering the parcel! I really appreciate it.
-      actions:
-        - name: All good, mate. Goodbye!
-          playerState: AT_POI
-  declined:
-    - text: Good news! I have found something else to deliver the parcel for me.
-      actions:
-        - name: I'm happy for you and &TOF. Goodbye!
-          playerState: AT_POI
-eventTarget:
-  available:
-    - text: Hey there, how can I help?
-      i: 0
-      actions:
-        - name: All good. Thank you.
-          playerState: AT_POI
-  active:
-    - text: This is a parcel from &O, you said? That's marvellous. I've been waiting for this for a while now. Thank you so much for delivering it to me.
-      i: 0
-    - text: Please accept this as a token of my appreciation. (&R)
-      actions:
-        - name: Thank you, I appreciate it!
-          eventState: COMPLETED
-          playerState: AT_POI
-  ready:
-    - text: Hey there, how can I help?
-      actions:
-        - name: All good, mate. Goodbye!
-          playerState: AT_POI
-  completed:
-    - text: Thanks again. I'll better get back to it. Have a good day.
-      actions:
-        - name: All good, mate. Goodbye!
-          playerState: AT_POI
-  declined:
-    - text: Hey there, how can I help?
-      actions:
-        - name: Goodbye!
-          playerState: AT_POI
+participantData:
+  EVENT_GIVER:
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Hey there, hey you! You look like someone who travels a lot. Are heading over to &TI by any chance? If you do, I need you to do something for me.
+          i: 0
+        - text: I need you to get this small parcel to &TO at &TI. It's a bag of seeds and &TOF is a good friend of mine. Can you do it? Please!
+          i: 1
+          actions:
+            - !action
+              name: (Accept) Alright, I'll do it
+              eventState: NONE
+              nextInteraction: 2
+            - !action
+              name: (Decline) I'm sorry, I can't
+              eventState: NONE
+              nextInteraction: 3
+        - text: You are amazing - thank you so much! Here, take the parcel. Please, don't lose it!
+          i: 2
+          actions:
+            - !action
+              name: Thanks, I'll take good care of it.
+              eventState: ACTIVE
+              nextInteraction: 0
+        - text: Oh, that's a shame. I really need someone to deliver this parcel to &TOF for me. I'll keep looking for someone else.
+          i: 3
+          actions:
+            - !action
+              name: Sorry, I'll have to leave now.
+              eventState: DECLINED
+              playerState: AT_POI
+              nextInteraction: 0
+    - !dialogue
+      state: ACTIVE
+      interactions:
+        - text: Really appreciate you doing this for me! Safe travels.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: READY
+      interactions:
+        - text: Really appreciate you doing this for me! Safe travels.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: COMPLETED
+      interactions:
+        - text: Thank you so much for delivering the parcel! I really appreciate it.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: Good news! I have found something else to deliver the parcel for me.
+          actions:
+            - !action
+              name: I'm happy for you and &TOF. Goodbye!
+              playerState: AT_POI
+  EVENT_TARGET:
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Hey there, how can I help?
+          actions:
+            - !action
+              name: All good. Thank you.
+              playerState: AT_POI
+    - !dialogue
+      state: ACTIVE
+      interactions:
+        - text: This is a parcel from &O, you said? That's marvellous. I've been waiting for this for a while now. Thank you so much for delivering it to me.
+        - text: Please accept this as a token of my appreciation. (&R)
+          actions:
+            - !action
+              name: Thank you, I appreciate it!
+              eventState: COMPLETED
+              playerState: AT_POI
+    - !dialogue
+      state: READY
+      interactions:
+        - text: Hey there, how can I help?
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: COMPLETED
+      interactions:
+        - text: Thanks again. I'll better get back to it. Have a good day.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: Hey there, how can I help?
+          actions:
+            - !action
+              name: Goodbye!
+              playerState: AT_POI

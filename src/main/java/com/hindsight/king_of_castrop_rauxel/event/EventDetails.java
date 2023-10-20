@@ -1,27 +1,20 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
+@Setter
 @EqualsAndHashCode
 public final class EventDetails {
 
-  private final String id;
-  private final Event.Type eventType;
-  private final List<Reward> rewards;
-  @Setter private String about;
-
-  public EventDetails(Event.Type eventType, String about, List<Reward> rewards) {
-    this.id = IdBuilder.idFrom(this.getClass());
-    this.eventType = eventType;
-    this.about = about;
-    this.rewards = rewards;
-  }
+  private String id;
+  private Event.Type eventType;
+  private List<Reward> rewards;
+  private String about;
 
   public EventDetails() {
     this.id = IdBuilder.idFrom(this.getClass());
