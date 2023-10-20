@@ -25,10 +25,15 @@ public class CombatLoop extends AbstractLoop {
   @Getter private final Scanner scanner;
   @Getter private final AppProperties appProperties;
 
+  // TODO: Implement actual attack/defend loop
+  //  - Start encounter and give summary of opponents and initiative (later description)
+  //  - Loop through combat actions until encounter is over (DONE)
+  //  - Give summary, reward and update player stats (DONE)
+  //  - Return to this loop and show actions (press on vs retreat)
+  //  - Optional: Once sequence is complete, show summary of the entire sequence
   @Override
   public void execute(List<Action> actions) {
     printHeaders(false);
-    // TODO: Implement actual attack/defend loop
     prepareActions(actions);
     promptPlayer(actions, "What now?");
     postProcess();
