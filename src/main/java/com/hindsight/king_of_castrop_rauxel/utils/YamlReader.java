@@ -8,29 +8,45 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 @Slf4j
 public class YamlReader {
 
+  private static final String DIALOGUE_TAG = "!dialogue";
+  private static final String ACTION_TAG = "!action";
+
   public EventDto read(String fileName) {
     var inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
     var options = new LoaderOptions();
-
-    // Skip unknown parameters when parsing to a Java object
-    var representer = new Representer(new DumperOptions());
-    representer.getPropertyUtils().setSkipMissingProperties(true);
-
-    // Set custom tags in the Yaml file that ensure parsing to the correct class
-    var constructor = new Constructor(EventDto.class, options);
-    constructor.addTypeDescription(new TypeDescription(Dialogue.class, "!dialogue"));
-    constructor.addTypeDescription(new TypeDescription(DialogueAction.class, "!action"));
-
+    var representer = getRepresenter();
+    var constructor = getConstructor(options);
     var yaml = new Yaml(constructor, representer);
     var data = (EventDto) yaml.load(inputStream);
     if (data.eventDetails == null) {
       return new EventDto(new EventDetails(), data.participantData);
     }
     return data;
+  }
+
+  /**
+   * Skip unknown parameters when parsing to a Java object and set custom tags when writing a Java
+   * class to Yaml
+   */
+  protected Representer getRepresenter() {
+    var representer = new Representer(new DumperOptions());
+    representer.getPropertyUtils().setSkipMissingProperties(true);
+    representer.addClassTag(Dialogue.class, new Tag(DIALOGUE_TAG));
+    representer.addClassTag(DialogueAction.class, new Tag(ACTION_TAG));
+    return representer;
+  }
+
+  /** Set custom tags in the Yaml file that ensure parsing to the correct class */
+  protected Constructor getConstructor(LoaderOptions options) {
+    var constructor = new Constructor(EventDto.class, options);
+    constructor.addTypeDescription(new TypeDescription(Dialogue.class, DIALOGUE_TAG));
+    constructor.addTypeDescription(new TypeDescription(DialogueAction.class, ACTION_TAG));
+    return constructor;
   }
 }
