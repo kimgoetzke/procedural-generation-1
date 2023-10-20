@@ -57,7 +57,6 @@ public final class AppConstants {
 
   // POINTS OF INTEREST
   // Dungeons
-
   public static final int DUNGEON_LEVEL_RANGE = 2;
-  public static final Bounds DUNGEON_ENCOUNTERS_RANGE = new Bounds(2, 6);
+  public static final Bounds DUNGEON_ENCOUNTERS_RANGE = new Bounds(1, 4);
 }

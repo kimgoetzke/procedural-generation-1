@@ -9,19 +9,21 @@ import java.util.List;
 import java.util.Random;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+import static java.lang.System.out;
 
 public class Encounter {
 
+  public static final long DELAY_IN_MS = 175;
   private final Random random = new Random();
   private Player player;
-  List<Combatant> allies;
-  List<Combatant> enemies;
+  List<Combatant> baseAllies;
+  List<Combatant> baseEnemies;
   List<Reward> loot = new ArrayList<>();
   private boolean isOver = false;
 
   public Encounter(List<Combatant> allies, List<Combatant> enemies) {
-    this.allies = allies;
-    this.enemies = enemies;
+    this.baseAllies = allies;
+    this.baseEnemies = enemies;
   }
 
   public void execute(Player player, boolean hasTheInitiative) {
@@ -37,21 +39,21 @@ public class Encounter {
       boolean hasTheInitiative, ArrayList<Combatant> attackers, ArrayList<Combatant> defenders) {
     if (hasTheInitiative) {
       attackers.add(player);
+      defenders.addAll(baseEnemies);
       addAlliesTo(attackers);
-      defenders.addAll(enemies);
     } else {
-      attackers.addAll(enemies);
       defenders.add(player);
+      attackers.addAll(baseEnemies);
       addAlliesTo(defenders);
     }
-    System.out.print("A fight has started. ");
-    System.out.printf(
-        "You %s%n", hasTheInitiative ? "have the initiative." : "are being surprised.");
+    out.printf(
+        "A fight has started. You %s%n",
+        hasTheInitiative ? "have the initiative." : "are being surprised.");
   }
 
   private void addAlliesTo(ArrayList<Combatant> combatants) {
-    if (allies != null) {
-      combatants.addAll(allies);
+    if (baseAllies != null) {
+      combatants.addAll(baseAllies);
     }
   }
 
@@ -65,21 +67,26 @@ public class Encounter {
   private void attackAndEvaluate(
       ArrayList<Combatant> attackingGroup, ArrayList<Combatant> defendingGroup) {
     for (var attacker : attackingGroup) {
+      try {
+        Thread.sleep(DELAY_IN_MS);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
       getTarget(attacker, defendingGroup);
       var damage = attacker.attack();
       printAttack(attacker, attacker.getTarget(), damage);
+      evaluateAttack(attacker.getTarget(), defendingGroup);
     }
-    evaluateAttack(defendingGroup);
   }
 
   private void wrapUp() {
-    System.out.println("The fight is over!");
+    out.println("The fight is over!");
     if (player.isAlive()) {
-      System.out.println("You have won! You have gained:");
-      System.out.println(loot);
+      out.println("You have won! You have gained:");
+      out.println(loot);
       loot.forEach(reward -> reward.give(player));
     } else {
-      System.out.printf("You have died!%nGame over. Thanks for playing!%n");
+      out.printf("You have died!%nGame over. Thanks for playing!%n");
       System.exit(0);
     }
   }
@@ -88,7 +95,7 @@ public class Encounter {
     var attackerColour = isPlayer(attacker) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     var targetColour = isPlayer(target) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     if (isEnemy(attacker)) {
-      System.out.printf(
+      out.printf(
           "- %s%s%s is attacked by %s%s%s  %s-%d%s -> %s%d%s health%n",
           targetColour,
           target.getName().toUpperCase(),
@@ -104,7 +111,7 @@ public class Encounter {
           FMT.RESET);
       return;
     }
-    System.out.printf(
+    out.printf(
         "- %s%s%s attacks %s%s%s  %s+%d%s -> %s%d%s health%n",
         attackerColour,
         attacker.getName().toUpperCase(),
@@ -120,21 +127,23 @@ public class Encounter {
         FMT.RESET);
   }
 
-  private void evaluateAttack(List<Combatant> combatants) {
-    for (var combatant : combatants) {
-      if (combatant.isAlive()) {
-        continue;
-      }
-      var droppedLoot = combatant.getReward();
-      loot.addAll(droppedLoot);
-      printDeath(combatant, droppedLoot);
-      combatants.remove(combatant);
+  private void evaluateAttack(Combatant target, ArrayList<Combatant> defendingGroup) {
+    if (target.isAlive()) {
+      return;
     }
+    var droppedLoot = target.getReward();
+    loot.addAll(droppedLoot);
+    printDeath(target, droppedLoot);
+    if (isPlayer(target)) {
+      isOver = true;
+      return;
+    }
+    defendingGroup.remove(target);
   }
 
   private void printDeath(Combatant combatant, List<Reward> loot) {
     var colour = isPlayer(combatant) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
-    System.out.printf(
+    out.printf(
         "- %s%s%s has died, dropping %s%n",
         colour, combatant.getName().toUpperCase(), FMT.RESET, loot);
   }
@@ -171,6 +180,6 @@ public class Encounter {
   }
 
   private boolean isEnemy(Combatant combatant) {
-    return enemies.contains(combatant);
+    return baseEnemies.contains(combatant);
   }
 }
