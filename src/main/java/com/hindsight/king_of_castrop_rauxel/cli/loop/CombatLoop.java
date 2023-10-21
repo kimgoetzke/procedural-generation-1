@@ -33,9 +33,9 @@ public class CombatLoop extends AbstractLoop {
   //  - Optional: Once sequence is complete, show summary of the entire sequence
   @Override
   public void execute(List<Action> actions) {
-    printHeaders(false);
     prepareActions(actions);
     promptPlayer(actions, "What now?");
+    printHeaders(false);
     postProcess();
   }
 
@@ -50,7 +50,7 @@ public class CombatLoop extends AbstractLoop {
   }
 
   private void prepareActions(List<Action> actions) {
-    actionHandler.getCombatActions(actions);
+    actionHandler.getCombatActions(player, actions);
   }
 
   private void postProcess() {

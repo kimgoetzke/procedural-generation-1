@@ -1,14 +1,13 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
+import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -64,6 +63,14 @@ public class BasicNameGenerator implements NameGenerator {
     processFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
     processor.process(words, parentName, inhabitant, amenity);
     return String.join("", words);
+  }
+
+  public String dungeonNameFrom(Class<?> clazz) {
+    var className = clazz.getSimpleName().toLowerCase();
+    log.debug("Attempting to generate dungeon name for class '{}'", className);
+    List<String> words = new ArrayList<>();
+    loopThroughFilesWithoutSuffix(words, className);
+    return String.join(" ", words).trim();
   }
 
   @Override

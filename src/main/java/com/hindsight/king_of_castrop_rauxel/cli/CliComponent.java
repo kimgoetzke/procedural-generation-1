@@ -7,6 +7,8 @@ import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Slf4j
 @Component
 public class CliComponent {
@@ -133,6 +135,19 @@ public class CliComponent {
       return LABEL_FORMAT.formatted(FMT.BLUE, label, FMT.RESET);
     }
     return label;
+  }
+
+  // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public static void awaitEnterKeyPress() {
+    try {
+      var message = "Press enter to continue...";
+      out.print(message);
+      System.in.read();
+      removeString(message, true);
+    } catch (IOException e) {
+      log.error("Could not read input from console", e);
+    }
   }
 
   public static void removeString(String toRemove, boolean previousLine) {

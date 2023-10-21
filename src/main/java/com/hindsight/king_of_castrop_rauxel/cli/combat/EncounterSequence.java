@@ -25,7 +25,7 @@ public class EncounterSequence implements Generatable {
   private final List<Encounter> encounters = new ArrayList<>();
   private final Coordinates coordinates;
   @Getter @Setter private boolean isLoaded;
-  private DungeonDetails dungeonDetails;
+  @Getter private DungeonDetails dungeonDetails;
   private int currentEncounter = 0;
   @Getter private boolean inProgress = false;
 
@@ -44,12 +44,11 @@ public class EncounterSequence implements Generatable {
 
   public void execute(Player player, boolean hasTheInitiative) {
     inProgress = true;
-    while (player.isAlive() && currentEncounter < dungeonDetails.encounters()) {
+    if (currentEncounter < dungeonDetails.encounters()) {
       encounters.get(currentEncounter).execute(player, hasTheInitiative);
       currentEncounter++;
     }
     inProgress = false;
-    System.out.println("The sequence is over.");
   }
 
   // TODO: Procedurally generate and abstract away everything necessary

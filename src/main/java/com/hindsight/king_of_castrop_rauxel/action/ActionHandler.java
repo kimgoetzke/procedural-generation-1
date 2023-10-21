@@ -5,6 +5,7 @@ import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
+import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,9 +79,11 @@ public class ActionHandler {
     addAllActions(eventActions, actions);
   }
 
-  public void getCombatActions(List<Action> actions) {
+  public void getCombatActions(Player player, List<Action> actions) {
     prepend(actions, false);
-    actions.add(new StateAction(actions.size() + 1, "Progress further", IN_COMBAT));
+    if (player.getCurrentPoi() instanceof Dungeon dungeon) {
+      actions.add(new CombatAction(actions.size() + 1, "Progress further", dungeon.getSequence()));
+    }
     actions.add(new StateAction(actions.size() + 1, "Retreat (for now)", AT_POI));
   }
 

@@ -7,7 +7,6 @@ import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
-import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import lombok.Getter;
@@ -54,23 +53,10 @@ public class DialogueLoop extends AbstractLoop {
   private void prepareActions(List<Action> actions) {
     if (player.getCurrentEvent().getCurrentActions().isEmpty()) {
       actionHandler.getNone(actions);
-      awaitEnterKeyPress();
+      CliComponent.awaitEnterKeyPress();
       return;
     }
     actionHandler.getDialogueActions(player, actions);
-  }
-
-  // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue
-  @SuppressWarnings("ResultOfMethodCallIgnored")
-  private void awaitEnterKeyPress() {
-    try {
-      var message = "Press enter to continue...";
-      out.print(message);
-      System.in.read();
-      CliComponent.removeString(message, true);
-    } catch (IOException e) {
-      log.error("Could not read input from console", e);
-    }
   }
 
   @Override

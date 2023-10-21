@@ -9,15 +9,17 @@ import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+@Getter
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(callSuper = true)
 public class Dungeon extends AbstractAmenity {
 
-  public static final String LABEL_FOR_USER = CliComponent.label("Combat", CliComponent.FMT.RED);
+  private static final String LABEL_FOR_USER = CliComponent.label("Combat", CliComponent.FMT.RED);
   private EncounterSequence sequence;
 
   public Dungeon(Type type, Npc npc, Location parent) {
@@ -28,11 +30,8 @@ public class Dungeon extends AbstractAmenity {
 
   @Override
   public void load() {
-    this.name =
-        parent
-            .getNameGenerator()
-            .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
     sequence = new EncounterSequence(this);
+    this.name = parent.getNameGenerator().dungeonNameFrom(this.getClass());
     setLoaded(true);
   }
 

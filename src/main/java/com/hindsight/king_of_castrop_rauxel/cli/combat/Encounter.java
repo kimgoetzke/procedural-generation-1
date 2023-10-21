@@ -2,7 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.cli.combat;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
+import com.hindsight.king_of_castrop_rauxel.event.Rewards;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ public class Encounter {
   private Player player;
   List<Combatant> baseAllies;
   List<Combatant> baseEnemies;
-  List<Reward> loot = new ArrayList<>();
+  Rewards loot = new Rewards();
   private boolean isOver = false;
 
   public Encounter(List<Combatant> allies, List<Combatant> enemies) {
@@ -47,8 +49,9 @@ public class Encounter {
       addAlliesTo(defenders);
     }
     out.printf(
-        "A fight has started. You %s%n",
+        "%nA fight has started. You %s%n%n",
         hasTheInitiative ? "have the initiative." : "are being surprised.");
+    CliComponent.awaitEnterKeyPress();
   }
 
   private void addAlliesTo(ArrayList<Combatant> combatants) {
@@ -83,12 +86,14 @@ public class Encounter {
     out.println("The fight is over!");
     if (player.isAlive()) {
       out.println("You have won! You have gained:");
-      out.println(loot);
-      loot.forEach(reward -> reward.give(player));
+      loot.print();
+      loot.give(player);
     } else {
-      out.printf("You have died!%nGame over. Thanks for playing!%n");
+      out.printf("You have died!%nGame over. Thanks for playing!");
       System.exit(0);
     }
+    out.println();
+    CliComponent.awaitEnterKeyPress();
   }
 
   private void printAttack(Combatant attacker, Combatant target, int damage) {
@@ -112,7 +117,7 @@ public class Encounter {
       return;
     }
     out.printf(
-        "- %s%s%s attacks %s%s%s  %s+%d%s -> %s%d%s health%n",
+        "- %s%s%s attacks %s%s%s  %s-%d%s -> %s%d%s health%n",
         attackerColour,
         attacker.getName().toUpperCase(),
         FMT.RESET,

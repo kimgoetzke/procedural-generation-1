@@ -1,10 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
+import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
+
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.Random;
-
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
 public interface NameGenerator {
 
@@ -14,6 +14,8 @@ public interface NameGenerator {
 
   String locationNameFrom(
       AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz);
+
+  String dungeonNameFrom(Class<?> clazz);
 
   String npcFirstNameFrom(Class<?> clazz);
 
