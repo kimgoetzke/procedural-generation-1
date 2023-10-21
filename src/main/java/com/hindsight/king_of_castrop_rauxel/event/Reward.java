@@ -28,6 +28,7 @@ public class Reward implements Randomisable {
     this.value = actualValue;
   }
 
+  @Override
   public void load(Random random) {
     this.value = random.nextInt(maxValue - minValue + 1) + minValue;
   }
