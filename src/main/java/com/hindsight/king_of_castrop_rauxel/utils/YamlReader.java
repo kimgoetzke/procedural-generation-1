@@ -8,14 +8,13 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 @Slf4j
 public class YamlReader {
 
-  private static final String DIALOGUE_TAG = "!dialogue";
-  private static final String ACTION_TAG = "!action";
+  protected static final String DIALOGUE_TAG = "!dialogue";
+  protected static final String ACTION_TAG = "!action";
 
   public EventDto read(String fileName) {
     var inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -30,15 +29,10 @@ public class YamlReader {
     return data;
   }
 
-  /**
-   * Skip unknown parameters when parsing to a Java object and set custom tags when writing a Java
-   * class to Yaml
-   */
+  /** Skip unknown parameters when parsing to a Java object */
   protected Representer getRepresenter() {
     var representer = new Representer(new DumperOptions());
     representer.getPropertyUtils().setSkipMissingProperties(true);
-    representer.addClassTag(Dialogue.class, new Tag(DIALOGUE_TAG));
-    representer.addClassTag(DialogueAction.class, new Tag(ACTION_TAG));
     return representer;
   }
 

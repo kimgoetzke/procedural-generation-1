@@ -1,6 +1,6 @@
 eventDetails:
   eventType: REACH
-  about: the delivery from &O
+  about: EXPECTED_TEXT
   rewards:
     - type: GOLD
       minValue: 10
@@ -12,11 +12,11 @@ participantData:
       interactions:
         - text: Hey, sht! Come over here. I need you to do something for me.
           i: 0
-        - text: I need you to get this small parcel to &TO at &TI. Don't ask questions and I'll pay you well. You in?
+        - text: EXPECTED_TEXT
           i: 1
           actions:
             - !action
-              name: (Accept) Alright, I'll do it.
+              name: EXPECTED_TEXT
               eventState: NONE
               nextInteraction: 2
             - !action
