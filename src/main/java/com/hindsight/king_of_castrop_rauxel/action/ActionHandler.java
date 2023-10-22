@@ -82,9 +82,13 @@ public class ActionHandler {
   public void getCombatActions(Player player, List<Action> actions) {
     prepend(actions, false);
     if (player.getCurrentPoi() instanceof Dungeon dungeon) {
-      actions.add(new CombatAction(actions.size() + 1, "Progress further", dungeon.getSequence()));
+      var sequence = dungeon.getSequence();
+      if (sequence.isInProgress()) {
+        actions.add(new CombatAction(actions.size() + 1, "Progress further", sequence));
+        actions.add(new StateAction(actions.size() + 1, "Retreat (for now)", AT_POI));
+      }
+      actions.add(new StateAction(actions.size() + 1, "Return victoriously", AT_POI));
     }
-    actions.add(new StateAction(actions.size() + 1, "Retreat (for now)", AT_POI));
   }
 
   public void getDebugActions(Player player, List<Action> actions) {

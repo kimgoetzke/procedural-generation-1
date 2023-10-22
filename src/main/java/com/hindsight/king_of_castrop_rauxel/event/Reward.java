@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.world.Randomisable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class Reward implements Randomisable {
   private int value;
   private int minValue;
   private int maxValue;
+  private boolean isLoaded = false;
 
   /** Used to create a reward with a specific value e.g. Player.getReward(). */
   public Reward(Type type, int actualValue) {
@@ -26,6 +28,7 @@ public class Reward implements Randomisable {
     this.minValue = actualValue;
     this.maxValue = actualValue;
     this.value = actualValue;
+    this.isLoaded = true;
   }
 
   @Override
@@ -34,6 +37,9 @@ public class Reward implements Randomisable {
   }
 
   public void give(Player player) {
+    if (!isLoaded) {
+      load(new Random());
+    }
     switch (type) {
       case GOLD -> player.addGold(value);
       case EXPERIENCE -> player.addExperience(value);
@@ -47,12 +53,7 @@ public class Reward implements Randomisable {
 
   @Override
   public String toString() {
-    return switch (type) {
-      case GOLD, EXPERIENCE -> FMT.YELLOW_BOLD
-          + String.valueOf(value)
-          + FMT.RESET
-          + " "
-          + type.toString().toLowerCase();
-    };
+    var colour = CliComponent.toColour(type);
+    return colour + value + FMT.RESET + " " + type.toString().toLowerCase();
   }
 }

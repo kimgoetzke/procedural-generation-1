@@ -44,11 +44,11 @@ public class EncounterSequence implements Generatable {
 
   public void execute(Player player, boolean hasTheInitiative) {
     inProgress = true;
-    if (currentEncounter < dungeonDetails.encounters()) {
-      encounters.get(currentEncounter).execute(player, hasTheInitiative);
-      currentEncounter++;
+    encounters.get(currentEncounter).execute(player, hasTheInitiative);
+    currentEncounter++;
+    if (currentEncounter >= dungeonDetails.encounters()) {
+      inProgress = false;
     }
-    inProgress = false;
   }
 
   // TODO: Procedurally generate and abstract away everything necessary

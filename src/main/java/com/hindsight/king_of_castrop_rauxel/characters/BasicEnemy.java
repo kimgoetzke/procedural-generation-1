@@ -29,7 +29,14 @@ public class BasicEnemy implements Combatant {
     this.health = 10;
     this.level = details.level();
     this.damageRange = Pair.of(0, 3);
-    this.reward = List.of(new Reward(Reward.Type.GOLD, 10));
+    this.reward = loadReward();
+  }
+
+  private List<Reward> loadReward() {
+    var gold = random.nextInt(12) + 1;
+    var range = Pair.of((level - 1) * 10, (level + 1) * 10);
+    var exp = random.nextInt(range.getSecond() - range.getFirst() + 1) + range.getFirst();
+    return List.of(new Reward(Reward.Type.GOLD, gold), new Reward(Reward.Type.EXPERIENCE, exp));
   }
 
   @Override

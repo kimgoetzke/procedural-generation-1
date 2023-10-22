@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class Rewards {
+public class Loot {
 
   private final List<Reward> list = new ArrayList<>();
 
@@ -38,10 +38,18 @@ public class Rewards {
         .sum();
   }
 
-  // TODO: Only show what's there
-  public void print() {
-    System.out.printf(
-        "Gold: %s%s%s, Experience: %s%s%s%n",
-        FMT.YELLOW_BOLD, getGold(), FMT.RESET, FMT.BLUE_BOLD, getExperience(), FMT.RESET);
+  @Override
+  public String toString() {
+    var rewards = new StringBuilder();
+    int gold = getGold();
+    if (gold > 0) {
+      rewards.append("[ Gold: ").append(FMT.YELLOW_BOLD).append(gold).append(FMT.RESET);
+    }
+    int exp = getExperience();
+    if (exp > 0) {
+      rewards.append(", Experience: ").append(FMT.BLUE_BOLD).append(exp).append(FMT.RESET);
+    }
+    rewards.append(" ]");
+    return rewards.toString();
   }
 }

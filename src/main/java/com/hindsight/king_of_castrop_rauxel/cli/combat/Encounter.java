@@ -4,7 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
-import com.hindsight.king_of_castrop_rauxel.event.Rewards;
+import com.hindsight.king_of_castrop_rauxel.event.Loot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class Encounter {
   private Player player;
   List<Combatant> baseAllies;
   List<Combatant> baseEnemies;
-  Rewards loot = new Rewards();
+  Loot loot = new Loot();
   private boolean isOver = false;
 
   public Encounter(List<Combatant> allies, List<Combatant> enemies) {
@@ -86,7 +86,7 @@ public class Encounter {
     out.println("The fight is over!");
     if (player.isAlive()) {
       out.println("You have won! You have gained:");
-      loot.print();
+      out.println(loot.toString());
       loot.give(player);
     } else {
       out.printf("You have died!%nGame over. Thanks for playing!");

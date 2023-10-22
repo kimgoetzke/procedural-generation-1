@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import static java.lang.System.out;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -132,9 +133,23 @@ public class CliComponent {
           default -> "";
         };
     if (!label.isEmpty()) {
-      return LABEL_FORMAT.formatted(FMT.BLUE, label, FMT.RESET);
+      return LABEL_FORMAT.formatted(toColour(type), label, FMT.RESET);
     }
     return label;
+  }
+
+  public static String toColour(Reward.Type type) {
+    return switch (type) {
+      case GOLD -> FMT.YELLOW_BOLD.toString();
+      case EXPERIENCE -> FMT.BLUE_BOLD.toString();
+    };
+  }
+
+  public static String toColour(PointOfInterest.Type type) {
+    return switch (type) {
+      case MAIN_SQUARE, DUNGEON, SHOP -> FMT.BLUE.toString();
+      default -> FMT.WHITE_BOLD.toString();
+    };
   }
 
   // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue
