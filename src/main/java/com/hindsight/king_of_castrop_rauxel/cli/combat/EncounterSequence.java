@@ -17,11 +17,13 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ToString(exclude = {"random", "isLoaded", "encounters"})
+@ToString(
+    exclude = {"random", "isLoaded", "encounters", "currentEncounter", "parent", "inProgress"})
 public class EncounterSequence implements Generatable {
 
   @Getter private final String id;
   private final Random random;
+  private final PointOfInterest parent;
   private final List<Encounter> encounters = new ArrayList<>();
   private final Coordinates coordinates;
   @Getter @Setter private boolean isLoaded;
@@ -35,6 +37,7 @@ public class EncounterSequence implements Generatable {
     this.coordinates = parentCoords;
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), parent.getId());
+    this.parent = parent;
     load();
   }
 
@@ -67,7 +70,7 @@ public class EncounterSequence implements Generatable {
   }
 
   private int calculateTargetLevel() {
-    return coordinates.distanceTo(World.getCentreCoords());
+    return coordinates.distanceTo(parent.getParent().getCoordinates().getGlobal());
   }
 
   @Override

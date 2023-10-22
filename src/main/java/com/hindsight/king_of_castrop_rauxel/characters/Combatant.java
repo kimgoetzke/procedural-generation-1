@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import org.springframework.data.util.Pair;
 
@@ -46,5 +47,14 @@ public interface Combatant {
       return;
     }
     setHealth(newHealth);
+  }
+
+  default String combatantToString() {
+    return CliComponent.bold(getName())
+        + " (Level "
+        + CliComponent.level(getLevel())
+        + ", "
+        + CliComponent.health(getHealth())
+        + " HP)";
   }
 }

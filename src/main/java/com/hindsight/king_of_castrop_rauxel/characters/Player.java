@@ -75,7 +75,7 @@ public class Player implements Visitor, Combatant {
   }
 
   public void addExperience(int amount) {
-    this.experience -= amount;
+    this.experience += amount;
   }
 
   public void setHealth(int health) {

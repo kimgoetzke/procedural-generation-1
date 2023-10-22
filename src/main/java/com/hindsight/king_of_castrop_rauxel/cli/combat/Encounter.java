@@ -9,7 +9,6 @@ import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static java.lang.System.out;
 
@@ -48,10 +47,23 @@ public class Encounter {
       attackers.addAll(baseEnemies);
       addAlliesTo(defenders);
     }
-    out.printf(
-        "%nA fight has started. You %s%n%n",
-        hasTheInitiative ? "have the initiative." : "are being surprised.");
+    out.printf("You %s%n%n", hasTheInitiative ? "have the initiative." : "are being surprised.");
+    printCombatants(attackers, "Attacker(s)");
+    printCombatants(defenders, "Defender(s)");
+    out.printf("%nThe fight has started.%n%n");
     CliComponent.awaitEnterKeyPress();
+  }
+
+  private void printCombatants(ArrayList<Combatant> combatants, String groupName) {
+    var stringBuilder = new StringBuilder();
+    stringBuilder.append(groupName).append(": ");
+    for (int i = 0; i < combatants.size(); i++) {
+      stringBuilder.append(combatants.get(i).combatantToString());
+      if (i < combatants.size() - 1) {
+        stringBuilder.append(", ");
+      }
+    }
+    out.println(stringBuilder);
   }
 
   private void addAlliesTo(ArrayList<Combatant> combatants) {

@@ -152,6 +152,18 @@ public class CliComponent {
     };
   }
 
+  public static String level(int level) {
+    return FMT.MAGENTA_BOLD + String.valueOf(level) + FMT.RESET;
+  }
+
+  public static String health(int health) {
+    return FMT.RED_BOLD + String.valueOf(health) + FMT.RESET;
+  }
+
+  public static String bold(String text) {
+    return FMT.WHITE_BOLD_BRIGHT + text + FMT.RESET;
+  }
+
   // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue
   @SuppressWarnings("ResultOfMethodCallIgnored")
   public static void awaitEnterKeyPress() {
