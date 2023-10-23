@@ -10,77 +10,65 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DELAY_IN_MS;
 import static java.lang.System.out;
 
 public class Encounter {
 
-  public static final long DELAY_IN_MS = 175;
   private final Random random = new Random();
+  private final List<Combatant> initialAllies;
+  private final List<Combatant> initialEnemies;
+  private final List<Combatant> attackers = new ArrayList<>();
+  private final List<Combatant> defenders = new ArrayList<>();
+  private final Loot loot = new Loot();
   private Player player;
-  List<Combatant> baseAllies;
-  List<Combatant> baseEnemies;
-  Loot loot = new Loot();
-  private boolean isOver = false;
+  private boolean isOver;
+  private boolean isAttacker;
 
   public Encounter(List<Combatant> allies, List<Combatant> enemies) {
-    this.baseAllies = allies;
-    this.baseEnemies = enemies;
+    this.initialAllies = allies;
+    this.initialEnemies = enemies;
   }
 
-  public void execute(Player player, boolean hasTheInitiative) {
+  public void execute(Player player, boolean isAttacker) {
     this.player = player;
-    var attackers = new ArrayList<Combatant>();
-    var defenders = new ArrayList<Combatant>();
-    initialise(hasTheInitiative, attackers, defenders);
-    complete(attackers, defenders);
+    this.isAttacker = isAttacker;
+    initialise();
+    complete();
     wrapUp();
   }
 
-  private void initialise(
-      boolean hasTheInitiative, ArrayList<Combatant> attackers, ArrayList<Combatant> defenders) {
-    if (hasTheInitiative) {
+  private void initialise() {
+    if (isAttacker) {
       attackers.add(player);
-      defenders.addAll(baseEnemies);
+      defenders.addAll(initialEnemies);
       addAlliesTo(attackers);
     } else {
       defenders.add(player);
-      attackers.addAll(baseEnemies);
+      attackers.addAll(initialEnemies);
       addAlliesTo(defenders);
     }
-    out.printf("You %s%n%n", hasTheInitiative ? "have the initiative." : "are being surprised.");
+    out.printf("You %s%n%n", isAttacker ? "have the initiative." : "are being surprised.");
     printCombatants(attackers, "Attacker(s)");
     printCombatants(defenders, "Defender(s)");
     out.printf("%nThe fight has started.%n%n");
     CliComponent.awaitEnterKeyPress();
   }
 
-  private void printCombatants(ArrayList<Combatant> combatants, String groupName) {
-    var stringBuilder = new StringBuilder();
-    stringBuilder.append(groupName).append(": ");
-    for (int i = 0; i < combatants.size(); i++) {
-      stringBuilder.append(combatants.get(i).combatantToString());
-      if (i < combatants.size() - 1) {
-        stringBuilder.append(", ");
-      }
-    }
-    out.println(stringBuilder);
-  }
-
-  private void addAlliesTo(ArrayList<Combatant> combatants) {
-    if (baseAllies != null) {
-      combatants.addAll(baseAllies);
+  private void addAlliesTo(List<Combatant> combatants) {
+    if (initialAllies != null) {
+      combatants.addAll(initialAllies);
     }
   }
 
-  private void complete(ArrayList<Combatant> attackers, ArrayList<Combatant> defenders) {
+  private void complete() {
     while (!isOver) {
       attackAndEvaluate(attackers, defenders);
       attackAndEvaluate(defenders, attackers);
     }
   }
 
-  private void attackAndEvaluate(
-      ArrayList<Combatant> attackingGroup, ArrayList<Combatant> defendingGroup) {
+  private void attackAndEvaluate(List<Combatant> attackingGroup, List<Combatant> defendingGroup) {
     for (var attacker : attackingGroup) {
       try {
         Thread.sleep(DELAY_IN_MS);
@@ -95,10 +83,15 @@ public class Encounter {
   }
 
   private void wrapUp() {
-    out.println("The fight is over!");
+    out.printf("%n%nThe fight is over!%n%n");
     if (player.isAlive()) {
-      out.println("You have won! You have gained:");
-      out.println(loot.toString());
+      out.print(CliComponent.bold("You have won!") + " You have defeated: ");
+      if (isAttacker) {
+        printCombatants(defenders);
+      } else {
+        printCombatants(attackers);
+      }
+      out.printf("You have gained: %s%n", loot);
       loot.give(player);
     } else {
       out.printf("You have died!%nGame over. Thanks for playing!");
@@ -144,7 +137,7 @@ public class Encounter {
         FMT.RESET);
   }
 
-  private void evaluateAttack(Combatant target, ArrayList<Combatant> defendingGroup) {
+  private void evaluateAttack(Combatant target, List<Combatant> defendingGroup) {
     if (target.isAlive()) {
       return;
     }
@@ -197,6 +190,24 @@ public class Encounter {
   }
 
   private boolean isEnemy(Combatant combatant) {
-    return baseEnemies.contains(combatant);
+    return initialEnemies.contains(combatant);
+  }
+
+  private void printCombatants(List<Combatant> combatants) {
+    printCombatants(combatants, "");
+  }
+
+  private void printCombatants(List<Combatant> combatants, String groupName) {
+    var stringBuilder = new StringBuilder();
+    if (!groupName.isEmpty()) {
+      stringBuilder.append(groupName).append(": ");
+    }
+    for (int i = 0; i < combatants.size(); i++) {
+      stringBuilder.append(combatants.get(i).combatantToString());
+      if (i < combatants.size() - 1) {
+        stringBuilder.append(", ");
+      }
+    }
+    out.println(stringBuilder);
   }
 }

@@ -153,11 +153,11 @@ public class CliComponent {
   }
 
   public static String level(int level) {
-    return FMT.MAGENTA_BOLD + String.valueOf(level) + FMT.RESET;
+    return FMT.MAGENTA + String.valueOf(level) + FMT.RESET;
   }
 
   public static String health(int health) {
-    return FMT.RED_BOLD + String.valueOf(health) + FMT.RESET;
+    return FMT.RED + String.valueOf(health) + FMT.RESET;
   }
 
   public static String bold(String text) {
