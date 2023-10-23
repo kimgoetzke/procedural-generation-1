@@ -50,11 +50,11 @@ public interface Combatant {
   }
 
   default String combatantToString() {
+    var health = getHealth() > 0 ? ", " + CliComponent.health(getHealth()) + " HP" : "";
     return CliComponent.bold(getName())
         + " (Level "
         + CliComponent.level(getLevel())
-        + ", "
-        + CliComponent.health(getHealth())
-        + " HP)";
+        + health
+        + ")";
   }
 }

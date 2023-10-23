@@ -43,13 +43,15 @@ public class Loot {
     var rewards = new StringBuilder();
     int gold = getGold();
     if (gold > 0) {
-      rewards.append("[ Gold: ").append(FMT.YELLOW_BOLD).append(gold).append(FMT.RESET);
+      rewards.append(FMT.YELLOW_BOLD).append(gold).append(FMT.RESET).append(" gold");
+    }
+    if (rewards.length() > 1) {
+      rewards.append(" and ");
     }
     int exp = getExperience();
     if (exp > 0) {
-      rewards.append(", Experience: ").append(FMT.BLUE_BOLD).append(exp).append(FMT.RESET);
+      rewards.append(FMT.BLUE_BOLD).append(exp).append(FMT.RESET).append(" XP");
     }
-    rewards.append(" ]");
     return rewards.toString();
   }
 }
