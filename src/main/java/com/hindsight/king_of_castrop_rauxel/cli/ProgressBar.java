@@ -28,8 +28,7 @@ public class ProgressBar {
       var filledWidth = (int) (progress * progressBarWidth);
       var emptyWidth = progressBarWidth - filledWidth;
       var progressPercentage = progress * 100;
-
-      String progressBar =
+      var progressBar =
           from.getName()
               + " ["
               + ">".repeat(Math.max(0, filledWidth))

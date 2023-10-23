@@ -141,7 +141,7 @@ public class Encounter {
     var targetColour = isPlayer(target) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     if (isEnemy(attacker)) {
       out.printf(
-          "- %s%s%s is attacked by %s%s%s  %s-%d%s -> %s%d%s health%n",
+          "- %s%s%s is attacked by %s%s%s  %s-%d%s -> %s%d%s HP%n",
           targetColour,
           target.getName().toUpperCase(),
           FMT.RESET,
@@ -157,7 +157,7 @@ public class Encounter {
       return;
     }
     out.printf(
-        "- %s%s%s attacks %s%s%s  %s-%d%s -> %s%d%s health%n",
+        "- %s%s%s attacks %s%s%s  %s-%d%s -> %s%d%s HP%n",
         attackerColour,
         attacker.getName().toUpperCase(),
         FMT.RESET,
@@ -203,7 +203,7 @@ public class Encounter {
       out.print(CliComponent.bold("You have won!") + " You have defeated: ");
       printCombatants(initialEnemies);
       out.printf(
-          "You have gained: %s. You have %s health left.%n",
+          "You have gained: %s. You have %s HP left.%n",
           loot, CliComponent.health(player.getHealth()));
     } else {
       out.print(CliComponent.bold("You have died!") + " Game over. Thanks for playing!");

@@ -8,6 +8,7 @@ import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -19,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(callSuper = true)
 public class Dungeon extends AbstractAmenity {
 
-  private static final String LABEL_FOR_USER = CliComponent.label("Combat", CliComponent.FMT.RED);
   private EncounterSequence sequence;
 
   public Dungeon(Type type, Npc npc, Location parent) {
@@ -38,15 +38,33 @@ public class Dungeon extends AbstractAmenity {
   @Override
   public List<Action> getAvailableActions() {
     var processedActions = new ArrayList<>(availableActions);
+    addEnterDungeonAction(processedActions);
+    return processedActions;
+  }
+
+  private void addEnterDungeonAction(ArrayList<Action> processedActions) {
+    if (sequence.isCompleted()) {
+      return;
+    }
+    var labelText = "Combat, level " + sequence.getDungeonDetails().level() + "+";
+    var label = CliComponent.label(labelText, CliComponent.FMT.RED);
+    var actionName = "Storm the " + name + (sequence.isInProgress() ? " again " : " ") + label;
     processedActions.add(
         CombatAction.builder()
-            .name(
-                "Storm the %s %s%s"
-                    .formatted(name, sequence.isInProgress() ? "again " : "", LABEL_FOR_USER))
+            .name(actionName)
             .index(availableActions.size() + 1)
             .sequence(sequence)
             .build());
-    return processedActions;
+  }
+
+  // TODO: Adapt description to dungeon style/type
+  @Override
+  public String getDescription() {
+    return "A dark and foreboding place%s"
+        .formatted(
+            sequence.isCompleted()
+                ? ", devoid of any life. You have slain all creatures here already."
+                : ", rumored to be filled with treasure.");
   }
 
   @Override
