@@ -74,7 +74,7 @@ public class World {
   }
 
   /** Returns the world coordinates of the chunk in the center of the world. */
-  public static Pair<Integer, Integer> getCentreCoords() {
+  public Pair<Integer, Integer> getCentreCoords() {
     return Pair.of(WORLD_SIZE / 2, WORLD_SIZE / 2);
   }
 
