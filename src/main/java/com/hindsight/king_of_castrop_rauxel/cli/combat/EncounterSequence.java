@@ -4,6 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.characters.BasicEnemy;
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
+import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;

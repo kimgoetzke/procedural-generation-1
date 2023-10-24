@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.cli.combat;
+package com.hindsight.king_of_castrop_rauxel.location;
 
 import java.util.Random;
 
@@ -18,10 +18,6 @@ public record DungeonDetails(int level, int encounters, Type type) {
 
   public enum Type {
     SKELETON,
-    ZOMBIE,
-    GHOST,
-    WEREWOLF,
-    VAMPIRE,
     GOBLIN
   }
 }

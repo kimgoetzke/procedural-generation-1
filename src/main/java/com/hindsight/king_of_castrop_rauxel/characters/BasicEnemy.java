@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.cli.combat.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.combat.Damage;
+import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
@@ -24,7 +25,7 @@ public class BasicEnemy implements Combatant, Generatable {
   private final DungeonDetails dungeonDetails;
   @ToString.Include private int level;
   @ToString.Include private List<Reward> reward;
-  @ToString.Include private Pair<Integer, Integer> damageRange;
+  @ToString.Include private Damage damage;
   @ToString.Include private String name;
   @ToString.Include @Setter private int health;
   @Setter private Combatant target;
@@ -50,18 +51,16 @@ public class BasicEnemy implements Combatant, Generatable {
     if (target == null) {
       return 0;
     }
-    var damage =
-        random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
-            + damageRange.getFirst();
-    target.takeDamage(damage);
-    return damage;
+    int actualDamage = damage.actual(random);
+    target.takeDamage(actualDamage);
+    return actualDamage;
   }
 
   @Override
   public void load() {
     health = 10;
     level = dungeonDetails.level();
-    damageRange = Pair.of(0, 3);
+    damage = Damage.of(0, 3);
     reward = loadReward();
     name = nameGenerator.enemyNameFrom(this.getClass(), dungeonDetails.type());
     setLoaded(true);

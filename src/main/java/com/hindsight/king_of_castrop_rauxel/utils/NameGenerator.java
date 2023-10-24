@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.cli.combat.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.Random;
 

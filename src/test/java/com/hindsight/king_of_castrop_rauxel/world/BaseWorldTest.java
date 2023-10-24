@@ -4,7 +4,6 @@ import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.XL_AMENITIES_QUEST_LOCATION;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.location.LocationBuilder.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
@@ -13,6 +12,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;

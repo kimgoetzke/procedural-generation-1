@@ -2,7 +2,6 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.Size;
 
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import java.util.EnumMap;
@@ -130,7 +129,6 @@ public class LocationBuilder {
     }
   }
 
-  // TODO: Add dungeons, caves or similar as non-amenity POIs
   @Getter
   @Setter
   public static class SettlementConfig {

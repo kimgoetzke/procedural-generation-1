@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
+import com.hindsight.king_of_castrop_rauxel.combat.Damage;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
-import org.springframework.data.util.Pair;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public interface Combatant {
 
   void setHealth(int health);
 
-  Pair<Integer, Integer> getDamageRange();
+  Damage getDamage();
 
   int getLevel();
 

@@ -1,14 +1,15 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.cli.combat.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 

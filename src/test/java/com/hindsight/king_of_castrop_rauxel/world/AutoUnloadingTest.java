@@ -1,7 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.RETENTION_ZONE;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +13,7 @@ import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 
 import java.util.Random;
 
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;

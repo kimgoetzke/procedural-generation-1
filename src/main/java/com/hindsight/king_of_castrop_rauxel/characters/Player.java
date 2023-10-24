@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
+import com.hindsight.king_of_castrop_rauxel.combat.Damage;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
@@ -28,7 +29,7 @@ public class Player implements Visitor, Combatant {
   private int health = 100;
   private int experience = 0;
   private int level = 1;
-  private Pair<Integer, Integer> damageRange = Pair.of(1, 4);
+  private Damage damage = Damage.of(1, 4);
   private State previousState = State.AT_LOCATION;
   private State state = State.AT_LOCATION;
   private Location currentLocation;
@@ -93,11 +94,9 @@ public class Player implements Visitor, Combatant {
     if (target == null) {
       return 0;
     }
-    var damage =
-        random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
-            + damageRange.getFirst();
-    target.takeDamage(damage);
-    return damage;
+    var actualDamage = damage.actual(random);
+    target.takeDamage(actualDamage);
+    return actualDamage;
   }
 
   public void setState(State state) {
