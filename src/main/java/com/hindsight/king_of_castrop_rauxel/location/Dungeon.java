@@ -17,10 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@ToString(callSuper = true)
+@ToString(
+    callSuper = true,
+    exclude = {"dungeonHandler", "sequence"})
 public class Dungeon extends AbstractAmenity {
 
+  private final DungeonHandler dungeonHandler = new DungeonHandler(this);
   private EncounterSequence sequence;
+  private DungeonDetails dungeonDetails;
 
   public Dungeon(Type type, Npc npc, Location parent) {
     super(type, npc, parent);
@@ -28,9 +32,11 @@ public class Dungeon extends AbstractAmenity {
     logResult();
   }
 
+  // TODO: Generate dungeon details and inject into sequence
   @Override
   public void load() {
     sequence = new EncounterSequence(this);
+    this.dungeonDetails = dungeonHandler.build();
     this.name = parent.getNameGenerator().dungeonNameFrom(this.getClass());
     setLoaded(true);
   }
