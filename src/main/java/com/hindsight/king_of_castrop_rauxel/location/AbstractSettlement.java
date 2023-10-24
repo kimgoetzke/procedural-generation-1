@@ -2,9 +2,8 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.utils.EventGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
-import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +18,7 @@ import org.springframework.data.util.Pair;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public abstract class AbstractSettlement extends AbstractLocation {
 
-  @Getter protected final NameGenerator nameGenerator;
-  @Getter protected final EventGenerator eventGenerator;
+  @Getter protected final Generators generators;
   @Getter protected Size size;
   protected Player loyalTo;
   protected int area;
@@ -34,10 +32,8 @@ public abstract class AbstractSettlement extends AbstractLocation {
       Pair<Integer, Integer> chunkCoords,
       Generators generators) {
     super(worldCoords, chunkCoords);
-    this.nameGenerator = generators.nameGenerator();
-    this.eventGenerator = generators.eventGenerator();
-    nameGenerator.initialise(random);
-    eventGenerator.initialise(random);
+    this.generators = generators;
+    generators.initialiseAll(random);
   }
 
   public void addNeighbour(Location neighbour) {

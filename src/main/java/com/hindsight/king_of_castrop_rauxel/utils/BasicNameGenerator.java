@@ -3,12 +3,12 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.hindsight.king_of_castrop_rauxel.location.DungeonHandler;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -109,7 +109,7 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type) {
+  public String enemyNameFrom(Class<?> clazz, DungeonHandler.Type type) {
     var className = clazz.getSimpleName().toLowerCase();
     var words = new ArrayList<String>();
     log.debug("Attempting to generate {} class {}", type, className);

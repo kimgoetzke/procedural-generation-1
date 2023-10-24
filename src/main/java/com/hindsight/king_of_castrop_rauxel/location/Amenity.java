@@ -25,7 +25,8 @@ public class Amenity extends AbstractAmenity {
     LocationBuilder.throwIfRepeatedRequest(this, true);
     this.name =
         parent
-            .getNameGenerator()
+            .getGenerators()
+            .nameGenerator()
             .locationNameFrom(this, parent.getSize(), parent.getName(), npc, this.getClass());
     setLoaded(true);
   }

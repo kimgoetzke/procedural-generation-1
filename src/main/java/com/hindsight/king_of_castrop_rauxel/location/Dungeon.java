@@ -37,7 +37,7 @@ public class Dungeon extends AbstractAmenity {
   public void load() {
     sequence = new EncounterSequence(this);
     this.dungeonDetails = dungeonHandler.build();
-    this.name = parent.getNameGenerator().dungeonNameFrom(this.getClass());
+    this.name = parent.getGenerators().nameGenerator().dungeonNameFrom(this.getClass());
     setLoaded(true);
   }
 

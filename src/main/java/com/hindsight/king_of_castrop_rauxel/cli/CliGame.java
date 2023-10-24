@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
 public class CliGame {
 
-  // https://github.com/awegmann/consoleui/blob/master/doc/howto.md
-
   private final EnvironmentResolver environmentResolver;
   private final World world;
   private final Graph<AbstractLocation> map;

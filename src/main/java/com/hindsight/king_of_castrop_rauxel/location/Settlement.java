@@ -42,7 +42,7 @@ public class Settlement extends AbstractSettlement {
   private void generateFoundation() {
     size = LocationBuilder.randomSize(random);
     area = LocationBuilder.randomArea(random, size);
-    name = nameGenerator.locationNameFrom(this.getClass());
+    name = generators.nameGenerator().locationNameFrom(this.getClass());
   }
 
   private void loadPois() {
@@ -60,7 +60,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addAmenity(Type type) {
-    var npc = new Inhabitant(random, new Generators(nameGenerator, eventGenerator));
+    var npc = new Inhabitant(random, generators);
     var amenity = new Amenity(type, npc, this);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);
@@ -72,7 +72,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void addDungeon(Type type) {
-    var npc = new Inhabitant(random, new Generators(nameGenerator, eventGenerator));
+    var npc = new Inhabitant(random, generators);
     var dungeon = new Dungeon(type, npc, this);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(dungeon.getName()))) {
       pointsOfInterests.add(dungeon);
