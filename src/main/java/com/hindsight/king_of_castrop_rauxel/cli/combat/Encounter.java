@@ -3,7 +3,6 @@ package com.hindsight.king_of_castrop_rauxel.cli.combat;
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
-import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 
 import java.util.ArrayList;
@@ -83,8 +82,8 @@ public class Encounter {
     if (target.isAlive()) {
       return;
     }
-    var droppedLoot = target.getReward();
-    loot.addAll(droppedLoot);
+    var droppedLoot = target.getLoot();
+    loot.add(droppedLoot);
     printDeath(target, droppedLoot);
     if (isPlayer(target)) {
       isOver = true;
@@ -190,7 +189,7 @@ public class Encounter {
     out.println(stringBuilder);
   }
 
-  private void printDeath(Combatant combatant, List<Reward> loot) {
+  private void printDeath(Combatant combatant, Loot loot) {
     var colour = isPlayer(combatant) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     out.printf(
         "- %s%s%s has died, dropping %s%n",

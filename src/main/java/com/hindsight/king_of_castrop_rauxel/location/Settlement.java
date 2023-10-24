@@ -142,6 +142,7 @@ public class Settlement extends AbstractSettlement {
 
   public void logResult(boolean initial) {
     var action = initial || isLoaded() ? "Generated" : "Unloaded";
-    log.info("{}: {}", action, this);
+    var summary = initial ? this.getBriefSummary() : this.toString();
+    log.info("{}: {}", action, summary);
   }
 }

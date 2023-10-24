@@ -6,18 +6,24 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class Loot {
 
   private final List<Reward> list = new ArrayList<>();
+
+  public Loot(List<Reward> rewards) {
+    list.addAll(rewards);
+  }
 
   public void add(Reward reward) {
     list.add(reward);
   }
 
-  public void addAll(List<Reward> rewards) {
-    list.addAll(rewards);
+  public void add(Loot loot) {
+    list.addAll(loot.getList());
   }
 
   public void give(Player player) {

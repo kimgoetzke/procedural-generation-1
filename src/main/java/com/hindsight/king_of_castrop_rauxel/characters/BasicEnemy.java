@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
 import com.hindsight.king_of_castrop_rauxel.combat.Damage;
+import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
@@ -14,6 +15,8 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
+import static com.hindsight.king_of_castrop_rauxel.event.Reward.*;
+
 @Slf4j
 @Getter
 @ToString(onlyExplicitlyIncluded = true)
@@ -24,7 +27,7 @@ public class BasicEnemy implements Combatant, Generatable {
   private final NameGenerator nameGenerator;
   private final DungeonDetails dungeonDetails;
   @ToString.Include private int level;
-  @ToString.Include private List<Reward> reward;
+  @ToString.Include private Loot loot;
   @ToString.Include private Damage damage;
   @ToString.Include private String name;
   @ToString.Include @Setter private int health;
@@ -39,11 +42,11 @@ public class BasicEnemy implements Combatant, Generatable {
     load();
   }
 
-  private List<Reward> loadReward() {
+  private void loadReward() {
     var gold = random.nextInt(12) + 1;
     var range = Pair.of((level - 1) * 10, (level + 1) * 10);
     var exp = random.nextInt(range.getSecond() - range.getFirst() + 1) + range.getFirst();
-    return List.of(new Reward(Reward.Type.GOLD, gold), new Reward(Reward.Type.EXPERIENCE, exp));
+    loot = new Loot(List.of(new Reward(Type.GOLD, gold), new Reward(Type.EXPERIENCE, exp)));
   }
 
   @Override
@@ -61,8 +64,8 @@ public class BasicEnemy implements Combatant, Generatable {
     health = 10;
     level = dungeonDetails.level();
     damage = Damage.of(0, 3);
-    reward = loadReward();
     name = nameGenerator.enemyNameFrom(this.getClass(), dungeonDetails.type());
+    loadReward();
     setLoaded(true);
     logResult();
   }

@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.characters;
 
 import com.hindsight.king_of_castrop_rauxel.combat.Damage;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
+import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
@@ -84,9 +85,9 @@ public class Player implements Visitor, Combatant {
   }
 
   @Override
-  public List<Reward> getReward() {
+  public Loot getLoot() {
     gold = 0;
-    return List.of(new Reward(Reward.Type.GOLD, gold));
+    return new Loot(List.of(new Reward(Reward.Type.GOLD, gold)));
   }
 
   @Override

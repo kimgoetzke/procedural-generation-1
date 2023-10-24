@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
+import com.hindsight.king_of_castrop_rauxel.world.TerrainGenerator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
@@ -11,7 +12,8 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DU
 @Slf4j
 public class DungeonHandler {
 
-  private final NameGenerator generators;
+  private final NameGenerator nameGenerator;
+  private final TerrainGenerator terrainGenerator;
   private final PointOfInterest parentPoi;
   private final Location parentLocation;
   private final Random random;
@@ -19,7 +21,8 @@ public class DungeonHandler {
   public DungeonHandler(PointOfInterest poi) {
     this.parentPoi = poi;
     this.parentLocation = poi.getParent();
-    this.generators = parentLocation.getGenerators().nameGenerator();
+    this.nameGenerator = parentLocation.getGenerators().nameGenerator();
+    this.terrainGenerator = parentLocation.getGenerators().terrainGenerator();
     var seed = SeedBuilder.seedFrom(parentLocation.getCoordinates().getGlobal());
     this.random = new Random(seed);
   }
@@ -45,7 +48,7 @@ public class DungeonHandler {
   }
 
   private int calculateTargetLevel() {
-    return 1; // parentLocation.getCoordinates().distanceTo(World.);
+    return terrainGenerator.getDifficulty(parentLocation.getCoordinates().getWorld());
   }
 
   public enum Type {

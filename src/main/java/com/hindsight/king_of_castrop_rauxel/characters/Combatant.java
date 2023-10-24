@@ -1,10 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.combat.Damage;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
-import com.hindsight.king_of_castrop_rauxel.event.Reward;
-
-import java.util.List;
+import com.hindsight.king_of_castrop_rauxel.combat.Damage;
+import com.hindsight.king_of_castrop_rauxel.event.Loot;
 
 public interface Combatant {
 
@@ -24,7 +22,7 @@ public interface Combatant {
 
   int getLevel();
 
-  List<Reward> getReward();
+  Loot getLoot();
 
   default boolean hasTarget() {
     return getTarget() != null && getTarget().getHealth() > 0;

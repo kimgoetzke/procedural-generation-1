@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
+import com.hindsight.king_of_castrop_rauxel.world.BasicTerrainGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.TerrainGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
@@ -31,7 +32,7 @@ public class AppConfiguration {
 
   @Bean
   public TerrainGenerator terrainGenerator() {
-    return new TerrainGenerator();
+    return new BasicTerrainGenerator();
   }
 
   @Bean
