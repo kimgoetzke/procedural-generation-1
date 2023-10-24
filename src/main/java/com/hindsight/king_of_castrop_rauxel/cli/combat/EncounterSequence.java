@@ -6,6 +6,7 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class EncounterSequence implements Generatable {
 
   @Getter private final String id;
   private final Random random;
+  private final NameGenerator nameGenerator;
   private final PointOfInterest parent;
   private final List<Encounter> encounters = new ArrayList<>();
   private final Coordinates coordinates;
@@ -36,6 +38,7 @@ public class EncounterSequence implements Generatable {
     var seed = SeedBuilder.seedFrom(parentCoords.getGlobal());
     this.coordinates = parentCoords;
     this.random = new Random(seed);
+    this.nameGenerator = parent.getParent().getNameGenerator();
     this.id = IdBuilder.idFrom(this.getClass(), parent.getId());
     this.parent = parent;
     load();
@@ -50,7 +53,8 @@ public class EncounterSequence implements Generatable {
     for (int i = 0; i < dungeonDetails.encounters(); i++) {
       var count = random.nextInt(2) + 1;
       var enemies = new ArrayList<Combatant>();
-      IntStream.range(0, count).forEach(j -> enemies.add(new BasicEnemy(dungeonDetails)));
+      IntStream.range(0, count)
+          .forEach(j -> enemies.add(new BasicEnemy(dungeonDetails, nameGenerator)));
       encounters.add(new Encounter(null, enemies));
     }
     setLoaded(true);

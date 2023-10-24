@@ -4,6 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.cli.combat.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class BasicNameGenerator implements NameGenerator {
 
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
+  private static final String BASIC_ENEMY_SUFFIX = "--prefix";
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
   private static final String FIRST_NAME = "first_name";
@@ -47,12 +49,12 @@ public class BasicNameGenerator implements NameGenerator {
     var className = clazz.getSimpleName().toLowerCase();
     var pathNameWithTypeAndSize = "%s%s%s".formatted(className, withType, withSize);
     var pathNameWithTypeOnly = "%s%s".formatted(className, withType);
+    var words = new ArrayList<String>();
     log.debug(
         "Attempting to generate string for class '{}' with '{}' or '{}'",
         className,
         pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
         pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
-    List<String> words = new ArrayList<>();
 
     loopThroughFilesWithSuffixes(words, pathNameWithTypeAndSize);
     loopThroughFilesWithSuffixes(words, pathNameWithTypeOnly);
@@ -67,10 +69,10 @@ public class BasicNameGenerator implements NameGenerator {
 
   public String dungeonNameFrom(Class<?> clazz) {
     var className = clazz.getSimpleName().toLowerCase();
+    var words = new ArrayList<String>();
     log.debug("Attempting to generate dungeon name for class '{}'", className);
-    List<String> words = new ArrayList<>();
     loopThroughFilesWithoutSuffix(words, className);
-    return String.join(" ", words).trim();
+    return words.get(0).trim();
   }
 
   @Override
@@ -86,13 +88,13 @@ public class BasicNameGenerator implements NameGenerator {
   @Override
   public String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
     var className = clazz.getSimpleName().toLowerCase();
+    var words = new ArrayList<String>();
     log.debug(
         "Attempting to generate {} {} {} for class {}",
         firstName && lastName ? "first and last name" : "",
         firstName && !lastName ? "first name" : "",
         !firstName && lastName ? "last name" : "",
         className);
-    List<String> words = new ArrayList<>();
 
     if (firstName) {
       loopThroughFilesWithoutSuffix(words, className + HYPHEN + FIRST_NAME);
@@ -103,6 +105,16 @@ public class BasicNameGenerator implements NameGenerator {
     setFallbackStringIfListEmpty(words, className);
 
     return String.join(" ", words).trim();
+  }
+
+  @Override
+  public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type) {
+    var className = clazz.getSimpleName().toLowerCase();
+    var words = new ArrayList<String>();
+    log.debug("Attempting to generate {} class {}", type, className);
+    loopThroughFilesWithoutSuffix(words, className + BASIC_ENEMY_SUFFIX);
+    setFallbackStringIfListEmpty(words, className);
+    return words.get(0).trim() + " " + type.name().toLowerCase();
   }
 
   private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {
