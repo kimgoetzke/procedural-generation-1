@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.TerrainGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class DungeonHandler {
 
   public DungeonDetails build() {
     log.info("Building dungeon...");
+    var id = IdBuilder.idFrom(this.getClass(), parentPoi.getId());
     var encounters = getNumberOfEncounters();
     var type = DungeonHandler.Type.values()[(random.nextInt(DungeonHandler.Type.values().length))];
     var targetLevel = calculateTargetLevel();
@@ -38,7 +40,12 @@ public class DungeonHandler {
     //  - Generate type (based on what though?)
     //  - Generate boss fight (by chance)
     //  - Generate encounters numbers
-    return null;
+    return DungeonDetails.builder()
+        .id(id)
+        .level(targetLevel)
+        .encounters(encounters)
+        .type(type)
+        .build();
   }
 
   private int getNumberOfEncounters() {
@@ -48,7 +55,7 @@ public class DungeonHandler {
   }
 
   private int calculateTargetLevel() {
-    return terrainGenerator.getDifficulty(parentLocation.getCoordinates().getWorld());
+    return terrainGenerator.getDifficulty(parentLocation.getCoordinates());
   }
 
   public enum Type {

@@ -28,20 +28,16 @@ public class EncounterSequence implements Generatable {
   private final Generators generators;
   private final PointOfInterest parent;
   private final List<Encounter> encounters = new ArrayList<>();
-  private final Coordinates coordinates;
+
   @Getter @Setter private boolean isLoaded;
-  @Getter private DungeonDetails dungeonDetails;
+  @Getter private final DungeonDetails dungeonDetails;
   private int currentEncounter = 0;
   @Getter private Event.State state = Event.State.AVAILABLE;
 
-  public EncounterSequence(PointOfInterest parent) {
-    var parentCoords = parent.getParent().getCoordinates();
-    var seed = SeedBuilder.seedFrom(parentCoords.getGlobal());
-    this.coordinates = parentCoords;
-    this.random = new Random(seed);
-    this.generators = parent.getParent().getGenerators();
-    this.id = IdBuilder.idFrom(this.getClass(), parent.getId());
-    this.parent = parent;
+  public EncounterSequence(DungeonDetails dungeonDetails) {
+    this.dungeonDetails = dungeonDetails;
+    this.id = dungeonDetails.id();
+    this.random = new Random();
     load();
   }
 
@@ -49,8 +45,6 @@ public class EncounterSequence implements Generatable {
   @Override
   public void load() {
     LocationBuilder.throwIfRepeatedRequest(this, true);
-    var targetLevel = calculateTargetLevel();
-    this.dungeonDetails = DungeonDetails.load(random, targetLevel);
     for (int i = 0; i < dungeonDetails.encounters(); i++) {
       var count = random.nextInt(2) + 1;
       var enemies = new ArrayList<Combatant>();
@@ -59,10 +53,6 @@ public class EncounterSequence implements Generatable {
       encounters.add(new Encounter(null, enemies));
     }
     setLoaded(true);
-  }
-
-  private int calculateTargetLevel() {
-    return coordinates.distanceTo(parent.getParent().getCoordinates().getGlobal());
   }
 
   public void execute(Player player) {
