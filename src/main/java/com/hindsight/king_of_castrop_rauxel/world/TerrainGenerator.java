@@ -8,5 +8,5 @@ public interface TerrainGenerator extends Generator {
   @Override
   void initialise(Random random);
 
-  int getDifficulty(Coordinates coordinates);
+  int getTargetLevel(Coordinates coordinates);
 }

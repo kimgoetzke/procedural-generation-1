@@ -19,25 +19,24 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WO
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BasicTerrainGenerator implements TerrainGenerator {
 
-  private final int[][] difficulty = new int[WORLD_SIZE][WORLD_SIZE];
+  private final int[][] targetLevel = new int[WORLD_SIZE][WORLD_SIZE];
 
   @Override
   public void initialise(Random random) {
-    createDifficultyMatrix();
+    createTargetLevelMatrix();
   }
 
-  private void createDifficultyMatrix() {
+  private void createTargetLevelMatrix() {
     for (int row = 0; row < WORLD_SIZE; row++) {
       for (int col = 0; col < WORLD_SIZE; col++) {
         int distance = Math.max(Math.abs(row - WORLD_CENTER) + Math.abs(col - WORLD_CENTER), 1);
-        difficulty[row][col] = distance;
+        targetLevel[row][col] = distance;
       }
     }
   }
 
-  @Override
-  public int getDifficulty(Coordinates coordinates) {
-    var chunkDifficulty = this.difficulty[coordinates.wX()][coordinates.wY()];
+  public int getTargetLevel(Coordinates coordinates) {
+    var chunkDifficulty = this.targetLevel[coordinates.wX()][coordinates.wY()];
     log.info("Generated difficulty {} for {}", chunkDifficulty, coordinates.globalToString());
     return chunkDifficulty;
   }

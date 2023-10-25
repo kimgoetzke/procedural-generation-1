@@ -4,12 +4,11 @@ import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
+import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import com.hindsight.king_of_castrop_rauxel.location.DungeonHandler;
-import com.hindsight.king_of_castrop_rauxel.location.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -68,14 +67,6 @@ public class BasicNameGenerator implements NameGenerator {
     return String.join("", words);
   }
 
-  public String dungeonNameFrom(Class<?> clazz) {
-    var className = clazz.getSimpleName().toLowerCase();
-    var words = new ArrayList<String>();
-    log.debug("Attempting to generate dungeon name for class '{}'", className);
-    loopThroughFilesWithoutSuffix(words, className);
-    return words.get(0).trim();
-  }
-
   @Override
   public String npcFirstNameFrom(Class<?> clazz) {
     return npcNameFrom(true, false, clazz);
@@ -86,8 +77,7 @@ public class BasicNameGenerator implements NameGenerator {
     return npcNameFrom(false, true, clazz);
   }
 
-  @Override
-  public String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
+  private String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
     var className = clazz.getSimpleName().toLowerCase();
     var words = new ArrayList<String>();
     log.debug(
@@ -109,13 +99,39 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String enemyNameFrom(Class<?> clazz, DungeonHandler.Type type) {
+  public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type dungeonType) {
     var className = clazz.getSimpleName().toLowerCase();
     var words = new ArrayList<String>();
-    log.debug("Attempting to generate {} class {}", type, className);
+    log.debug("Attempting to generate {} class {}", dungeonType, className);
     loopThroughFilesWithoutSuffix(words, className + BASIC_ENEMY_SUFFIX);
     setFallbackStringIfListEmpty(words, className);
-    return words.get(0).trim() + " " + type.name().toLowerCase();
+    return words.get(0).trim() + " " + dungeonType.name().toLowerCase();
+  }
+
+  // TODO: Align this with dungeon type which is based on the tier
+  @Override
+  public String dungeonNameFrom(Class<?> clazz, DungeonDetails.Type type) {
+    var className = clazz.getSimpleName().toLowerCase();
+    var words = new ArrayList<String>();
+    log.debug("Attempting to generate dungeon name for class '{}'", className);
+    loopThroughFilesWithoutSuffix(words, className);
+    return words.get(0).trim();
+  }
+
+  @Override
+  public String dungeonDescriptionFrom(Class<?> ignoredClass, DungeonDetails.Type ignoredType) {
+    return "A dark and foreboding place";
+  }
+
+  @Override
+  public DungeonDetails.Type dungeonTypeFrom(int tier) {
+    var fileName = "dungeon%stier%s%d".formatted(HYPHEN, HYPHEN, tier);
+    var words = new ArrayList<String>();
+    loopThroughFilesWithoutSuffix(words, fileName);
+    if (words.isEmpty()) {
+      throw new IllegalStateException("Failed to generate dungeon type for tier " + tier);
+    }
+    return DungeonDetails.Type.valueOf(words.get(0).trim().toUpperCase());
   }
 
   private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {

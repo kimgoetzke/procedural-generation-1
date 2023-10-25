@@ -1,9 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import com.hindsight.king_of_castrop_rauxel.location.DungeonHandler;
-import com.hindsight.king_of_castrop_rauxel.location.Size;
+import com.hindsight.king_of_castrop_rauxel.location.*;
 
 public interface NameGenerator extends Generator {
 
@@ -12,13 +10,15 @@ public interface NameGenerator extends Generator {
   String locationNameFrom(
       AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz);
 
-  String dungeonNameFrom(Class<?> clazz);
-
   String npcFirstNameFrom(Class<?> clazz);
 
   String npcLastNameFrom(Class<?> clazz);
 
-  String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz);
+  String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type);
 
-  String enemyNameFrom(Class<?> clazz, DungeonHandler.Type type);
+  DungeonDetails.Type dungeonTypeFrom(int tier);
+
+  String dungeonNameFrom(Class<?> clazz, DungeonDetails.Type type);
+
+  String dungeonDescriptionFrom(Class<?> clazz, DungeonDetails.Type type);
 }

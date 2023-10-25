@@ -24,7 +24,7 @@ class BasicTerrainGeneratorTest {
   void givenDifferentXWorldLocations_returnDifficultyAsExpected(int offset) {
     var worldCoords = Pair.of(WORLD_CENTER + offset, WORLD_CENTER);
     var chunkCoords = Pair.of(250, 250);
-    var result = terrainGenerator.getDifficulty(new Coordinates(worldCoords, chunkCoords));
+    var result = terrainGenerator.getTargetLevel(new Coordinates(worldCoords, chunkCoords));
     var expected = Math.max(offset, 1);
     assertThat(result).isEqualTo(expected);
   }
@@ -34,7 +34,7 @@ class BasicTerrainGeneratorTest {
   void givenDifferentYWorldLocations_returnDifficultyAsExpected(int offset) {
     var worldCoords = Pair.of(WORLD_CENTER, WORLD_CENTER + offset);
     var chunkCoords = Pair.of(250, 250);
-    var result = terrainGenerator.getDifficulty(new Coordinates(worldCoords, chunkCoords));
+    var result = terrainGenerator.getTargetLevel(new Coordinates(worldCoords, chunkCoords));
     var expected = Math.max(offset, 1);
     assertThat(result).isEqualTo(expected);
   }
@@ -44,7 +44,7 @@ class BasicTerrainGeneratorTest {
   void givenDifferentWorldLocations_returnDifficultyAsExpected(int offset) {
     var worldCoords = Pair.of(WORLD_CENTER + offset, WORLD_CENTER + offset);
     var chunkCoords = Pair.of(250, 250);
-    var result = terrainGenerator.getDifficulty(new Coordinates(worldCoords, chunkCoords));
+    var result = terrainGenerator.getTargetLevel(new Coordinates(worldCoords, chunkCoords));
     var expected = Math.max(offset * 2, 1);
     assertThat(result).isEqualTo(expected);
   }

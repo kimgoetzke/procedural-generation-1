@@ -7,38 +7,72 @@ import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 
 @Getter
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(
     callSuper = true,
-    exclude = {"dungeonHandler", "sequence"})
+    exclude = {"sequence", "generators"})
 public class Dungeon extends AbstractAmenity {
 
-  private final DungeonHandler dungeonHandler = new DungeonHandler(this);
+  private final Generators generators;
   private EncounterSequence sequence;
   private DungeonDetails dungeonDetails;
 
-  public Dungeon(Type type, Npc npc, Location parent) {
+  public Dungeon(PointOfInterest.Type type, Npc npc, Location parent) {
     super(type, npc, parent);
+    this.generators = parent.getGenerators();
     load();
     logResult();
   }
 
-  // TODO: Generate dungeon details and inject into sequence
   @Override
   public void load() {
-    this.dungeonDetails = dungeonHandler.build();
-    this.name = parent.getGenerators().nameGenerator().dungeonNameFrom(this.getClass());
-    sequence = new EncounterSequence(dungeonDetails);
+    this.dungeonDetails = createDungeonDetails();
+    this.name = dungeonDetails.name();
+    this.description = dungeonDetails.description();
+    this.sequence = new EncounterSequence(dungeonDetails, parent.getGenerators());
     setLoaded(true);
+  }
+
+  private DungeonDetails createDungeonDetails() {
+    var encounters = loadEncounters();
+    var targetLevel = generators.terrainGenerator().getTargetLevel(parent.getCoordinates());
+    var tier = (targetLevel / DUNGEON_TIER_DIVIDER) + 1;
+    var type = generators.nameGenerator().dungeonTypeFrom(tier);
+    var dungeonName = generators.nameGenerator().dungeonNameFrom(this.getClass(), type);
+    var dungeonDescription =
+        generators.nameGenerator().dungeonDescriptionFrom(parent.getClass(), type);
+    return DungeonDetails.builder()
+        .id(id)
+        .name(dungeonName)
+        .description(dungeonDescription)
+        .tier(tier)
+        .level(targetLevel)
+        .encounters(encounters)
+        .type(type)
+        .build();
+  }
+
+  private int[] loadEncounters() {
+    var dLower = ENCOUNTERS_PER_DUNGEON.getLower();
+    var dUpper = ENCOUNTERS_PER_DUNGEON.getUpper();
+    var encounters = new int[random.nextInt(dUpper - dLower + 1) + dLower];
+    var eLower = ENEMIES_PER_ENCOUNTER.getLower();
+    var eUpper = ENEMIES_PER_ENCOUNTER.getUpper();
+    Arrays.setAll(encounters, i -> random.nextInt(eUpper - eLower + 1) + eLower);
+    return encounters;
   }
 
   @Override
@@ -52,7 +86,7 @@ public class Dungeon extends AbstractAmenity {
     if (sequence.isCompleted()) {
       return;
     }
-    var labelText = "Combat, level " + sequence.getDungeonDetails().level() + "+";
+    var labelText = "Combat, level " + dungeonDetails.level() + "+";
     var label = CliComponent.label(labelText, CliComponent.FMT.RED);
     var actionName = "Storm the " + name + (sequence.isInProgress() ? " again " : " ") + label;
     processedActions.add(
@@ -63,11 +97,11 @@ public class Dungeon extends AbstractAmenity {
             .build());
   }
 
-  // TODO: Adapt description to dungeon style/type
   @Override
   public String getDescription() {
-    return "A dark and foreboding place%s"
+    return "%s%s"
         .formatted(
+            dungeonDetails.description(),
             sequence.isCompleted()
                 ? ", devoid of any life. You have slain all creatures here already."
                 : ", rumored to be filled with treasure.");
