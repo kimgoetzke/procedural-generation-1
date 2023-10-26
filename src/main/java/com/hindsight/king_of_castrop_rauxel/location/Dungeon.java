@@ -7,7 +7,6 @@ import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
@@ -15,8 +14,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 
 @Getter
 @Slf4j
@@ -45,10 +42,10 @@ public class Dungeon extends AbstractAmenity {
   }
 
   private DungeonDetails createDungeonDetails() {
-    var encounters = loadEncounters();
     var targetLevel = generators.terrainGenerator().getTargetLevel(parent.getCoordinates());
-    var tier = LocationBuilder.getDungeonTier(targetLevel);
-    var type = LocationBuilder.getDungeonType(tier, random);
+    var tier = LocationBuilder.dungeonTierFrom(targetLevel);
+    var type = LocationBuilder.dungeonTypeFrom(tier, random);
+    var encounters = LocationBuilder.encountersFrom(random);
     var dungeonName = generators.nameGenerator().dungeonNameFrom(this.getClass(), type);
     var dungeonDescription =
         generators.nameGenerator().dungeonDescriptionFrom(parent.getClass(), type);
@@ -61,16 +58,6 @@ public class Dungeon extends AbstractAmenity {
         .encounters(encounters)
         .type(type)
         .build();
-  }
-
-  private int[] loadEncounters() {
-    var dLower = ENCOUNTERS_PER_DUNGEON.getLower();
-    var dUpper = ENCOUNTERS_PER_DUNGEON.getUpper();
-    var encounters = new int[random.nextInt(dUpper - dLower + 1) + dLower];
-    var eLower = ENEMIES_PER_ENCOUNTER.getLower();
-    var eUpper = ENEMIES_PER_ENCOUNTER.getUpper();
-    Arrays.setAll(encounters, i -> random.nextInt(eUpper - eLower + 1) + eLower);
-    return encounters;
   }
 
   @Override

@@ -34,19 +34,11 @@ public class BasicEnemy implements Combatant, Generatable {
   @Setter private Combatant target;
   @Setter private boolean isLoaded;
 
-  // TODO: Procedurally generate all relevant enemy stats
   public BasicEnemy(DungeonDetails dungeonDetails, NameGenerator nameGenerator) {
     this.id = IdBuilder.idFrom(this.getClass());
     this.nameGenerator = nameGenerator;
     this.dungeonDetails = dungeonDetails;
     load();
-  }
-
-  private void loadReward() {
-    var gold = random.nextInt(12) + 1;
-    var range = Pair.of((level - 1) * 10, (level + 1) * 10);
-    var exp = random.nextInt(range.getSecond() - range.getFirst() + 1) + range.getFirst();
-    loot = new Loot(List.of(new Reward(Type.GOLD, gold), new Reward(Type.EXPERIENCE, exp)));
   }
 
   @Override
@@ -68,6 +60,14 @@ public class BasicEnemy implements Combatant, Generatable {
     loadReward();
     setLoaded(true);
     logResult();
+  }
+
+  // TODO: Procedurally generate all relevant enemy stats via LocationBuilder
+  private void loadReward() {
+    var gold = random.nextInt(12) + 1;
+    var range = Pair.of((level - 1) * 10, (level + 1) * 10);
+    var exp = random.nextInt(range.getSecond() - range.getFirst() + 1) + range.getFirst();
+    loot = new Loot(List.of(new Reward(Type.GOLD, gold), new Reward(Type.EXPERIENCE, exp)));
   }
 
   @Override

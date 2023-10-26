@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
+import com.hindsight.king_of_castrop_rauxel.world.Range;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -80,10 +81,25 @@ public final class AppConstants {
   public static final Bounds ENCOUNTERS_PER_DUNGEON = new Bounds(1, 4);
   public static final Bounds ENEMIES_PER_ENCOUNTER = new Bounds(1, 3);
   public static final int DUNGEON_TIER_DIVIDER = 10;
-  public static final List<Type> DUNGEON_TIER_1 = List.of(Type.GOBLIN, Type.IMP, Type.CYNOCEPHALY);
-  public static final List<Type> DUNGEON_TIER_2 = List.of(Type.SKELETON, Type.UNDEAD, Type.DEMON);
-  public static final List<Type> DUNGEON_TIER_3 = List.of(Type.ORC, Type.TROLL, Type.ONOCENTAUR);
-  public static final List<Type> DUNGEON_TIER_4 = List.of(Type.CENTICORE, Type.POOKA, Type.MAPUCHE);
-  public static final List<Type> DUNGEON_TIER_5 = List.of(Type.SPHINX, Type.MINOTAUR, Type.CHIMERA);
-  public static final List<Type> DUNGEON_TIER_6 = List.of(Type.CYCLOPS, Type.HYDRA, Type.PHOENIX);
+  public static final List<Type> DUNGEON_TYPES_T1 =
+      List.of(Type.GOBLIN, Type.IMP, Type.CYNOCEPHALY);
+  public static final List<Type> DUNGEON_TYPES_T2 = List.of(Type.SKELETON, Type.UNDEAD, Type.DEMON);
+  public static final List<Type> DUNGEON_TYPES_T3 = List.of(Type.ORC, Type.TROLL, Type.ONOCENTAUR);
+  public static final List<Type> DUNGEON_TYPES_T4 =
+      List.of(Type.CENTICORE, Type.POOKA, Type.MAPUCHE);
+  public static final List<Type> DUNGEON_TYPES_T5 =
+      List.of(Type.SPHINX, Type.MINOTAUR, Type.CHIMERA);
+  public static final List<Type> DUNGEON_TYPES_T6 = List.of(Type.CYCLOPS, Type.HYDRA, Type.PHOENIX);
+
+  // Enemies
+  public static final Range T1_ENEMY_HP_XP_GOLD = new Range(10, 0.7F, 1.1F);
+  public static final Range T2_ENEMY_HP_XP_GOLD = new Range(8, 0.8F, 1.1F);
+  public static final Range T3_ENEMY_HP_XP_GOLD = new Range(6, 0.8F, 1.2F);
+  public static final Range T4_ENEMY_HP_XP_GOLD = new Range(4, 0.8F, 1.3F);
+  public static final Range T5_ENEMY_HP_XP_GOLD = new Range(2, 0.9F, 1.3F);
+  public static final Range T1_ENEMY_DAMAGE = new Range(1, 0, 2);
+  public static final Range T2_ENEMY_DAMAGE = new Range(1, 0.9F, 1.1F);
+  public static final Range T3_ENEMY_DAMAGE = new Range(1, 1, 1.2F);
+  public static final Range T4_ENEMY_DAMAGE = new Range(1, 1, 1.5F);
+  public static final Range T5_ENEMY_DAMAGE = new Range(1, 1.2F, 2);
 }
