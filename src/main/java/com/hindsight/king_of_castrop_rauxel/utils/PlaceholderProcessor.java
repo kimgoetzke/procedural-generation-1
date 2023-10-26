@@ -6,6 +6,11 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * The purpose of this class is to process placeholders in strings at runtime. The order in which
+ * they are processed is important: Most specific placeholders must be processed before more generic
+ * ones e.g. &OF must be processed before &O.
+ */
 @Slf4j
 public class PlaceholderProcessor {
 
@@ -21,7 +26,7 @@ public class PlaceholderProcessor {
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
   private static final String PLACEHOLDER_REWARD = "&R";
 
-  /** Used to process events. */
+  /** Used to process events, in particular actions, interactions, and eventDetails. */
   public String process(String toProcess, Npc owner, Npc targetNpc) {
     toProcess = processOwnerPlaceholders(toProcess, owner);
     toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
@@ -32,7 +37,7 @@ public class PlaceholderProcessor {
     return toProcess;
   }
 
-  /** Used to process events. */
+  /** Used to process events, in particular actions and interactions. */
   public String process(String toProcess, Npc owner) {
     return processOwnerPlaceholders(toProcess, owner);
   }
@@ -46,6 +51,7 @@ public class PlaceholderProcessor {
     return toProcess;
   }
 
+  /** Used to process events, in particular interactions. */
   public String process(String toProcess, EventDetails eventDetails) {
     var rewards = eventDetails.getRewards();
     if (rewards == null || rewards.isEmpty()) {

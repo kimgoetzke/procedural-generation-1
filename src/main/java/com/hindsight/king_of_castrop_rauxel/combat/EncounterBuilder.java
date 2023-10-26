@@ -26,7 +26,7 @@ public class EncounterBuilder {
   public EncounterBuilder() {
     configureDungeons();
     configureEnemies();
-    log.info(this.toString());
+    log.debug(this.toString());
   }
 
   public static int getDungeonTier(int targetLevel) {
@@ -38,6 +38,7 @@ public class EncounterBuilder {
     return DungeonDetails.Type.valueOf(types.get(random.nextInt(types.size())).name());
   }
 
+  // TODO: Make sure stats are slightly different for each enemy
   public static List<List<EnemyDetails>> getEncounterDetails(
       Random random, int targetLevel, DungeonDetails.Type type) {
     var encounterDetails = new ArrayList<List<EnemyDetails>>();
@@ -132,9 +133,9 @@ public class EncounterBuilder {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("Available configurations configurations:%n".formatted());
+    sb.append("Available dungeon types by tier:%n".formatted());
     for (var entry : DUNGEON_TYPES_CONFIGS.entrySet()) {
-      sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
+      sb.append("- Tier %s=%s%n".formatted(entry.getKey(), entry.getValue()));
     }
     return sb.toString();
   }

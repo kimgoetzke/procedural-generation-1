@@ -17,7 +17,7 @@ public class BasicNameGenerator implements NameGenerator {
 
   private static final String SUFFIX_MIDDLE = "--middle";
   private static final String[] SUFFIXES = new String[] {"--start", SUFFIX_MIDDLE, "--end"};
-  private static final String BASIC_ENEMY_SUFFIX = "--prefix";
+  private static final String BASIC_ENEMY_SUFFIX = "--type-prefix";
   private static final String NONDESCRIPT = "Nondescript ";
   private static final String HYPHEN = "-";
   private static final String FIRST_NAME = "first_name";
@@ -56,10 +56,10 @@ public class BasicNameGenerator implements NameGenerator {
         pathNameWithTypeAndSize != null ? pathNameWithTypeAndSize : "null",
         pathNameWithTypeOnly != null ? pathNameWithTypeOnly : "null");
 
-    loopThroughFilesWithSuffixes(words, pathNameWithTypeAndSize);
-    loopThroughFilesWithSuffixes(words, pathNameWithTypeOnly);
-    loopThroughFilesWithoutSuffix(words, pathNameWithTypeAndSize);
-    loopThroughFilesWithoutSuffix(words, pathNameWithTypeOnly);
+    randomWordForEachSuffix(words, pathNameWithTypeAndSize);
+    randomWordForEachSuffix(words, pathNameWithTypeOnly);
+    randomWordFromSpecificFile(words, pathNameWithTypeAndSize);
+    randomWordFromSpecificFile(words, pathNameWithTypeOnly);
     setFallbackStringIfListEmpty(words, className);
 
     processFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
@@ -81,17 +81,17 @@ public class BasicNameGenerator implements NameGenerator {
     var className = clazz.getSimpleName().toLowerCase();
     var words = new ArrayList<String>();
     log.debug(
-        "Attempting to generate {} {} {} for class {}",
+        "Attempting to generate {} {} {} for class '{}'",
         firstName && lastName ? "first and last name" : "",
         firstName && !lastName ? "first name" : "",
         !firstName && lastName ? "last name" : "",
         className);
 
     if (firstName) {
-      loopThroughFilesWithoutSuffix(words, className + HYPHEN + FIRST_NAME);
+      randomWordFromSpecificFile(words, className + HYPHEN + FIRST_NAME);
     }
     if (lastName) {
-      loopThroughFilesWithoutSuffix(words, className + HYPHEN + LAST_NAME);
+      randomWordFromSpecificFile(words, className + HYPHEN + LAST_NAME);
     }
     setFallbackStringIfListEmpty(words, className);
 
@@ -101,32 +101,40 @@ public class BasicNameGenerator implements NameGenerator {
   @Override
   public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type) {
     var className = clazz.getSimpleName().toLowerCase();
+    var pathName = className + BASIC_ENEMY_SUFFIX;
     var words = new ArrayList<String>();
-    log.debug("Attempting to generate {} class {}", type, className);
-    loopThroughFilesWithoutSuffix(words, className + BASIC_ENEMY_SUFFIX);
+    log.debug("Attempting to generate {} of type {}", className, type);
+    randomWordFromSpecificFile(words, pathName);
     setFallbackStringIfListEmpty(words, className);
     return words.get(0).trim() + " " + type.name().toLowerCase();
   }
 
-  // TODO: Align this with dungeon type which is based on the tier
   @Override
   public String dungeonNameFrom(Class<?> clazz, DungeonDetails.Type type) {
     var className = clazz.getSimpleName().toLowerCase();
+    var pathNameWithType = className + HYPHEN + type.name().toLowerCase();
     var words = new ArrayList<String>();
     log.debug("Attempting to generate dungeon name for class '{}'", className);
-    loopThroughFilesWithoutSuffix(words, className);
+    randomWordFromSpecificFile(words, pathNameWithType);
+    randomWordFromSpecificFile(words, className);
+    setFallbackStringIfListEmpty(words, className);
     return words.get(0).trim();
   }
 
+  // TODO: Think about what descriptions would make sense for different types of dungeons
   @Override
   public String dungeonDescriptionFrom(Class<?> ignoredClass, DungeonDetails.Type ignoredType) {
     return "A dark and foreboding place";
   }
 
-  private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {
+  /**
+   * Adds one, random word from each file with the given suffixes to the list of words, with there
+   * being a 25% chance that a word from the file with the suffix '--middle' is added.
+   */
+  private void randomWordForEachSuffix(List<String> words, String partialFileName) {
     if (words.isEmpty()) {
       for (String suffix : SUFFIXES) {
-        var result = txtReader.read(pathName + suffix);
+        var result = txtReader.read(partialFileName + suffix);
         if (!result.isEmpty() && (!suffix.equals(SUFFIX_MIDDLE) || random.nextInt(3) == 0)) {
           words.add(txtReader.getRandom(result, random));
         }
@@ -134,9 +142,10 @@ public class BasicNameGenerator implements NameGenerator {
     }
   }
 
-  private void loopThroughFilesWithoutSuffix(List<String> words, String pathName) {
+  /** Adds one, random word from the file with the given name to the list of words. */
+  private void randomWordFromSpecificFile(List<String> words, String fileName) {
     if (words.isEmpty()) {
-      var result = txtReader.read(pathName);
+      var result = txtReader.read(fileName);
       if (!result.isEmpty()) {
         words.add(txtReader.getRandom(result, random));
       }
@@ -145,8 +154,8 @@ public class BasicNameGenerator implements NameGenerator {
 
   private void setFallbackStringIfListEmpty(List<String> words, String className) {
     if (words.isEmpty()) {
-      log.warn("No input files found for class '{}'", className);
-      words.add(className + " " + RandomStringUtils.randomNumeric(3));
+      log.error("No input files found for class '{}'", className);
+      words.add(className.toUpperCase() + " " + RandomStringUtils.randomNumeric(3));
     }
   }
 

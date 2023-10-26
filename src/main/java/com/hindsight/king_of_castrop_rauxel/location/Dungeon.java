@@ -20,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
+@ToString(callSuper = true, onlyExplicitlyIncluded = true, includeFieldNames = false)
 public class Dungeon extends AbstractAmenity {
 
   private final Generators generators;
   private EncounterSequence sequence;
-  @ToString.Include private DungeonDetails dungeonDetails;
+  private DungeonDetails dungeonDetails;
 
   public Dungeon(PointOfInterest.Type type, Npc npc, Location parent) {
     super(type, npc, parent);
