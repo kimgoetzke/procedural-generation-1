@@ -8,7 +8,6 @@ import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,10 +20,13 @@ public class EncounterSequence {
   private Event.State state = Event.State.AVAILABLE;
 
   public EncounterSequence(DungeonDetails dungeonDetails, Generators generators) {
-    for (int i = 0; i < dungeonDetails.encounters().length; i++) {
+    var seed = dungeonDetails.seed();
+    for (int i = 0; i < dungeonDetails.encounterDetails().size(); i++) {
       var enemies = new ArrayList<Combatant>();
-      IntStream.range(0, dungeonDetails.encounters()[i])
-          .forEach(j -> enemies.add(new BasicEnemy(dungeonDetails, generators.nameGenerator())));
+      var encounter = dungeonDetails.encounterDetails().get(i);
+      for (var enemyDetails : encounter) {
+        enemies.add(new BasicEnemy(enemyDetails, seed, generators.nameGenerator()));
+      }
       encounters.add(new Encounter(null, enemies));
     }
   }

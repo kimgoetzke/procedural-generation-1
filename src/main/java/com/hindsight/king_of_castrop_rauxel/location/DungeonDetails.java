@@ -1,12 +1,21 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import com.hindsight.king_of_castrop_rauxel.combat.EnemyDetails;
 import lombok.Builder;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Builder
 public record DungeonDetails(
-    String id, String name, String description, int tier, int level, int[] encounters, Type type) {
+    String id,
+    String name,
+    String description,
+    long seed,
+    int tier,
+    int level,
+    List<List<EnemyDetails>> encounterDetails,
+    Type type) {
 
   public enum Type {
     GOBLIN,
@@ -42,8 +51,8 @@ public record DungeonDetails(
         + tier
         + ", level="
         + level
-        + ", encounters="
-        + Arrays.toString(encounters)
+        + ", encounterDetails="
+        + Arrays.deepToString(encounterDetails.toArray())
         + ", type="
         + type
         + '}';

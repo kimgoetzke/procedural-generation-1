@@ -1,44 +1,48 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
 import com.hindsight.king_of_castrop_rauxel.combat.Damage;
+import com.hindsight.king_of_castrop_rauxel.combat.EnemyDetails;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
-import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
-import com.hindsight.king_of_castrop_rauxel.world.Generatable;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
-import java.util.List;
+
 import java.util.Random;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.util.Pair;
-
-import static com.hindsight.king_of_castrop_rauxel.event.Reward.*;
 
 @Slf4j
 @Getter
 @ToString(onlyExplicitlyIncluded = true)
-public class BasicEnemy implements Combatant, Generatable {
+public class BasicEnemy implements Combatant {
 
+  private final Random random;
   @ToString.Include private final String id;
-  private final Random random = new Random();
-  private final NameGenerator nameGenerator;
-  private final DungeonDetails dungeonDetails;
-  @ToString.Include private int level;
-  @ToString.Include private Loot loot;
-  @ToString.Include private Damage damage;
-  @ToString.Include private String name;
+  @ToString.Include private final int level;
+  @ToString.Include private final Loot loot;
+  @ToString.Include private final Damage damage;
+  @ToString.Include private final String name;
+  @ToString.Include private final DungeonDetails.Type type;
   @ToString.Include @Setter private int health;
   @Setter private Combatant target;
-  @Setter private boolean isLoaded;
 
-  public BasicEnemy(DungeonDetails dungeonDetails, NameGenerator nameGenerator) {
+  public BasicEnemy(EnemyDetails enemyDetails, long seed, NameGenerator nameGenerator) {
     this.id = IdBuilder.idFrom(this.getClass());
-    this.nameGenerator = nameGenerator;
-    this.dungeonDetails = dungeonDetails;
-    load();
+    this.type = enemyDetails.type();
+    this.name = generateName(nameGenerator);
+    this.level = enemyDetails.level();
+    this.loot = enemyDetails.loot();
+    this.damage = enemyDetails.damage();
+    this.health = enemyDetails.health();
+    this.random = new Random(seed);
+    logResult();
+  }
+
+  private String generateName(NameGenerator nameGenerator) {
+    return nameGenerator.enemyNameFrom(this.getClass(), type);
   }
 
   @Override
@@ -51,26 +55,6 @@ public class BasicEnemy implements Combatant, Generatable {
     return actualDamage;
   }
 
-  @Override
-  public void load() {
-    health = 10;
-    level = dungeonDetails.level();
-    damage = Damage.of(0, 3);
-    name = nameGenerator.enemyNameFrom(this.getClass(), dungeonDetails.type());
-    loadReward();
-    setLoaded(true);
-    logResult();
-  }
-
-  // TODO: Procedurally generate all relevant enemy stats via LocationBuilder
-  private void loadReward() {
-    var gold = random.nextInt(12) + 1;
-    var range = Pair.of((level - 1) * 10, (level + 1) * 10);
-    var exp = random.nextInt(range.getSecond() - range.getFirst() + 1) + range.getFirst();
-    loot = new Loot(List.of(new Reward(Type.GOLD, gold), new Reward(Type.EXPERIENCE, exp)));
-  }
-
-  @Override
   public void logResult() {
     log.info("Generated: {}", this);
   }

@@ -38,7 +38,7 @@ public final class AppConstants {
   public static final int GENERATION_TRIGGER_ZONE = 100;
   public static final Bounds DENSITY = new Bounds(5, 10);
 
-  // LOCATION PROPERTIES
+  // LOCATION & POINT OF INTEREST PROPERTIES
   // Settlements
   public static final Bounds XS_INHABITANTS = new Bounds(1, 10);
   public static final Bounds S_INHABITANTS = new Bounds(11, 100);
@@ -76,7 +76,6 @@ public final class AppConstants {
   public static final Bounds L_AMENITIES_DUNGEON = new Bounds(2, 3);
   public static final Bounds XL_AMENITIES_DUNGEON = new Bounds(3, 4);
 
-  // POINTS OF INTEREST
   // Dungeons
   public static final Bounds ENCOUNTERS_PER_DUNGEON = new Bounds(1, 4);
   public static final Bounds ENEMIES_PER_ENCOUNTER = new Bounds(1, 3);
@@ -91,7 +90,8 @@ public final class AppConstants {
       List.of(Type.SPHINX, Type.MINOTAUR, Type.CHIMERA);
   public static final List<Type> DUNGEON_TYPES_T6 = List.of(Type.CYCLOPS, Type.HYDRA, Type.PHOENIX);
 
-  // Enemies
+  // ENEMIES PROPERTIES
+  // Basic Enemy
   public static final Range T1_ENEMY_HP_XP_GOLD = new Range(10, 0.7F, 1.1F);
   public static final Range T2_ENEMY_HP_XP_GOLD = new Range(8, 0.8F, 1.1F);
   public static final Range T3_ENEMY_HP_XP_GOLD = new Range(6, 0.8F, 1.2F);

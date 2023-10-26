@@ -37,7 +37,7 @@ public class BasicTerrainGenerator implements TerrainGenerator {
 
   public int getTargetLevel(Coordinates coordinates) {
     var chunkDifficulty = this.targetLevel[coordinates.wX()][coordinates.wY()];
-    log.info("Generated difficulty {} for {}", chunkDifficulty, coordinates.globalToString());
+    log.debug("Generated difficulty {} for {}", chunkDifficulty, coordinates.globalToString());
     return chunkDifficulty;
   }
 }

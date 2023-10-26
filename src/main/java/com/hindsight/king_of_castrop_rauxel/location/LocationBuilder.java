@@ -4,14 +4,10 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
-
-import java.util.*;
-
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
-import com.hindsight.king_of_castrop_rauxel.world.Range;
+import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,42 +16,14 @@ import org.springframework.stereotype.Component;
 public class LocationBuilder {
 
   private static final Map<Size, SettlementConfig> SETTLEMENT_CONFIGS = new EnumMap<>(Size.class);
-  private static final Map<Integer, List<DungeonDetails.Type>> DUNGEON_TYPES_CONFIG =
-      new HashMap<>();
-  private static final Map<Integer, EnemyConfig> ENEMY_CONFIGS = new HashMap<>();
 
   public LocationBuilder() {
     configureSettlements();
-    configureDungeons();
-    configureEnemies();
     log.debug(this.toString());
-  }
-
-  private void configureEnemies() {
-    // TODO: Set here
   }
 
   public static SettlementConfig getSettlementConfig(Size size) {
     return SETTLEMENT_CONFIGS.get(size);
-  }
-
-  public static int dungeonTierFrom(int targetLevel) {
-    return (targetLevel / DUNGEON_TIER_DIVIDER) + 1;
-  }
-
-  public static DungeonDetails.Type dungeonTypeFrom(int tier, Random random) {
-    var types = DUNGEON_TYPES_CONFIG.get(tier);
-    return types.get(random.nextInt(types.size()));
-  }
-
-  public static int[] encountersFrom(Random random) {
-    var dLower = ENCOUNTERS_PER_DUNGEON.getLower();
-    var dUpper = ENCOUNTERS_PER_DUNGEON.getUpper();
-    var encounters = new int[random.nextInt(dUpper - dLower + 1) + dLower];
-    var eLower = ENEMIES_PER_ENCOUNTER.getLower();
-    var eUpper = ENEMIES_PER_ENCOUNTER.getUpper();
-    Arrays.setAll(encounters, i -> random.nextInt(eUpper - eLower + 1) + eLower);
-    return encounters;
   }
 
   private void configureSettlements() {
@@ -120,23 +88,11 @@ public class LocationBuilder {
     SETTLEMENT_CONFIGS.put(Size.XL, xl);
   }
 
-  private void configureDungeons() {
-    DUNGEON_TYPES_CONFIG.put(1, DUNGEON_TYPES_T1);
-    DUNGEON_TYPES_CONFIG.put(2, DUNGEON_TYPES_T2);
-    DUNGEON_TYPES_CONFIG.put(3, DUNGEON_TYPES_T3);
-    DUNGEON_TYPES_CONFIG.put(4, DUNGEON_TYPES_T4);
-    DUNGEON_TYPES_CONFIG.put(5, DUNGEON_TYPES_T5);
-    DUNGEON_TYPES_CONFIG.put(6, DUNGEON_TYPES_T6);
-  }
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("Available settlement configurations:%n".formatted());
     for (var entry : SETTLEMENT_CONFIGS.entrySet()) {
-      sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
-    }
-    for (var entry : DUNGEON_TYPES_CONFIG.entrySet()) {
       sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
     }
     return sb.toString();
@@ -181,15 +137,5 @@ public class LocationBuilder {
     public String toString() {
       return "{area=" + area + ", inhabitants=" + inhabitants + ", amenities=" + amenities + '}';
     }
-  }
-
-  @Getter
-  @Setter
-  @ToString(includeFieldNames = false)
-  public static class EnemyConfig {
-    private Range health;
-    private Range damage;
-    private Range experience;
-    private Range gold;
   }
 }

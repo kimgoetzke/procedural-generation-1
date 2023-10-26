@@ -9,7 +9,9 @@ import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hindsight.king_of_castrop_rauxel.combat.EncounterBuilder;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
+import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -43,9 +45,10 @@ public class Dungeon extends AbstractAmenity {
 
   private DungeonDetails createDungeonDetails() {
     var targetLevel = generators.terrainGenerator().getTargetLevel(parent.getCoordinates());
-    var tier = LocationBuilder.dungeonTierFrom(targetLevel);
-    var type = LocationBuilder.dungeonTypeFrom(tier, random);
-    var encounters = LocationBuilder.encountersFrom(random);
+    var tier = EncounterBuilder.getDungeonTier(targetLevel);
+    var type = EncounterBuilder.getDungeonType(random, tier);
+    var encounterDetails = EncounterBuilder.getEncounterDetails(random, targetLevel, type);
+    var seed = SeedBuilder.seedFrom(parent.getCoordinates().getGlobal());
     var dungeonName = generators.nameGenerator().dungeonNameFrom(this.getClass(), type);
     var dungeonDescription =
         generators.nameGenerator().dungeonDescriptionFrom(parent.getClass(), type);
@@ -55,8 +58,9 @@ public class Dungeon extends AbstractAmenity {
         .description(dungeonDescription)
         .tier(tier)
         .level(targetLevel)
-        .encounters(encounters)
+        .encounterDetails(encounterDetails)
         .type(type)
+        .seed(seed)
         .build();
   }
 

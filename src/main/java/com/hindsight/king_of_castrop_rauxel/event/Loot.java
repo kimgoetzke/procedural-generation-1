@@ -26,6 +26,16 @@ public class Loot {
     list.addAll(loot.getList());
   }
 
+  public Loot experience(int experience) {
+    list.add(new Reward(Reward.Type.EXPERIENCE, experience));
+    return this;
+  }
+
+  public Loot gold(int gold) {
+    list.add(new Reward(Reward.Type.GOLD, gold));
+    return this;
+  }
+
   public void give(Player player) {
     list.forEach(reward -> reward.give(player));
   }
