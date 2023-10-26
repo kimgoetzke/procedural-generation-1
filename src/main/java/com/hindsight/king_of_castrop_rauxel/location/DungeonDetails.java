@@ -9,13 +9,25 @@ public record DungeonDetails(
     String id, String name, String description, int tier, int level, int[] encounters, Type type) {
 
   public enum Type {
-    SKELETON,
     GOBLIN,
+    IMP,
+    CYNOCEPHALY,
+    SKELETON,
+    UNDEAD,
+    DEMON,
     ORC,
     TROLL,
-    VAMPIRE,
-    WEREWOLF,
-    DEMON,
+    ONOCENTAUR,
+    CENTICORE,
+    POOKA,
+    MAPUCHE,
+    SPHINX,
+    MINOTAUR,
+    CHIMERA,
+    CYCLOPS,
+    HYDRA,
+    PHOENIX,
+    DRAGON,
   }
 
   @Override

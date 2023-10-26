@@ -11,10 +11,14 @@ import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
+@ToString(
+    of = {"name", "coordinates", "isLoaded"},
+    includeFieldNames = false)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractLocation implements Location {
 
@@ -80,16 +84,5 @@ public abstract class AbstractLocation implements Location {
       }
     }
     return WorldHandler.CardinalDirection.THIS;
-  }
-
-  @Override
-  public String toString() {
-    return "Location(name="
-        + name
-        + ", coordinates="
-        + coordinates
-        + ", isLoaded="
-        + isLoaded
-        + ")";
   }
 }

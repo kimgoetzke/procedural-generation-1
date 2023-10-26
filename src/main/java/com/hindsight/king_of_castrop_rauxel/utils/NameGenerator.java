@@ -16,8 +16,6 @@ public interface NameGenerator extends Generator {
 
   String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type);
 
-  DungeonDetails.Type dungeonTypeFrom(int tier);
-
   String dungeonNameFrom(Class<?> clazz, DungeonDetails.Type type);
 
   String dungeonDescriptionFrom(Class<?> clazz, DungeonDetails.Type type);

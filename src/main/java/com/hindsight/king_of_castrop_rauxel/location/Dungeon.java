@@ -21,14 +21,12 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 @Getter
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@ToString(
-    callSuper = true,
-    exclude = {"sequence", "generators"})
+@ToString(onlyExplicitlyIncluded = true, includeFieldNames = false)
 public class Dungeon extends AbstractAmenity {
 
   private final Generators generators;
   private EncounterSequence sequence;
-  private DungeonDetails dungeonDetails;
+  @ToString.Include private DungeonDetails dungeonDetails;
 
   public Dungeon(PointOfInterest.Type type, Npc npc, Location parent) {
     super(type, npc, parent);
@@ -49,8 +47,8 @@ public class Dungeon extends AbstractAmenity {
   private DungeonDetails createDungeonDetails() {
     var encounters = loadEncounters();
     var targetLevel = generators.terrainGenerator().getTargetLevel(parent.getCoordinates());
-    var tier = (targetLevel / DUNGEON_TIER_DIVIDER) + 1;
-    var type = generators.nameGenerator().dungeonTypeFrom(tier);
+    var tier = LocationBuilder.getDungeonTier(targetLevel);
+    var type = LocationBuilder.getDungeonType(tier, random);
     var dungeonName = generators.nameGenerator().dungeonNameFrom(this.getClass(), type);
     var dungeonDescription =
         generators.nameGenerator().dungeonDescriptionFrom(parent.getClass(), type);

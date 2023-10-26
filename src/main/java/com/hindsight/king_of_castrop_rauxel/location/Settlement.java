@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-@ToString(callSuper = true)
+@ToString(callSuper = true, includeFieldNames = false)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Settlement extends AbstractSettlement {
 

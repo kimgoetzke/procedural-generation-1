@@ -99,13 +99,13 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type dungeonType) {
+  public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type) {
     var className = clazz.getSimpleName().toLowerCase();
     var words = new ArrayList<String>();
-    log.debug("Attempting to generate {} class {}", dungeonType, className);
+    log.debug("Attempting to generate {} class {}", type, className);
     loopThroughFilesWithoutSuffix(words, className + BASIC_ENEMY_SUFFIX);
     setFallbackStringIfListEmpty(words, className);
-    return words.get(0).trim() + " " + dungeonType.name().toLowerCase();
+    return words.get(0).trim() + " " + type.name().toLowerCase();
   }
 
   // TODO: Align this with dungeon type which is based on the tier
@@ -121,17 +121,6 @@ public class BasicNameGenerator implements NameGenerator {
   @Override
   public String dungeonDescriptionFrom(Class<?> ignoredClass, DungeonDetails.Type ignoredType) {
     return "A dark and foreboding place";
-  }
-
-  @Override
-  public DungeonDetails.Type dungeonTypeFrom(int tier) {
-    var fileName = "dungeon%stier%s%d".formatted(HYPHEN, HYPHEN, tier);
-    var words = new ArrayList<String>();
-    loopThroughFilesWithoutSuffix(words, fileName);
-    if (words.isEmpty()) {
-      throw new IllegalStateException("Failed to generate dungeon type for tier " + tier);
-    }
-    return DungeonDetails.Type.valueOf(words.get(0).trim().toUpperCase());
   }
 
   private void loopThroughFilesWithSuffixes(List<String> words, String pathName) {

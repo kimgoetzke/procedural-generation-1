@@ -4,9 +4,8 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Random;
+
+import java.util.*;
 
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
 import lombok.Getter;
@@ -19,14 +18,26 @@ import org.springframework.stereotype.Component;
 public class LocationBuilder {
 
   private static final Map<Size, SettlementConfig> SETTLEMENT_CONFIGS = new EnumMap<>(Size.class);
+  private static final Map<Integer, List<DungeonDetails.Type>> DUNGEON_TYPES_CONFIG =
+      new HashMap<>();
 
   public LocationBuilder() {
     configureSettlements();
+    configureDungeons();
     log.debug(this.toString());
   }
 
   public static SettlementConfig getSettlementConfig(Size size) {
     return SETTLEMENT_CONFIGS.get(size);
+  }
+
+  public static int getDungeonTier(int targetLevel) {
+    return (targetLevel / DUNGEON_TIER_DIVIDER) + 1;
+  }
+
+  public static DungeonDetails.Type getDungeonType(int tier, Random random) {
+    var types = DUNGEON_TYPES_CONFIG.get(tier);
+    return types.get(random.nextInt(types.size()));
   }
 
   private void configureSettlements() {
@@ -91,11 +102,23 @@ public class LocationBuilder {
     SETTLEMENT_CONFIGS.put(Size.XL, xl);
   }
 
+  private void configureDungeons() {
+    DUNGEON_TYPES_CONFIG.put(1, DUNGEON_TIER_1);
+    DUNGEON_TYPES_CONFIG.put(2, DUNGEON_TIER_2);
+    DUNGEON_TYPES_CONFIG.put(3, DUNGEON_TIER_3);
+    DUNGEON_TYPES_CONFIG.put(4, DUNGEON_TIER_4);
+    DUNGEON_TYPES_CONFIG.put(5, DUNGEON_TIER_5);
+    DUNGEON_TYPES_CONFIG.put(6, DUNGEON_TIER_6);
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("Available settlement configurations:%n".formatted());
     for (var entry : SETTLEMENT_CONFIGS.entrySet()) {
+      sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
+    }
+    for (var entry : DUNGEON_TYPES_CONFIG.entrySet()) {
       sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
     }
     return sb.toString();

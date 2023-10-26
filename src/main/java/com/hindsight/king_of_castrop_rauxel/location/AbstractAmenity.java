@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString(includeFieldNames = false, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 

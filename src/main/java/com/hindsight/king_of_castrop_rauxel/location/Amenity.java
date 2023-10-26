@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@ToString(callSuper = true)
+@ToString(callSuper = true, includeFieldNames = false)
 public class Amenity extends AbstractAmenity {
 
   public Amenity(Type type, Npc npc, Location parent) {

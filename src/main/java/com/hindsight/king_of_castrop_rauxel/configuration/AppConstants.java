@@ -3,6 +3,10 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
+import static com.hindsight.king_of_castrop_rauxel.location.DungeonDetails.*;
+
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class AppConstants {
 
@@ -76,4 +80,10 @@ public final class AppConstants {
   public static final Bounds ENCOUNTERS_PER_DUNGEON = new Bounds(1, 4);
   public static final Bounds ENEMIES_PER_ENCOUNTER = new Bounds(1, 3);
   public static final int DUNGEON_TIER_DIVIDER = 10;
+  public static final List<Type> DUNGEON_TIER_1 = List.of(Type.GOBLIN, Type.IMP, Type.CYNOCEPHALY);
+  public static final List<Type> DUNGEON_TIER_2 = List.of(Type.SKELETON, Type.UNDEAD, Type.DEMON);
+  public static final List<Type> DUNGEON_TIER_3 = List.of(Type.ORC, Type.TROLL, Type.ONOCENTAUR);
+  public static final List<Type> DUNGEON_TIER_4 = List.of(Type.CENTICORE, Type.POOKA, Type.MAPUCHE);
+  public static final List<Type> DUNGEON_TIER_5 = List.of(Type.SPHINX, Type.MINOTAUR, Type.CHIMERA);
+  public static final List<Type> DUNGEON_TIER_6 = List.of(Type.CYCLOPS, Type.HYDRA, Type.PHOENIX);
 }
