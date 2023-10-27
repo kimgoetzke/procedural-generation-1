@@ -3,14 +3,19 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import static java.lang.System.out;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.event.Reward;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Slf4j
 @Component
 public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
+  public static final String LABEL_FORMAT = "%s(%s)%s";
 
   public enum FMT {
     RESET("\033[0m"),
@@ -112,6 +117,63 @@ public class CliComponent {
       if (e instanceof InterruptedException) {
         Thread.currentThread().interrupt();
       }
+    }
+  }
+
+  public static String label(String label, FMT format) {
+    return LABEL_FORMAT.formatted(format, label, FMT.RESET);
+  }
+
+  public static String label(PointOfInterest.Type type) {
+    var label =
+        switch (type) {
+          case MAIN_SQUARE -> "Main Square";
+          case SHOP -> "Shop";
+          case DUNGEON -> "Dungeon";
+          default -> "";
+        };
+    if (!label.isEmpty()) {
+      return LABEL_FORMAT.formatted(toColour(type), label, FMT.RESET);
+    }
+    return label;
+  }
+
+  public static String toColour(Reward.Type type) {
+    return switch (type) {
+      case GOLD -> FMT.YELLOW_BOLD.toString();
+      case EXPERIENCE -> FMT.BLUE_BOLD.toString();
+    };
+  }
+
+  public static String toColour(PointOfInterest.Type type) {
+    return switch (type) {
+      case MAIN_SQUARE, DUNGEON, SHOP -> FMT.BLUE.toString();
+      default -> FMT.WHITE_BOLD.toString();
+    };
+  }
+
+  public static String level(int level) {
+    return FMT.MAGENTA + String.valueOf(level) + FMT.RESET;
+  }
+
+  public static String health(int health) {
+    return FMT.RED + String.valueOf(health) + FMT.RESET;
+  }
+
+  public static String bold(String text) {
+    return FMT.WHITE_BOLD_BRIGHT + text + FMT.RESET;
+  }
+
+  // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public static void awaitEnterKeyPress() {
+    try {
+      var message = "Press enter to continue...";
+      out.print(message);
+      System.in.read();
+      removeString(message, true);
+    } catch (IOException e) {
+      log.error("Could not read input from console", e);
     }
   }
 

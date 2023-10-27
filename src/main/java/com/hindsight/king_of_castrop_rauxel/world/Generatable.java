@@ -8,7 +8,5 @@ public interface Generatable {
 
   void load();
 
-  void unload();
-
   void logResult();
 }

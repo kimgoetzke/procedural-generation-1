@@ -1,20 +1,21 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
-
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-@ToString(onlyExplicitlyIncluded = true)
+@ToString(includeFieldNames = false, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 
@@ -32,7 +33,7 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
   protected Random random;
 
   protected AbstractAmenity(Type type, Npc npc, Location parent) {
-    this.id = "POI~" + UUID.randomUUID();
+    this.id = IdBuilder.idFrom(this.getClass());
     this.seed = SeedBuilder.seedFrom(parent.getCoordinates().getGlobal());
     this.random = new Random(seed);
     this.type = type;
@@ -48,11 +49,32 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
     return "%s [ Type: %s | Located in %s ]".formatted(name, type, parent.getName());
   }
 
-  public enum Type {
-    ENTRANCE,
-    MAIN_SQUARE,
-    SHOP,
-    QUEST_LOCATION,
-    DUNGEON
+  @Override
+  public void addAvailableAction(Event event) {
+    var isPrimaryEvent = event.equals(npc.getPrimaryEvent());
+    if (!isPrimaryEvent) {
+      var about = event.getEventDetails().getAbout();
+      var appendAbout = about == null ? "" : " about " + about;
+      addEventAction(event, appendAbout);
+      return;
+    }
+    if (type == Type.QUEST_LOCATION || type == Type.SHOP) {
+      addEventAction(event, "");
+    }
+  }
+
+  protected void addEventAction(Event event, String append) {
+    var action =
+        EventAction.builder()
+            .name("Speak with %s%s".formatted(npc.getName(), append))
+            .index(availableActions.size() + 1)
+            .event(event)
+            .npc(npc)
+            .build();
+    if (availableActions.stream().anyMatch(a -> a.getName().equals(action.getName()))) {
+      throw new IllegalStateException(
+          "Duplicate action '%s' for event '%s'".formatted(action, event));
+    }
+    availableActions.add(action);
   }
 }

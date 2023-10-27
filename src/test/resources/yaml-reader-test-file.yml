@@ -1,0 +1,116 @@
+eventDetails:
+  eventType: REACH
+  about: EXPECTED_TEXT
+  rewards:
+    - type: GOLD
+      minValue: 10
+      maxValue: 15
+participantData:
+  EVENT_GIVER:
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Hey, sht! Come over here. I need you to do something for me.
+          i: 0
+        - text: EXPECTED_TEXT
+          i: 1
+          actions:
+            - !action
+              name: EXPECTED_TEXT
+              eventState: NONE
+              nextInteraction: 2
+            - !action
+              name: (Decline) I'm sorry, I can't.
+              eventState: NONE
+              nextInteraction: 3
+        - text: Good, good. Off you go then!
+          i: 2
+          actions:
+            - !action
+              name: I'm on my way.
+              eventState: ACTIVE
+              nextInteraction: 0
+        - text: Well, your loss, friend. &TOF won't be pleased, I'll tell ya that.
+          i: 3
+          actions:
+            - !action
+              name: Sorry, I'll have to leave now.
+              eventState: DECLINED
+              playerState: AT_POI
+              nextInteraction: 0
+    - !dialogue
+      state: ACTIVE
+      interactions:
+        - text: Please, hurry! Don't just stand around here.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: READY
+      interactions:
+        - text: Nice one, I heard you delivered the parcel. Here, take this. (&R)
+          actions:
+            - !action
+              name: Thanks. Goodbye!
+              eventState: COMPLETED
+              playerState: AT_POI
+    - !dialogue
+      state: COMPLETED
+      interactions:
+        - text: What? I don't think we've got anything else to talk about.
+          actions:
+            - !action
+              name: Alright. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: What? I don't think we've got anything else to talk about.
+          actions:
+            - !action
+              name: Alright. Goodbye!
+              playerState: AT_POI
+  EVENT_TARGET:
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Hey there, how can I help?
+          i: 0
+          actions:
+            - !action
+              name: All good. Thank you.
+              playerState: AT_POI
+    - !dialogue
+      state: ACTIVE
+      interactions:
+        - text: A delivery? From &O? Good. Thanks, now please leave. Go back to &O.
+          actions:
+            - !action
+              name: Alright, bye.
+              eventState: READY
+              playerState: AT_POI
+    - !dialogue
+      state: READY
+      interactions:
+        - text: Hey there, how can I help?
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: COMPLETED
+      interactions:
+        - text: Thanks again. I'll better get back to it. Have a good day.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: Hey there, how can I help?
+          actions:
+            - !action
+              name: Goodbye!
+              playerState: AT_POI

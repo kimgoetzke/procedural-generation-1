@@ -1,10 +1,11 @@
 package com.hindsight.king_of_castrop_rauxel.cli.loop;
 
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static java.lang.System.out;
 
+import com.google.common.base.Strings;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.ListResult;
@@ -29,36 +30,35 @@ public abstract class AbstractLoop {
 
   protected void printHeaders(boolean showPoi) {
     if (getAppProperties().getEnvironment().clearConsole()) {
-      CliComponent.clearConsole();
+      clearConsole();
     }
     out.printf(
-        "%sSTATS: [ Gold: %s%s%s%s | Level: %s%s%s%s | Experience: %s%s%s%s | Health: %s%s%s%s ]%s%n",
-        CliComponent.FMT.DEFAULT_BOLD,
-        CliComponent.FMT.YELLOW_BOLD,
+        "%sSTATS [ Gold: %s%s%s%s | Level: %s%s%s%s | Experience: %s%s%s%s | Health Points: %s%s%s%s ]%s%n",
+        FMT.DEFAULT_BOLD,
+        FMT.YELLOW_BOLD,
         player.getGold(),
-        CliComponent.FMT.RESET,
-        CliComponent.FMT.DEFAULT_BOLD,
-        CliComponent.FMT.MAGENTA_BOLD,
+        FMT.RESET,
+        FMT.DEFAULT_BOLD,
+        FMT.MAGENTA_BOLD,
         player.getLevel(),
-        CliComponent.FMT.RESET,
-        CliComponent.FMT.DEFAULT_BOLD,
-        CliComponent.FMT.BLUE_BOLD,
+        FMT.RESET,
+        FMT.DEFAULT_BOLD,
+        FMT.BLUE_BOLD,
         player.getExperience(),
-        CliComponent.FMT.RESET,
-        CliComponent.FMT.DEFAULT_BOLD,
-        CliComponent.FMT.RED_BOLD,
+        FMT.RESET,
+        FMT.DEFAULT_BOLD,
+        FMT.RED_BOLD,
         player.getHealth(),
-        CliComponent.FMT.RESET,
-        CliComponent.FMT.DEFAULT_BOLD,
-        CliComponent.FMT.RESET);
+        FMT.RESET,
+        FMT.DEFAULT_BOLD,
+        FMT.RESET);
     var currentLocation = player.getCurrentLocation();
     out.printf(
         "%sCURRENT LOCATION: %s%s%n%n",
-        CliComponent.FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), CliComponent.FMT.RESET);
+        FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), FMT.RESET);
     if (showPoi) {
       out.printf(
-          "%sYou are at: %s.%s ",
-          CliComponent.FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), CliComponent.FMT.RESET);
+          "%sYou are at: %s.%s ", FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), FMT.RESET);
     }
   }
 
@@ -76,7 +76,7 @@ public abstract class AbstractLoop {
   @SuppressWarnings("CallToPrintStackTrace")
   private void useConsoleUi(List<Action> actions, String message) {
     out.println();
-    message = message == null ? "Your response:" : message;
+    message = message == null ? "Your response:" : getDescription() + message;
     var prompt = new ConsolePrompt();
     var promptBuilder = prompt.getPromptBuilder();
     var listPrompt = promptBuilder.createListPrompt();
@@ -101,11 +101,19 @@ public abstract class AbstractLoop {
 
   private void useSystemOut(List<Action> actions, String message) {
     if (message != null) {
-      out.printf("%s%s%s%n", CliComponent.FMT.DEFAULT_BOLD, message, CliComponent.FMT.RESET);
+      out.printf("%s%s%s%s%n", FMT.DEFAULT_BOLD, getDescription(), message, FMT.RESET);
     }
     actions.forEach(a -> out.println(a.print()));
-    out.printf("%n%s>%s ", CliComponent.FMT.WHITE_BOLD_BRIGHT, CliComponent.FMT.RESET);
+    out.printf("%n%s>%s ", FMT.WHITE_BOLD_BRIGHT, FMT.RESET);
     takeAction(actions);
+  }
+
+  private String getDescription() {
+    if (player.getState() != Player.State.AT_POI) {
+      return "";
+    }
+    var description = player.getCurrentPoi().getDescription();
+    return Strings.isNullOrEmpty(description) ? "" : description + " ";
   }
 
   protected void takeAction(List<Action> actions) {
@@ -118,7 +126,7 @@ public abstract class AbstractLoop {
       var action = getValidActionOrThrow(validInput, actions);
       action.execute(player);
     } catch (NumberFormatException e) {
-      out.println(CliComponent.FMT.RED + "Invalid choice, try again..." + CliComponent.FMT.RESET);
+      out.println(FMT.RED + "Invalid choice, try again..." + FMT.RESET);
       recoverInvalidAction();
     }
     out.println();

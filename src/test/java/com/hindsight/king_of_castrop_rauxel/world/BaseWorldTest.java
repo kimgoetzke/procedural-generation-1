@@ -4,7 +4,6 @@ import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.XL_AMENITIES_QUEST_LOCATION;
 import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.location.LocationBuilder.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
@@ -13,6 +12,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;
@@ -133,6 +133,12 @@ public abstract class BaseWorldTest {
     mAmenities.put(Type.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
     lAmenities.put(Type.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
     xlAmenities.put(Type.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
+
+    xsAmenities.put(Type.DUNGEON, XL_AMENITIES_DUNGEON);
+    sAmenities.put(Type.DUNGEON, S_AMENITIES_DUNGEON);
+    mAmenities.put(Type.DUNGEON, M_AMENITIES_DUNGEON);
+    lAmenities.put(Type.DUNGEON, L_AMENITIES_DUNGEON);
+    xlAmenities.put(Type.DUNGEON, XL_AMENITIES_DUNGEON);
 
     xs.setAmenities(xsAmenities);
     s.setAmenities(sAmenities);

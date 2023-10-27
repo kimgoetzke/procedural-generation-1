@@ -6,19 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.SPEED_MODIFIER;
 import static java.lang.System.out;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ProgressBar {
-
-  /**
-   * The speed modifier for the progress bar. The higher the value, the slower the progress.
-   * Examples: A modifier of 1 means that it takes 10 seconds to travel a distance of 100 km. A
-   * modifier of 0.5 means that it takes 5 seconds to travel a distance of 100 km.
-   */
-  public static final float SPEED_MODIFIER = 0.1F;
 
   // TODO: Allow interrupting (returning progress %) and resuming later (accepting progress %)
   public static void displayProgress(Location from, Location to) {
@@ -34,8 +28,7 @@ public class ProgressBar {
       var filledWidth = (int) (progress * progressBarWidth);
       var emptyWidth = progressBarWidth - filledWidth;
       var progressPercentage = progress * 100;
-
-      String progressBar =
+      var progressBar =
           from.getName()
               + " ["
               + ">".repeat(Math.max(0, filledWidth))

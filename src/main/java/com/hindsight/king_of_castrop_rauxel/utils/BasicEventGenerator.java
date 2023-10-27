@@ -30,7 +30,7 @@ public class BasicEventGenerator implements EventGenerator {
   @Override
   public Event singleStepDialogue(Npc npc) {
     var text = readRandomLineFromFile(NPC_DISMISSIVE);
-    var interactions = List.of(new Interaction(text, List.of(), null));
+    var interactions = List.of(new Interaction(text, List.of()));
     var dialogues = List.of(new Dialogue(interactions));
     var participants = List.of(new Participant(npc, dialogues));
     process(dialogues, npc, null);
@@ -80,7 +80,7 @@ public class BasicEventGenerator implements EventGenerator {
   private void initialiseRewards(EventDetails eventDetails) {
     for (var reward : eventDetails.getRewards()) {
       reward.load(random);
-      log.info("Initialised reward: {}", reward);
+      log.info("Initialised reward of {} for {}", reward, eventDetails.getId());
     }
   }
 
@@ -129,7 +129,7 @@ public class BasicEventGenerator implements EventGenerator {
 
   private void process(EventDto toProcess, Npc npc, Npc targetNpc) {
     var eventDetails = toProcess.eventDetails;
-    if (eventDetails.getAbout() == null) {
+    if (eventDetails.getAbout().isEmpty()) {
       return;
     }
     var about = processor.process(eventDetails.getAbout(), npc, targetNpc);

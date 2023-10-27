@@ -1,15 +1,13 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractLocation.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
-import java.util.List;
-import java.util.Set;
-
+import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
+import java.util.List;
+import java.util.Set;
 import org.springframework.data.util.Pair;
 
 public interface Location extends Visitable, Generatable {
@@ -34,7 +32,7 @@ public interface Location extends Visitable, Generatable {
 
   CardinalDirection getCardinalDirection(Pair<Integer, Integer> otherCoordinates);
 
-  NameGenerator getNameGenerator();
+  Generators getGenerators();
 
   String getFullSummary(); // TODO: Replace with objects so that it can be used via API
 

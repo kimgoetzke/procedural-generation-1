@@ -90,7 +90,6 @@ public class World {
     var stats = worldHandler.getStats(map);
     var chunk = new Chunk(worldCoords, worldHandler);
     place(chunk);
-    chunk.logResult();
     worldHandler.logOutcome(stats, map, this.getClass());
   }
 

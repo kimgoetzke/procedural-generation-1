@@ -16,6 +16,8 @@ import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import java.util.List;
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -192,13 +194,13 @@ class WorldHandlerTest extends BaseWorldTest {
 
   @Override
   protected void locationComponentIsInitialised(MockedStatic<LocationBuilder> mocked) {
-    mocked.when(() -> randomSize(any(Random.class))).thenReturn(AbstractLocation.Size.XS);
+    mocked.when(() -> randomSize(any(Random.class))).thenReturn(Size.XS);
     mocked.when(() -> randomArea(any(Random.class), any())).thenReturn(1);
   }
 
   private List<Vertex<AbstractLocation>> chunkWithSettlementsExists() {
-    assertEquals(AbstractLocation.Size.XS, LocationBuilder.randomSize(new Random()));
-    assertEquals(1, LocationBuilder.randomArea(new Random(), AbstractLocation.Size.XS));
+    assertEquals(Size.XS, LocationBuilder.randomSize(new Random()));
+    assertEquals(1, LocationBuilder.randomArea(new Random(), Size.XS));
 
     var v1 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(0, 0), generators));
     var v2 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(20, 20), generators));

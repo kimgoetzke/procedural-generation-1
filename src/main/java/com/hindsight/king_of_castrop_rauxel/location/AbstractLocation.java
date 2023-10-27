@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import java.util.*;
 
@@ -10,10 +11,14 @@ import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
+@ToString(
+    of = {"name", "coordinates", "isLoaded"},
+    includeFieldNames = false)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractLocation implements Location {
 
@@ -32,7 +37,7 @@ public abstract class AbstractLocation implements Location {
     this.coordinates = new Coordinates(worldCoords, chunkCoords);
     this.seed = SeedBuilder.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
-    this.id = "LOC~" + coordinates.gX() + coordinates.gY();
+    this.id = IdBuilder.idFrom(this.getClass(), coordinates);
   }
 
   @Override
@@ -79,33 +84,5 @@ public abstract class AbstractLocation implements Location {
       }
     }
     return WorldHandler.CardinalDirection.THIS;
-  }
-
-  @Getter
-  public enum Size {
-    XS("Very small", 0),
-    S("Small", 1),
-    M("Medium", 2),
-    L("Large", 3),
-    XL("Very large", 4);
-
-    private final String name;
-    private final int ordinal;
-
-    Size(String s, int i) {
-      this.name = s;
-      this.ordinal = i;
-    }
-  }
-
-  @Override
-  public String toString() {
-    return "Location(name="
-        + name
-        + ", coordinates="
-        + coordinates
-        + ", isLoaded="
-        + isLoaded
-        + ")";
   }
 }

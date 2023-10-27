@@ -1,6 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
+import com.hindsight.king_of_castrop_rauxel.combat.Damage;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
+import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
@@ -8,6 +10,7 @@ import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 
 import java.util.*;
 
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -21,17 +24,19 @@ public class Player implements Visitor, Combatant {
   private final Set<Location> visitedLocations = new LinkedHashSet<>();
   private final List<Event> events = new ArrayList<>();
   private final Coordinates coordinates;
+  private final Pair<Integer, Integer> startCoordinates;
   private final Random random = new Random();
   private int gold = 100;
   private int health = 100;
   private int experience = 0;
   private int level = 1;
-  private Pair<Integer, Integer> damageRange = Pair.of(1, 4);
+  private Damage damage = Damage.of(1, 4);
   private State previousState = State.AT_LOCATION;
   private State state = State.AT_LOCATION;
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
+  @Setter private Combatant target;
 
   public enum State {
     AT_LOCATION,
@@ -45,8 +50,9 @@ public class Player implements Visitor, Combatant {
   public Player(
       String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoords) {
     this.name = name;
-    this.id = "PLA~" + UUID.randomUUID();
     this.coordinates = new Coordinates(worldCoords, currentLocation.getCoordinates().getChunk());
+    this.startCoordinates = coordinates.getGlobal();
+    this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
     visitedLocations.add(currentLocation);
@@ -71,7 +77,7 @@ public class Player implements Visitor, Combatant {
   }
 
   public void addExperience(int amount) {
-    this.experience -= amount;
+    this.experience += amount;
   }
 
   public void setHealth(int health) {
@@ -79,22 +85,19 @@ public class Player implements Visitor, Combatant {
   }
 
   @Override
-  public List<Reward> getReward() {
-    return List.of(new Reward(Reward.Type.GOLD, gold));
+  public Loot getLoot() {
+    gold = 0;
+    return new Loot(List.of(new Reward(Reward.Type.GOLD, gold)));
   }
 
   @Override
-  public void attack(Combatant other) {
-    var damage =
-        random.nextInt(damageRange.getSecond() - damageRange.getFirst() + 1)
-            + damageRange.getFirst();
-    other.takeDamage(damage);
-  }
-
-  @Override
-  public void die() {
-    System.out.println("You died!");
-    System.exit(0);
+  public int attack(Combatant target) {
+    if (target == null) {
+      return 0;
+    }
+    var actualDamage = damage.actual(random);
+    target.takeDamage(actualDamage);
+    return actualDamage;
   }
 
   public void setState(State state) {

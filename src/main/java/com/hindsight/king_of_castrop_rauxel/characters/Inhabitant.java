@@ -39,6 +39,9 @@ public class Inhabitant implements Npc {
 
   @Override
   public void addSecondaryEvent(Event event) {
+    if (event.equals(primaryEvent)) {
+      return;
+    }
     secondaryEvents.add(event);
   }
 
