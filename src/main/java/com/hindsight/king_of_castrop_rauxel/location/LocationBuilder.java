@@ -57,11 +57,11 @@ public class LocationBuilder {
     l.amenities.put(Type.ENTRANCE, L_AMENITIES_ENTRANCE);
     xl.amenities.put(Type.ENTRANCE, XL_AMENITIES_ENTRANCE);
 
-    xs.amenities.put(Type.MAIN_SQUARE, XS_AMENITIES_MAIN_SQUARE);
-    s.amenities.put(Type.MAIN_SQUARE, S_AMENITIES_MAIN_SQUARE);
-    m.amenities.put(Type.MAIN_SQUARE, M_AMENITIES_MAIN_SQUARE);
-    l.amenities.put(Type.MAIN_SQUARE, L_AMENITIES_MAIN_SQUARE);
-    xl.amenities.put(Type.MAIN_SQUARE, XL_AMENITIES_MAIN_SQUARE);
+    xs.amenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    s.amenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    m.amenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    l.amenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    xl.amenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
 
     xs.amenities.put(Type.SHOP, XS_AMENITIES_SHOP);
     s.amenities.put(Type.SHOP, S_AMENITIES_SHOP);

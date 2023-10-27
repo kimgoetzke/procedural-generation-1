@@ -82,7 +82,7 @@ public class WorldHandler {
           continue;
         }
         var distance = reference.getLocation().distanceTo(other.getLocation());
-        if (distance < MAX_NEIGHBOUR_DISTANCE) {
+        if (distance < MAX_GUARANTEED_NEIGHBOUR_DISTANCE) {
           addConnections(map, reference, other, distance);
         }
       }

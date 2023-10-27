@@ -4,6 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
@@ -106,8 +107,12 @@ public class ActionHandler {
     actions.add(
         new StateAction(
             actions.size() + 1,
-            "Go to... (%s point(s) of interest available)"
-                .formatted(currentLocation.getPointsOfInterest().size() - 1),
+            "Go to... %s"
+                .formatted(
+                    CliComponent.label(
+                        "%s point(s) of interest"
+                            .formatted(currentLocation.getPointsOfInterest().size() - 1),
+                        CliComponent.FMT.BLUE)),
             CHOOSING_POI));
   }
 
@@ -117,7 +122,7 @@ public class ActionHandler {
       to.add(
           new LocationAction(
               to.size() + 1,
-              "Travel to %s (%s km %s%s)"
+              "Travel to %s (%s km %s%s) %s"
                   .formatted(
                       neighbour.getName(),
                       neighbour.distanceTo(currentLocation),
@@ -127,7 +132,8 @@ public class ActionHandler {
                           .toLowerCase(),
                       player.getVisitedLocations().stream().anyMatch(a -> a.equals(neighbour))
                           ? ""
-                          : ", unvisited"),
+                          : ", unvisited",
+                      CliComponent.label("Location", CliComponent.FMT.BLUE)),
               neighbour));
     }
   }

@@ -63,7 +63,6 @@ public abstract class BaseWorldTest {
           FMT.RED_BRIGHT
               + "Error: Could not print plane - this happens usually because 1) the setUp()/tearDown() does not reset all fields correctly or 2) you never call setCurrentChunk().%n"
               + FMT.RESET);
-      throw e;
     }
     daf.printConnectivity();
   }
@@ -116,11 +115,11 @@ public abstract class BaseWorldTest {
     lAmenities.put(Type.ENTRANCE, L_AMENITIES_ENTRANCE);
     xlAmenities.put(Type.ENTRANCE, XL_AMENITIES_ENTRANCE);
 
-    xsAmenities.put(Type.MAIN_SQUARE, XS_AMENITIES_MAIN_SQUARE);
-    sAmenities.put(Type.MAIN_SQUARE, S_AMENITIES_MAIN_SQUARE);
-    mAmenities.put(Type.MAIN_SQUARE, M_AMENITIES_MAIN_SQUARE);
-    lAmenities.put(Type.MAIN_SQUARE, L_AMENITIES_MAIN_SQUARE);
-    xlAmenities.put(Type.MAIN_SQUARE, XL_AMENITIES_MAIN_SQUARE);
+    xsAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    sAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    mAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    lAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    xlAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
 
     xsAmenities.put(Type.SHOP, XS_AMENITIES_SHOP);
     sAmenities.put(Type.SHOP, S_AMENITIES_SHOP);

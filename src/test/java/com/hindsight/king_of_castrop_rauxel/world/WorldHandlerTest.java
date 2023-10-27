@@ -87,7 +87,7 @@ class WorldHandlerTest extends BaseWorldTest {
       locationComponentIsInitialised(mocked);
       var expected1 = Pair.of(317, 45);
       var expected2 = Pair.of(51, 338);
-      var expected3 = Pair.of(243, 330);
+      var expected3 = Pair.of(356, 238);
 
       // When
       worldHandler.generateSettlements(map, chunk);
@@ -117,19 +117,19 @@ class WorldHandlerTest extends BaseWorldTest {
       var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocation();
       var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocation();
       var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocation();
-      var WYR = map.getVertexByValue(Pair.of(292, 40), CoordType.GLOBAL).getLocation();
-      var SOL = map.getVertexByValue(Pair.of(231, 332), CoordType.GLOBAL).getLocation();
-      var ITH = map.getVertexByValue(Pair.of(243, 330), CoordType.GLOBAL).getLocation();
+      var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocation();
+      var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocation();
+      var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocation();
 
       // Then
       assertThat(map.getVertices()).hasSize(7);
-      assertThat(BAE.getNeighbours()).containsOnly(AEL, WYR);
       assertThat(VAL.getNeighbours()).isEmpty();
-      assertThat(AEL.getNeighbours()).containsOnly(BAE, WYR);
       assertThat(AST.getNeighbours()).isEmpty();
-      assertThat(WYR.getNeighbours()).containsOnly(BAE, AEL);
-      assertThat(SOL.getNeighbours()).containsOnly(ITH);
-      assertThat(ITH.getNeighbours()).containsOnly(SOL);
+      assertThat(MYS.getNeighbours()).containsOnly(EBR);
+      assertThat(EBR.getNeighbours()).containsOnly(MYS);
+      assertThat(BAE.getNeighbours()).containsOnly(AEL, THE);
+      assertThat(AEL.getNeighbours()).containsOnly(BAE, THE);
+      assertThat(THE.getNeighbours()).containsOnly(BAE, AEL);
     }
   }
 
@@ -147,17 +147,20 @@ class WorldHandlerTest extends BaseWorldTest {
       var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocation();
       var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocation();
       var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocation();
-      var WYR = map.getVertexByValue(Pair.of(292, 40), CoordType.GLOBAL).getLocation();
-      var SOL = map.getVertexByValue(Pair.of(231, 332), CoordType.GLOBAL).getLocation();
-      var ITH = map.getVertexByValue(Pair.of(243, 330), CoordType.GLOBAL).getLocation();
+      var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocation();
+      var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocation();
+      var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocation();
 
       // Then
       map.getVertices().forEach(v -> assertThat(v.getLocation().getNeighbours()).isNotEmpty());
-      assertThat(BAE.getNeighbours()).containsOnly(WYR, AEL);
-      assertThat(AEL.getNeighbours()).containsOnly(BAE, AST);
-      assertThat(SOL.getNeighbours()).containsOnly(VAL, ITH);
-      assertThat(result.unvisitedVertices()).hasSize(4);
-      assertThat(result.visitedVertices()).hasSize(3);
+      assertThat(VAL.getNeighbours()).containsOnly(EBR);
+      assertThat(MYS.getNeighbours()).containsOnly(EBR);
+      assertThat(EBR.getNeighbours()).containsOnly(VAL, MYS);
+      assertThat(BAE.getNeighbours()).containsOnly(AEL);
+      assertThat(AEL.getNeighbours()).containsOnly(THE, BAE, AST);
+      assertThat(THE.getNeighbours()).containsOnly(AEL);
+      assertThat(result.unvisitedVertices()).hasSize(3);
+      assertThat(result.visitedVertices()).hasSize(4);
     }
   }
 
@@ -175,19 +178,19 @@ class WorldHandlerTest extends BaseWorldTest {
       var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocation();
       var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocation();
       var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocation();
-      var WYR = map.getVertexByValue(Pair.of(292, 40), CoordType.GLOBAL).getLocation();
-      var SOL = map.getVertexByValue(Pair.of(231, 332), CoordType.GLOBAL).getLocation();
-      var ITH = map.getVertexByValue(Pair.of(243, 330), CoordType.GLOBAL).getLocation();
+      var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocation();
+      var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocation();
+      var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocation();
 
       // Then
       assertThat(map.getVertices()).hasSize(7);
-      assertThat(BAE.getNeighbours()).containsOnly(WYR, SOL, AEL);
-      assertThat(VAL.getNeighbours()).containsOnly(SOL);
-      assertThat(AEL.getNeighbours()).containsOnly(BAE, AST);
+      assertThat(BAE.getNeighbours()).containsOnly(VAL, AEL);
+      assertThat(VAL.getNeighbours()).containsOnly(MYS, BAE);
+      assertThat(MYS.getNeighbours()).containsOnly(VAL, EBR);
+      assertThat(EBR.getNeighbours()).containsOnly(MYS);
+      assertThat(AEL.getNeighbours()).containsOnly(THE, BAE, AST);
       assertThat(AST.getNeighbours()).containsOnly(AEL);
-      assertThat(WYR.getNeighbours()).containsOnly(BAE);
-      assertThat(SOL.getNeighbours()).containsOnly(VAL, BAE, ITH);
-      assertThat(ITH.getNeighbours()).containsOnly(SOL);
+      assertThat(THE.getNeighbours()).containsOnly(AEL);
       assertThat(connectivity.visitedVertices()).hasSize(7);
     }
   }

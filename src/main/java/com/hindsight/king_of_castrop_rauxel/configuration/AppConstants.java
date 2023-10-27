@@ -33,8 +33,8 @@ public final class AppConstants {
 
   // CHUNK PROPERTIES
   public static final int CHUNK_SIZE = 500;
-  public static final int MIN_PLACEMENT_DISTANCE = 5;
-  public static final int MAX_NEIGHBOUR_DISTANCE = 100;
+  public static final int MIN_PLACEMENT_DISTANCE = 30;
+  public static final int MAX_GUARANTEED_NEIGHBOUR_DISTANCE = 130;
   public static final int GENERATION_TRIGGER_ZONE = 100;
   public static final Bounds DENSITY = new Bounds(5, 10);
 
@@ -49,17 +49,13 @@ public final class AppConstants {
   public static final Bounds S_AREA = new Bounds(1, 2);
   public static final Bounds M_AREA = new Bounds(1, 3);
   public static final Bounds L_AREA = new Bounds(2, 8);
-  public static final Bounds XL_AREA = new Bounds(15, 40);
+  public static final Bounds XL_AREA = new Bounds(12, 30);
   public static final Bounds XS_AMENITIES_ENTRANCE = new Bounds(0, 0);
   public static final Bounds S_AMENITIES_ENTRANCE = new Bounds(0, 1);
   public static final Bounds M_AMENITIES_ENTRANCE = new Bounds(1, 1);
   public static final Bounds L_AMENITIES_ENTRANCE = new Bounds(2, 3);
   public static final Bounds XL_AMENITIES_ENTRANCE = new Bounds(4, 5);
-  public static final Bounds XS_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
-  public static final Bounds S_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
-  public static final Bounds M_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
-  public static final Bounds L_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
-  public static final Bounds XL_AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
+  public static final Bounds AMENITIES_MAIN_SQUARE = new Bounds(1, 1);
   public static final Bounds XS_AMENITIES_SHOP = new Bounds(0, 1);
   public static final Bounds S_AMENITIES_SHOP = new Bounds(1, 3);
   public static final Bounds M_AMENITIES_SHOP = new Bounds(3, 5);
