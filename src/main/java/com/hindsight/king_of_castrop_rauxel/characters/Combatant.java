@@ -1,7 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
-import com.hindsight.king_of_castrop_rauxel.combat.Damage;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 
 public interface Combatant {
@@ -18,8 +17,6 @@ public interface Combatant {
 
   void setHealth(int health);
 
-  Damage getDamage();
-
   int getLevel();
 
   Loot getLoot();
@@ -33,6 +30,9 @@ public interface Combatant {
   Combatant getTarget();
 
   default int attack() {
+    if (!hasTarget()) {
+      return 0;
+    }
     return attack(getTarget());
   }
 

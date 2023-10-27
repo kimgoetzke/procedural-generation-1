@@ -72,6 +72,9 @@ public class Encounter {
         Thread.currentThread().interrupt();
       }
       getTarget(attacker, defendingGroup);
+      if (isOver) {
+        return;
+      }
       var damage = attacker.attack();
       printAttack(attacker, attacker.getTarget(), damage);
       evaluateAttack(attacker.getTarget(), defendingGroup);
@@ -106,6 +109,7 @@ public class Encounter {
       possibleTargets.remove(target);
     }
     isOver = true;
+    combatant.setTarget(null);
   }
 
   private Combatant selectNewTarget(List<Combatant> possibleTargets) {
@@ -120,7 +124,7 @@ public class Encounter {
   }
 
   private boolean isPlayer(Combatant combatant) {
-    return combatant.getId().equals(player.getId());
+    return player.getId().equals(combatant.getId());
   }
 
   private boolean isEnemy(Combatant combatant) {
