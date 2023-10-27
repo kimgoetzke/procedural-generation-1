@@ -38,14 +38,15 @@ public class EncounterBuilder {
     return DungeonDetails.Type.valueOf(types.get(random.nextInt(types.size())).name());
   }
 
-  // TODO: Make sure stats are slightly different for each enemy
   public static List<List<EnemyDetails>> getEncounterDetails(
       Random random, int targetLevel, DungeonDetails.Type type) {
     var encounterDetails = new ArrayList<List<EnemyDetails>>();
     var encountersArray = getEncounters(random);
     for (int encounter : encountersArray) {
       var list =
-          IntStream.range(0, encounter).mapToObj(j -> getEnemyDetails(targetLevel, type)).toList();
+          IntStream.range(0, encounter)
+              .mapToObj(j -> getEnemyDetails(targetLevel, type, random))
+              .toList();
       encounterDetails.add(list);
     }
     return encounterDetails;
@@ -61,16 +62,17 @@ public class EncounterBuilder {
     return encounters;
   }
 
-  private static EnemyDetails getEnemyDetails(int targetLevel, DungeonDetails.Type type) {
+  private static EnemyDetails getEnemyDetails(
+      int targetLevel, DungeonDetails.Type type, Random random) {
     var tier = getDungeonTier(targetLevel);
     var config = ENEMY_CONFIGS.get(tier);
     var damageBounds = config.getDamage().toBounds(targetLevel);
     var damage = new Damage(damageBounds.getLower(), damageBounds.getUpper());
-    var experience = config.getExperience().toActual(targetLevel);
-    var gold = config.getGold().toActual(targetLevel);
+    var experience = config.getExperience().toRandomActual(random, targetLevel);
+    var gold = config.getGold().toRandomActual(random, targetLevel);
     var loot = new Loot().gold(gold).experience(experience);
     return EnemyDetails.builder()
-        .health(config.getHealth().toActual(targetLevel))
+        .health(config.getHealth().toRandomActual(random, targetLevel))
         .damage(damage)
         .loot(loot)
         .level(targetLevel)

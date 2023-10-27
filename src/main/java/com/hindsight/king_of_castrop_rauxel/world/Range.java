@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Random;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,12 +28,17 @@ public class Range {
     return new Bounds((int) lower, (int) upper);
   }
 
-  public int toActual(int targetLevel) {
-    var modulus = targetLevel % DUNGEON_TIER_DIVIDER;
-    var modifier = 1 / modulus;
+  public int toRandomActual(Random random, int targetLevel) {
     var upper = targetLevel * multiplier * maxMod;
     var lower = targetLevel * multiplier * minMod;
-    return (int) ((upper - lower) * modifier) + (int) lower;
+    var randomOffset = random.nextFloat(upper - lower);
+    return toActual(targetLevel, upper, lower, randomOffset);
+  }
+
+  private int toActual(int targetLevel, float upper, float lower, float offset) {
+    var modulus = targetLevel % DUNGEON_TIER_DIVIDER;
+    var modifier = 1 - (1 / modulus);
+    return (int) ((upper - lower) * modifier) + (int) (lower + offset);
   }
 
   @Override
