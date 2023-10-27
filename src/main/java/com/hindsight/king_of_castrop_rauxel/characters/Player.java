@@ -31,15 +31,15 @@ public class Player implements Visitor, Combatant {
   private int experience = 0;
   private int level = 1;
   private Damage damage = Damage.of(1, 4);
-  private State previousState = State.AT_LOCATION;
-  private State state = State.AT_LOCATION;
+  private State previousState = State.AT_DEFAULT_POI;
+  private State state = State.AT_DEFAULT_POI;
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
   @Setter private Combatant target;
 
   public enum State {
-    AT_LOCATION,
+    AT_DEFAULT_POI,
     CHOOSING_POI,
     AT_POI,
     IN_DIALOGUE,

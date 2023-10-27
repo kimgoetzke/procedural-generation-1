@@ -35,48 +35,32 @@ public class ActionHandler {
     }
   }
 
-  public void getDefaultPoiActions(Player player, List<Action> actions) {
-    prepend(actions, true);
-    var currentLocation = player.getCurrentLocation();
-    actions.add(
-        new StateAction(
-            actions.size() + 1,
-            "Explore any of the %s point(s) of interest"
-                .formatted(currentLocation.getPointsOfInterest().size() - 1),
-            CHOOSING_POI));
-    addAllActions(currentLocation.getDefaultPoi().getAvailableActions(), actions);
-    var neighbours = currentLocation.getNeighbours().stream().toList();
-    addLocationActions(neighbours, actions, currentLocation, player);
-    append(actions);
-  }
-
-  public void getAllPoiActions(Player player, List<Action> actions) {
+  public void getChoosePoiActions(Player player, List<Action> actions) {
     prepend(actions, true);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
-    var defaultAction =
-        new LocationAction(actions.size() + 1, "Stay at " + poi.getName(), location);
-    actions.add(defaultAction);
-    addAllActions(location.getAvailableActions(), actions, defaultAction);
+    var stayHereAction = new PoiAction(actions.size() + 1, "Stay at " + poi.getName(), poi);
+    actions.add(stayHereAction);
+    addAllActionsFrom(location.getAvailableActions(), actions, stayHereAction);
     append(actions);
   }
 
   public void getThisPoiActions(Player player, List<Action> actions) {
     prepend(actions, true);
     var poi = player.getCurrentPoi();
-    var location = player.getCurrentLocation();
-    var defaultAction =
-        new LocationAction(
-            actions.size() + 1, "Go back to " + location.getDefaultPoi().getName(), location);
-    actions.add(defaultAction);
-    addAllActions(poi.getAvailableActions(), actions, defaultAction);
+    var currentLocation = player.getCurrentLocation();
+    addGoToPoiAction(actions, currentLocation);
+    if (poi == currentLocation.getDefaultPoi()) {
+      addLocationActions(actions, currentLocation, player);
+    }
+    addAllActionsFrom(poi.getAvailableActions(), actions);
     append(actions);
   }
 
   public void getDialogueActions(Player player, List<Action> actions) {
     prepend(actions, false);
     var eventActions = player.getCurrentEvent().getCurrentActions();
-    addAllActions(eventActions, actions);
+    addAllActionsFrom(eventActions, actions);
   }
 
   public void getCombatActions(Player player, List<Action> actions) {
@@ -118,8 +102,17 @@ public class ActionHandler {
     actions.clear();
   }
 
-  private static void addLocationActions(
-      List<Location> from, List<Action> to, Location currentLocation, Player player) {
+  private static void addGoToPoiAction(List<Action> actions, Location currentLocation) {
+    actions.add(
+        new StateAction(
+            actions.size() + 1,
+            "Go to... (%s point(s) of interest available)"
+                .formatted(currentLocation.getPointsOfInterest().size() - 1),
+            CHOOSING_POI));
+  }
+
+  private static void addLocationActions(List<Action> to, Location currentLocation, Player player) {
+    var from = currentLocation.getNeighbours().stream().toList();
     for (var neighbour : from) {
       to.add(
           new LocationAction(
@@ -139,7 +132,7 @@ public class ActionHandler {
     }
   }
 
-  private static void addAllActions(List<Action> from, List<Action> to) {
+  private static void addAllActionsFrom(List<Action> from, List<Action> to) {
     var adjustedActions = new ArrayList<>(from);
     for (var action : adjustedActions) {
       action.setIndex(to.size() + 1);
@@ -147,10 +140,10 @@ public class ActionHandler {
     }
   }
 
-  private static void addAllActions(List<Action> from, List<Action> to, LocationAction except) {
+  private static void addAllActionsFrom(List<Action> from, List<Action> to, PoiAction except) {
     var adjustedActions = new ArrayList<>(from);
     for (var action : adjustedActions) {
-      if (action.getName().contains(except.getLocation().getName())) {
+      if (action.getName().contains(except.getPoi().getName())) {
         continue;
       }
       action.setIndex(to.size() + 1);

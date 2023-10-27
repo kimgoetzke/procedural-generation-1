@@ -62,6 +62,6 @@ public class LocationAction implements Action {
 
   @Override
   public State getNextState() {
-    return State.AT_LOCATION;
+    return State.AT_DEFAULT_POI;
   }
 }
