@@ -17,7 +17,7 @@ public class ExitAction implements Action {
 
   @Setter private int index;
   @Setter private String name;
-  private static final State NEXT_STATE = State.AT_LOCATION;
+  private static final State NEXT_STATE = State.AT_POI;
 
   @Override
   public void execute(Player player) {

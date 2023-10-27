@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.combat.Damage;
+import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
@@ -31,15 +31,14 @@ public class Player implements Visitor, Combatant {
   private int experience = 0;
   private int level = 1;
   private Damage damage = Damage.of(1, 4);
-  private State previousState = State.AT_LOCATION;
-  private State state = State.AT_LOCATION;
+  private State previousState = State.AT_POI;
+  private State state = State.AT_POI;
   private Location currentLocation;
   private PointOfInterest currentPoi;
   @Setter private Event currentEvent;
   @Setter private Combatant target;
 
   public enum State {
-    AT_LOCATION,
     CHOOSING_POI,
     AT_POI,
     IN_DIALOGUE,

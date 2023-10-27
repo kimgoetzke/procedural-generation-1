@@ -22,7 +22,6 @@ public class CliGame {
   private final EnvironmentResolver environmentResolver;
   private final World world;
   private final Graph<AbstractLocation> map;
-  private final LocationLoop locationLoop;
   private final ChoosePoiLoop choosePoiLoop;
   private final PoiLoop poiLoop;
   private final DialogueLoop dialogueLoop;
@@ -40,7 +39,6 @@ public class CliGame {
     initialise();
     while (true) {
       switch (player.getState()) {
-        case AT_LOCATION -> locationLoop.execute(actions);
         case CHOOSING_POI -> choosePoiLoop.execute(actions);
         case AT_POI -> poiLoop.execute(actions);
         case IN_DIALOGUE -> dialogueLoop.execute(actions);
@@ -56,7 +54,6 @@ public class CliGame {
     var startLocation = world.getCurrentChunk().getCentralLocation(world, map);
     var worldCoordinates = world.getCurrentChunk().getCoordinates().getWorld();
     player = new Player("Traveller", startLocation, worldCoordinates);
-    locationLoop.initialise(player);
     dialogueLoop.initialise(player);
     poiLoop.initialise(player);
     choosePoiLoop.initialise(player);

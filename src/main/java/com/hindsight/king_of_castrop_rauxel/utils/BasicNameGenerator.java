@@ -4,7 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import java.util.ArrayList;
 import java.util.List;

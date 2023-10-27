@@ -10,8 +10,8 @@ import lombok.Setter;
 
 /**
  * This action changes the player's current POI. It never changes the location. However, it does
- * change the player's state to AT_SPECIFIC_POI, so that the player sees the POI's actions next. It
- * is NOT used for any actions at the POI itself (unless changing POI is part of a quest).
+ * change the player's state to AT_POI, so that the player sees the POI's actions next. It is NOT
+ * used for any actions at the POI itself (unless changing POI is part of a quest).
  */
 @Getter
 @Builder

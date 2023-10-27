@@ -1,7 +1,6 @@
-package com.hindsight.king_of_castrop_rauxel.world;
+package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.utils.Generator;
-
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import java.util.Random;
 
 public interface TerrainGenerator extends Generator {

@@ -28,7 +28,7 @@ eventDetails:
 #   The choices a player can make. Required A dialogue can ONLY be concluded by changing the playerState. You must
 #   provide 1) 'name' and 2) 'playerState' OR 'eventState'.
 # - 'name' (required, accepts: String)
-# - 'playerState' (optional, accepts: AT_POI, AT_LOCATION, etc.)
+# - 'playerState' (optional, accepts: AT_POI, etc.)
 #    Changes the state of the player and immediately conclude the dialogue.
 # - 'eventState' (optional, accepts: NONE, AVAILABLE, ACTIVE, READY, COMPLETED, or DECLINED)
 #    Changes the state of the event AND the active dialogue immediately i.e. no further interactions in the current

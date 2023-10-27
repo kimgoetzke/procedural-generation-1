@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static com.hindsight.king_of_castrop_rauxel.location.DungeonDetails.*;
+import static com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails.*;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class AppConstants {

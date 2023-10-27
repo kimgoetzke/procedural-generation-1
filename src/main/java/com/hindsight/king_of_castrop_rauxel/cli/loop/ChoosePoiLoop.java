@@ -31,7 +31,7 @@ public class ChoosePoiLoop extends AbstractLoop {
   }
 
   private void prepareActions(List<Action> actions) {
-    actionHandler.getAllPoiActions(player, actions);
+    actionHandler.getChoosePoiActions(player, actions);
   }
 
   private void postProcess() {
