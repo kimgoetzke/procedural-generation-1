@@ -1,7 +1,6 @@
-package com.hindsight.king_of_castrop_rauxel.combat;
+package com.hindsight.king_of_castrop_rauxel.encounter;
 
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
-import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import lombok.Builder;
 
 @Builder

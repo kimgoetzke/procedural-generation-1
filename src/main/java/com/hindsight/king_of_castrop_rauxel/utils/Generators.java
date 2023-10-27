@@ -1,7 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.world.TerrainGenerator;
-
 import java.util.List;
 import java.util.Random;
 

@@ -4,12 +4,13 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.CombatAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
-import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
+import com.hindsight.king_of_castrop_rauxel.encounter.EncounterSequence;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hindsight.king_of_castrop_rauxel.combat.EncounterBuilder;
+import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.encounter.EncounterBuilder;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import lombok.EqualsAndHashCode;

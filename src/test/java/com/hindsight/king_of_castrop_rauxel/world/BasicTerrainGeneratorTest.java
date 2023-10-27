@@ -4,6 +4,8 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WO
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

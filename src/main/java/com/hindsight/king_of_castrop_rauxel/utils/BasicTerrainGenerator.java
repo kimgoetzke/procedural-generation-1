@@ -1,6 +1,8 @@
-package com.hindsight.king_of_castrop_rauxel.world;
+package com.hindsight.king_of_castrop_rauxel.utils;
 
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

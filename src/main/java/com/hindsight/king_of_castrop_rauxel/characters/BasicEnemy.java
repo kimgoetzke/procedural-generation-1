@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
-import com.hindsight.king_of_castrop_rauxel.combat.Damage;
-import com.hindsight.king_of_castrop_rauxel.combat.EnemyDetails;
+import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
+import com.hindsight.king_of_castrop_rauxel.encounter.EnemyDetails;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
-import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 

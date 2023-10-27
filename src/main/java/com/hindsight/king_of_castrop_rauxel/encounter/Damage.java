@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.combat;
+package com.hindsight.king_of_castrop_rauxel.encounter;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

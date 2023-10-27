@@ -1,9 +1,8 @@
-package com.hindsight.king_of_castrop_rauxel.combat;
+package com.hindsight.king_of_castrop_rauxel.encounter;
 
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
-import com.hindsight.king_of_castrop_rauxel.location.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.world.Range;
 import java.util.*;
 import java.util.stream.IntStream;

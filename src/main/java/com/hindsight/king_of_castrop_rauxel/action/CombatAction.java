@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.cli.combat.EncounterSequence;
+import com.hindsight.king_of_castrop_rauxel.encounter.EncounterSequence;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

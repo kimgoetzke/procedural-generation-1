@@ -12,8 +12,8 @@ import lombok.Setter;
 
 /**
  * This action is used to change the player's current location by setting the currentPoi to the
- * defaultPoi of the new location. It also changes the player's state to AT_DEFAULT_POI so that the
- * player can see the actions of the default POI next.
+ * defaultPoi of the new location. It also changes the player's state to AT_POI so that the player
+ * can see the actions of the default POI next.
  */
 @Getter
 @Builder
@@ -62,6 +62,6 @@ public class LocationAction implements Action {
 
   @Override
   public State getNextState() {
-    return State.AT_DEFAULT_POI;
+    return State.AT_POI;
   }
 }
