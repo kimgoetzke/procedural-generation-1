@@ -110,7 +110,7 @@ public class ActionHandler {
     actions.add(
         new StateAction(
             index(actions),
-            "Go to... %s"
+            "Go to...%s"
                 .formatted(
                     CliComponent.label(
                         "%s point(s) of interest"
@@ -125,7 +125,7 @@ public class ActionHandler {
       to.add(
           new LocationAction(
               index(to),
-              "Travel to %s (%s km %s%s) %s"
+              "Travel to %s (%s km %s%s)%s"
                   .formatted(
                       neighbour.getName(),
                       neighbour.distanceTo(currentLocation),

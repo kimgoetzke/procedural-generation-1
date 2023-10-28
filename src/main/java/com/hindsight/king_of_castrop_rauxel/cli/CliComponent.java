@@ -15,7 +15,7 @@ import java.io.IOException;
 public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
-  public static final String LABEL_FORMAT = "%s(%s)%s";
+  public static final String LABEL_FORMAT = " %s(%s)%s";
 
   public enum FMT {
     RESET("\033[0m"),

@@ -126,7 +126,7 @@ public class Settlement extends AbstractSettlement {
           PoiAction.builder()
               .index(i)
               .name(
-                  "Go to %s %s"
+                  "Go to %s%s"
                       .formatted(
                           pointsOfInterests.get(i).getName(),
                           CliComponent.label(pointsOfInterests.get(i).getType())))

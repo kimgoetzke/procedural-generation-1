@@ -78,7 +78,7 @@ public class Dungeon extends AbstractAmenity {
     }
     var labelText = "Combat, level " + dungeonDetails.level() + "+";
     var label = CliComponent.label(labelText, CliComponent.FMT.RED);
-    var actionName = "Storm the " + name + (sequence.isInProgress() ? " again " : " ") + label;
+    var actionName = "Storm the " + name + (sequence.isInProgress() ? " again" : "") + label;
     processedActions.add(
         CombatAction.builder()
             .name(actionName)

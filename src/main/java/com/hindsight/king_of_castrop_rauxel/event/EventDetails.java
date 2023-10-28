@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import java.util.List;
 import lombok.EqualsAndHashCode;
@@ -14,12 +15,15 @@ public final class EventDetails {
   private String id;
   private Event.Type eventType;
   private List<Reward> rewards;
-  private String about;
+  private Npc eventGiver;
+  private String aboutGiver; // What the player will see when they see the event giver
+  private String aboutTarget; // What the player will see when they see an event target
 
   public EventDetails() {
     this.id = IdBuilder.idFrom(this.getClass());
     this.eventType = Event.Type.DIALOGUE;
-    this.about = "";
+    this.aboutGiver = "";
+    this.aboutTarget = "";
     this.rewards = List.of();
   }
 

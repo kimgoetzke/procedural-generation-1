@@ -51,30 +51,19 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 
   @Override
   public void addAvailableAction(Event event) {
-    var isPrimaryEvent = event.equals(npc.getPrimaryEvent());
-    if (!isPrimaryEvent) {
-      var about = event.getEventDetails().getAbout();
-      var appendAbout = about == null ? "" : " about " + about;
-      addEventAction(event, appendAbout);
-      return;
-    }
     if (type == Type.QUEST_LOCATION || type == Type.SHOP) {
-      addEventAction(event, "");
+      addEventAction(event);
     }
   }
 
-  protected void addEventAction(Event event, String append) {
+  protected void addEventAction(Event event) {
     var action =
         EventAction.builder()
-            .name("Speak with %s%s".formatted(npc.getName(), append))
+            .name("Speak with %s".formatted(npc.getName()))
             .index(availableActions.size() + 1)
             .event(event)
             .npc(npc)
             .build();
-    if (availableActions.stream().anyMatch(a -> a.getName().equals(action.getName()))) {
-      throw new IllegalStateException(
-          "Duplicate action '%s' for event '%s'".formatted(action, event));
-    }
     availableActions.add(action);
   }
 }
