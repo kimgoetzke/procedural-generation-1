@@ -125,14 +125,17 @@ public class Settlement extends AbstractSettlement {
       availableActions.add(
           PoiAction.builder()
               .index(i)
-              .name(
-                  "Go to %s %s"
-                      .formatted(
-                          pointsOfInterests.get(i).getName(),
-                          CliComponent.label(pointsOfInterests.get(i).getType())))
+              .name(getActionName(i))
               .poi(pointsOfInterests.get(i))
               .build());
     }
+  }
+
+  private String getActionName(int i) {
+    return "Go to %s%s"
+        .formatted(
+            pointsOfInterests.get(i).getName(),
+            CliComponent.label(pointsOfInterests.get(i).getType()));
   }
 
   @Override

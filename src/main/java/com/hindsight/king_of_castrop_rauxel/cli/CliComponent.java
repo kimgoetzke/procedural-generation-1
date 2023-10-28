@@ -5,17 +5,16 @@ import static java.lang.System.out;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Slf4j
 @Component
 public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
-  public static final String LABEL_FORMAT = "%s(%s)%s";
+  public static final String LABEL_FORMAT = " %s(%s)%s";
 
   public enum FMT {
     RESET("\033[0m"),
@@ -124,31 +123,34 @@ public class CliComponent {
     return LABEL_FORMAT.formatted(format, label, FMT.RESET);
   }
 
-  public static String label(PointOfInterest.Type type) {
-    var label =
-        switch (type) {
-          case MAIN_SQUARE -> "Main Square";
-          case SHOP -> "Shop";
-          case DUNGEON -> "Dungeon";
-          default -> "";
-        };
-    if (!label.isEmpty()) {
-      return LABEL_FORMAT.formatted(toColour(type), label, FMT.RESET);
-    }
-    return label;
-  }
-
-  public static String toColour(Reward.Type type) {
+  public static String label(CliComponent.Type type) {
     return switch (type) {
-      case GOLD -> FMT.YELLOW_BOLD.toString();
-      case EXPERIENCE -> FMT.BLUE_BOLD.toString();
+      case LOCATION -> label("Location", FMT.BLUE);
+      case QUEST -> label("Quest", FMT.BLUE);
+      case DIALOGUE -> label("Dialogue", FMT.BLUE);
     };
   }
 
-  public static String toColour(PointOfInterest.Type type) {
+  public static String label(PointOfInterest.Type type) {
     return switch (type) {
-      case MAIN_SQUARE, DUNGEON, SHOP -> FMT.BLUE.toString();
-      default -> FMT.WHITE_BOLD.toString();
+      case MAIN_SQUARE -> label("Main Square", toColour(type));
+      case SHOP -> LABEL_FORMAT.formatted(toColour(type), "Shop", FMT.RESET);
+      case DUNGEON -> LABEL_FORMAT.formatted(toColour(type), "Dungeon", FMT.RESET);
+      default -> "";
+    };
+  }
+
+  public static FMT toColour(Reward.Type type) {
+    return switch (type) {
+      case GOLD -> FMT.YELLOW_BOLD;
+      case EXPERIENCE -> FMT.BLUE_BOLD;
+    };
+  }
+
+  private static FMT toColour(PointOfInterest.Type type) {
+    return switch (type) {
+      case MAIN_SQUARE, DUNGEON, SHOP -> FMT.BLUE;
+      default -> FMT.WHITE_BOLD;
     };
   }
 
@@ -190,5 +192,11 @@ public class CliComponent {
       out.print(" ");
     }
     out.println();
+  }
+
+  public enum Type {
+    LOCATION,
+    QUEST,
+    DIALOGUE,
   }
 }

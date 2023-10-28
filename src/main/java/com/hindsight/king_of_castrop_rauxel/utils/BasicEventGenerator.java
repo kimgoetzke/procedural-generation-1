@@ -70,18 +70,12 @@ public class BasicEventGenerator implements EventGenerator {
       var targetNpc = targetPoi.getNpc();
       var targetParticipant = new Participant(targetNpc, Role.EVENT_TARGET, targetNpcDialogues);
       var participants = List.of(giverParticipant, targetParticipant);
+      setEventGiver(eventDto.eventDetails, npc);
       initialiseRewards(eventDto.eventDetails);
       processPlaceholders(eventDto, participants);
       return new ReachEvent(eventDto.eventDetails, participants);
     }
     return null;
-  }
-
-  private void initialiseRewards(EventDetails eventDetails) {
-    for (var reward : eventDetails.getRewards()) {
-      reward.load(random);
-      log.info("Initialised reward of {} for {}", reward, eventDetails.getId());
-    }
   }
 
   private PointOfInterest tryToFindAPoi(Npc npc) {
@@ -107,6 +101,17 @@ public class BasicEventGenerator implements EventGenerator {
     return poi;
   }
 
+  private void setEventGiver(EventDetails eventDetails, Npc npc) {
+    eventDetails.setEventGiver(npc);
+  }
+
+  private void initialiseRewards(EventDetails eventDetails) {
+    for (var reward : eventDetails.getRewards()) {
+      reward.load(random);
+      log.info("Initialised reward of {} for {}", reward, eventDetails.getId());
+    }
+  }
+
   private void processPlaceholders(EventDto eventDto, List<Participant> participants) {
     var giverNpc = getNpc(participants, Role.EVENT_GIVER);
     var targetNpc = getNpc(participants, Role.EVENT_TARGET);
@@ -129,11 +134,10 @@ public class BasicEventGenerator implements EventGenerator {
 
   private void process(EventDto toProcess, Npc npc, Npc targetNpc) {
     var eventDetails = toProcess.eventDetails;
-    if (eventDetails.getAbout().isEmpty()) {
-      return;
-    }
-    var about = processor.process(eventDetails.getAbout(), npc, targetNpc);
-    eventDetails.setAbout(about);
+    var tAboutProcessed = process(eventDetails.getAboutTarget(), npc, targetNpc);
+    eventDetails.setAboutTarget(tAboutProcessed);
+    var gAboutProcessed = process(eventDetails.getAboutGiver(), npc, targetNpc);
+    eventDetails.setAboutGiver(gAboutProcessed);
   }
 
   private void process(List<Dialogue> toProcess, Npc npc, Npc targetNpc) {
@@ -164,6 +168,9 @@ public class BasicEventGenerator implements EventGenerator {
   }
 
   private String process(String toProcess, Npc npc, Npc targetNpc) {
+    if (toProcess.isEmpty()) {
+      return toProcess;
+    }
     if (targetNpc == null) {
       return processor.process(toProcess, npc);
     } else {

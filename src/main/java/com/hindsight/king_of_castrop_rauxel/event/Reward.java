@@ -53,7 +53,7 @@ public class Reward implements Randomisable {
 
   @Override
   public String toString() {
-    var colour = CliComponent.toColour(type);
+    var colour = CliComponent.toColour(type).toString();
     return colour + value + FMT.RESET + " " + type.toString().toLowerCase();
   }
 }

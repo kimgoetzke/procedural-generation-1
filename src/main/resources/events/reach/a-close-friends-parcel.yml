@@ -4,7 +4,8 @@
 # - 'reward' (optional, accepts: list of Reward objects)
 eventDetails:
   eventType: REACH
-  about: the parcel of &O
+  aboutGiver: a delivery
+  aboutTarget: the parcel of &O
   rewards:
     - type: GOLD
       minValue: 2

@@ -1,6 +1,7 @@
 eventDetails:
   eventType: REACH
-  about: the delivery from &O
+  aboutGiver: a delivery
+  aboutTarget: the delivery from &O
   rewards:
     - type: GOLD
       minValue: 10

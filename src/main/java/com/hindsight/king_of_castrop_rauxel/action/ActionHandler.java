@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
+import com.hindsight.king_of_castrop_rauxel.action.debug.Debuggable;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
@@ -79,18 +80,15 @@ public class ActionHandler {
 
   public void getDebugActions(Player player, List<Action> actions) {
     prepend(actions, true);
+    var triggerZone = (Debuggable) () -> debug.logLocationsInsideTriggerZone(player);
+    var visitedLocs = (Debuggable) () -> debug.logVisitedLocations(player);
+    var visitedLocsAction = debug.create(index(actions), "Log visited locations", visitedLocs);
     actions.remove(0);
     actions.add(new LocationAction(index(actions), "Resume game", player.getCurrentLocation()));
     actions.add(debug.create(index(actions), "Log memory usage", debug::logMemoryStats));
     actions.add(debug.create(index(actions), "Log all locations", debug::logVertices));
-    actions.add(
-        debug.create(
-            index(actions),
-            "Log locations inside trigger zone",
-            () -> debug.logLocationsInsideTriggerZone(player)));
-    actions.add(
-        debug.create(
-            index(actions), "Log visited locations", () -> debug.logVisitedLocations(player)));
+    actions.add(debug.create(index(actions), "Log locations inside trigger zone", triggerZone));
+    actions.add(visitedLocsAction);
     actions.add(debug.create(index(actions), "Log graph connectivity", debug::printConnectivity));
     actions.add(debug.create(index(actions), "Log graph edges & distances", debug::logGraph));
     actions.add(debug.create(index(actions), "Log close chunks", debug::logWorld));
@@ -107,38 +105,35 @@ public class ActionHandler {
   }
 
   private static void addGoToPoiAction(List<Action> actions, Location currentLocation) {
-    actions.add(
-        new StateAction(
-            index(actions),
-            "Go to... %s"
-                .formatted(
-                    CliComponent.label(
-                        "%s point(s) of interest"
-                            .formatted(currentLocation.getPointsOfInterest().size() - 1),
-                        CliComponent.FMT.BLUE)),
-            CHOOSING_POI));
+    var poisCount = currentLocation.getPointsOfInterest().size() - 1;
+    actions.add(new StateAction(index(actions), getGoToActionName(poisCount), CHOOSING_POI));
+  }
+
+  private static String getGoToActionName(int poisCount) {
+    var labelText = "%s point(s) of interest".formatted(poisCount);
+    var formattedLabel = CliComponent.label(labelText, CliComponent.FMT.BLUE);
+    return "Go to...%s".formatted(formattedLabel);
   }
 
   private static void addLocationActions(List<Action> to, Location currentLocation, Player player) {
     var from = currentLocation.getNeighbours().stream().toList();
-    for (var neighbour : from) {
-      to.add(
-          new LocationAction(
-              index(to),
-              "Travel to %s (%s km %s%s) %s"
-                  .formatted(
-                      neighbour.getName(),
-                      neighbour.distanceTo(currentLocation),
-                      neighbour
-                          .getCardinalDirection(player.getCoordinates().getChunk())
-                          .getName()
-                          .toLowerCase(),
-                      player.getVisitedLocations().stream().anyMatch(a -> a.equals(neighbour))
-                          ? ""
-                          : ", unvisited",
-                      CliComponent.label("Location", CliComponent.FMT.BLUE)),
-              neighbour));
+    for (var n : from) {
+      var action =
+          new LocationAction(index(to), getLocationActionName(currentLocation, player, n), n);
+      to.add(action);
     }
+  }
+
+  private static String getLocationActionName(Location currentLocation, Player player, Location l) {
+    var hasBeenVisited = player.getVisitedLocations().stream().anyMatch(a -> a.equals(l));
+    var visitedText = hasBeenVisited ? "" : ", unvisited";
+    return "Travel to %s (%s km %s%s)%s"
+        .formatted(
+            l.getName(),
+            l.distanceTo(currentLocation),
+            l.getCardinalDirection(player.getCoordinates().getChunk()).getName().toLowerCase(),
+            visitedText,
+            CliComponent.label(CliComponent.Type.LOCATION));
   }
 
   private static void addAllActionsFrom(List<Action> from, List<Action> to) {
