@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This action initiates a dialogue by changing the state to DIALOGUE and setting the current event
- * on the player.
+ * This action initiates a dialogue by changing the state to IN_DIALOGUE and setting the current
+ * event on the player.
  */
 @Getter
 @Builder

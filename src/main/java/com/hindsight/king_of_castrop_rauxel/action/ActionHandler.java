@@ -32,7 +32,7 @@ public class ActionHandler {
 
   private void append(List<Action> actions) {
     if (environmentResolver.isCli()) {
-      actions.add(new ExitAction(actions.size() + 1, "Exit game"));
+      actions.add(new ExitAction(index(actions), "Exit game"));
     }
   }
 
@@ -40,7 +40,7 @@ public class ActionHandler {
     prepend(actions, true);
     var poi = player.getCurrentPoi();
     var location = player.getCurrentLocation();
-    var stayHereAction = new PoiAction(actions.size() + 1, "Stay at " + poi.getName(), poi);
+    var stayHereAction = new PoiAction(index(actions), "Stay at " + poi.getName(), poi);
     actions.add(stayHereAction);
     addAllActionsFrom(location.getAvailableActions(), actions, stayHereAction);
     append(actions);
@@ -69,10 +69,10 @@ public class ActionHandler {
     if (player.getCurrentPoi() instanceof Dungeon dungeon) {
       var sequence = dungeon.getSequence();
       if (sequence.isInProgress()) {
-        actions.add(new CombatAction(actions.size() + 1, "Press on", sequence));
-        actions.add(new StateAction(actions.size() + 1, "Retreat (for now)", AT_POI));
+        actions.add(new CombatAction(index(actions), "Press on", sequence));
+        actions.add(new StateAction(index(actions), "Retreat (for now)", AT_POI));
       } else {
-        actions.add(new StateAction(actions.size() + 1, "Return victoriously", AT_POI));
+        actions.add(new StateAction(index(actions), "Return victoriously", AT_POI));
       }
     }
   }
@@ -80,22 +80,21 @@ public class ActionHandler {
   public void getDebugActions(Player player, List<Action> actions) {
     prepend(actions, true);
     actions.remove(0);
-    actions.add(new LocationAction(actions.size() + 1, "Resume game", player.getCurrentLocation()));
-    actions.add(debug.create(actions.size() + 1, "Log memory usage", debug::logMemoryStats));
-    actions.add(debug.create(actions.size() + 1, "Log all locations", debug::logVertices));
+    actions.add(new LocationAction(index(actions), "Resume game", player.getCurrentLocation()));
+    actions.add(debug.create(index(actions), "Log memory usage", debug::logMemoryStats));
+    actions.add(debug.create(index(actions), "Log all locations", debug::logVertices));
     actions.add(
         debug.create(
-            actions.size() + 1,
+            index(actions),
             "Log locations inside trigger zone",
             () -> debug.logLocationsInsideTriggerZone(player)));
     actions.add(
         debug.create(
-            actions.size() + 1, "Log visited locations", () -> debug.logVisitedLocations(player)));
-    actions.add(
-        debug.create(actions.size() + 1, "Log graph connectivity", debug::printConnectivity));
-    actions.add(debug.create(actions.size() + 1, "Log graph edges & distances", debug::logGraph));
-    actions.add(debug.create(actions.size() + 1, "Log close chunks", debug::logWorld));
-    actions.add(debug.create(actions.size() + 1, "Log visualised plane", debug::printPlane));
+            index(actions), "Log visited locations", () -> debug.logVisitedLocations(player)));
+    actions.add(debug.create(index(actions), "Log graph connectivity", debug::printConnectivity));
+    actions.add(debug.create(index(actions), "Log graph edges & distances", debug::logGraph));
+    actions.add(debug.create(index(actions), "Log close chunks", debug::logWorld));
+    actions.add(debug.create(index(actions), "Print visualised plane", debug::printPlane));
     append(actions);
   }
 
@@ -103,10 +102,14 @@ public class ActionHandler {
     actions.clear();
   }
 
+  private static int index(List<Action> actions) {
+    return actions.size() + 1;
+  }
+
   private static void addGoToPoiAction(List<Action> actions, Location currentLocation) {
     actions.add(
         new StateAction(
-            actions.size() + 1,
+            index(actions),
             "Go to... %s"
                 .formatted(
                     CliComponent.label(
@@ -121,7 +124,7 @@ public class ActionHandler {
     for (var neighbour : from) {
       to.add(
           new LocationAction(
-              to.size() + 1,
+              index(to),
               "Travel to %s (%s km %s%s) %s"
                   .formatted(
                       neighbour.getName(),
@@ -141,7 +144,7 @@ public class ActionHandler {
   private static void addAllActionsFrom(List<Action> from, List<Action> to) {
     var adjustedActions = new ArrayList<>(from);
     for (var action : adjustedActions) {
-      action.setIndex(to.size() + 1);
+      action.setIndex(index(to));
       to.add(action);
     }
   }
@@ -152,7 +155,7 @@ public class ActionHandler {
       if (action.getName().contains(except.getPoi().getName())) {
         continue;
       }
-      action.setIndex(to.size() + 1);
+      action.setIndex(index(to));
       to.add(action);
     }
   }
