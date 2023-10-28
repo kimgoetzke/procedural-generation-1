@@ -20,6 +20,15 @@ public class EventAction implements Action {
   private Event event;
   private Npc npc;
 
+  public static EventAction from(EventAction action) {
+    return EventAction.builder()
+        .index(action.getIndex())
+        .name(action.getName())
+        .event(action.getEvent())
+        .npc(action.getNpc())
+        .build();
+  }
+
   @Override
   public void execute(Player player) {
     if (!player.getEvents().contains(event)

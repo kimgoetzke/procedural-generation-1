@@ -37,27 +37,29 @@ public class Amenity extends AbstractAmenity {
 
   @Override
   public List<Action> getAvailableActions() {
-    var processedActions = new ArrayList<>(availableActions);
-    for (var action : processedActions) {
-      if (action instanceof EventAction eventAction) {
-        if (!eventAction.getEvent().isDisplayable(npc)) {
-          continue;
-        }
-        processEventActionName(action, eventAction);
+    var processedActions = new ArrayList<Action>();
+    for (var action : availableActions) {
+      if (!(action instanceof EventAction eventAction)) {
+        processedActions.add(action);
+        continue;
       }
-      processedActions.add(action);
+      if (eventAction.getEvent().isDisplayable(npc)) {
+        var processedAction = EventAction.from(eventAction);
+        processEventActionName(processedAction);
+        processedActions.add(processedAction);
+      }
     }
     return processedActions;
   }
 
-  private void processEventActionName(Action action, EventAction eventAction) {
-    var details = eventAction.getEvent().getEventDetails();
+  private void processEventActionName(EventAction action) {
+    var details = action.getEvent().getEventDetails();
     if (details.getEventType() == Event.Type.DIALOGUE) {
       action.setName(action.getName() + CliComponent.label(CliComponent.Type.DIALOGUE));
     } else {
       var isEventGiver = details.getEventGiver().equals(npc);
       var aboutText = isEventGiver ? details.getAboutGiver() : details.getAboutTarget();
-      action.setName(getProcessedName(eventAction, aboutText));
+      action.setName(getProcessedName(action, aboutText));
     }
   }
 
