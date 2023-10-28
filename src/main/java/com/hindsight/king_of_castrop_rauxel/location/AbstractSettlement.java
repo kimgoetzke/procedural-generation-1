@@ -1,5 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -45,6 +48,19 @@ public abstract class AbstractSettlement extends AbstractLocation {
         .filter(a -> a.getType() == PointOfInterest.Type.MAIN_SQUARE)
         .findFirst()
         .orElse(null);
+  }
+
+  @Override
+  public List<Action> getAvailableActions() {
+    return availableActions.stream().filter(hasActionsOrIsMainSquare()).toList();
+  }
+
+  private static Predicate<Action> hasActionsOrIsMainSquare() {
+    return a -> {
+      if (!(a instanceof PoiAction pa)) return false;
+      var isMainSquare = pa.getPoi().getType() == PointOfInterest.Type.MAIN_SQUARE;
+      return !pa.getPoi().getAvailableActions().isEmpty() || isMainSquare;
+    };
   }
 
   @Override

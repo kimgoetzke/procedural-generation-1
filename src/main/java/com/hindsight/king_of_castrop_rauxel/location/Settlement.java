@@ -94,12 +94,9 @@ public class Settlement extends AbstractSettlement {
    * settlement and POIs have been generated as the event can reference other POIs, etc.
    */
   private void loadEvents() {
-    pointsOfInterests.forEach(
-        poi -> {
-          if (poi.getType() == Type.QUEST_LOCATION || poi.getType() == Type.SHOP) {
-            loadPrimaryEvent(poi);
-          }
-        });
+    pointsOfInterests.stream()
+        .filter(poi -> poi.getType() == Type.QUEST_LOCATION || poi.getType() == Type.SHOP)
+        .forEach(this::loadPrimaryEvent);
   }
 
   private void loadPrimaryEvent(PointOfInterest poi) {
@@ -114,10 +111,8 @@ public class Settlement extends AbstractSettlement {
 
   private void loadInhabitants() {
     var bounds = LocationBuilder.getSettlementConfig(size).getInhabitants();
-    inhabitantCount =
-        Math.max(
-            random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower(),
-            inhabitants.size());
+    var i = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
+    inhabitantCount = Math.max(i, inhabitants.size());
   }
 
   private void loadPlayerActions() {

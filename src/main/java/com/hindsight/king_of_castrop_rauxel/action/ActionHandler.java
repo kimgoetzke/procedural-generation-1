@@ -24,31 +24,30 @@ public class ActionHandler {
   private final EnvironmentResolver environmentResolver;
   private final DebugActionFactory debug;
 
-  private void prepend(List<Action> actions, boolean showDebugMenu) {
+  private void prepend(List<Action> actions) {
     actions.clear();
-    if (environmentResolver.isDev() && showDebugMenu) {
-      actions.add(new StateAction(1, "Show debug menu", DEBUGGING));
-    }
   }
 
   private void append(List<Action> actions) {
+    if (environmentResolver.isDev()) {
+      actions.add(new StateAction(index(actions), "Show debug menu", DEBUGGING));
+    }
     if (environmentResolver.isCli()) {
       actions.add(new ExitAction(index(actions), "Exit game"));
     }
   }
 
   public void getChoosePoiActions(Player player, List<Action> actions) {
-    prepend(actions, true);
+    prepend(actions);
     var poi = player.getCurrentPoi();
-    var location = player.getCurrentLocation();
     var stayHereAction = new PoiAction(index(actions), "Stay at " + poi.getName(), poi);
     actions.add(stayHereAction);
-    addAllActionsFrom(location.getAvailableActions(), actions, stayHereAction);
+    addAllActionsFrom(player.getCurrentLocation().getAvailableActions(), actions, stayHereAction);
     append(actions);
   }
 
   public void getThisPoiActions(Player player, List<Action> actions) {
-    prepend(actions, true);
+    prepend(actions);
     var poi = player.getCurrentPoi();
     var currentLocation = player.getCurrentLocation();
     addGoToPoiAction(actions, currentLocation);
@@ -60,13 +59,13 @@ public class ActionHandler {
   }
 
   public void getDialogueActions(Player player, List<Action> actions) {
-    prepend(actions, false);
+    prepend(actions);
     var eventActions = player.getCurrentEvent().getCurrentActions();
     addAllActionsFrom(eventActions, actions);
   }
 
   public void getCombatActions(Player player, List<Action> actions) {
-    prepend(actions, false);
+    prepend(actions);
     if (player.getCurrentPoi() instanceof Dungeon dungeon) {
       var sequence = dungeon.getSequence();
       if (sequence.isInProgress()) {
@@ -79,7 +78,7 @@ public class ActionHandler {
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
-    prepend(actions, true);
+    prepend(actions);
     var triggerZone = (Debuggable) () -> debug.logLocationsInsideTriggerZone(player);
     var visitedLocs = (Debuggable) () -> debug.logVisitedLocations(player);
     var visitedLocsAction = debug.create(index(actions), "Log visited locations", visitedLocs);

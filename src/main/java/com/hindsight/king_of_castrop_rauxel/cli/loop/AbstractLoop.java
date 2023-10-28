@@ -112,8 +112,11 @@ public abstract class AbstractLoop {
     if (player.getState() != Player.State.AT_POI) {
       return "";
     }
-    var description = player.getCurrentPoi().getDescription();
-    return Strings.isNullOrEmpty(description) ? "" : description + " ";
+    var poi = player.getCurrentPoi();
+    var hasNoActions = poi.getAvailableActions().isEmpty();
+    var text = hasNoActions ? "There is nothing to do here. " : "";
+    var description = poi.getDescription();
+    return Strings.isNullOrEmpty(description) ? text : description + text + " ";
   }
 
   protected void takeAction(List<Action> actions) {
@@ -140,6 +143,6 @@ public abstract class AbstractLoop {
   }
 
   protected void recoverInvalidAction() {
-    // Empty by default but can be overridden, e.g. to resent any quest progression
+    // Empty by default but can be overridden, e.g. to reset any quest progression
   }
 }

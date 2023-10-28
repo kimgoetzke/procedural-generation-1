@@ -10,12 +10,23 @@ YAML files are read to `EventDto` objects. They require the following elements:
 1. `eventDetails` -> `EventDetails`
 2. `participantData` -> `Map<Role, List<Dialogue>>`
 
-## Event details
+### Event details
 
 The `eventDetails` element must contain the `eventType` which is parsed to `EventType` enum (see `Event` class).
 All other fields of the class are optional. An `id` is generated automatically and should not be provided.
 
-## Participant data
+```yaml
+eventDetails:
+  eventType: REACH # Event.Type enum
+  aboutGiver: a delivery # Optional, type String
+  aboutTarget: the parcel of &O # Optional, type String
+  rewards: # Optional, type List<Reward>
+    - type: GOLD # Reward.Type enum
+      minValue: 2
+      maxValue: 15
+```
+
+### Participant data
 
 The `participantData` element must contain a `Map` of `Role` to `List<Dialogue>`. The `Role` is parsed to `Role` enum (
 see `Role` class).
@@ -49,6 +60,59 @@ participantData:
 - Both `eventState` and `playerState` can be changed in a single action
 - If an action should only advance the dialogue to a different interaction, you must set `eventState` to `NONE` and set
   `nextInteraction` to the index of the next interaction
+
+### Examples
+
+#### How to create a simple dialogue
+
+```yaml
+eventDetails:
+  eventType: DIALOGUE
+  # Add Event.Type DIALOGUE enum
+  # ...and skip all other eventDetails
+participantDetails:
+  EVENT_GIVER:
+    - ...
+```
+
+#### How to branch a dialogue
+
+```yaml
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Can you do this for me?
+          i: 0
+          actions: # Add an action
+            - !action # Indicate mapping to Action class
+              name: (Accept) Alright, I'll do it
+              eventState: NONE # Set eventState to NONE
+              nextInteraction: 1 # Set nextInteraction to anything you want
+            - !action
+              name: (Decline) I'm sorry, I can't
+              eventState: NONE
+              nextInteraction: 2
+        - text: Great, thank you!
+          i: 1
+        - text: That's a shame!
+          i: 2
+```
+
+Note that in the example above, "That's a shame!" would be displayed right after "Great, thank you!". When doing
+branching like this, make sure to use additional actions to change the event state or end the dialogue to avoid this.
+
+#### How to end a dialogue
+
+```yaml
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: Alright, see you around.
+          actions: # Add an action
+            - !action # Indicate mapping to Action class
+              name: Goodbye! # Give it any text/name
+              playerState: AT_POI # Set playerState to AT_POI
+```
 
 ## Other notes
 
