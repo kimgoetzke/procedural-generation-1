@@ -1,0 +1,8 @@
+Northern Gates
+Southern Gates
+Western Gates
+Eastern Gates
+Northern Barricades
+Southern Barricades
+Western Barricades
+Eastern Barricades

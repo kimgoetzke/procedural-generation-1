@@ -1,0 +1,69 @@
+eventDetails:
+  eventType: DIALOGUE
+participantData:
+  EVENT_GIVER:
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Good day. Haven't seen you here in &L before. You new here?
+          i: 0
+        - text: Well, I guess you're one of 'em travellers, aren't ya?
+          i: 1
+          actions:
+            - !action
+              name: Yes, I am - just got here
+              eventState: NONE
+              nextInteraction: 2
+            - !action
+              name: No, I live here
+              eventState: NONE
+              nextInteraction: 4
+        - text: Thought so. Well, I'm &O. Nice to meet you.
+          i: 2
+        - text: I wish I was a traveller. Always wanted to see the world. But I'm stuck here, working me arse off to survive.
+          i: 3
+          actions:
+            - !action
+              name: Nice to meet you too, &OF
+              eventState: ACTIVE
+              nextInteraction: 0
+        - text: You're lying, mate. I can tell. You're not from here. You're a traveller. (&O is visibly getting angry.)
+          i: 4
+          actions:
+            - !action
+              name: I'll better leave now - bye!
+              eventState: DECLINED
+              playerState: AT_POI
+              nextInteraction: 0
+    - !dialogue
+      state: ACTIVE
+      interactions:
+        - text: Gotta get back to work but if you're around for a while, I'd love to hear about your travels.
+          actions:
+            - !action
+              name: Sure, have a good day!
+              playerState: AT_POI
+    - !dialogue
+      state: READY
+      interactions:
+        - text: Gotta get back to work but if you're around for a while, I'd love to hear about your travels.
+          actions:
+            - !action
+              name: Sure, have a good day!
+              playerState: AT_POI
+    - !dialogue
+      state: COMPLETED
+      interactions:
+        - text: Gotta get back to work but if you're around for a while, I'd love to hear about your travels.
+          actions:
+            - !action
+              name: Sure, have a good day!
+              playerState: AT_POI
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: Get outta here, mate! Or I'll bash you're head in! (&O is shaking with anger.)
+          actions:
+            - !action
+              name: (Leave without saying anything)
+              playerState: AT_POI

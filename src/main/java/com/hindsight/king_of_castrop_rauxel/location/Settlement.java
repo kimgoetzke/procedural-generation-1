@@ -1,79 +1,132 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import static com.hindsight.king_of_castrop_rauxel.settings.LocationComponent.*;
-
-import com.hindsight.king_of_castrop_rauxel.action.PlayerAction;
-import com.hindsight.king_of_castrop_rauxel.settings.LocationComponent;
-import com.hindsight.king_of_castrop_rauxel.utils.BasicStringGenerator;
+import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
+import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
+import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
+import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.stream.IntStream;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 
 @Slf4j
-@ToString(callSuper = true)
+@ToString(callSuper = true, includeFieldNames = false)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Settlement extends AbstractSettlement {
 
-  public Settlement() {
-    generate();
-    logResult();
+  public Settlement(
+      Pair<Integer, Integer> worldCoords,
+      Pair<Integer, Integer> chunkCoords,
+      Generators generators,
+      DataServices dataServices) {
+    super(worldCoords, chunkCoords, generators, dataServices);
+    generateFoundation();
+    logResult(true);
   }
 
   @Override
-  public void generate() {
-    log.info("Generating settlement...");
-    size = LocationComponent.randomSize();
-    name = BasicStringGenerator.generate(this.getClass());
-    generateInhabitants();
-    generateAmenities();
-    generatePlayerActions();
+  public void load() {
+    var startTime = System.currentTimeMillis();
+    log.info("Generating full settlement '{}'...", id);
+    LocationBuilder.throwIfRepeatedRequest(this, true);
+    loadPois();
+    loadEvents();
+    loadInhabitants();
+    loadPlayerActions();
+    setLoaded(true);
+    logResult();
+    log.info("Generated '{}' in {} seconds", id, (System.currentTimeMillis() - startTime) / 1000.0);
   }
 
-  private void generateInhabitants() {
-    var bounds = getSettlementConfigurations().get(size).getInhabitants();
-    inhabitants = random.nextInt(bounds.getMaxInclusive() - bounds.getMinInclusive() + 1);
+  private void generateFoundation() {
+    size = LocationBuilder.randomSize(random);
+    area = LocationBuilder.randomArea(random, size);
+    name = generators.nameGenerator().locationNameFrom(this.getClass());
   }
 
-  private void generateAmenities() {
-    getSettlementConfigurations()
-        .get(size)
-        .getAmenities()
-        .forEach(
-            (k, v) ->
-                IntStream.range(v.getMinInclusive(), v.getMaxInclusive() + 1)
-                    .forEach(i -> addAmenity(k)));
-  }
-
-  private void addAmenity(AmenityType type) {
-    var amenity = new Amenity(type, name);
-    if (amenities.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
-      amenities.add(amenity);
-    } else {
-      addAmenity(type);
+  private void loadPois() {
+    var amenities = LocationBuilder.getSettlementConfig(size).getAmenities();
+    for (var amenity : amenities.entrySet()) {
+      var bounds = amenity.getValue();
+      var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
+      var type = amenity.getKey();
+      IntStream.range(0, count).forEach(i -> addPoi(type));
     }
   }
 
-  private void generatePlayerActions() {
-    for (int i = 1; i <= amenities.size(); i++) {
+  private void addPoi(Type type) {
+    var npc = new Inhabitant(random, generators);
+    var amenity = LocationBuilder.createInstance(this, npc, type);
+    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
+      pointsOfInterests.add(amenity);
+      inhabitants.add(npc);
+    } else {
+      revert(amenity);
+      addPoi(type);
+    }
+  }
+
+  private void revert(PointOfInterest poi) {
+    poi.getNpc().setHome(null);
+    log.info(
+        "Skipping duplicate {} POI '{}' and generating alternative", poi.getType(), poi.getName());
+  }
+
+  /**
+   * Generates events and available actions for each POI. This method must be called after the
+   * settlement and POIs have been generated as the event can reference other POIs, etc.
+   */
+  private void loadEvents() {
+    pointsOfInterests.stream()
+        .filter(poi -> poi.getType() != Type.DUNGEON && poi.getType() != Type.ENTRANCE)
+        .forEach(this::loadPrimaryEvent);
+  }
+
+  private void loadPrimaryEvent(PointOfInterest poi) {
+    poi.getNpc().loadPrimaryEvent();
+    var event = poi.getNpc().getPrimaryEvent();
+    var participatingNpcs = event.getParticipantNpcs();
+    for (var npc : participatingNpcs) {
+      npc.addSecondaryEvent(event);
+      npc.getHome().addAvailableAction(event);
+    }
+  }
+
+  private void loadInhabitants() {
+    var bounds = LocationBuilder.getSettlementConfig(size).getInhabitants();
+    var i = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
+    inhabitantCount = Math.max(i, inhabitants.size());
+  }
+
+  private void loadPlayerActions() {
+    for (int i = 0; i < pointsOfInterests.size(); i++) {
       availableActions.add(
-          PlayerAction.builder()
-              .number(i)
-              .name("[%s] Go to %s".formatted(i, amenities.get(i - 1).getName()))
-              .location(amenities.get(i - 1))
+          PoiAction.builder()
+              .index(i)
+              .name(getActionName(i))
+              .poi(pointsOfInterests.get(i))
               .build());
     }
   }
 
-  /**
-   * Modify once higher-level locations such as countries or lands are implemented. This method is
-   * currently redundant but would allow referencing the parent name in its own name.
-   */
-  @Override
-  public void generate(String parentName) {
-    generate();
+  private String getActionName(int i) {
+    return "Go to %s%s"
+        .formatted(
+            pointsOfInterests.get(i).getName(),
+            CliComponent.label(pointsOfInterests.get(i).getType()));
   }
 
   @Override
   public void logResult() {
-    log.info("Generated: {}", this);
+    logResult(false);
+  }
+
+  public void logResult(boolean initial) {
+    var action = initial || isLoaded() ? "Generated" : "Unloaded";
+    var summary = initial ? this.getBriefSummary() : this.toString();
+    log.info("{}: {}", action, summary);
   }
 }

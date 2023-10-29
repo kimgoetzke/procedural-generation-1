@@ -1,0 +1,86 @@
+THIS FILE IS NOT USED. IT CONTAINS POTENTIAL NAMES FOR FUTURE AMENITIES.
+
+-- General
+Palace
+Royal Residence
+Cathedral
+Church
+Temple
+Marketplace
+Granaries
+Public Bath
+Council Hall
+City Gates
+Public Oven
+Guardhouse
+City Mint
+City Maintenance Depot
+Market Authority Building
+Record Archive
+Tax Collector's Office
+Council Chamber
+Courthouse
+City Hall
+-SHOP
+-SQUARE
+WEAPON_SHOP
+Tavern
+Inn
+Blacksmith
+Stables
+Alchemist
+Bakery
+Butcher
+Farm
+Fishmonger
+Tailor
+Cobbler
+Jeweler
+Carpenter
+Mason
+Potter
+Weaver
+Brewery
+Distillery
+Winery
+Tannery
+Leather-worker
+Fletcher
+Armorer
+Saddler
+Bookbinder
+Bookstore
+Library
+Scribe
+Apothecary
+Herbalist
+Healer
+Physician
+Surgeon
+Barber
+Bathhouse
+Baths
+Bath
+Bathing Room,
+University
+Academy
+School
+College
+Museum
+Art Gallery
+Theater
+
+-- Shops
+Metalworking Forge
+&O's Forge
+Textile Workshop
+&O's Textiles
+Carpentry Shop
+&O's Carpentry
+Jewelry Studio
+&O's Jewelries
+Potter's Workshop
+&P's Potter
+Armourer
+&O's Armour Shop
+Armourer of &P
