@@ -76,6 +76,10 @@ public class Player implements Visitor, Combatant {
 
   public void addExperience(int amount) {
     this.experience += amount;
+    if (experience >= PLAYER_EXPERIENCE_TO_LEVEL_UP) {
+      level++;
+      experience = experience % PLAYER_EXPERIENCE_TO_LEVEL_UP;
+    }
   }
 
   public void changeGoldBy(int amount) {

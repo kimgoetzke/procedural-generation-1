@@ -101,8 +101,8 @@ public final class AppConstants {
   public static final Range T5_ENEMY_DAMAGE = new Range(1, 1.2F, 2);
 
   // PLAYER PROPERTIES
-
   public static final int PLAYER_STARTING_GOLD = 100;
   public static final int PLAYER_STARTING_MAX_HEALTH = 100;
+  public static final int PLAYER_EXPERIENCE_TO_LEVEL_UP = 100;
   public static final Damage PLAYER_STARTING_DAMAGE = new Damage(1, 4);
 }
