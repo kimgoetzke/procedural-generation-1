@@ -1,10 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.items;
 
-import lombok.Getter;
+import com.hindsight.king_of_castrop_rauxel.location.Shop;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -12,15 +11,16 @@ public class ConsumableService {
 
   private final ConsumablesRepository consumablesRepository;
 
-  @Getter private final List<Consumable> consumables;
-
   public ConsumableService(ConsumablesRepository consumablesRepository) {
     this.consumablesRepository = consumablesRepository;
-    this.consumables = getAllConsumables();
-    log.info("Loaded {} consumables from database", consumables.size());
+    log.info("Loaded {} consumables from database", getAllConsumables().size());
   }
 
   public List<Consumable> getAllConsumables() {
     return (List<Consumable>) consumablesRepository.findAll();
+  }
+
+  public List<Consumable> getConsumablesByType(Shop.Type type) {
+    return consumablesRepository.findBySellerType(type);
   }
 }

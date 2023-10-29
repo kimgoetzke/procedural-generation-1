@@ -10,5 +10,5 @@ public interface Buyable {
 
   int getBasePrice();
 
-  void boughtBy(Player player);
+  boolean isBoughtBy(Player player);
 }

@@ -18,13 +18,18 @@ public class BuyAction implements Action {
 
   public BuyAction(int index, Buyable item) {
     this.index = index;
-    this.name = CliComponent.buyable(item);
+    this.name = "Buy: " + CliComponent.buyable(item);
     this.item = item;
   }
 
   @Override
   public void execute(Player player) {
-    item.boughtBy(player);
+    var isBought = item.isBoughtBy(player);
+    var errorMessage = "Not enough gold to buy: '%s'.%n".formatted(item.getName());
+    if (!isBought) {
+      System.out.printf(CliComponent.error(errorMessage));
+      CliComponent.awaitEnterKeyPress();
+    }
     nextState(player);
   }
 

@@ -4,6 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import org.springframework.data.util.Pair;
 public abstract class AbstractSettlement extends AbstractLocation {
 
   @Getter protected final Generators generators;
+  @Getter protected final DataServices dataServices;
   @Getter protected Size size;
   protected Player loyalTo;
   protected int area;
@@ -33,9 +35,11 @@ public abstract class AbstractSettlement extends AbstractLocation {
   protected AbstractSettlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
-      Generators generators) {
+      Generators generators,
+      DataServices dataServices) {
     super(worldCoords, chunkCoords);
     this.generators = generators;
+    this.dataServices = dataServices;
     generators.initialiseAll(random);
   }
 

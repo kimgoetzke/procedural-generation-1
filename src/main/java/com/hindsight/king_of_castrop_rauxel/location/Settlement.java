@@ -4,6 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
+import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.stream.IntStream;
 import lombok.EqualsAndHashCode;
@@ -19,8 +20,9 @@ public class Settlement extends AbstractSettlement {
   public Settlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
-      Generators generators) {
-    super(worldCoords, chunkCoords, generators);
+      Generators generators,
+      DataServices dataServices) {
+    super(worldCoords, chunkCoords, generators, dataServices);
     generateFoundation();
     logResult(true);
   }

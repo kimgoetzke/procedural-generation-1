@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.items;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,17 +23,33 @@ public class Consumable implements Buyable {
 
   @Getter private String name;
   private int tier;
-  private int effectHealth;
+
+  @Enumerated(EnumType.STRING)
+  private Shop.Type sellerType;
+
   @Getter private int basePrice;
+  private int effectHealth;
+  private int effectMaxHealth;
 
   @Override
   public String getDescription() {
-    return "Restores %s HP".formatted(CliComponent.health(effectHealth));
+    var stringBuilder = new StringBuilder();
+    var restoresHealth = "restores " + CliComponent.health(effectHealth) + " HP, ";
+    stringBuilder.append(effectHealth > 0 ? restoresHealth : "");
+    var increasesMaxHealth = "increases max HP by " + CliComponent.health(effectMaxHealth) + ", ";
+    stringBuilder.append(effectMaxHealth > 0 ? increasesMaxHealth : "");
+    stringBuilder.setLength(stringBuilder.length() - 2);
+    return stringBuilder.toString();
   }
 
   @Override
-  public void boughtBy(Player player) {
-    player.addGold(-basePrice);
-    player.setHealth(player.getHealth() + effectHealth);
+  public boolean isBoughtBy(Player player) {
+    if (player.getGold() < basePrice) {
+      return false;
+    }
+    player.changeGoldBy(-basePrice);
+    player.changeHealthBy(effectHealth);
+    player.changeMaxHealthBy(effectMaxHealth);
+    return true;
   }
 }

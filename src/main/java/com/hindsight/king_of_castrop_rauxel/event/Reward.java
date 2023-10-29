@@ -41,7 +41,7 @@ public class Reward implements Randomisable {
       load(new Random());
     }
     switch (type) {
-      case GOLD -> player.addGold(value);
+      case GOLD -> player.changeGoldBy(value);
       case EXPERIENCE -> player.addExperience(value);
     }
   }

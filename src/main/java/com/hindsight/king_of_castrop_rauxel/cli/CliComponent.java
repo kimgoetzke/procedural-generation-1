@@ -16,7 +16,7 @@ public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
   public static final String LABEL_FORMAT = " %s(%s)%s";
-  public static final String BUYABLE_ACTION_FORMAT = " %s, %s (%s gold)";
+  public static final String BUYABLE_ACTION_FORMAT = "%s - %s (%s gold)";
 
   public enum FMT {
     RESET("\033[0m"),
@@ -168,13 +168,16 @@ public class CliComponent {
     return FMT.YELLOW + String.valueOf(gold) + FMT.RESET;
   }
 
+  public static String buyable(Buyable b) {
+    return BUYABLE_ACTION_FORMAT.formatted(b.getName(), b.getDescription(), gold(b.getBasePrice()));
+  }
+
   public static String bold(String text) {
     return FMT.WHITE_BOLD_BRIGHT + text + FMT.RESET;
   }
 
-  public static String buyable(Buyable b) {
-    return BUYABLE_ACTION_FORMAT.formatted(
-        bold(b.getName()), b.getDescription(), gold(b.getBasePrice()));
+  public static String error(String text) {
+    return FMT.RED + text + FMT.RESET;
   }
 
   // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue

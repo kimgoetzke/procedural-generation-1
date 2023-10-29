@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.items.ConsumableService;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
@@ -8,12 +9,15 @@ import com.hindsight.king_of_castrop_rauxel.utils.TerrainGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import java.util.Scanner;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class AppConfiguration {
+
+  private final ConsumableService consumableService;
 
   @Bean
   public Scanner scanner() {
@@ -41,6 +45,11 @@ public class AppConfiguration {
   }
 
   @Bean
+  public DataServices dataServices() {
+    return new DataServices(consumableService);
+  }
+
+  @Bean
   public FolderReader folderReader() {
     return new FolderReader();
   }
@@ -62,6 +71,6 @@ public class AppConfiguration {
 
   @Bean
   public WorldHandler worldBuilder() {
-    return new WorldHandler(map(), generators());
+    return new WorldHandler(map(), generators(), dataServices());
   }
 }

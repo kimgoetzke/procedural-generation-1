@@ -15,6 +15,8 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
+
 @Slf4j
 @Getter
 public class Player implements Visitor, Combatant {
@@ -26,11 +28,12 @@ public class Player implements Visitor, Combatant {
   private final Coordinates coordinates;
   private final Pair<Integer, Integer> startCoordinates;
   private final Random random = new Random();
-  private int gold = 100;
-  private int health = 100;
+  private int gold = PLAYER_STARTING_GOLD;
+  private int health = PLAYER_STARTING_MAX_HEALTH;
+  private int maxHealth = PLAYER_STARTING_MAX_HEALTH;
   private int experience = 0;
   private int level = 1;
-  private Damage damage = Damage.of(1, 4);
+  private Damage damage = PLAYER_STARTING_DAMAGE;
   private State previousState = State.AT_POI;
   private State state = State.AT_POI;
   private Location currentLocation;
@@ -71,16 +74,24 @@ public class Player implements Visitor, Combatant {
     events.add(event);
   }
 
-  public void addGold(int amount) {
-    this.gold += amount;
-  }
-
   public void addExperience(int amount) {
     this.experience += amount;
   }
 
+  public void changeGoldBy(int amount) {
+    this.gold += amount;
+  }
+
+  public void changeHealthBy(int health) {
+    this.health = Math.max(0, Math.min(maxHealth, this.health + health));
+  }
+
   public void setHealth(int health) {
     this.health = health;
+  }
+
+  public void changeMaxHealthBy(int maxHealth) {
+    this.maxHealth = Math.max(PLAYER_STARTING_MAX_HEALTH, this.maxHealth + maxHealth);
   }
 
   @Override

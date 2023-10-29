@@ -13,6 +13,7 @@ import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
+import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +29,7 @@ public abstract class BaseWorldTest {
   @Autowired protected Generators generators;
   @Autowired protected AppProperties appProperties;
   @Autowired protected WorldHandler worldHandler;
+  @Autowired protected DataServices dataServices;
 
   protected Chunk chunk;
   protected World world;

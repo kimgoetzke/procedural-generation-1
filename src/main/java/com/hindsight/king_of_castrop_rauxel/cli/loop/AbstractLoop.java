@@ -6,6 +6,7 @@ import static java.lang.System.out;
 import com.google.common.base.Strings;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;
 import de.codeshelf.consoleui.prompt.ListResult;
@@ -114,9 +115,9 @@ public abstract class AbstractLoop {
     }
     var poi = player.getCurrentPoi();
     var hasNoActions = poi.getAvailableActions().isEmpty();
-    var text = hasNoActions ? "There is nothing to do here. " : "";
+    var text = hasNoActions ? "There is nothing to do here. " : " ";
     var description = poi.getDescription();
-    return Strings.isNullOrEmpty(description) ? text : description + text + " ";
+    return Strings.isNullOrEmpty(description) ? text : description + text;
   }
 
   protected void takeAction(List<Action> actions) {
@@ -129,7 +130,9 @@ public abstract class AbstractLoop {
       var action = getValidActionOrThrow(validInput, actions);
       action.execute(player);
     } catch (NumberFormatException e) {
-      out.println(FMT.RED + "Invalid choice, try again..." + FMT.RESET);
+      var errorMessage = "Invalid choice, try again...%n";
+      out.printf(CliComponent.error(errorMessage));
+      CliComponent.awaitEnterKeyPress();
       recoverInvalidAction();
     }
     out.println();

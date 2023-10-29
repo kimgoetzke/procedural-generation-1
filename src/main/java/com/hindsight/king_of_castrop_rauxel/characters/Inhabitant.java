@@ -6,7 +6,8 @@ import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
+
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class Inhabitant implements Npc {
 
   @Override
   public void load() {
-    id = "NPC~" + UUID.randomUUID();
+    id = IdBuilder.idFrom(this.getClass());
     firstName = generators.nameGenerator().npcFirstNameFrom(Inhabitant.class);
     lastName = generators.nameGenerator().npcLastNameFrom(Inhabitant.class);
     fullName = firstName + " " + lastName;
@@ -46,10 +47,11 @@ public class Inhabitant implements Npc {
     return firstName + " " + lastName;
   }
 
+  /** Set or resets (i.e. sets to null) the home of this inhabitant. */
   @Override
   public void setHome(PointOfInterest home) {
     this.home = home;
-    log.info("Set home of '{}' to {} '{}'", this.fullName, home.getType(), home.getId());
+    log.info("Set home of '{}' to: {}", this.fullName, home);
   }
 
   @Override

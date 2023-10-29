@@ -205,10 +205,12 @@ class WorldHandlerTest extends BaseWorldTest {
     assertEquals(Size.XS, LocationBuilder.randomSize(new Random()));
     assertEquals(1, LocationBuilder.randomArea(new Random(), Size.XS));
 
-    var v1 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(0, 0), generators));
-    var v2 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(20, 20), generators));
-    var v3 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(100, 100), generators));
-    var v4 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(500, 500), generators));
+    var v1 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(0, 0), generators, dataServices));
+    var v2 = map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(20, 20), generators, dataServices));
+    var v3 =
+        map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(100, 100), generators, dataServices));
+    var v4 =
+        map.addVertex(new Settlement(C_1_W_COORDS, Pair.of(500, 500), generators, dataServices));
 
     chunk.place(v1.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
     chunk.place(v2.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);

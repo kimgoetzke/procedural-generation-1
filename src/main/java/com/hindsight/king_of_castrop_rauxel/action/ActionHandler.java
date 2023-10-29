@@ -82,7 +82,6 @@ public class ActionHandler {
     var triggerZone = (Debuggable) () -> debug.logLocationsInsideTriggerZone(player);
     var visitedLocs = (Debuggable) () -> debug.logVisitedLocations(player);
     var visitedLocsAction = debug.create(index(actions), "Log visited locations", visitedLocs);
-    actions.remove(0);
     actions.add(new LocationAction(index(actions), "Resume game", player.getCurrentLocation()));
     actions.add(debug.create(index(actions), "Log memory usage", debug::logMemoryStats));
     actions.add(debug.create(index(actions), "Log all locations", debug::logVertices));

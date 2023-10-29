@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
+import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import com.hindsight.king_of_castrop_rauxel.world.Range;
 import lombok.NoArgsConstructor;
@@ -98,4 +99,10 @@ public final class AppConstants {
   public static final Range T3_ENEMY_DAMAGE = new Range(1, 1, 1.2F);
   public static final Range T4_ENEMY_DAMAGE = new Range(1, 1, 1.5F);
   public static final Range T5_ENEMY_DAMAGE = new Range(1, 1.2F, 2);
+
+  // PLAYER PROPERTIES
+
+  public static final int PLAYER_STARTING_GOLD = 100;
+  public static final int PLAYER_STARTING_MAX_HEALTH = 100;
+  public static final Damage PLAYER_STARTING_DAMAGE = new Damage(1, 4);
 }

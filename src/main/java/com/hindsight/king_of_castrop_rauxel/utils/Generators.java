@@ -6,7 +6,7 @@ import java.util.Random;
 public record Generators(
     NameGenerator nameGenerator, EventGenerator eventGenerator, TerrainGenerator terrainGenerator) {
 
-  public List<Generator> getAll() {
+  private List<Generator> getAll() {
     return List.of(nameGenerator, eventGenerator, terrainGenerator);
   }
 
