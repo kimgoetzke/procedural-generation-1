@@ -49,7 +49,7 @@ public class Inhabitant implements Npc {
   @Override
   public void setHome(PointOfInterest home) {
     this.home = home;
-    log.info("Set home of '{}' to: {}", this.fullName, home);
+    log.info("Set home of '{}' to {} '{}'", this.fullName, home.getType(), home.getId());
   }
 
   @Override
