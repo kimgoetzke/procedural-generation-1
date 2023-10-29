@@ -114,6 +114,7 @@ public class LocationBuilder {
       Location parent, Npc npc, PointOfInterest.Type type) {
     return switch (type) {
       case DUNGEON -> new Dungeon(type, npc, parent);
+      case SHOP -> new Shop(type, npc, parent);
       default -> new Amenity(type, npc, parent);
     };
   }

@@ -9,7 +9,9 @@ public interface NameGenerator extends Generator {
   String locationNameFrom(Class<?> clazz);
 
   String locationNameFrom(
-      AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz);
+      Class<?> clazz, AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant);
+
+  String shopNameFrom(AbstractAmenity amenity, Shop.Type type, String parentName, Npc inhabitant);
 
   String npcFirstNameFrom(Class<?> clazz);
 

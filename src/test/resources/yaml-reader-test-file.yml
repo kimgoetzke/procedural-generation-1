@@ -1,6 +1,7 @@
 eventDetails:
   eventType: REACH
-  about: EXPECTED_TEXT
+  aboutGiver: EXPECTED_TEXT
+  aboutTarget: EXPECTED_TEXT
   rewards:
     - type: GOLD
       minValue: 10

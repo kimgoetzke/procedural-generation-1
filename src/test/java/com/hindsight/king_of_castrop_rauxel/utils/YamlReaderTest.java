@@ -45,7 +45,8 @@ class YamlReaderTest extends YamlReader {
     assertThat(data).isNotNull();
     assertThat(data.eventDetails).isNotNull();
     assertThat(data.eventDetails.getEventType()).isEqualTo(Event.Type.REACH);
-    assertThat(data.eventDetails.getAbout()).isEqualTo(EXPECTED_TEXT);
+    assertThat(data.eventDetails.getAboutGiver()).isEqualTo(EXPECTED_TEXT);
+    assertThat(data.eventDetails.getAboutTarget()).isEqualTo(EXPECTED_TEXT);
     assertThat(data.eventDetails.getRewards().get(0).getType()).isEqualTo(Reward.Type.GOLD);
     assertThat(data.eventDetails.getRewards().get(0).getMinValue()).isEqualTo(10);
     assertThat(data.eventDetails.getRewards().get(0).getMaxValue()).isEqualTo(15);

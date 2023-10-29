@@ -3,7 +3,6 @@ package com.hindsight.king_of_castrop_rauxel.world;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.XL_AMENITIES_QUEST_LOCATION;
-import static com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity.*;
 import static com.hindsight.king_of_castrop_rauxel.location.LocationBuilder.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
@@ -12,6 +11,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
@@ -103,41 +103,41 @@ public abstract class BaseWorldTest {
     l.setArea(L_AREA);
     xl.setArea(XL_AREA);
 
-    EnumMap<Type, Bounds> xsAmenities = new EnumMap<>(Type.class);
-    EnumMap<Type, Bounds> sAmenities = new EnumMap<>(Type.class);
-    EnumMap<Type, Bounds> mAmenities = new EnumMap<>(Type.class);
-    EnumMap<Type, Bounds> lAmenities = new EnumMap<>(Type.class);
-    EnumMap<Type, Bounds> xlAmenities = new EnumMap<>(Type.class);
+    EnumMap<PointOfInterest.Type, Bounds> xsAmenities = new EnumMap<>(PointOfInterest.Type.class);
+    EnumMap<PointOfInterest.Type, Bounds> sAmenities = new EnumMap<>(PointOfInterest.Type.class);
+    EnumMap<PointOfInterest.Type, Bounds> mAmenities = new EnumMap<>(PointOfInterest.Type.class);
+    EnumMap<PointOfInterest.Type, Bounds> lAmenities = new EnumMap<>(PointOfInterest.Type.class);
+    EnumMap<PointOfInterest.Type, Bounds> xlAmenities = new EnumMap<>(PointOfInterest.Type.class);
 
-    xsAmenities.put(Type.ENTRANCE, XS_AMENITIES_ENTRANCE);
-    sAmenities.put(Type.ENTRANCE, S_AMENITIES_ENTRANCE);
-    mAmenities.put(Type.ENTRANCE, M_AMENITIES_ENTRANCE);
-    lAmenities.put(Type.ENTRANCE, L_AMENITIES_ENTRANCE);
-    xlAmenities.put(Type.ENTRANCE, XL_AMENITIES_ENTRANCE);
+    xsAmenities.put(PointOfInterest.Type.ENTRANCE, XS_AMENITIES_ENTRANCE);
+    sAmenities.put(PointOfInterest.Type.ENTRANCE, S_AMENITIES_ENTRANCE);
+    mAmenities.put(PointOfInterest.Type.ENTRANCE, M_AMENITIES_ENTRANCE);
+    lAmenities.put(PointOfInterest.Type.ENTRANCE, L_AMENITIES_ENTRANCE);
+    xlAmenities.put(PointOfInterest.Type.ENTRANCE, XL_AMENITIES_ENTRANCE);
 
-    xsAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
-    sAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
-    mAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
-    lAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
-    xlAmenities.put(Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    xsAmenities.put(PointOfInterest.Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    sAmenities.put(PointOfInterest.Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    mAmenities.put(PointOfInterest.Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    lAmenities.put(PointOfInterest.Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
+    xlAmenities.put(PointOfInterest.Type.MAIN_SQUARE, AMENITIES_MAIN_SQUARE);
 
-    xsAmenities.put(Type.SHOP, XS_AMENITIES_SHOP);
-    sAmenities.put(Type.SHOP, S_AMENITIES_SHOP);
-    mAmenities.put(Type.SHOP, M_AMENITIES_SHOP);
-    lAmenities.put(Type.SHOP, L_AMENITIES_SHOP);
-    xlAmenities.put(Type.SHOP, XL_AMENITIES_SHOP);
+    xsAmenities.put(PointOfInterest.Type.SHOP, XS_AMENITIES_SHOP);
+    sAmenities.put(PointOfInterest.Type.SHOP, S_AMENITIES_SHOP);
+    mAmenities.put(PointOfInterest.Type.SHOP, M_AMENITIES_SHOP);
+    lAmenities.put(PointOfInterest.Type.SHOP, L_AMENITIES_SHOP);
+    xlAmenities.put(PointOfInterest.Type.SHOP, XL_AMENITIES_SHOP);
 
-    xsAmenities.put(Type.QUEST_LOCATION, XS_AMENITIES_QUEST_LOCATION);
-    sAmenities.put(Type.QUEST_LOCATION, S_AMENITIES_QUEST_LOCATION);
-    mAmenities.put(Type.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
-    lAmenities.put(Type.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
-    xlAmenities.put(Type.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
+    xsAmenities.put(PointOfInterest.Type.QUEST_LOCATION, XS_AMENITIES_QUEST_LOCATION);
+    sAmenities.put(PointOfInterest.Type.QUEST_LOCATION, S_AMENITIES_QUEST_LOCATION);
+    mAmenities.put(PointOfInterest.Type.QUEST_LOCATION, M_AMENITIES_QUEST_LOCATION);
+    lAmenities.put(PointOfInterest.Type.QUEST_LOCATION, L_AMENITIES_QUEST_LOCATION);
+    xlAmenities.put(PointOfInterest.Type.QUEST_LOCATION, XL_AMENITIES_QUEST_LOCATION);
 
-    xsAmenities.put(Type.DUNGEON, XL_AMENITIES_DUNGEON);
-    sAmenities.put(Type.DUNGEON, S_AMENITIES_DUNGEON);
-    mAmenities.put(Type.DUNGEON, M_AMENITIES_DUNGEON);
-    lAmenities.put(Type.DUNGEON, L_AMENITIES_DUNGEON);
-    xlAmenities.put(Type.DUNGEON, XL_AMENITIES_DUNGEON);
+    xsAmenities.put(PointOfInterest.Type.DUNGEON, XL_AMENITIES_DUNGEON);
+    sAmenities.put(PointOfInterest.Type.DUNGEON, S_AMENITIES_DUNGEON);
+    mAmenities.put(PointOfInterest.Type.DUNGEON, M_AMENITIES_DUNGEON);
+    lAmenities.put(PointOfInterest.Type.DUNGEON, L_AMENITIES_DUNGEON);
+    xlAmenities.put(PointOfInterest.Type.DUNGEON, XL_AMENITIES_DUNGEON);
 
     xs.setAmenities(xsAmenities);
     s.setAmenities(sAmenities);

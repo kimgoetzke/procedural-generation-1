@@ -5,12 +5,13 @@ import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
+import com.hindsight.king_of_castrop_rauxel.location.Amenity;
+import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
 public class BasicNameGenerator implements NameGenerator {
@@ -37,12 +38,12 @@ public class BasicNameGenerator implements NameGenerator {
 
   @Override
   public String locationNameFrom(Class<?> clazz) {
-    return locationNameFrom(null, null, null, null, clazz);
+    return locationNameFrom(clazz, null, null, null, null);
   }
 
   @Override
   public String locationNameFrom(
-      AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant, Class<?> clazz) {
+      Class<?> clazz, AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant) {
     var type = amenity == null ? null : amenity.getType();
     var withType = type == null ? "" : HYPHEN + type.name().toLowerCase();
     var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toLowerCase();
@@ -65,6 +66,19 @@ public class BasicNameGenerator implements NameGenerator {
     processFileNamePlaceholders(words, pathNameWithTypeAndSize, type);
     processor.process(words, parentName, inhabitant, amenity);
     return String.join("", words);
+  }
+
+  @Override
+  public String shopNameFrom(AbstractAmenity amenity, Shop.Type type, String parentName, Npc inhabitant) {
+    var className = amenity.getClass().getSimpleName().toLowerCase();
+    var basePath = Amenity.class.getSimpleName() + HYPHEN + className;
+    var pathName = basePath + HYPHEN + type.name().toLowerCase();
+    var words = new ArrayList<String>();
+    log.debug("Attempting to generate shop name for '{}'", pathName);
+    randomWordFromSpecificFile(words, pathName);
+    setFallbackStringIfListEmpty(words, className);
+    processor.process(words, parentName, inhabitant, amenity);
+    return words.get(0).trim();
   }
 
   @Override
@@ -155,7 +169,7 @@ public class BasicNameGenerator implements NameGenerator {
   private void setFallbackStringIfListEmpty(List<String> words, String className) {
     if (words.isEmpty()) {
       log.error("No input files found for class '{}'", className);
-      words.add(className.toUpperCase() + " " + RandomStringUtils.randomNumeric(3));
+      words.add(className.toUpperCase() + " " + random.nextInt(1000));
     }
   }
 
@@ -165,7 +179,7 @@ public class BasicNameGenerator implements NameGenerator {
       if (result.isEmpty()) {
         log.warn("Failed to replace '{}' at path '{}'", words.get(0), pathName);
         var fallbackName = type != null ? type.name() : pathName;
-        words.set(0, NONDESCRIPT + fallbackName + " " + RandomStringUtils.randomNumeric(3));
+        words.set(0, NONDESCRIPT + fallbackName + " " + random.nextInt(1000));
       } else {
         var randomWord = txtReader.getRandom(result, random);
         log.info("Replacing '{}' with word '{}'", words.get(0), randomWord);
