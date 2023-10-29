@@ -4,6 +4,7 @@ import static java.lang.System.out;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
+import com.hindsight.king_of_castrop_rauxel.items.Buyable;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
   public static final String LABEL_FORMAT = " %s(%s)%s";
+  public static final String BUYABLE_ACTION_FORMAT = " %s, %s (%s gold)";
 
   public enum FMT {
     RESET("\033[0m"),
@@ -162,8 +164,17 @@ public class CliComponent {
     return FMT.RED + String.valueOf(health) + FMT.RESET;
   }
 
+  public static String gold(int gold) {
+    return FMT.YELLOW + String.valueOf(gold) + FMT.RESET;
+  }
+
   public static String bold(String text) {
     return FMT.WHITE_BOLD_BRIGHT + text + FMT.RESET;
+  }
+
+  public static String buyable(Buyable b) {
+    return BUYABLE_ACTION_FORMAT.formatted(
+        bold(b.getName()), b.getDescription(), gold(b.getBasePrice()));
   }
 
   // TODO: Fix awaitEnterKeyPress() when called in JAR with multiple text lines in dialogue
