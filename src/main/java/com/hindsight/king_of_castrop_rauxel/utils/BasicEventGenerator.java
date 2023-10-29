@@ -9,8 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BasicEventGenerator implements EventGenerator {
 
-  private static final int MAX_ATTEMPTS = 3;
-  public static final String NPC_DISMISSIVE = "npc-dismissive";
+  private static final String NPC_DISMISSIVE = "npc-dismissive";
   private static final String FALLBACK_ONE_LINER = "Hum?";
   private final FolderReader folderReader;
   private final TxtReader txtReader;
@@ -79,8 +78,9 @@ public class BasicEventGenerator implements EventGenerator {
   }
 
   private PointOfInterest tryToFindAPoi(Npc npc) {
-    for (int i = 0; i < MAX_ATTEMPTS; i++) {
-      var poi = findPoiInSameLocation(npc);
+    var availablePois = npc.getHome().getParent().getPointsOfInterest();
+    for (int i = 0; i < availablePois.size(); i++) {
+      var poi = findPoiInSameLocation(npc, availablePois);
       if (poi != null) {
         return poi;
       }
@@ -89,13 +89,13 @@ public class BasicEventGenerator implements EventGenerator {
     return null;
   }
 
-  private PointOfInterest findPoiInSameLocation(Npc npc) {
-    var pointsOfInterest = npc.getHome().getParent().getPointsOfInterest();
-    var randomNumber = random.nextInt(0, pointsOfInterest.size());
-    var poi = pointsOfInterest.get(randomNumber);
+  private PointOfInterest findPoiInSameLocation(Npc npc, List<PointOfInterest> pois) {
+    var randomNumber = random.nextInt(0, pois.size());
+    var poi = pois.get(randomNumber);
     var hasNoNpc = poi.getNpc() == null;
     var isSamePoi = npc.getHome().equals(poi);
-    if (hasNoNpc || isSamePoi) {
+    var isNotEligible = poi.getType() == PointOfInterest.Type.DUNGEON;
+    if (hasNoNpc || isSamePoi || isNotEligible) {
       return null;
     }
     return poi;

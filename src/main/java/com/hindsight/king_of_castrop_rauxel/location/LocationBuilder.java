@@ -3,8 +3,10 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
+
 import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -88,16 +90,6 @@ public class LocationBuilder {
     SETTLEMENT_CONFIGS.put(Size.XL, xl);
   }
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Available settlement configurations:%n".formatted());
-    for (var entry : SETTLEMENT_CONFIGS.entrySet()) {
-      sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
-    }
-    return sb.toString();
-  }
-
   /**
    * Returns a random Size enum. Must be provided with a Random in order to ensure reproducibility.
    */
@@ -118,12 +110,30 @@ public class LocationBuilder {
     return random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
   }
 
+  public static PointOfInterest createInstance(
+      Location parent, Npc npc, PointOfInterest.Type type) {
+    return switch (type) {
+      case DUNGEON -> new Dungeon(type, npc, parent);
+      default -> new Amenity(type, npc, parent);
+    };
+  }
+
   public static void throwIfRepeatedRequest(Generatable generatable, boolean toBeLoaded) {
     if (generatable.isLoaded() == toBeLoaded) {
       throw new IllegalStateException(
           "Request to %s settlement '%s' even though it already is, check your logic"
               .formatted(toBeLoaded ? "loaded" : "unloaded", generatable.getId()));
     }
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Available settlement configurations:%n".formatted());
+    for (var entry : SETTLEMENT_CONFIGS.entrySet()) {
+      sb.append("- [%s=%s]%n".formatted(entry.getKey(), entry.getValue()));
+    }
+    return sb.toString();
   }
 
   @Getter

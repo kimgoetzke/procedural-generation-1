@@ -51,35 +51,19 @@ public class Settlement extends AbstractSettlement {
       var bounds = amenity.getValue();
       var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
       var type = amenity.getKey();
-      if (type == Type.DUNGEON) {
-        IntStream.range(0, count).forEach(i -> addDungeon(type));
-      } else {
-        IntStream.range(0, count).forEach(i -> addAmenity(type));
-      }
+      IntStream.range(0, count).forEach(i -> addPoi(type));
     }
   }
 
-  private void addAmenity(Type type) {
+  private void addPoi(Type type) {
     var npc = new Inhabitant(random, generators);
-    var amenity = new Amenity(type, npc, this);
+    var amenity = LocationBuilder.createInstance(this, npc, type);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);
       inhabitants.add(npc);
     } else {
       revert(amenity);
-      addAmenity(type);
-    }
-  }
-
-  private void addDungeon(Type type) {
-    var npc = new Inhabitant(random, generators);
-    var dungeon = new Dungeon(type, npc, this);
-    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(dungeon.getName()))) {
-      pointsOfInterests.add(dungeon);
-      inhabitants.add(npc);
-    } else {
-      revert(dungeon);
-      addDungeon(type);
+      addPoi(type);
     }
   }
 
@@ -95,7 +79,7 @@ public class Settlement extends AbstractSettlement {
    */
   private void loadEvents() {
     pointsOfInterests.stream()
-        .filter(poi -> poi.getType() == Type.QUEST_LOCATION || poi.getType() == Type.SHOP)
+        .filter(poi -> poi.getType() != Type.DUNGEON && poi.getType() != Type.ENTRANCE)
         .forEach(this::loadPrimaryEvent);
   }
 
