@@ -209,7 +209,7 @@ public class Encounter {
           "You have gained: %s. You have %s HP left.%n",
           loot, CliComponent.health(player.getHealth()));
     } else {
-      out.print(CliComponent.bold("You have died!") + " Game over. Thanks for playing!");
+      out.printf("%n%s Game over. %nThanks for playing!%n%n", CliComponent.bold("You have died!"));
       System.exit(0);
     }
   }
