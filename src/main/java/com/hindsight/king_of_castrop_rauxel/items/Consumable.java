@@ -4,14 +4,13 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(name = "ITEMS_CONSUMABLES")
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode

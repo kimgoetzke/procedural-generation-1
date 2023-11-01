@@ -1,0 +1,7 @@
+id,name,tier,base_price,seller_type,effect_health,effect_max_health
+1,Weak Health Portion,1,100,GENERAL,30,0
+2,Small Health Portion,1,150,GENERAL,60,0
+3,Small Health Portion,1,200,ALCHEMY,60,0
+4,Health Portion,1,250,ALCHEMY,90,0
+5,Special House Potion,1,300,ALCHEMY,100,10
+6,Portion of Hope,1,600,ALCHEMY,10,25

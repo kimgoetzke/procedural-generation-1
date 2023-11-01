@@ -19,6 +19,7 @@ public class FolderReader {
   private static final String MULTI_STEP_FOLDER = "multi-step";
   private static final String REACH_FOLDER = "reach";
   private static final String BASE_NAME_FOLDER = "names";
+  private static final String BASE_CONTENT_FOLDER = "content";
 
   @Getter public String fileSeparator;
   private Map<Event.Type, List<String>> eventFilePaths;
@@ -39,6 +40,10 @@ public class FolderReader {
 
   public String getNamesFolder() {
     return BASE_NAME_FOLDER + fileSeparator;
+  }
+
+  public String getContentFolder() {
+    return BASE_CONTENT_FOLDER + fileSeparator;
   }
 
   public String getSingleStepEventFolder() {
