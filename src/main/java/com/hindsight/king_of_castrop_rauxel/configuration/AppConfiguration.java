@@ -61,13 +61,12 @@ public class AppConfiguration {
 
   @Bean
   public LocationFactory locationFactory() {
-    return new LocationFactory(
-        appProperties(), coordinateFactory(), generators(), dataServices(), poiFactory());
+    return new LocationFactory(appProperties(), generators(), dataServices(), poiFactory());
   }
 
   @Bean
   public PoiFactory poiFactory() {
-    return new PoiFactory(appProperties(), coordinateFactory());
+    return new PoiFactory(appProperties());
   }
 
   @Bean
