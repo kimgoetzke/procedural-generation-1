@@ -4,6 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.characters.BasicEnemy;
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.combat.Encounter;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.ArrayList;
@@ -19,7 +20,8 @@ public class EncounterSequence {
   private int currentEncounter = 0;
   private Event.State state = Event.State.AVAILABLE;
 
-  public EncounterSequence(DungeonDetails dungeonDetails, Generators generators) {
+  public EncounterSequence(
+    AppProperties appProperties, Generators generators, DungeonDetails dungeonDetails) {
     var seed = dungeonDetails.seed();
     for (int i = 0; i < dungeonDetails.encounterDetails().size(); i++) {
       var enemies = new ArrayList<Combatant>();
@@ -27,7 +29,7 @@ public class EncounterSequence {
       for (var enemyDetails : encounter) {
         enemies.add(new BasicEnemy(enemyDetails, seed, generators.nameGenerator()));
       }
-      encounters.add(new Encounter(null, enemies));
+      encounters.add(new Encounter(null, enemies, appProperties));
     }
   }
 

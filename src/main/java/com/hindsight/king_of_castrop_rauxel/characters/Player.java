@@ -7,6 +7,7 @@ import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 
 import java.util.*;
@@ -28,6 +29,7 @@ public class Player implements Visitor, Combatant {
   private final Pair<Integer, Integer> startCoordinates;
   private final Random random = new Random();
   private final AppProperties.PlayerProperties playerProperties;
+  private final AppProperties.GameProperties gameProperties;
   private int gold;
   private int health;
   private int maxHealth;
@@ -54,12 +56,14 @@ public class Player implements Visitor, Combatant {
       @NonNull Location currentLocation,
       @NonNull Pair<Integer, Integer> worldCoords,
       @NonNull AppProperties appProperties) {
+    var cf = new CoordinateFactory(appProperties);
+    this.coordinates = cf.create(worldCoords, currentLocation.getCoordinates().getChunk());
     this.name = name;
-    this.coordinates = new Coordinates(worldCoords, currentLocation.getCoordinates().getChunk());
     this.startCoordinates = coordinates.getGlobal();
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
+    this.gameProperties = appProperties.getGameProperties();
     this.playerProperties = appProperties.getPlayerProperties();
     this.gold = playerProperties.startingGold();
     this.health = playerProperties.startingMaxHealth();

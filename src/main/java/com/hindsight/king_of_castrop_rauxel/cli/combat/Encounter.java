@@ -3,13 +3,13 @@ package com.hindsight.king_of_castrop_rauxel.cli.combat;
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DELAY_IN_MS;
 import static java.lang.System.out;
 
 public class Encounter {
@@ -20,11 +20,13 @@ public class Encounter {
   private final List<Combatant> attackers = new ArrayList<>();
   private final List<Combatant> defenders = new ArrayList<>();
   private final Loot loot = new Loot();
+  private final long delayInMs;
   private Player player;
   private boolean isOver;
   private boolean isAttacker;
 
-  public Encounter(List<Combatant> allies, List<Combatant> enemies) {
+  public Encounter(List<Combatant> allies, List<Combatant> enemies, AppProperties appProperties) {
+    this.delayInMs = appProperties.getGameProperties().delayInMs();
     this.initialAllies = allies;
     this.initialEnemies = enemies;
   }
@@ -67,7 +69,7 @@ public class Encounter {
   private void attackAndEvaluate(List<Combatant> attackingGroup, List<Combatant> defendingGroup) {
     for (var attacker : attackingGroup) {
       try {
-        Thread.sleep(DELAY_IN_MS);
+        Thread.sleep(delayInMs);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       }

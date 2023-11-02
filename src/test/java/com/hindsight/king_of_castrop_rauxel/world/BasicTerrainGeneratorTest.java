@@ -16,11 +16,13 @@ import org.springframework.data.util.Pair;
 class BasicTerrainGeneratorTest {
 
   @Autowired private AppProperties appProperties;
+  private CoordinateFactory cf;
   private BasicTerrainGenerator terrainGenerator;
   private int worldCentre;
 
   @BeforeEach
   void setUp() {
+    cf = new CoordinateFactory(appProperties);
     terrainGenerator = new BasicTerrainGenerator(appProperties);
     terrainGenerator.initialise(new Random());
     worldCentre = appProperties.getWorldProperties().centre();
@@ -31,7 +33,7 @@ class BasicTerrainGeneratorTest {
   void givenDifferentXWorldLocations_returnDifficultyAsExpected(int offset) {
     var worldCoords = Pair.of(worldCentre + offset, worldCentre);
     var chunkCoords = Pair.of(250, 250);
-    var result = terrainGenerator.getTargetLevel(new Coordinates(worldCoords, chunkCoords));
+    var result = terrainGenerator.getTargetLevel(cf.create(worldCoords, chunkCoords));
     var expected = Math.max(offset, 1);
     assertThat(result).isEqualTo(expected);
   }
@@ -41,7 +43,7 @@ class BasicTerrainGeneratorTest {
   void givenDifferentYWorldLocations_returnDifficultyAsExpected(int offset) {
     var worldCoords = Pair.of(worldCentre, worldCentre + offset);
     var chunkCoords = Pair.of(250, 250);
-    var result = terrainGenerator.getTargetLevel(new Coordinates(worldCoords, chunkCoords));
+    var result = terrainGenerator.getTargetLevel(cf.create(worldCoords, chunkCoords));
     var expected = Math.max(offset, 1);
     assertThat(result).isEqualTo(expected);
   }
@@ -51,7 +53,7 @@ class BasicTerrainGeneratorTest {
   void givenDifferentWorldLocations_returnDifficultyAsExpected(int offset) {
     var worldCoords = Pair.of(worldCentre + offset, worldCentre + offset);
     var chunkCoords = Pair.of(250, 250);
-    var result = terrainGenerator.getTargetLevel(new Coordinates(worldCoords, chunkCoords));
+    var result = terrainGenerator.getTargetLevel(cf.create(worldCoords, chunkCoords));
     var expected = Math.max(offset * 2, 1);
     assertThat(result).isEqualTo(expected);
   }

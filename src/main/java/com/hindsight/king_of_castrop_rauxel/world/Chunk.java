@@ -39,13 +39,11 @@ public class Chunk implements Generatable, Unloadable {
     this(worldCoords, chunkHandler, Strategy.DEFAULT);
   }
 
-  public Chunk(
-      Pair<Integer, Integer> worldCoords,
-      ChunkHandler chunkHandler,
-      Strategy strategy) {
+  public Chunk(Pair<Integer, Integer> worldCoords, ChunkHandler chunkHandler, Strategy strategy) {
     var chunkProperties = chunkHandler.getAppProperties().getChunkProperties();
     var seed = SeedBuilder.seedFrom(worldCoords);
-    this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
+    var cf = new CoordinateFactory(chunkHandler.getAppProperties());
+    this.coordinates = cf.create(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.chunkHandler = chunkHandler;

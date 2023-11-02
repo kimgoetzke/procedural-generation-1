@@ -1,7 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -10,6 +8,8 @@ import org.springframework.data.util.Pair;
 @Getter
 public class Coordinates {
 
+  private final int worldSize;
+  private final int chunkSize;
   private Pair<Integer, Integer> global;
   private Pair<Integer, Integer> world;
   private Pair<Integer, Integer> chunk;
@@ -20,7 +20,13 @@ public class Coordinates {
     CHUNK
   }
 
-  public Coordinates(Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
+  public Coordinates(
+      Pair<Integer, Integer> worldCoords,
+      Pair<Integer, Integer> chunkCoords,
+      int worldSize,
+      int chunkSize) {
+    this.worldSize = worldSize;
+    this.chunkSize = chunkSize;
     verify(worldCoords, CoordType.WORLD);
     verify(chunkCoords, CoordType.CHUNK);
     this.chunk = chunkCoords;
@@ -28,14 +34,19 @@ public class Coordinates {
     this.global = toGlobalCoords(worldCoords, chunkCoords);
   }
 
-  public Coordinates(Pair<Integer, Integer> chunkCoords, Chunk chunk) {
+  public Coordinates(
+      Pair<Integer, Integer> chunkCoords, Chunk chunk, int worldSize, int chunkSize) {
+    this.worldSize = worldSize;
+    this.chunkSize = chunkSize;
     verify(chunkCoords, CoordType.CHUNK);
     this.chunk = chunkCoords;
     this.world = chunk.getCoordinates().getWorld();
     this.global = toGlobalCoords(world, chunkCoords);
   }
 
-  public Coordinates(Pair<Integer, Integer> coords, CoordType type) {
+  public Coordinates(Pair<Integer, Integer> coords, CoordType type, int worldSize, int chunkSize) {
+    this.worldSize = worldSize;
+    this.chunkSize = chunkSize;
     verify(coords, type);
     switch (type) {
       case GLOBAL -> {
@@ -71,9 +82,9 @@ public class Coordinates {
   private void verify(Pair<Integer, Integer> anyCoords, CoordType type) {
     var max =
         switch (type) {
-          case GLOBAL -> CHUNK_SIZE * WORLD_SIZE;
-          case WORLD -> WORLD_SIZE;
-          case CHUNK -> CHUNK_SIZE;
+          case GLOBAL -> chunkSize * worldSize;
+          case WORLD -> worldSize;
+          case CHUNK -> chunkSize;
         };
     var x = (int) anyCoords.getFirst();
     var y = (int) anyCoords.getSecond();
@@ -132,20 +143,20 @@ public class Coordinates {
 
   private Pair<Integer, Integer> toGlobalCoords(
       Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
-    var x = chunkCoords.getFirst() + (worldCoords.getFirst() * CHUNK_SIZE);
-    var y = chunkCoords.getSecond() + (worldCoords.getSecond() * CHUNK_SIZE);
+    var x = chunkCoords.getFirst() + (worldCoords.getFirst() * chunkSize);
+    var y = chunkCoords.getSecond() + (worldCoords.getSecond() * chunkSize);
     return Pair.of(x, y);
   }
 
   private Pair<Integer, Integer> toWorldCoords(Pair<Integer, Integer> globalCoords) {
-    var x = globalCoords.getFirst() / CHUNK_SIZE;
-    var y = globalCoords.getSecond() / CHUNK_SIZE;
+    var x = globalCoords.getFirst() / chunkSize;
+    var y = globalCoords.getSecond() / chunkSize;
     return Pair.of(x, y);
   }
 
   private Pair<Integer, Integer> toChunkCoords(Pair<Integer, Integer> globalCoords) {
-    var x = globalCoords.getFirst() % CHUNK_SIZE;
-    var y = globalCoords.getSecond() % CHUNK_SIZE;
+    var x = globalCoords.getFirst() % chunkSize;
+    var y = globalCoords.getSecond() % chunkSize;
     return Pair.of(x, y);
   }
 

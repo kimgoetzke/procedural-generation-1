@@ -1,7 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.encounter;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.world.Range;
@@ -15,19 +13,21 @@ public class EncounterHandler {
 
   private final AppProperties.DungeonProperties dungeonProperties;
   private final AppProperties.EnemyProperties enemyProperties;
+  private final int levelToTierDivider;
   private final Map<Integer, List<DungeonDetails.Type>> dungeonTypesConfigs = new HashMap<>();
   private final Map<Integer, EnemyConfig> enemyConfigs = new HashMap<>();
 
   public EncounterHandler(AppProperties appProperties) {
     this.dungeonProperties = appProperties.getDungeonProperties();
     this.enemyProperties = appProperties.getEnemyProperties();
+    this.levelToTierDivider = dungeonProperties.levelToTierDivider();
     configureDungeons();
     configureEnemies();
     log.debug(this.toString());
   }
 
   public int getDungeonTier(int targetLevel) {
-    return (targetLevel / LEVEL_TO_TIER_DIVIDER) + 1;
+    return (targetLevel / levelToTierDivider) + 1;
   }
 
   public DungeonDetails.Type getDungeonType(Random random, int tier) {
@@ -64,11 +64,11 @@ public class EncounterHandler {
     var config = enemyConfigs.get(tier);
     var damageBounds = config.getDamage().toBounds(targetLevel);
     var damage = new Damage(damageBounds.getLower(), damageBounds.getUpper());
-    var experience = config.getExperience().toRandomActual(random, targetLevel);
-    var gold = config.getGold().toRandomActual(random, targetLevel);
+    var experience = config.getExperience().toRandomActual(random, targetLevel, levelToTierDivider);
+    var gold = config.getGold().toRandomActual(random, targetLevel, levelToTierDivider);
     var loot = new Loot().gold(gold).experience(experience);
     return EnemyDetails.builder()
-        .health(config.getHealth().toRandomActual(random, targetLevel))
+        .health(config.getHealth().toRandomActual(random, targetLevel, levelToTierDivider))
         .damage(damage)
         .loot(loot)
         .level(targetLevel)

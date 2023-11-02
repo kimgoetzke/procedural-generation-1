@@ -38,7 +38,8 @@ public abstract class AbstractLocation implements Location {
       Pair<Integer, Integer> chunkCoords,
       AppProperties appProperties,
       PoiFactory poiFactory) {
-    this.coordinates = new Coordinates(worldCoords, chunkCoords);
+    var cf = new CoordinateFactory(appProperties);
+    this.coordinates = cf.create(worldCoords, chunkCoords);
     this.seed = SeedBuilder.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);

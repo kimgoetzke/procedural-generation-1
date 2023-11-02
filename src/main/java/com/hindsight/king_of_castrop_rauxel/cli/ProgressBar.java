@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.SPEED_MODIFIER;
 import static java.lang.System.out;
 
 @Slf4j
@@ -15,13 +14,13 @@ import static java.lang.System.out;
 public class ProgressBar {
 
   // TODO: Allow interrupting (returning progress %) and resuming later (accepting progress %)
-  public static void displayProgress(Location from, Location to) {
+  public static void displayProgress(Location from, Location to, float speedModifier) {
     if (from.equals(to)) {
       return;
     }
     var progressBarWidth = 100;
     var totalSteps = 100;
-    var millisecondsPerStep = from.distanceTo(to) * SPEED_MODIFIER;
+    var millisecondsPerStep = from.distanceTo(to) * speedModifier;
     prepareCli();
     for (int step = 0; step <= totalSteps; step++) {
       var progress = (float) step / totalSteps;

@@ -1,7 +1,11 @@
 # noinspection SpringBootApplicationYaml
 settings:
   game-properties:
+    # The delay in milliseconds between each step. Currently used when displaying each action in an encounter.
     delay-in-ms: 175
+    # The speed modifier for the progress bar. The higher the value, the slower the progress. Examples: A modifier of 1
+    # means that it takes 10 seconds to travel a distance of 100 km. A modifier of 0.5 means that it takes 5 seconds to
+    # travel a distance of 100 km.
     speed-modifier: 0.1
   world-properties:
     size: 50
@@ -67,6 +71,7 @@ settings:
     t3-types: ORC, TROLL, ONOCENTAUR
     t4-types: CENTICORE, POOKA, MAPUCHE, SPHINX
     t5-types: MINOTAUR, CHIMERA, CYCLOPS, HYDRA, PHOENIX
+    level-to-tier-divider: 10
   enemy-properties:
     t1:
       damage: { multiplier: 1, minMod: 0, maxMod: 2 }

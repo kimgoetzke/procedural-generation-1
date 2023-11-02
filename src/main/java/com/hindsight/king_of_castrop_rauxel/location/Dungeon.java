@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(callSuper = true, onlyExplicitlyIncluded = true, includeFieldNames = false)
 public class Dungeon extends AbstractAmenity {
 
+  private final AppProperties appProperties;
   private final Generators generators;
   private final EncounterHandler encounterHandler;
   private EncounterSequence sequence;
@@ -32,6 +33,7 @@ public class Dungeon extends AbstractAmenity {
 
   public Dungeon(AppProperties appProperties, Type type, Npc npc, Location parent) {
     super(type, npc, parent);
+    this.appProperties = appProperties;
     this.generators = parent.getGenerators();
     this.encounterHandler = new EncounterHandler(appProperties);
     load();
@@ -43,7 +45,7 @@ public class Dungeon extends AbstractAmenity {
     this.dungeonDetails = createDungeonDetails();
     this.name = dungeonDetails.name();
     this.description = dungeonDetails.description();
-    this.sequence = new EncounterSequence(dungeonDetails, parent.getGenerators());
+    this.sequence = new EncounterSequence(appProperties, parent.getGenerators(), dungeonDetails);
     setLoaded(true);
   }
 
