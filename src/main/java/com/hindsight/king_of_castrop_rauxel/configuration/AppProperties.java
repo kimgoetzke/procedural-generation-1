@@ -3,9 +3,12 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.encounter.EncounterHandler;
-import com.hindsight.king_of_castrop_rauxel.location.LocationHandler;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import com.hindsight.king_of_castrop_rauxel.location.Size;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import java.util.List;
+import java.util.Map;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -64,11 +67,35 @@ public class AppProperties {
       Bounds density) {}
 
   public record SettlementProperties(
-      LocationHandler.SettlementConfig xs,
-      LocationHandler.SettlementConfig s,
-      LocationHandler.SettlementConfig m,
-      LocationHandler.SettlementConfig l,
-      LocationHandler.SettlementConfig xl) {}
+      SettlementConfig xs,
+      SettlementConfig s,
+      SettlementConfig m,
+      SettlementConfig l,
+      SettlementConfig xl) {
+
+    public SettlementConfig get(Size size) {
+      return switch (size) {
+        case XS -> xs;
+        case S -> s;
+        case M -> m;
+        case L -> l;
+        case XL -> xl;
+      };
+    }
+  }
+
+  @Getter
+  @Setter
+  public static class SettlementConfig {
+    private Bounds area;
+    private Bounds inhabitants;
+    private Map<PointOfInterest.Type, Bounds> amenities;
+
+    @Override
+    public String toString() {
+      return "{area=" + area + ", inhabitants=" + inhabitants + ", amenities=" + amenities + '}';
+    }
+  }
 
   public record EnemyProperties(
       EncounterHandler.EnemyConfig t1,

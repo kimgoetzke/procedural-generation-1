@@ -3,12 +3,10 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
-import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
-import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
+import com.hindsight.king_of_castrop_rauxel.world.*;
+
 import java.util.*;
 
-import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,33 +62,53 @@ public abstract class AbstractLocation implements Location {
   }
 
   @Override
-  public WorldHandler.CardinalDirection getCardinalDirection(Pair<Integer, Integer> other) {
+  public CardinalDirection getCardinalDirection(Pair<Integer, Integer> other) {
     int dx = other.getFirst() - getCoordinates().cX();
     int dy = other.getSecond() - getCoordinates().cY();
 
     if (dx == 0) {
       if (dy < 0) {
-        return WorldHandler.CardinalDirection.NORTH;
+        return CardinalDirection.NORTH;
       } else if (dy > 0) {
-        return WorldHandler.CardinalDirection.SOUTH;
+        return CardinalDirection.SOUTH;
       }
     } else if (dy == 0) {
       if (dx < 0) {
-        return WorldHandler.CardinalDirection.WEST;
+        return CardinalDirection.WEST;
       } else {
-        return WorldHandler.CardinalDirection.EAST;
+        return CardinalDirection.EAST;
       }
     } else {
       if (dx < 0 && dy < 0) {
-        return WorldHandler.CardinalDirection.NORTH_WEST;
+        return CardinalDirection.NORTH_WEST;
       } else if (dx < 0) {
-        return WorldHandler.CardinalDirection.SOUTH_WEST;
+        return CardinalDirection.SOUTH_WEST;
       } else if (dy < 0) {
-        return WorldHandler.CardinalDirection.NORTH_EAST;
+        return CardinalDirection.NORTH_EAST;
       } else {
-        return WorldHandler.CardinalDirection.SOUTH_EAST;
+        return CardinalDirection.SOUTH_EAST;
       }
     }
-    return WorldHandler.CardinalDirection.THIS;
+    return CardinalDirection.THIS;
+  }
+
+  /** Returns a random float that expresses the area of a settlement in square kilometers. */
+  public int randomArea(Size size) {
+    var bounds = appProperties.getSettlementProperties().get(size).getArea();
+    return random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
+  }
+
+  /**
+   * Returns a random Size enum. Must be provided with a Random in order to ensure reproducibility.
+   */
+  public Size randomSize() {
+    var randomNumber = random.nextInt(0, 21);
+    return switch (randomNumber) {
+      case 0, 1, 2, 3, 4, 5 -> Size.XS;
+      case 6, 7, 8, 9, 10, 11, 12, 13, 14 -> Size.S;
+      case 15, 16, 17 -> Size.M;
+      case 18, 19 -> Size.L;
+      default -> Size.XL;
+    };
   }
 }

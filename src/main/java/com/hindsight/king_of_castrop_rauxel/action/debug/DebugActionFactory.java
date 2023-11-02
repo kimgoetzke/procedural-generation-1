@@ -2,20 +2,24 @@ package com.hindsight.king_of_castrop_rauxel.action.debug;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
-import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
+import com.hindsight.king_of_castrop_rauxel.world.Chunk;
 import com.hindsight.king_of_castrop_rauxel.world.World;
-import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
+import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Component
@@ -24,7 +28,7 @@ public class DebugActionFactory {
 
   private final Graph<AbstractLocation> map;
   private final World world;
-  private final WorldHandler worldHandler;
+  private final ChunkHandler chunkHandler;
   private final AppProperties appProperties;
 
   public DebugAction create(int index, String name, Debuggable debuggable) {
@@ -42,7 +46,7 @@ public class DebugActionFactory {
   }
 
   public void printConnectivity() {
-    worldHandler.logDisconnectedVertices(map);
+    chunkHandler.logDisconnectedVertices(map);
   }
 
   public void logVertices() {
@@ -68,6 +72,29 @@ public class DebugActionFactory {
     log(world.getChunk(CardinalDirection.EAST), CardinalDirection.EAST);
     log(world.getChunk(CardinalDirection.SOUTH), CardinalDirection.SOUTH);
     log(world.getChunk(CardinalDirection.THIS), CardinalDirection.THIS);
+  }
+
+  public static void log(Chunk chunk, CardinalDirection where) {
+    if (chunk == null) {
+      log.info("{} chunk does not exist yet", where);
+      return;
+    }
+    var settlements = new AtomicInteger();
+    Arrays.stream(chunk.getPlane())
+        .forEach(
+            row -> {
+              for (var cell : row) {
+                if (cell > 0) {
+                  settlements.getAndIncrement();
+                }
+              }
+            });
+    log.info(
+        "{} chunk at {} has a density of {} and {} settlements",
+        where,
+        chunk.getCoordinates(),
+        chunk.getDensity(),
+        settlements);
   }
 
   public void printPlane() {
@@ -132,10 +159,10 @@ public class DebugActionFactory {
     var vertices =
         map.getVertices().stream()
             .map(Vertex::getLocation)
-            .filter(l -> worldHandler.isInsideTriggerZone((l.getCoordinates().getChunk())))
+            .filter(l -> chunkHandler.isInsideTriggerZone((l.getCoordinates().getChunk())))
             .toList();
     var allPlayerCords = player.getCoordinates();
-    var whereNext = worldHandler.nextChunkPosition(allPlayerCords.getChunk());
+    var whereNext = chunkHandler.nextChunkPosition(allPlayerCords.getChunk());
     var whereNextAllCoords = world.getChunk(whereNext).getCoordinates();
     if (whereNext == CardinalDirection.THIS) {
       log.info("Player is not inside any trigger zone of {}", whereNextAllCoords.worldToString());
@@ -146,7 +173,7 @@ public class DebugActionFactory {
           allPlayerCords.worldToString());
       vertices.stream()
           .filter(l -> l.getCoordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
-          .filter(l -> worldHandler.isInsideTriggerZone(l.getCoordinates().getChunk()))
+          .filter(l -> chunkHandler.isInsideTriggerZone(l.getCoordinates().getChunk()))
           .forEach(l -> log.info("- " + l.getBriefSummary()));
     }
   }

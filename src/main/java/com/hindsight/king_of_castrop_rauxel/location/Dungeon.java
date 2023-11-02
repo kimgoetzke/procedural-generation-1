@@ -30,10 +30,10 @@ public class Dungeon extends AbstractAmenity {
   private EncounterSequence sequence;
   private DungeonDetails dungeonDetails;
 
-  public Dungeon(Type type, Npc npc, Location parent, AppProperties appProperties, EncounterHandler encounterHandler) {
+  public Dungeon(AppProperties appProperties, Type type, Npc npc, Location parent) {
     super(type, npc, parent);
     this.generators = parent.getGenerators();
-    this.encounterHandler = encounterHandler;
+    this.encounterHandler = new EncounterHandler(appProperties);
     load();
     logResult();
   }

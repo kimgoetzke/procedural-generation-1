@@ -1,12 +1,11 @@
 package com.hindsight.king_of_castrop_rauxel.game;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.World;
-import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
+import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,18 +15,12 @@ public class GameHandler {
 
   private final World world;
   private final Graph<AbstractLocation> map;
-  private final AppProperties appProperties;
-  private final WorldHandler worldHandler;
+  private final ChunkHandler chunkHandler;
 
-  public GameHandler(
-      World world,
-      Graph<AbstractLocation> map,
-      AppProperties appProperties,
-      WorldHandler worldHandler) {
+  public GameHandler(World world, Graph<AbstractLocation> map, ChunkHandler chunkHandler) {
     this.world = world;
     this.map = map;
-    this.appProperties = appProperties;
-    this.worldHandler = worldHandler;
+    this.chunkHandler = chunkHandler;
   }
 
   public void updateWorld(Player player) {
@@ -46,8 +39,8 @@ public class GameHandler {
 
   private void generateNextChunk(Player player) {
     var chunkCoords = player.getCurrentLocation().getCoordinates().getChunk();
-    if (worldHandler.isInsideTriggerZone(chunkCoords)) {
-      var whereNext = worldHandler.nextChunkPosition(chunkCoords);
+    if (chunkHandler.isInsideTriggerZone(chunkCoords)) {
+      var whereNext = chunkHandler.nextChunkPosition(chunkCoords);
       log.info("Player is inside {}ern trigger zone", whereNext.getName().toLowerCase());
       if (world.hasChunk(whereNext)) {
         log.info("{} chunk already exists - skipping generation", whereNext.getName());

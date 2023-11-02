@@ -26,7 +26,7 @@ public class Amenity extends AbstractAmenity {
 
   @Override
   public void load() {
-    LocationHandler.throwIfRepeatedRequest(this, true);
+    throwIfRepeatedRequest(true);
     this.name =
         parent
             .getGenerators()

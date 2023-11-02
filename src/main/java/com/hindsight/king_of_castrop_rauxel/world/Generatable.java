@@ -9,4 +9,12 @@ public interface Generatable {
   void load();
 
   void logResult();
+
+  default void throwIfRepeatedRequest(boolean toBeLoaded) {
+    if (isLoaded() == toBeLoaded) {
+      throw new IllegalStateException(
+          "Request to %s settlement '%s' even though it already is, check your logic"
+              .formatted(toBeLoaded ? "loaded" : "unloaded", getId()));
+    }
+  }
 }

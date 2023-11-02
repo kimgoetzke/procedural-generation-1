@@ -15,14 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BasicTerrainGenerator implements TerrainGenerator {
 
-  private final AppProperties appProperties;
-
   private final int[][] targetLevel;
   private final int worldSize;
   private final int worldCentre;
 
   public BasicTerrainGenerator(AppProperties appProperties) {
-    this.appProperties = appProperties;
     this.worldSize = appProperties.getWorldProperties().size();
     this.worldCentre = appProperties.getWorldProperties().centre();
     targetLevel = new int[worldSize][worldSize];

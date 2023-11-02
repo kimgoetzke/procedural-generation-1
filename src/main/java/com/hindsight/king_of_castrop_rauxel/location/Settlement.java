@@ -34,7 +34,7 @@ public class Settlement extends AbstractSettlement {
   public void load() {
     var startTime = System.currentTimeMillis();
     log.info("Generating full settlement '{}'...", id);
-    LocationHandler.throwIfRepeatedRequest(this, true);
+    throwIfRepeatedRequest(true);
     loadPois();
     loadEvents();
     loadInhabitants();
@@ -45,13 +45,13 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateFoundation() {
-    size = LocationHandler.randomSize(random);
-    area = LocationHandler.randomArea(random, size);
+    size = randomSize();
+    area = randomArea(size);
     name = generators.nameGenerator().locationNameFrom(this.getClass());
   }
 
   private void loadPois() {
-    var amenities = LocationHandler.getSettlementConfig(size).getAmenities();
+    var amenities = appProperties.getSettlementProperties().get(size).getAmenities();
     for (var amenity : amenities.entrySet()) {
       var bounds = amenity.getValue();
       var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
@@ -62,7 +62,7 @@ public class Settlement extends AbstractSettlement {
 
   private void addPoi(Type type) {
     var npc = new Inhabitant(random, generators);
-    var amenity = poiFactory.createInstance(this, npc, type);
+    var amenity = poiFactory.createPoiInstance(this, npc, type);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);
       inhabitants.add(npc);
@@ -99,7 +99,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void loadInhabitants() {
-    var bounds = LocationHandler.getSettlementConfig(size).getInhabitants();
+    var bounds = appProperties.getSettlementProperties().get(size).getInhabitants();
     var i = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
     inhabitantCount = Math.max(i, inhabitants.size());
   }

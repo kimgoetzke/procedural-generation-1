@@ -1,11 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;

@@ -2,16 +2,18 @@ package com.hindsight.king_of_castrop_rauxel.world;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.world.WorldHandler.CardinalDirection;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
+import java.util.List;
+
 @Slf4j
 public class World {
 
-  private final WorldHandler worldHandler;
+  private final ChunkHandler chunkHandler;
   private final Chunk[][] plane;
   private final int worldSize;
   private final int chunkSize;
@@ -20,8 +22,8 @@ public class World {
 
   @Getter private Chunk currentChunk;
 
-  public World(AppProperties appProperties, WorldHandler worldHandler) {
-    this.worldHandler = worldHandler;
+  public World(AppProperties appProperties, ChunkHandler chunkHandler) {
+    this.chunkHandler = chunkHandler;
     this.worldSize = appProperties.getWorldProperties().size();
     this.chunkSize = appProperties.getChunkProperties().size();
     this.autoUnload = appProperties.getGeneralProperties().autoUnload();
@@ -93,18 +95,18 @@ public class World {
 
   public void generateChunk(Pair<Integer, Integer> worldCoords, Graph<AbstractLocation> map) {
     throwErrorIfChunkExists(worldCoords);
-    var stats = worldHandler.getStats(map);
-    var chunk = new Chunk(worldCoords, worldHandler);
+    var stats = getStats(map);
+    var chunk = new Chunk(worldCoords, chunkHandler);
     place(chunk);
-    worldHandler.logOutcome(stats, map, this.getClass());
+    logOutcome(stats, map, this.getClass());
   }
 
   public void generateChunk(CardinalDirection where, Graph<AbstractLocation> map) {
     throwErrorIfChunkExists(where);
-    var stats = worldHandler.getStats(map);
-    var nextChunk = new Chunk(getCoordsFor(where), worldHandler);
+    var stats = getStats(map);
+    var nextChunk = new Chunk(getCoordsFor(where), chunkHandler);
     place(nextChunk, where);
-    worldHandler.logOutcome(stats, map, this.getClass());
+    logOutcome(stats, map, this.getClass());
   }
 
   /** Places a chunk in the center of the world. Used to place the first chunk in a new world. */
@@ -207,4 +209,21 @@ public class World {
               worldCoords.getSecond()));
     }
   }
+
+  public LogStats getStats(Graph<AbstractLocation> map) {
+    return new LogStats(
+        System.currentTimeMillis(),
+        map.getVertices().size(),
+        map.getVertices().stream().map(Vertex::getLocation).toList());
+  }
+
+  // TODO: Make this a wrapper within which code can be executed
+  public <T> void logOutcome(LogStats stats, Graph<AbstractLocation> map, Class<T> clazz) {
+    log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startT) / 1000.0);
+    if (clazz.equals(World.class)) {
+      log.info("Generated {} settlements", map.getVertices().size() - stats.prevSetCount);
+    }
+  }
+
+  public record LogStats(long startT, int prevSetCount, List<AbstractLocation> prevSet) {}
 }

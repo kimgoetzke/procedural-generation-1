@@ -20,7 +20,8 @@ import org.springframework.data.util.Pair;
 @SpringBootTest
 class CoordinatesTest {
 
-  @Autowired WorldHandler worldHandler;
+  @Autowired
+  ChunkHandler chunkHandler;
   @Autowired Generators generators;
   @Autowired DataServices dataServices;
   @Autowired AppProperties appProperties;
@@ -29,7 +30,7 @@ class CoordinatesTest {
 
   @BeforeEach
   void setUp() {
-    worldHandler = new WorldHandler(map, appProperties, locationFactory);
+    chunkHandler = new ChunkHandler(map, appProperties, locationFactory);
   }
 
   @Test
@@ -49,7 +50,7 @@ class CoordinatesTest {
     var worldCoords = Pair.of(8, 6);
     var chunkCoords = Pair.of(200, 200);
     var expectedGlobal = expectedGlobalFrom(worldCoords, chunkCoords); // here (2700, 3200)
-    var chunk = new Chunk(worldCoords, worldHandler);
+    var chunk = new Chunk(worldCoords, chunkHandler);
     var coordinates = new Coordinates(chunkCoords, chunk);
 
     assertEquals(expectedGlobal, coordinates.getGlobal());

@@ -8,51 +8,24 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.LocationFactory;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-public class WorldHandler {
+public class ChunkHandler {
 
-  private final Graph<AbstractLocation> map;
-  private final AppProperties appProperties;
-  private final LocationFactory locationFactory;
+  @Getter private final AppProperties appProperties;
   private final AppProperties.ChunkProperties chunkProperties;
+  private final Graph<AbstractLocation> map;
+  private final LocationFactory locationFactory;
 
-  public WorldHandler(
+  public ChunkHandler(
       Graph<AbstractLocation> map, AppProperties appProperties, LocationFactory locationFactory) {
     this.map = map;
     this.appProperties = appProperties;
     this.locationFactory = locationFactory;
     this.chunkProperties = appProperties.getChunkProperties();
-  }
-
-  @Getter
-  public enum CardinalDirection {
-    THIS("This", 0),
-    NORTH("North", 1),
-    NORTH_EAST("North-east", 2),
-    EAST("East", 3),
-    SOUTH_EAST("South-east", 4),
-    SOUTH("South", 5),
-    SOUTH_WEST("South-west", 6),
-    WEST("West", 7),
-    NORTH_WEST("North-west", 8);
-
-    private final String name;
-    private final int ordinal;
-
-    CardinalDirection(String name, int ordinal) {
-      this.name = name;
-      this.ordinal = ordinal;
-    }
-  }
-
-  public enum Strategy {
-    DEFAULT,
-    NONE,
   }
 
   public void populate(Chunk chunk, Strategy strategy) {
@@ -204,27 +177,6 @@ public class WorldHandler {
     return closestNeighbor;
   }
 
-  public <T extends AbstractLocation> void logDisconnectedVertices(Graph<T> graph) {
-    var result = evaluateConnectivity(graph);
-    log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
-    result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
-    log.info("Visited vertices: {}", result.visitedVertices().size());
-    result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
-  }
-
-  public int chunkSize() {
-    return chunkProperties.size();
-  }
-
-  public int minPlacementDistance() {
-    return chunkProperties.minPlacementDistance();
-  }
-
-  public int randomDensity(Random random) {
-    var density = chunkProperties.density();
-    return random.nextInt(density.getUpper() - density.getLower() + 1) + density.getLower();
-  }
-
   public boolean isInsideTriggerZone(Pair<Integer, Integer> chunkCoords) {
     var chunkSize = chunkProperties.size();
     var generationTriggerZone = chunkProperties.generationTriggerZone();
@@ -251,29 +203,6 @@ public class WorldHandler {
     }
   }
 
-  public static void log(Chunk chunk, CardinalDirection where) {
-    if (chunk == null) {
-      log.info("{} chunk does not exist yet", where);
-      return;
-    }
-    var settlements = new AtomicInteger();
-    Arrays.stream(chunk.getPlane())
-        .forEach(
-            row -> {
-              for (var cell : row) {
-                if (cell > 0) {
-                  settlements.getAndIncrement();
-                }
-              }
-            });
-    log.info(
-        "{} chunk at {} has a density of {} and {} settlements",
-        where,
-        chunk.getCoordinates(),
-        chunk.getDensity(),
-        settlements);
-  }
-
   protected <T extends AbstractLocation> ConnectivityResult<T> evaluateConnectivity(
       Graph<T> graph) {
     var visitedVertices = new LinkedHashSet<Vertex<T>>();
@@ -285,22 +214,13 @@ public class WorldHandler {
     return new ConnectivityResult<>(visitedVertices, unvisitedVertices);
   }
 
-  // TODO: Make this a wrapper within which code can be executed
-  public <T> void logOutcome(LogStats stats, Graph<AbstractLocation> map, Class<T> clazz) {
-    log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startT) / 1000.0);
-    if (clazz.equals(World.class)) {
-      log.info("Generated {} settlements", map.getVertices().size() - stats.prevSetCount);
-    }
+  public <T extends AbstractLocation> void logDisconnectedVertices(Graph<T> graph) {
+    var result = evaluateConnectivity(graph);
+    log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
+    result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
+    log.info("Visited vertices: {}", result.visitedVertices().size());
+    result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
   }
-
-  public LogStats getStats(Graph<AbstractLocation> map) {
-    return new LogStats(
-        System.currentTimeMillis(),
-        map.getVertices().size(),
-        map.getVertices().stream().map(Vertex::getLocation).toList());
-  }
-
-  public record LogStats(long startT, int prevSetCount, List<AbstractLocation> prevSet) {}
 
   protected record ConnectivityResult<T extends AbstractLocation>(
       Set<Vertex<T>> visitedVertices, Set<Vertex<T>> unvisitedVertices) {}
