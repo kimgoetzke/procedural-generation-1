@@ -4,6 +4,7 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 
@@ -36,8 +37,10 @@ public abstract class AbstractSettlement extends AbstractLocation {
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
       Generators generators,
-      DataServices dataServices) {
-    super(worldCoords, chunkCoords);
+      DataServices dataServices,
+      AppProperties appProperties,
+      PoiFactory poiFactory) {
+    super(worldCoords, chunkCoords, appProperties, poiFactory);
     this.generators = generators;
     this.dataServices = dataServices;
     generators.initialiseAll(random);

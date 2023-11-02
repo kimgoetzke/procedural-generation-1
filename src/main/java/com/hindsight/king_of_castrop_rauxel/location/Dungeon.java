@@ -4,13 +4,14 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.CombatAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.encounter.EncounterSequence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
-import com.hindsight.king_of_castrop_rauxel.encounter.EncounterBuilder;
+import com.hindsight.king_of_castrop_rauxel.encounter.EncounterHandler;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import lombok.EqualsAndHashCode;
@@ -25,12 +26,14 @@ import lombok.extern.slf4j.Slf4j;
 public class Dungeon extends AbstractAmenity {
 
   private final Generators generators;
+  private final EncounterHandler encounterHandler;
   private EncounterSequence sequence;
   private DungeonDetails dungeonDetails;
 
-  public Dungeon(PointOfInterest.Type type, Npc npc, Location parent) {
+  public Dungeon(Type type, Npc npc, Location parent, AppProperties appProperties, EncounterHandler encounterHandler) {
     super(type, npc, parent);
     this.generators = parent.getGenerators();
+    this.encounterHandler = encounterHandler;
     load();
     logResult();
   }
@@ -46,9 +49,9 @@ public class Dungeon extends AbstractAmenity {
 
   private DungeonDetails createDungeonDetails() {
     var targetLevel = generators.terrainGenerator().getTargetLevel(parent.getCoordinates());
-    var tier = EncounterBuilder.getDungeonTier(targetLevel);
-    var type = EncounterBuilder.getDungeonType(random, tier);
-    var encounterDetails = EncounterBuilder.getEncounterDetails(random, targetLevel, type);
+    var tier = encounterHandler.getDungeonTier(targetLevel);
+    var type = encounterHandler.getDungeonType(random, tier);
+    var encounterDetails = encounterHandler.getEncounterDetails(random, targetLevel, type);
     var seed = SeedBuilder.seedFrom(parent.getCoordinates().getGlobal());
     var dungeonName = generators.nameGenerator().dungeonNameFrom(this.getClass(), type);
     var dungeonDescription =

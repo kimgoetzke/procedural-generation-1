@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DUNGEON_TIER_DIVIDER;
+import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.LEVEL_TO_TIER_DIVIDER;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,7 +36,7 @@ public class Range {
   }
 
   private int toActual(int targetLevel, float upper, float lower, float offset) {
-    var modulus = targetLevel % DUNGEON_TIER_DIVIDER;
+    var modulus = targetLevel % LEVEL_TO_TIER_DIVIDER;
     var modifier = 1 - (1 / modulus);
     return (int) ((upper - lower) * modifier) + (int) (lower + offset);
   }

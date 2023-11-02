@@ -1,12 +1,11 @@
 package com.hindsight.king_of_castrop_rauxel.action.debug;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-import static com.hindsight.king_of_castrop_rauxel.world.ChunkBuilder.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
@@ -26,6 +25,7 @@ public class DebugActionFactory {
   private final Graph<AbstractLocation> map;
   private final World world;
   private final WorldHandler worldHandler;
+  private final AppProperties appProperties;
 
   public DebugAction create(int index, String name, Debuggable debuggable) {
     return DebugAction.builder()
@@ -78,14 +78,15 @@ public class DebugActionFactory {
     var chunk = world.getChunk(CardinalDirection.THIS);
     var plane = chunk.getPlane();
     var scale = 10;
-    var downscaledPlane = new String[CHUNK_SIZE / scale][CHUNK_SIZE / scale];
+    var chunkSize = appProperties.getChunkProperties().size();
+    var downscaledPlane = new String[chunkSize / scale][chunkSize / scale];
     var numRows = downscaledPlane.length;
     var numCols = downscaledPlane[0].length;
     var locationCount = 0;
 
     // Shrink data into the new array and convert to location names
-    for (int i = 0; i < CHUNK_SIZE; i++) {
-      for (int j = 0; j < CHUNK_SIZE; j++) {
+    for (int i = 0; i < chunkSize; i++) {
+      for (int j = 0; j < chunkSize; j++) {
         if (plane[i][j] > 0) {
           downscaledPlane[i / scale][j / scale] =
               map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocation().getName();
@@ -131,10 +132,10 @@ public class DebugActionFactory {
     var vertices =
         map.getVertices().stream()
             .map(Vertex::getLocation)
-            .filter(l -> isInsideTriggerZone(l.getCoordinates().getChunk()))
+            .filter(l -> worldHandler.isInsideTriggerZone((l.getCoordinates().getChunk())))
             .toList();
     var allPlayerCords = player.getCoordinates();
-    var whereNext = nextChunkPosition(allPlayerCords.getChunk());
+    var whereNext = worldHandler.nextChunkPosition(allPlayerCords.getChunk());
     var whereNextAllCoords = world.getChunk(whereNext).getCoordinates();
     if (whereNext == CardinalDirection.THIS) {
       log.info("Player is not inside any trigger zone of {}", whereNextAllCoords.worldToString());
@@ -145,7 +146,7 @@ public class DebugActionFactory {
           allPlayerCords.worldToString());
       vertices.stream()
           .filter(l -> l.getCoordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
-          .filter(l -> isInsideTriggerZone(l.getCoordinates().getChunk()))
+          .filter(l -> worldHandler.isInsideTriggerZone(l.getCoordinates().getChunk()))
           .forEach(l -> log.info("- " + l.getBriefSummary()));
     }
   }

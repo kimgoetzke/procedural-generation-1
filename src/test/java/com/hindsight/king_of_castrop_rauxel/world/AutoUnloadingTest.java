@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.RETENTION_ZONE;
 import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,7 +8,7 @@ import static org.mockito.Mockito.mockStatic;
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
+import com.hindsight.king_of_castrop_rauxel.location.LocationHandler;
 
 import java.util.Random;
 
@@ -23,18 +22,21 @@ import org.springframework.data.util.Pair;
 @SpringBootTest
 class AutoUnloadingTest extends BaseWorldTest {
 
+  private int retentionZone;
+
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
     map = new Graph<>(true);
-    worldHandler = new WorldHandler(map, generators, dataServices);
+    worldHandler = new WorldHandler(map, appProperties, locationFactory);
     world = new World(appProperties, worldHandler);
-    daf = new DebugActionFactory(map, world, worldHandler);
+    daf = new DebugActionFactory(map, world, worldHandler, appProperties);
+    retentionZone = appProperties.getWorldProperties().retentionZone();
   }
 
   @Test
   void whenChangingCurrentChunk_unloadChunksOutsideRetentionZone() {
-    try (var mocked = mockStatic(LocationBuilder.class)) {
+    try (var mocked = mockStatic(LocationHandler.class)) {
       // Given
       locationComponentIsInitialised(mocked);
       var initialCoords = world.getCentreCoords();
@@ -44,7 +46,7 @@ class AutoUnloadingTest extends BaseWorldTest {
       // When
       world.generateChunk(initialCoords, map);
       world.setCurrentChunk(initialCoords);
-      for (var i = 0; i < RETENTION_ZONE + 1; i++) {
+      for (var i = 0; i < retentionZone + 1; i++) {
         world.generateChunk(CardinalDirection.NORTH, map);
         world.generateChunk(CardinalDirection.EAST, map);
         world.generateChunk(CardinalDirection.SOUTH, map);
@@ -54,9 +56,9 @@ class AutoUnloadingTest extends BaseWorldTest {
 
       // Then
       var currentWorldCoords = world.getCurrentChunk().getCoordinates();
-      var nCoords = Pair.of(currentWorldCoords.wX() - RETENTION_ZONE, currentWorldCoords.wY() + 1);
-      var eCoords = Pair.of(currentWorldCoords.wX() - RETENTION_ZONE, currentWorldCoords.wY());
-      var sCoords = Pair.of(currentWorldCoords.wX() - RETENTION_ZONE, currentWorldCoords.wY() - 1);
+      var nCoords = Pair.of(currentWorldCoords.wX() - retentionZone, currentWorldCoords.wY() + 1);
+      var eCoords = Pair.of(currentWorldCoords.wX() - retentionZone, currentWorldCoords.wY());
+      var sCoords = Pair.of(currentWorldCoords.wX() - retentionZone, currentWorldCoords.wY() - 1);
       assertThat(world.hasLoadedChunk(removedNorthCoords)).isFalse();
       assertThat(world.hasLoadedChunk(initialCoords)).isFalse();
       assertThat(world.hasLoadedChunk(removedSouthCoords)).isFalse();
@@ -71,7 +73,7 @@ class AutoUnloadingTest extends BaseWorldTest {
 
   @Test
   void whenReturningToPrevChunk_generateTheSameChunkAgain() {
-    try (var mocked = mockStatic(LocationBuilder.class)) {
+    try (var mocked = mockStatic(LocationHandler.class)) {
       // Given
       locationComponentIsInitialised(mocked);
       var initialCoords = world.getCentreCoords();
@@ -80,7 +82,7 @@ class AutoUnloadingTest extends BaseWorldTest {
       world.generateChunk(initialCoords, map);
       world.setCurrentChunk(initialCoords);
       var expected = map.getVertices().stream().map(Vertex::getLocation).toList();
-      for (var i = 0; i < RETENTION_ZONE + 1; i++) {
+      for (var i = 0; i < retentionZone + 1; i++) {
         world.generateChunk(CardinalDirection.EAST, map);
         world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
       }
@@ -94,10 +96,10 @@ class AutoUnloadingTest extends BaseWorldTest {
   }
 
   @Override
-  protected void locationComponentIsInitialised(MockedStatic<LocationBuilder> mocked) {
-    mocked.when(() -> LocationBuilder.randomSize(any(Random.class))).thenReturn(Size.M);
+  protected void locationComponentIsInitialised(MockedStatic<LocationHandler> mocked) {
+    mocked.when(() -> LocationHandler.randomSize(any(Random.class))).thenReturn(Size.M);
     mocked
-        .when(() -> LocationBuilder.getSettlementConfig(Size.M))
+        .when(() -> LocationHandler.getSettlementConfig(Size.M))
         .thenReturn(fakeConfig.get(Size.M));
   }
 }

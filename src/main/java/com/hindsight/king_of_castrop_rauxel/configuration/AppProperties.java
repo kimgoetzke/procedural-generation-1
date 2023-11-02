@@ -2,9 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
-import com.hindsight.king_of_castrop_rauxel.location.LocationBuilder;
+import com.hindsight.king_of_castrop_rauxel.encounter.EncounterHandler;
+import com.hindsight.king_of_castrop_rauxel.location.LocationHandler;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
-import com.hindsight.king_of_castrop_rauxel.world.Range;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +17,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "settings")
 public class AppProperties {
 
-  private AutoUnload autoUnload;
-  private Environment environment;
+  private GeneralProperties generalProperties;
   private GameProperties gameProperties;
   private WorldProperties worldProperties;
   private ChunkProperties chunkProperties;
@@ -51,9 +50,7 @@ public class AppProperties {
         "Runtime environment is %s but must be JAR or IDE ".formatted(env));
   }
 
-  public record AutoUnload(boolean world) {}
-
-  public record Environment(boolean useConsoleUi, boolean clearConsole) {}
+  public record GeneralProperties(boolean autoUnload, boolean useConsoleUi, boolean clearConsole) {}
 
   public record GameProperties(long delayInMs, float speedModifier) {}
 
@@ -67,23 +64,18 @@ public class AppProperties {
       Bounds density) {}
 
   public record SettlementProperties(
-      LocationBuilder.SettlementConfig xs,
-      LocationBuilder.SettlementConfig s,
-      LocationBuilder.SettlementConfig m,
-      LocationBuilder.SettlementConfig l,
-      LocationBuilder.SettlementConfig xl) {}
+      LocationHandler.SettlementConfig xs,
+      LocationHandler.SettlementConfig s,
+      LocationHandler.SettlementConfig m,
+      LocationHandler.SettlementConfig l,
+      LocationHandler.SettlementConfig xl) {}
 
   public record EnemyProperties(
-      Range t1HpXpGold,
-      Range t2HpXpGold,
-      Range t3HpXpGold,
-      Range t4HpXpGold,
-      Range t5HpXpGold,
-      Range t1Damage,
-      Range t2Damage,
-      Range t3Damage,
-      Range t4Damage,
-      Range t5Damage) {}
+      EncounterHandler.EnemyConfig t1,
+      EncounterHandler.EnemyConfig t2,
+      EncounterHandler.EnemyConfig t3,
+      EncounterHandler.EnemyConfig t4,
+      EncounterHandler.EnemyConfig t5) {}
 
   public record DungeonProperties(
       Bounds encountersPerDungeon,

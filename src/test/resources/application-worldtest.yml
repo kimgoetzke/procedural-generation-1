@@ -62,23 +62,37 @@ settings:
   dungeon-properties:
     encounters-per-dungeon: { lower: 1, upper: 4 }
     enemies-per-encounter: { lower: 1, upper: 3 }
-    level-to-tier-divider: 10
     t1-types: GOBLIN, IMP, CYNOCEPHALY
     t2-types: SKELETON, UNDEAD, DEMON
     t3-types: ORC, TROLL, ONOCENTAUR
     t4-types: CENTICORE, POOKA, MAPUCHE, SPHINX
     t5-types: MINOTAUR, CHIMERA, CYCLOPS, HYDRA, PHOENIX
   enemy-properties:
-    t1-hp-xp-gold: { multiplier: 10, minMod: 0.7, maxMod: 1.1 }
-    t2-hp-xp-gold: { multiplier: 8, minMod: 0.8, maxMod: 1.1 }
-    t3-hp-xp-gold: { multiplier: 6, minMod: 0.8, maxMod: 1.2 }
-    t4-hp-xp-gold: { multiplier: 4, minMod: 0.8, maxMod: 1.3 }
-    t5-hp-xp-gold: { multiplier: 2, minMod: 0.9, maxMod: 1.3 }
-    t1-damage: { multiplier: 1, minMod: 0, maxMod: 2 }
-    t2-damage: { multiplier: 1, minMod: 0.9, maxMod: 1.1 }
-    t3-damage: { multiplier: 1, minMod: 1, maxMod: 1.2 }
-    t4-damage: { multiplier: 1, minMod: 1, maxMod: 1.5 }
-    t5-damage: { multiplier: 1, minMod: 1.2, maxMod: 2 }
+    t1:
+      damage: { multiplier: 1, minMod: 0, maxMod: 2 }
+      health: { multiplier: 10, minMod: 0.7, maxMod: 1.1 }
+      experience: { multiplier: 10, minMod: 0.7, maxMod: 1.1 }
+      gold: { multiplier: 10, minMod: 0.7, maxMod: 1.1 }
+    t2:
+      damage: { multiplier: 1, minMod: 0.9, maxMod: 1.1 }
+      health: { multiplier: 8, minMod: 0.8, maxMod: 1.1 }
+      experience: { multiplier: 8, minMod: 0.8, maxMod: 1.1 }
+      gold: { multiplier: 8, minMod: 0.8, maxMod: 1.1 }
+    t3:
+      damage: { multiplier: 1, minMod: 1, maxMod: 1.2 }
+      health: { multiplier: 6, minMod: 0.8, maxMod: 1.2 }
+      experience: { multiplier: 6, minMod: 0.8, maxMod: 1.2 }
+      gold: { multiplier: 6, minMod: 0.8, maxMod: 1.2 }
+    t4:
+      damage: { multiplier: 1, minMod: 1, maxMod: 1.5 }
+      health: { multiplier: 4, minMod: 0.8, maxMod: 1.3 }
+      experience: { multiplier: 4, minMod: 0.8, maxMod: 1.3 }
+      gold: { multiplier: 4, minMod: 0.8, maxMod: 1.3 }
+    t5:
+      damage: { multiplier: 1, minMod: 1.2, maxMod: 2 }
+      health: { multiplier: 2, minMod: 0.9, maxMod: 1.3 }
+      experience: { multiplier: 2, minMod: 0.9, maxMod: 1.3 }
+      gold: { multiplier: 2, minMod: 0.9, maxMod: 1.3 }
   player-properties:
     starting-damage: { min: 1, max: 4 }
     experience-to-level-up: 100

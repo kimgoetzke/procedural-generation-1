@@ -6,8 +6,7 @@ logging:
   level:
     root: INFO
 settings:
-  auto-unload:
-    world: true
-  environment:
+  general-properties:
+    auto-unload: true
     clear-console: false
     use-console-ui: false

@@ -30,7 +30,7 @@ public abstract class AbstractLoop {
   public abstract void execute(List<Action> actions);
 
   protected void printHeaders(boolean showPoi) {
-    if (getAppProperties().getEnvironment().clearConsole()) {
+    if (getAppProperties().getGeneralProperties().clearConsole()) {
       clearConsole();
     }
     out.printf(
@@ -67,7 +67,7 @@ public abstract class AbstractLoop {
     if (actions.isEmpty()) {
       return;
     }
-    if (getAppProperties().getEnvironment().useConsoleUi()) {
+    if (getAppProperties().getGeneralProperties().useConsoleUi()) {
       useConsoleUi(actions, message);
       return;
     }

@@ -1,8 +1,12 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
+import com.hindsight.king_of_castrop_rauxel.encounter.EncounterHandler;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.items.ConsumableService;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.location.LocationFactory;
+import com.hindsight.king_of_castrop_rauxel.location.LocationHandler;
+import com.hindsight.king_of_castrop_rauxel.location.PoiFactory;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.TerrainGenerator;
@@ -36,7 +40,7 @@ public class AppConfiguration {
 
   @Bean
   public TerrainGenerator terrainGenerator() {
-    return new BasicTerrainGenerator();
+    return new BasicTerrainGenerator(appProperties());
   }
 
   @Bean
@@ -70,7 +74,27 @@ public class AppConfiguration {
   }
 
   @Bean
+  public EncounterHandler encounterHandler() {
+    return new EncounterHandler(appProperties());
+  }
+
+  @Bean
+  public LocationFactory locationFactory() {
+    return new LocationFactory(appProperties(), generators(), dataServices(), poiFactory());
+  }
+
+  @Bean
+  public PoiFactory poiFactory() {
+    return new PoiFactory(appProperties(), encounterHandler());
+  }
+
+  @Bean
+  public LocationHandler locationHandler() {
+    return new LocationHandler(appProperties(), locationFactory());
+  }
+
+  @Bean
   public WorldHandler worldBuilder() {
-    return new WorldHandler(map(), generators(), dataServices());
+    return new WorldHandler(map(), appProperties(), locationFactory());
   }
 }

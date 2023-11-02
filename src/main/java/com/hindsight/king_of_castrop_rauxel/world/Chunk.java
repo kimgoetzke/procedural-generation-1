@@ -1,7 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
@@ -18,7 +16,7 @@ public class Chunk implements Generatable, Unloadable {
 
   @Getter private final String id;
   @Getter private final int density;
-  @Getter private final int[][] plane = new int[CHUNK_SIZE][CHUNK_SIZE];
+  @Getter private final int[][] plane;
   @Getter private final Coordinates coordinates;
   private final Random random;
   private final WorldHandler.Strategy strategy;
@@ -37,10 +35,11 @@ public class Chunk implements Generatable, Unloadable {
     var seed = SeedBuilder.seedFrom(worldCoords);
     this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
-    this.density = ChunkBuilder.randomDensity(random);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.worldHandler = worldHandler;
+    this.density = worldHandler.randomDensity(random);
     this.strategy = strategy;
+    this.plane = new int[worldHandler.chunkSize()][worldHandler.chunkSize()];
     load();
   }
 
@@ -48,10 +47,11 @@ public class Chunk implements Generatable, Unloadable {
     var seed = SeedBuilder.seedFrom(worldCoords);
     this.coordinates = new Coordinates(worldCoords, Coordinates.CoordType.WORLD);
     this.random = new Random(seed);
-    this.density = ChunkBuilder.randomDensity(random);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.worldHandler = worldHandler;
+    this.density = worldHandler.randomDensity(random);
     this.strategy = WorldHandler.Strategy.DEFAULT;
+    this.plane = new int[worldHandler.chunkSize()][worldHandler.chunkSize()];
     load();
   }
 
@@ -85,15 +85,15 @@ public class Chunk implements Generatable, Unloadable {
   }
 
   public Pair<Integer, Integer> getCentreCoords() {
-    return Pair.of(CHUNK_SIZE / 2, CHUNK_SIZE / 2);
+    return Pair.of(plane.length / 2, plane[0].length / 2);
   }
 
   public Pair<Integer, Integer> getRandomCoords() {
     var x = -1;
     var y = -1;
-    while (!isValidPosition(x, y) || hasNeighbors(x, y, MIN_PLACEMENT_DISTANCE)) {
-      x = random.nextInt(CHUNK_SIZE + 1);
-      y = random.nextInt(CHUNK_SIZE + 1);
+    while (!isValidPosition(x, y) || hasNeighbors(x, y, worldHandler.minPlacementDistance())) {
+      x = random.nextInt(plane.length + 1);
+      y = random.nextInt(plane[0].length + 1);
     }
     return Pair.of(x, y);
   }
@@ -119,7 +119,7 @@ public class Chunk implements Generatable, Unloadable {
   }
 
   private boolean isValidPosition(int x, int y) {
-    return x >= 0 && x < CHUNK_SIZE && y >= 0 && y < CHUNK_SIZE;
+    return x >= 0 && x < plane.length && y >= 0 && y < plane[0].length;
   }
 
   private boolean hasNeighbors(int x, int y, int distance) {

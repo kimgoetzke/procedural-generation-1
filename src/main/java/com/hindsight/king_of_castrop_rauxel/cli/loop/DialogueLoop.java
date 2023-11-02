@@ -37,7 +37,7 @@ public class DialogueLoop extends AbstractLoop {
     var dialogue = player.getCurrentEvent();
     if (dialogue.hasCurrentInteraction()) {
       // TODO: Fix dialogue.isBeginningOfDialogue() as it doesn't work when accepting reward
-      if (dialogue.isBeginningOfDialogue() && appProperties.getEnvironment().clearConsole()) {
+      if (dialogue.isBeginningOfDialogue() && appProperties.getGeneralProperties().clearConsole()) {
         CliComponent.clearConsole();
       }
       out.printf(

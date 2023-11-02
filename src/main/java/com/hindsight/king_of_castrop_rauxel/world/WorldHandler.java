@@ -1,28 +1,33 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.location.Settlement;
-import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
-import com.hindsight.king_of_castrop_rauxel.utils.Generators;
+import com.hindsight.king_of_castrop_rauxel.location.LocationFactory;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class WorldHandler {
 
   private final Graph<AbstractLocation> map;
-  private final Generators generators;
-  private final DataServices dataServices;
+  private final AppProperties appProperties;
+  private final LocationFactory locationFactory;
+  private final AppProperties.ChunkProperties chunkProperties;
+
+  public WorldHandler(
+      Graph<AbstractLocation> map, AppProperties appProperties, LocationFactory locationFactory) {
+    this.map = map;
+    this.appProperties = appProperties;
+    this.locationFactory = locationFactory;
+    this.chunkProperties = appProperties.getChunkProperties();
+  }
 
   @Getter
   public enum CardinalDirection {
@@ -70,7 +75,7 @@ public class WorldHandler {
   private void placeSettlement(
       Graph<AbstractLocation> map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
-    var settlement = new Settlement(worldCoords, chunkCoords, generators, dataServices);
+    var settlement = locationFactory.createSettlement(worldCoords, chunkCoords);
     map.addVertex(settlement);
     chunk.place(chunkCoords, LocationType.SETTLEMENT);
   }
@@ -84,7 +89,7 @@ public class WorldHandler {
           continue;
         }
         var distance = reference.getLocation().distanceTo(other.getLocation());
-        if (distance < MAX_GUARANTEED_NEIGHBOUR_DISTANCE) {
+        if (distance < appProperties.getChunkProperties().maxGuaranteedNeighbourDistance()) {
           addConnections(map, reference, other, distance);
         }
       }
@@ -205,6 +210,68 @@ public class WorldHandler {
     result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
     log.info("Visited vertices: {}", result.visitedVertices().size());
     result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
+  }
+
+  public int chunkSize() {
+    return chunkProperties.size();
+  }
+
+  public int minPlacementDistance() {
+    return chunkProperties.minPlacementDistance();
+  }
+
+  public int randomDensity(Random random) {
+    var density = chunkProperties.density();
+    return random.nextInt(density.getUpper() - density.getLower() + 1) + density.getLower();
+  }
+
+  public boolean isInsideTriggerZone(Pair<Integer, Integer> chunkCoords) {
+    var chunkSize = chunkProperties.size();
+    var generationTriggerZone = chunkProperties.generationTriggerZone();
+    return chunkCoords.getFirst() > chunkSize - generationTriggerZone
+        || chunkCoords.getFirst() < generationTriggerZone
+        || chunkCoords.getSecond() > chunkSize - generationTriggerZone
+        || chunkCoords.getSecond() < generationTriggerZone;
+  }
+
+  // TODO: Expand to include all 8 directions
+  public CardinalDirection nextChunkPosition(Pair<Integer, Integer> chunkCoords) {
+    var chunkSize = chunkProperties.size();
+    var generationTriggerZone = chunkProperties.generationTriggerZone();
+    if (chunkCoords.getFirst() > chunkSize - generationTriggerZone) {
+      return CardinalDirection.EAST;
+    } else if (chunkCoords.getFirst() < generationTriggerZone) {
+      return CardinalDirection.WEST;
+    } else if (chunkCoords.getSecond() > chunkSize - generationTriggerZone) {
+      return CardinalDirection.NORTH;
+    } else if (chunkCoords.getSecond() < generationTriggerZone) {
+      return CardinalDirection.SOUTH;
+    } else {
+      return CardinalDirection.THIS;
+    }
+  }
+
+  public static void log(Chunk chunk, CardinalDirection where) {
+    if (chunk == null) {
+      log.info("{} chunk does not exist yet", where);
+      return;
+    }
+    var settlements = new AtomicInteger();
+    Arrays.stream(chunk.getPlane())
+        .forEach(
+            row -> {
+              for (var cell : row) {
+                if (cell > 0) {
+                  settlements.getAndIncrement();
+                }
+              }
+            });
+    log.info(
+        "{} chunk at {} has a density of {} and {} settlements",
+        where,
+        chunk.getCoordinates(),
+        chunk.getDensity(),
+        settlements);
   }
 
   protected <T extends AbstractLocation> ConnectivityResult<T> evaluateConnectivity(

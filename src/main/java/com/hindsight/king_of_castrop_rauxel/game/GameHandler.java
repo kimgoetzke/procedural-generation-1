@@ -1,23 +1,34 @@
 package com.hindsight.king_of_castrop_rauxel.game;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.world.ChunkBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.World;
-import lombok.RequiredArgsConstructor;
+import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GameHandler {
 
   private final World world;
   private final Graph<AbstractLocation> map;
+  private final AppProperties appProperties;
+  private final WorldHandler worldHandler;
+
+  public GameHandler(
+      World world,
+      Graph<AbstractLocation> map,
+      AppProperties appProperties,
+      WorldHandler worldHandler) {
+    this.world = world;
+    this.map = map;
+    this.appProperties = appProperties;
+    this.worldHandler = worldHandler;
+  }
 
   public void updateWorld(Player player) {
     updateWorldCoords(player);
@@ -35,8 +46,8 @@ public class GameHandler {
 
   private void generateNextChunk(Player player) {
     var chunkCoords = player.getCurrentLocation().getCoordinates().getChunk();
-    if (ChunkBuilder.isInsideTriggerZone(chunkCoords)) {
-      var whereNext = ChunkBuilder.nextChunkPosition(chunkCoords);
+    if (worldHandler.isInsideTriggerZone(chunkCoords)) {
+      var whereNext = worldHandler.nextChunkPosition(chunkCoords);
       log.info("Player is inside {}ern trigger zone", whereNext.getName().toLowerCase());
       if (world.hasChunk(whereNext)) {
         log.info("{} chunk already exists - skipping generation", whereNext.getName());

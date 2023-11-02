@@ -22,9 +22,8 @@ logging:
   level:
     root: INFO
 settings:
-  auto-unload:
-    world: true
-  environment:
+  general-properties:
+    auto-unload: true
     clear-console: false
     use-console-ui: false
 ---
@@ -36,9 +35,8 @@ logging:
   level:
     root: DEBUG
 settings:
-  auto-unload:
-    world: false
-  environment:
+  general-properties:
+    auto-unload: false
     clear-console: true
     use-console-ui: false
 ---
@@ -50,9 +48,8 @@ logging:
   level:
     root: OFF
 settings:
-  auto-unload:
-    world: true
-  environment:
+  general-properties:
+    auto-unload: true
     clear-console: true
     use-console-ui: true
 ---
@@ -64,9 +61,8 @@ logging:
   level:
     root: INFO
 settings:
-  auto-unload:
-    world: true
-  environment:
+  general-properties:
+    auto-unload: true
     clear-console: false
     use-console-ui: false
 ---
@@ -78,8 +74,7 @@ logging:
   level:
     root: INFO
 settings:
-  auto-unload:
-    world: true
-  environment:
+  general-properties:
+    auto-unload: true
     clear-console: true
     use-console-ui: true

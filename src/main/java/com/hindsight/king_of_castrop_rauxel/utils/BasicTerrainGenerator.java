@@ -1,14 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import java.util.Random;
-
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
-import lombok.RequiredArgsConstructor;
+import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WORLD_CENTER;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WORLD_SIZE;
 
 /**
  * Currently only used to generate difficulty values for each chunk based on their distance to the
@@ -18,10 +13,20 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WO
  * generate an ASCII art visual map).
  */
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BasicTerrainGenerator implements TerrainGenerator {
 
-  private final int[][] targetLevel = new int[WORLD_SIZE][WORLD_SIZE];
+  private final AppProperties appProperties;
+
+  private final int[][] targetLevel;
+  private final int worldSize;
+  private final int worldCentre;
+
+  public BasicTerrainGenerator(AppProperties appProperties) {
+    this.appProperties = appProperties;
+    this.worldSize = appProperties.getWorldProperties().size();
+    this.worldCentre = appProperties.getWorldProperties().centre();
+    targetLevel = new int[worldSize][worldSize];
+  }
 
   @Override
   public void initialise(Random random) {
@@ -29,9 +34,9 @@ public class BasicTerrainGenerator implements TerrainGenerator {
   }
 
   private void createTargetLevelMatrix() {
-    for (int row = 0; row < WORLD_SIZE; row++) {
-      for (int col = 0; col < WORLD_SIZE; col++) {
-        int distance = Math.max(Math.abs(row - WORLD_CENTER) + Math.abs(col - WORLD_CENTER), 1);
+    for (int row = 0; row < worldSize; row++) {
+      for (int col = 0; col < worldSize; col++) {
+        int distance = Math.max(Math.abs(row - worldCentre) + Math.abs(col - worldCentre), 1);
         targetLevel[row][col] = distance;
       }
     }

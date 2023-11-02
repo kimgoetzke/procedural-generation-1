@@ -4,8 +4,10 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.location.LocationFactory;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,11 +23,13 @@ class CoordinatesTest {
   @Autowired WorldHandler worldHandler;
   @Autowired Generators generators;
   @Autowired DataServices dataServices;
+  @Autowired AppProperties appProperties;
+  @Autowired LocationFactory locationFactory;
   @Mock Graph<AbstractLocation> map;
 
   @BeforeEach
   void setUp() {
-    worldHandler = new WorldHandler(map, generators, dataServices);
+    worldHandler = new WorldHandler(map, appProperties, locationFactory);
   }
 
   @Test

@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
@@ -30,14 +31,21 @@ public abstract class AbstractLocation implements Location {
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
   @EqualsAndHashCode.Include @Getter protected final Coordinates coordinates;
+  protected final AppProperties appProperties;
+  protected final PoiFactory poiFactory;
   @Getter @Setter private boolean isLoaded;
 
   protected AbstractLocation(
-      Pair<Integer, Integer> worldCoords, Pair<Integer, Integer> chunkCoords) {
+      Pair<Integer, Integer> worldCoords,
+      Pair<Integer, Integer> chunkCoords,
+      AppProperties appProperties,
+      PoiFactory poiFactory) {
     this.coordinates = new Coordinates(worldCoords, chunkCoords);
     this.seed = SeedBuilder.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
+    this.appProperties = appProperties;
+    this.poiFactory = poiFactory;
   }
 
   @Override

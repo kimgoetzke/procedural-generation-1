@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.loop.*;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
@@ -27,6 +28,7 @@ public class CliGame {
   private final DialogueLoop dialogueLoop;
   private final CombatLoop combatLoop;
   private final DebugLoop debugLoop;
+  private final AppProperties appProperties;
   private Player player;
 
   @SuppressWarnings("InfiniteLoopStatement")
@@ -53,7 +55,7 @@ public class CliGame {
     world.setCurrentChunk(world.getCentreCoords());
     var startLocation = world.getCurrentChunk().getCentralLocation(world, map);
     var worldCoordinates = world.getCurrentChunk().getCoordinates().getWorld();
-    player = new Player("Traveller", startLocation, worldCoordinates);
+    player = new Player("Traveller", startLocation, worldCoordinates, appProperties);
     dialogueLoop.initialise(player);
     poiLoop.initialise(player);
     choosePoiLoop.initialise(player);

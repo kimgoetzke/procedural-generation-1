@@ -1,27 +1,33 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.CHUNK_SIZE;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.RETENTION_ZONE;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.WORLD_SIZE;
-
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.world.WorldHandler.CardinalDirection;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
-@RequiredArgsConstructor
 public class World {
 
-  private final AppProperties appProperties;
   private final WorldHandler worldHandler;
+  private final Chunk[][] plane;
+  private final int worldSize;
+  private final int chunkSize;
+  private final int retentionZone;
+  private final boolean autoUnload;
 
   @Getter private Chunk currentChunk;
-  private final Chunk[][] plane = new Chunk[WORLD_SIZE][WORLD_SIZE];
+
+  public World(AppProperties appProperties, WorldHandler worldHandler) {
+    this.worldHandler = worldHandler;
+    this.worldSize = appProperties.getWorldProperties().size();
+    this.chunkSize = appProperties.getChunkProperties().size();
+    this.autoUnload = appProperties.getGeneralProperties().autoUnload();
+    this.retentionZone = appProperties.getWorldProperties().retentionZone();
+    this.plane = new Chunk[worldSize][worldSize];
+  }
 
   public boolean hasChunk(CardinalDirection where) {
     var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
@@ -75,7 +81,7 @@ public class World {
 
   /** Returns the world coordinates of the chunk in the center of the world. */
   public Pair<Integer, Integer> getCentreCoords() {
-    return Pair.of(WORLD_SIZE / 2, WORLD_SIZE / 2);
+    return Pair.of(worldSize / 2, worldSize / 2);
   }
 
   /**
@@ -86,7 +92,7 @@ public class World {
   }
 
   public void generateChunk(Pair<Integer, Integer> worldCoords, Graph<AbstractLocation> map) {
-    throwErrorIfChunkExists(worldCoords, this);
+    throwErrorIfChunkExists(worldCoords);
     var stats = worldHandler.getStats(map);
     var chunk = new Chunk(worldCoords, worldHandler);
     place(chunk);
@@ -94,7 +100,7 @@ public class World {
   }
 
   public void generateChunk(CardinalDirection where, Graph<AbstractLocation> map) {
-    throwErrorIfChunkExists(where, this);
+    throwErrorIfChunkExists(where);
     var stats = worldHandler.getStats(map);
     var nextChunk = new Chunk(getCoordsFor(where), worldHandler);
     place(nextChunk, where);
@@ -139,7 +145,7 @@ public class World {
     }
     currentChunk = chunk;
     log.info("Set current chunk to: {}", chunk.getSummary());
-    if (appProperties.getAutoUnload().world()) {
+    if (autoUnload) {
       unloadChunks();
     }
   }
@@ -148,8 +154,8 @@ public class World {
     log.info("Unloading chunks outside retention zone...");
     var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
     var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
-    for (int i = 0; i < WORLD_SIZE; i++) {
-      for (int j = 0; j < WORLD_SIZE; j++) {
+    for (int i = 0; i < worldSize; i++) {
+      for (int j = 0; j < worldSize; j++) {
         if (isValidPosition(i, j)
             && hasLoadedChunk(Pair.of(i, j))
             && isInsideRemovalZone(i, x, j, y)) {
@@ -159,12 +165,12 @@ public class World {
     }
   }
 
-  private static boolean isInsideRemovalZone(int targetX, int currX, int targetY, int currY) {
-    return Math.abs(targetX - currX) > RETENTION_ZONE || Math.abs(targetY - currY) > RETENTION_ZONE;
+  private boolean isInsideRemovalZone(int targetX, int currX, int targetY, int currY) {
+    return Math.abs(targetX - currX) > retentionZone || Math.abs(targetY - currY) > retentionZone;
   }
 
   private boolean isValidPosition(int x, int y) {
-    return x >= 0 && x < CHUNK_SIZE && y >= 0 && y < CHUNK_SIZE;
+    return x >= 0 && x < chunkSize && y >= 0 && y < chunkSize;
   }
 
   private static Pair<Integer, Integer> getCoordsFor(CardinalDirection where, Chunk chunk) {
@@ -183,23 +189,22 @@ public class World {
     };
   }
 
-  private static void throwErrorIfChunkExists(CardinalDirection where, World world) {
-    if (world.hasChunk(where)) {
+  private void throwErrorIfChunkExists(CardinalDirection where) {
+    var chunk = getChunk(where);
+    if (chunk == null) {
+      return;
+    }
+    throwErrorIfChunkExists(chunk.getCoordinates().getWorld());
+  }
+
+  private void throwErrorIfChunkExists(Pair<Integer, Integer> worldCoords) {
+    if (hasChunk(worldCoords)) {
       throw new IllegalStateException(
           String.format(
               "Chunk %s of w(%d, %d) already exists",
-              where.name().toLowerCase(),
-              world.getCoordsFor(where).getFirst(),
-              world.getCoordsFor(where).getSecond()));
-    }
-  }
-
-  private static void throwErrorIfChunkExists(Pair<Integer, Integer> worldCoords, World world) {
-    if (world.hasChunk(worldCoords)) {
-      throw new IllegalStateException(
-          String.format(
-              "Chunk at w(%d, %d) already exists",
-              worldCoords.getFirst(), worldCoords.getSecond()));
+              getChunk(worldCoords).getSummary().toLowerCase(),
+              worldCoords.getFirst(),
+              worldCoords.getSecond()));
     }
   }
 }

@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
@@ -21,8 +22,10 @@ public class Settlement extends AbstractSettlement {
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
       Generators generators,
-      DataServices dataServices) {
-    super(worldCoords, chunkCoords, generators, dataServices);
+      DataServices dataServices,
+      AppProperties appProperties,
+      PoiFactory poiFactory) {
+    super(worldCoords, chunkCoords, generators, dataServices, appProperties, poiFactory);
     generateFoundation();
     logResult(true);
   }
@@ -31,7 +34,7 @@ public class Settlement extends AbstractSettlement {
   public void load() {
     var startTime = System.currentTimeMillis();
     log.info("Generating full settlement '{}'...", id);
-    LocationBuilder.throwIfRepeatedRequest(this, true);
+    LocationHandler.throwIfRepeatedRequest(this, true);
     loadPois();
     loadEvents();
     loadInhabitants();
@@ -42,13 +45,13 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateFoundation() {
-    size = LocationBuilder.randomSize(random);
-    area = LocationBuilder.randomArea(random, size);
+    size = LocationHandler.randomSize(random);
+    area = LocationHandler.randomArea(random, size);
     name = generators.nameGenerator().locationNameFrom(this.getClass());
   }
 
   private void loadPois() {
-    var amenities = LocationBuilder.getSettlementConfig(size).getAmenities();
+    var amenities = LocationHandler.getSettlementConfig(size).getAmenities();
     for (var amenity : amenities.entrySet()) {
       var bounds = amenity.getValue();
       var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
@@ -59,7 +62,7 @@ public class Settlement extends AbstractSettlement {
 
   private void addPoi(Type type) {
     var npc = new Inhabitant(random, generators);
-    var amenity = LocationBuilder.createInstance(this, npc, type);
+    var amenity = poiFactory.createInstance(this, npc, type);
     if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
       pointsOfInterests.add(amenity);
       inhabitants.add(npc);
@@ -96,7 +99,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void loadInhabitants() {
-    var bounds = LocationBuilder.getSettlementConfig(size).getInhabitants();
+    var bounds = LocationHandler.getSettlementConfig(size).getInhabitants();
     var i = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
     inhabitantCount = Math.max(i, inhabitants.size());
   }

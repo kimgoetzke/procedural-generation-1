@@ -16,8 +16,8 @@ class AppPropertiesTest {
 
   @Test
   void loadsPropertiesFromAllIncludedProfiles() {
-    assertThat(appProperties.getAutoUnload().world()).isTrue();
-    assertThat(appProperties.getEnvironment().useConsoleUi()).isFalse();
+    assertThat(appProperties.getGeneralProperties().autoUnload()).isTrue();
+    assertThat(appProperties.getGeneralProperties().useConsoleUi()).isFalse();
     assertThat(appProperties.getWorldProperties().size()).isEqualTo(50);
   }
 
@@ -29,12 +29,14 @@ class AppPropertiesTest {
     assertThat(appProperties.getChunkProperties().density().getUpper()).isEqualTo(10);
     assertThat(appProperties.getGameProperties().delayInMs()).isEqualTo(175L);
     assertThat(appProperties.getGameProperties().speedModifier()).isEqualTo(0.1F);
-    assertThat(appProperties.getEnemyProperties().t3HpXpGold().getMultiplier()).isEqualTo(6);
-    assertThat(appProperties.getEnemyProperties().t3HpXpGold().getMinMod()).isEqualTo(0.8F);
-    assertThat(appProperties.getEnemyProperties().t3HpXpGold().getMaxMod()).isEqualTo(1.2F);
-    assertThat(appProperties.getEnemyProperties().t5Damage().getMultiplier()).isEqualTo(1);
-    assertThat(appProperties.getEnemyProperties().t5Damage().getMinMod()).isEqualTo(1.2F);
-    assertThat(appProperties.getEnemyProperties().t5Damage().getMaxMod()).isEqualTo(2F);
+    var t3 = appProperties.getEnemyProperties().t3();
+    assertThat(t3.getGold().getMultiplier()).isEqualTo(6);
+    assertThat(t3.getHealth().getMinMod()).isEqualTo(0.8F);
+    assertThat(t3.getExperience().getMaxMod()).isEqualTo(1.2F);
+    var t5Damage = appProperties.getEnemyProperties().t5().getDamage();
+    assertThat(t5Damage.getMultiplier()).isEqualTo(1);
+    assertThat(t5Damage.getMinMod()).isEqualTo(1.2F);
+    assertThat(t5Damage.getMaxMod()).isEqualTo(2F);
     var expectedList = List.of(Type.SKELETON, Type.UNDEAD, Type.DEMON);
     assertThat(appProperties.getDungeonProperties().t2Types()).containsAll(expectedList);
     var xsSettlement = appProperties.getSettlementProperties().xs();
