@@ -1,0 +1,84 @@
+spring:
+  profiles:
+    default: cli-dev
+  datasource:
+    url: jdbc:h2:mem:content_db
+    driverClassName: org.h2.Driver
+    username: user
+    password: pw
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    open-in-view: false
+---
+spring:
+  config:
+    activate:
+      on-profile: cli-dev
+logging:
+  level:
+    root: INFO
+settings:
+  auto-unload:
+    world: true
+  environment:
+    clear-console: false
+    use-console-ui: false
+---
+spring:
+  config:
+    activate:
+      on-profile: cli-debug
+logging:
+  level:
+    root: DEBUG
+settings:
+  auto-unload:
+    world: false
+  environment:
+    clear-console: true
+    use-console-ui: false
+---
+spring:
+  config:
+    activate:
+      on-profile: cli-prod
+logging:
+  level:
+    root: OFF
+settings:
+  auto-unload:
+    world: true
+  environment:
+    clear-console: true
+    use-console-ui: true
+---
+spring:
+  config:
+    activate:
+      on-profile: web-dev
+logging:
+  level:
+    root: INFO
+settings:
+  auto-unload:
+    world: true
+  environment:
+    clear-console: false
+    use-console-ui: false
+---
+spring:
+  config:
+    activate:
+      on-profile: web-prod
+logging:
+  level:
+    root: INFO
+settings:
+  auto-unload:
+    world: true
+  environment:
+    clear-console: true
+    use-console-ui: true
