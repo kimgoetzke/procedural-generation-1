@@ -1,6 +1,7 @@
 spring:
   profiles:
     default: cli-dev
+    include: world
   datasource:
     url: jdbc:h2:mem:content_db
     driverClassName: org.h2.Driver

@@ -63,7 +63,6 @@ class EncounterBuilderTest {
         arguments(2, DUNGEON_TYPES_T2),
         arguments(3, DUNGEON_TYPES_T3),
         arguments(4, DUNGEON_TYPES_T4),
-        arguments(5, DUNGEON_TYPES_T5),
-        arguments(6, DUNGEON_TYPES_T6));
+        arguments(5, DUNGEON_TYPES_T5));
   }
 }

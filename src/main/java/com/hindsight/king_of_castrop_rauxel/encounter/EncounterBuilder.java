@@ -85,7 +85,6 @@ public class EncounterBuilder {
     DUNGEON_TYPES_CONFIGS.put(3, DUNGEON_TYPES_T3);
     DUNGEON_TYPES_CONFIGS.put(4, DUNGEON_TYPES_T4);
     DUNGEON_TYPES_CONFIGS.put(5, DUNGEON_TYPES_T5);
-    DUNGEON_TYPES_CONFIGS.put(6, DUNGEON_TYPES_T6);
   }
 
   private void configureEnemies() {

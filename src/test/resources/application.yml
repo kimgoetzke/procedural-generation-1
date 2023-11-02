@@ -1,6 +1,7 @@
 spring:
   profiles:
     active: cli-dev
+    include: worldtest
 logging:
   level:
     root: INFO

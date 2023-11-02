@@ -82,11 +82,9 @@ public final class AppConstants {
   public static final List<Type> DUNGEON_TYPES_T2 = List.of(Type.SKELETON, Type.UNDEAD, Type.DEMON);
   public static final List<Type> DUNGEON_TYPES_T3 = List.of(Type.ORC, Type.TROLL, Type.ONOCENTAUR);
   public static final List<Type> DUNGEON_TYPES_T4 =
-      List.of(Type.CENTICORE, Type.POOKA, Type.MAPUCHE);
+      List.of(Type.CENTICORE, Type.POOKA, Type.MAPUCHE, Type.SPHINX);
   public static final List<Type> DUNGEON_TYPES_T5 =
-      List.of(Type.SPHINX, Type.MINOTAUR, Type.CHIMERA);
-  public static final List<Type> DUNGEON_TYPES_T6 = List.of(Type.CYCLOPS, Type.HYDRA, Type.PHOENIX);
-
+      List.of(Type.MINOTAUR, Type.CHIMERA, Type.CYCLOPS, Type.HYDRA, Type.PHOENIX);
   // ENEMIES PROPERTIES
   // Basic Enemy
   public static final Range T1_ENEMY_HP_XP_GOLD = new Range(10, 0.7F, 1.1F);
