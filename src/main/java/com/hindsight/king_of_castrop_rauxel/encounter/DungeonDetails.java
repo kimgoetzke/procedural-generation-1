@@ -35,7 +35,15 @@ public record DungeonDetails(
     CYCLOPS,
     HYDRA,
     PHOENIX,
-    DRAGON,
+    DRAGON;
+
+    public static Type from(int ordinal) {
+      return Type.values()[ordinal];
+    }
+
+    public static Type from(String name) {
+      return Type.valueOf(name);
+    }
   }
 
   @Override

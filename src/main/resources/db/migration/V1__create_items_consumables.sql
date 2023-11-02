@@ -9,4 +9,6 @@ CREATE TABLE ITEMS_CONSUMABLES
     effect_max_health INT          NOT NULL DEFAULT 0,
     PRIMARY KEY (id)
 );
+
+-- To load data directly from a CSV file, add the below after creating the table:
 -- AS SELECT * FROM CSVREAD('src/main/resources/content/consumables.csv');
