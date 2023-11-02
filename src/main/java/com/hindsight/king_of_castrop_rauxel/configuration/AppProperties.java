@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
-import com.hindsight.king_of_castrop_rauxel.encounter.EncounterHandler;
+import com.hindsight.king_of_castrop_rauxel.encounter.DungeonHandler;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
@@ -98,11 +98,11 @@ public class AppProperties {
   }
 
   public record EnemyProperties(
-      EncounterHandler.EnemyConfig t1,
-      EncounterHandler.EnemyConfig t2,
-      EncounterHandler.EnemyConfig t3,
-      EncounterHandler.EnemyConfig t4,
-      EncounterHandler.EnemyConfig t5) {}
+      DungeonHandler.EnemyConfig t1,
+      DungeonHandler.EnemyConfig t2,
+      DungeonHandler.EnemyConfig t3,
+      DungeonHandler.EnemyConfig t4,
+      DungeonHandler.EnemyConfig t5) {}
 
   public record DungeonProperties(
       Bounds encountersPerDungeon,

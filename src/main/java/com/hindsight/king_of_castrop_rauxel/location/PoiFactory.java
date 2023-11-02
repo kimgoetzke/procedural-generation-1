@@ -2,7 +2,6 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PoiFactory {
 
   private final AppProperties appProperties;
-  private final CoordinateFactory coordinateFactory;
 
   public PointOfInterest createPoiInstance(Location parent, Npc npc, PointOfInterest.Type type) {
     return switch (type) {

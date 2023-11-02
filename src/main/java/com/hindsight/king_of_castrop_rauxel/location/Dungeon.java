@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
-import com.hindsight.king_of_castrop_rauxel.encounter.EncounterHandler;
+import com.hindsight.king_of_castrop_rauxel.encounter.DungeonHandler;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
 import lombok.EqualsAndHashCode;
@@ -27,7 +27,7 @@ public class Dungeon extends AbstractAmenity {
 
   private final AppProperties appProperties;
   private final Generators generators;
-  private final EncounterHandler encounterHandler;
+  private final DungeonHandler dungeonHandler;
   private EncounterSequence sequence;
   private DungeonDetails dungeonDetails;
 
@@ -35,7 +35,7 @@ public class Dungeon extends AbstractAmenity {
     super(type, npc, parent);
     this.appProperties = appProperties;
     this.generators = parent.getGenerators();
-    this.encounterHandler = new EncounterHandler(appProperties);
+    this.dungeonHandler = new DungeonHandler(appProperties);
     load();
     logResult();
   }
@@ -51,9 +51,9 @@ public class Dungeon extends AbstractAmenity {
 
   private DungeonDetails createDungeonDetails() {
     var targetLevel = generators.terrainGenerator().getTargetLevel(parent.getCoordinates());
-    var tier = encounterHandler.getDungeonTier(targetLevel);
-    var type = encounterHandler.getDungeonType(random, tier);
-    var encounterDetails = encounterHandler.getEncounterDetails(random, targetLevel, type);
+    var tier = dungeonHandler.getDungeonTier(targetLevel);
+    var type = dungeonHandler.getDungeonType(random, tier);
+    var encounterDetails = dungeonHandler.getEncounterDetails(random, targetLevel, type);
     var seed = SeedBuilder.seedFrom(parent.getCoordinates().getGlobal());
     var dungeonName = generators.nameGenerator().dungeonNameFrom(this.getClass(), type);
     var dungeonDescription =

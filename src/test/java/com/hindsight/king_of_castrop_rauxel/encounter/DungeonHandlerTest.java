@@ -15,15 +15,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-class EncounterHandlerTest {
+class DungeonHandlerTest {
 
   @Autowired private AppProperties appProperties;
 
-  private EncounterHandler underTest;
+  private DungeonHandler underTest;
 
   @BeforeEach
   void setUp() {
-    underTest = new EncounterHandler(appProperties);
+    underTest = new DungeonHandler(appProperties);
   }
 
   @ParameterizedTest

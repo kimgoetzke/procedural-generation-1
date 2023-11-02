@@ -9,7 +9,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class EncounterHandler {
+public class DungeonHandler {
 
   private final AppProperties.DungeonProperties dungeonProperties;
   private final AppProperties.EnemyProperties enemyProperties;
@@ -17,7 +17,7 @@ public class EncounterHandler {
   private final Map<Integer, List<DungeonDetails.Type>> dungeonTypesConfigs = new HashMap<>();
   private final Map<Integer, EnemyConfig> enemyConfigs = new HashMap<>();
 
-  public EncounterHandler(AppProperties appProperties) {
+  public DungeonHandler(AppProperties appProperties) {
     this.dungeonProperties = appProperties.getDungeonProperties();
     this.enemyProperties = appProperties.getEnemyProperties();
     this.levelToTierDivider = dungeonProperties.levelToTierDivider();
