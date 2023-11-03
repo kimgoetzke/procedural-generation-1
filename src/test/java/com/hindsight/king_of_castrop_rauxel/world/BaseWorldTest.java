@@ -24,7 +24,7 @@ public abstract class BaseWorldTest {
 
   protected Chunk chunk;
   protected World world;
-  protected Graph<AbstractLocation> map;
+  protected Graph map;
   protected DebugActionFactory daf;
 
   @AfterEach
@@ -35,8 +35,7 @@ public abstract class BaseWorldTest {
     daf = null;
   }
 
-  protected <T extends AbstractLocation> void debug(
-      List<Vertex<T>> vertices, Graph<AbstractLocation> map) {
+  protected void debug(List<Vertex<? extends Location>> vertices, Graph map) {
     chunkHandler.logDisconnectedVertices(map);
     var connectivityResult = chunkHandler.evaluateConnectivity(map);
     System.out.println("Unvisited vertices: " + connectivityResult.unvisitedVertices().size());
@@ -54,8 +53,8 @@ public abstract class BaseWorldTest {
     daf.printConnectivity();
   }
 
-  protected <T extends AbstractLocation> void debugSet(
-      List<Vertex<T>> vertices, Set<Vertex<AbstractLocation>> vertexSet) {
+  protected void debugSet(
+      List<Vertex<? extends Location>> vertices, Set<Vertex<? extends Location>> vertexSet) {
     vertexSet.forEach(
         v -> {
           System.out.println(v.getLocation().getBriefSummary());

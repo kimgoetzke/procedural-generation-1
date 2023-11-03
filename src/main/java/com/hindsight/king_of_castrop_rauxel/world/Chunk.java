@@ -1,7 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import java.util.Random;
 
@@ -103,7 +102,7 @@ public class Chunk implements Generatable, Unloadable {
     return Pair.of(x, y);
   }
 
-  public Settlement getCentralLocation(World world, Graph<AbstractLocation> map) {
+  public Settlement getCentralLocation(World world, Graph map) {
     var globalCoords = world.getCurrentChunk().getCoordinates().getGlobal();
     var startVertex = chunkHandler.closestLocationTo(globalCoords, map.getVertices());
     var centralLocation = startVertex.getLocation();

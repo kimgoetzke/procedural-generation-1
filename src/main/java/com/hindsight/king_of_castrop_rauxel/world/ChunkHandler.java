@@ -5,10 +5,10 @@ import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 
 import java.util.*;
 
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
@@ -21,15 +21,12 @@ public class ChunkHandler {
 
   @Getter private final AppProperties appProperties;
   private final AppProperties.ChunkProperties chunkProperties;
-  private final Graph<AbstractLocation> map;
+  private final Graph map;
   private final Generators generators;
   private final DataServices dataServices;
 
   public ChunkHandler(
-      Graph<AbstractLocation> map,
-      AppProperties appProperties,
-      Generators generators,
-      DataServices dataServices) {
+      Graph map, AppProperties appProperties, Generators generators, DataServices dataServices) {
     this.map = map;
     this.appProperties = appProperties;
     this.chunkProperties = appProperties.getChunkProperties();
@@ -46,7 +43,7 @@ public class ChunkHandler {
     }
   }
 
-  protected void generateSettlements(Graph<AbstractLocation> map, Chunk chunk) {
+  protected void generateSettlements(Graph map, Chunk chunk) {
     var settlementsCount = chunk.getDensity();
     for (int i = 0; i < settlementsCount; i++) {
       var chunkCoords = chunk.getRandomCoords();
@@ -54,8 +51,7 @@ public class ChunkHandler {
     }
   }
 
-  private void placeSettlement(
-      Graph<AbstractLocation> map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
+  private void placeSettlement(Graph map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
     var settlement =
         new Settlement(worldCoords, chunkCoords, generators, dataServices, appProperties);
@@ -64,7 +60,7 @@ public class ChunkHandler {
   }
 
   /** Connects any vertices that are within a certain distance of each other. */
-  protected <T extends AbstractLocation> void connectAnyWithinNeighbourDistance(Graph<T> map) {
+  protected void connectAnyWithinNeighbourDistance(Graph map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       for (var other : vertices) {
@@ -87,7 +83,7 @@ public class ChunkHandler {
    * C will be connected to D and D will be skipped because it now has a neighbour, despite D's
    * closest neighbour being A.
    */
-  protected void connectNeighbourlessToClosest(Graph<AbstractLocation> map) {
+  protected void connectNeighbourlessToClosest(Graph map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       var refLocation = reference.getLocation();
@@ -117,7 +113,7 @@ public class ChunkHandler {
    * close vertices if they have not been connected to the graph yet. Executing this method prior to
    * any other connection algorithm will provide odd results.
    */
-  protected void connectDisconnectedToClosestConnected(Graph<AbstractLocation> map) {
+  protected void connectDisconnectedToClosestConnected(Graph map) {
     var connectivity = evaluateConnectivity(map);
     var visitedVertices = new ArrayList<>(connectivity.visitedVertices());
     var unvisitedVertices = connectivity.unvisitedVertices();
@@ -135,8 +131,11 @@ public class ChunkHandler {
     }
   }
 
-  protected <T extends AbstractLocation> void addConnections(
-      Graph<T> map, Vertex<T> vertex1, Vertex<T> vertex2, int distance) {
+  protected void addConnections(
+      Graph map,
+      Vertex<? extends Location> vertex1,
+      Vertex<? extends Location> vertex2,
+      int distance) {
     map.addEdge(vertex1, vertex2, distance);
     var v1Location = vertex1.getLocation();
     var v2Location = vertex2.getLocation();
@@ -149,9 +148,9 @@ public class ChunkHandler {
         distance);
   }
 
-  private <T extends AbstractLocation> Vertex<T> closestNeighbourTo(
-      Vertex<T> reference, List<Vertex<T>> vertices) {
-    Vertex<T> closestNeighbor = null;
+  private Vertex<? extends Location> closestNeighbourTo(
+      Vertex<? extends Location> reference, List<Vertex<? extends Location>> vertices) {
+    Vertex<? extends Location> closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var other : vertices) {
       if (reference.equals(other)) {
@@ -173,9 +172,9 @@ public class ChunkHandler {
     return closestNeighbor;
   }
 
-  public <T extends AbstractLocation> Vertex<T> closestLocationTo(
-      Pair<Integer, Integer> globalCoords, List<Vertex<T>> vertices) {
-    Vertex<T> closestNeighbor = null;
+  public Vertex<? extends Location> closestLocationTo(
+      Pair<Integer, Integer> globalCoords, List<Vertex<? extends Location>> vertices) {
+    Vertex<? extends Location> closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var vertex : vertices) {
       var distance = vertex.getLocation().getCoordinates().distanceTo(globalCoords);
@@ -213,18 +212,17 @@ public class ChunkHandler {
     }
   }
 
-  protected <T extends AbstractLocation> ConnectivityResult<T> evaluateConnectivity(
-      Graph<T> graph) {
-    var visitedVertices = new LinkedHashSet<Vertex<T>>();
+  protected ConnectivityResult evaluateConnectivity(Graph graph) {
+    var visitedVertices = new LinkedHashSet<Vertex<? extends Location>>();
     var unvisitedVertices = new LinkedHashSet<>(graph.getVertices());
     if (!unvisitedVertices.isEmpty()) {
       var startVertex = unvisitedVertices.iterator().next();
       Graph.traverseGraphDepthFirst(startVertex, visitedVertices, unvisitedVertices);
     }
-    return new ConnectivityResult<>(visitedVertices, unvisitedVertices);
+    return new ConnectivityResult(visitedVertices, unvisitedVertices);
   }
 
-  public <T extends AbstractLocation> void logDisconnectedVertices(Graph<T> graph) {
+  public void logDisconnectedVertices(Graph graph) {
     var result = evaluateConnectivity(graph);
     log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
     result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
@@ -232,6 +230,7 @@ public class ChunkHandler {
     result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
   }
 
-  protected record ConnectivityResult<T extends AbstractLocation>(
-      Set<Vertex<T>> visitedVertices, Set<Vertex<T>> unvisitedVertices) {}
+  protected record ConnectivityResult(
+      Set<Vertex<? extends Location>> visitedVertices,
+      Set<Vertex<? extends Location>> unvisitedVertices) {}
 }

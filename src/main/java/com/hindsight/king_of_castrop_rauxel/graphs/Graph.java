@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,22 +11,23 @@ import org.springframework.data.util.Pair;
 
 @Slf4j
 @Getter
-public class Graph<T extends AbstractLocation> {
+public class Graph {
 
-  private final List<Vertex<T>> vertices = new ArrayList<>();
+  private final List<Vertex<? extends Location>> vertices = new ArrayList<>();
   private final boolean isWeighted;
 
   public Graph(boolean isWeighted) {
     this.isWeighted = isWeighted;
   }
 
-  public Vertex<T> addVertex(T location) {
-    Vertex<T> newVertex = new Vertex<>(location);
+  public Vertex<Location> addVertex(Location location) {
+    Vertex<Location> newVertex = new Vertex<>(location);
     this.vertices.add(newVertex);
     return newVertex;
   }
 
-  public void addEdge(Vertex<T> vertex1, Vertex<T> vertex2, Integer weight) {
+  public void addEdge(
+      Vertex<? extends Location> vertex1, Vertex<? extends Location> vertex2, Integer weight) {
     if (!this.isWeighted) {
       weight = null;
     }
@@ -34,17 +35,17 @@ public class Graph<T extends AbstractLocation> {
     vertex1.addEdge(vertex2, weight);
   }
 
-  public void removeEdge(Vertex<T> vertex1, Vertex<T> vertex2) {
+  public void removeEdge(Vertex<? extends Location> vertex1, Vertex<? extends Location> vertex2) {
     vertex1.removeEdge(vertex2);
     vertex2.removeEdge(vertex1);
   }
 
-  public void removeVertex(Vertex<T> vertex) {
+  public void removeVertex(Vertex<? extends Location> vertex) {
     this.vertices.remove(vertex);
   }
 
-  public Vertex<T> getVertexByValue(T location) {
-    for (Vertex<T> vertex : this.vertices) {
+  public Vertex<? extends Location> getVertexByValue(Location location) {
+    for (var vertex : this.vertices) {
       if (vertex.getLocation().equals(location)) {
         return vertex;
       }
@@ -52,10 +53,11 @@ public class Graph<T extends AbstractLocation> {
     return null;
   }
 
-  public Vertex<T> getVertexByValue(Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
+  public Vertex<? extends Location> getVertexByValue(
+      Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
     var rX = (int) anyCoords.getFirst();
     var rY = (int) anyCoords.getSecond();
-    for (Vertex<T> vertex : this.vertices) {
+    for (var vertex : this.vertices) {
       var vCoords =
           switch (type) {
             case WORLD -> vertex.getLocation().getCoordinates().getWorld();
@@ -73,13 +75,15 @@ public class Graph<T extends AbstractLocation> {
 
   public void log() {
     log.info("Graph: ");
-    for (Vertex<T> vertex : this.vertices) {
+    for (Vertex<? extends Location> vertex : this.vertices) {
       vertex.log(isWeighted);
     }
   }
 
-  public static <T extends AbstractLocation> void traverseGraphDepthFirst(
-      Vertex<T> currentVertex, Set<Vertex<T>> visitedVertices, Set<Vertex<T>> unvisitedVertices) {
+  public static void traverseGraphDepthFirst(
+      Vertex<? extends Location> currentVertex,
+      Set<Vertex<? extends Location>> visitedVertices,
+      Set<Vertex<? extends Location>> unvisitedVertices) {
     if (visitedVertices.contains(currentVertex)) {
       return;
     }

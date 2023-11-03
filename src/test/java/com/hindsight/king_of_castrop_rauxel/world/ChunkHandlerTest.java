@@ -7,9 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+
 import java.util.List;
 
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class ChunkHandlerTest extends BaseWorldTest {
   void setUp() {
     SeedBuilder.changeSeed(123L);
     world = new World(appProperties, chunkHandler);
-    map = new Graph<>(true);
+    map = new Graph(true);
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
     chunk = new Chunk(C_1_W_COORDS, chunkHandler, Chunk.Strategy.NONE);
     world.place(chunk, C_1_W_COORDS);
@@ -164,7 +165,7 @@ class ChunkHandlerTest extends BaseWorldTest {
     assertThat(connectivity.visitedVertices()).hasSize(7);
   }
 
-  private List<Vertex<AbstractLocation>> chunkWithSettlementsExists() {
+  private List<Vertex<? extends Location>> chunkWithSettlementsExists() {
     var v1 = map.addVertex(createSettlement(Pair.of(0, 0)));
     var v2 = map.addVertex(createSettlement(Pair.of(20, 20)));
     var v3 = map.addVertex(createSettlement(Pair.of(100, 100)));

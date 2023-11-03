@@ -13,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Vertex<T extends Location> {
 
   @EqualsAndHashCode.Include private final String id;
-  private final Set<Edge<T>> edges;
-  private final T location;
+  private final Set<Edge> edges;
+  private final Location location;
 
   public Vertex(T location) {
     this.id =
@@ -26,11 +26,11 @@ public class Vertex<T extends Location> {
     this.edges = new LinkedHashSet<>();
   }
 
-  public void addEdge(Vertex<T> endVertex, Integer weight) {
-    this.edges.add(new Edge<>(this, endVertex, weight));
+  public void addEdge(Vertex<? extends Location> endVertex, Integer weight) {
+    this.edges.add(new Edge(this, endVertex, weight));
   }
 
-  public void removeEdge(Vertex<T> endVertex) {
+  public void removeEdge(Vertex<? extends Location> endVertex) {
     this.edges.removeIf(edge -> edge.end().equals(endVertex));
   }
 
@@ -42,7 +42,7 @@ public class Vertex<T extends Location> {
     }
     StringBuilder message = new StringBuilder();
     boolean first = true;
-    for (Edge<T> edge : edges) {
+    for (var edge : edges) {
       if (first) {
         message
             .append("- ")

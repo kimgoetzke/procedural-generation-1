@@ -2,10 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.game;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.World;
-import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Component;
 public class GameHandler {
 
   private final World world;
-  private final Graph<AbstractLocation> map;
+  private final Graph map;
   private final ChunkHandler chunkHandler;
 
-  public GameHandler(World world, Graph<AbstractLocation> map, ChunkHandler chunkHandler) {
+  public GameHandler(World world, Graph map, ChunkHandler chunkHandler) {
     this.world = world;
     this.map = map;
     this.chunkHandler = chunkHandler;

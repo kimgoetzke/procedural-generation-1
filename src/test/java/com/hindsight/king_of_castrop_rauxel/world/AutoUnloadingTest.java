@@ -18,7 +18,7 @@ class AutoUnloadingTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    map = new Graph<>(true);
+    map = new Graph(true);
     chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices);
     world = new World(appProperties, chunkHandler);
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
@@ -64,7 +64,7 @@ class AutoUnloadingTest extends BaseWorldTest {
     // Given
     var initialCoords = world.getCentreCoords();
 
-    // When
+    // When moving outside the retention zone
     world.generateChunk(initialCoords, map);
     world.setCurrentChunk(initialCoords);
     var expected = map.getVertices().stream().map(Vertex::getLocation).toList();
@@ -72,11 +72,20 @@ class AutoUnloadingTest extends BaseWorldTest {
       world.generateChunk(CardinalDirection.EAST, map);
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
+    var intermediateResult = map.getVertices().stream().map(Vertex::getLocation).toList();
+
+    // Then initial chunk is unloaded
+    assertThat(world.hasLoadedChunk(initialCoords)).isFalse();
+
+    // When moving back to initial chunk
     world.setCurrentChunk(initialCoords);
     var result = map.getVertices().stream().map(Vertex::getLocation).toList();
     debug(map.getVertices(), map);
 
-    // Then
+    // Then initial chunk is loaded again
     assertThat(result).containsAll(expected);
+    System.out.println("intermediateResult = " + intermediateResult);
+    System.out.println("intermediateResult.size = " + intermediateResult.size());
+    System.out.println("result.size = " + result.size());
   }
 }

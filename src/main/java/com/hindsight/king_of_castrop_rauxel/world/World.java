@@ -3,7 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.world;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -86,7 +86,7 @@ public class World {
     return Pair.of(worldSize / 2, worldSize / 2);
   }
 
-  public void generateChunk(Pair<Integer, Integer> worldCoords, Graph<AbstractLocation> map) {
+  public void generateChunk(Pair<Integer, Integer> worldCoords, Graph map) {
     throwErrorIfChunkExists(worldCoords);
     var stats = getStats(map);
     var chunk = new Chunk(worldCoords, chunkHandler);
@@ -94,7 +94,7 @@ public class World {
     logOutcome(stats, map, this.getClass());
   }
 
-  public void generateChunk(CardinalDirection where, Graph<AbstractLocation> map) {
+  public void generateChunk(CardinalDirection where, Graph map) {
     var worldCoords = getCoordsFor(where);
     throwErrorIfChunkExists(worldCoords);
     var stats = getStats(map);
@@ -199,19 +199,19 @@ public class World {
     }
   }
 
-  private LogStats getStats(Graph<AbstractLocation> map) {
+  private LogStats getStats(Graph map) {
     return new LogStats(
         System.currentTimeMillis(),
         map.getVertices().size(),
         map.getVertices().stream().map(Vertex::getLocation).toList());
   }
 
-  private <T> void logOutcome(LogStats stats, Graph<AbstractLocation> map, Class<T> clazz) {
+  private <T> void logOutcome(LogStats stats, Graph map, Class<T> clazz) {
     log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startT) / 1000.0);
     if (clazz.equals(World.class)) {
       log.info("Generated {} settlements", map.getVertices().size() - stats.prevSetCount);
     }
   }
 
-  private record LogStats(long startT, int prevSetCount, List<AbstractLocation> prevSet) {}
+  private record LogStats(long startT, int prevSetCount, List<? extends Location> prevSet) {}
 }

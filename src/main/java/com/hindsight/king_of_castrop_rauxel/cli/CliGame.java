@@ -6,7 +6,6 @@ import com.hindsight.king_of_castrop_rauxel.cli.loop.*;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.ArrayList;
 import lombok.AccessLevel;
@@ -22,7 +21,7 @@ public class CliGame {
 
   private final EnvironmentResolver environmentResolver;
   private final World world;
-  private final Graph<AbstractLocation> map;
+  private final Graph map;
   private final ChoosePoiLoop choosePoiLoop;
   private final PoiLoop poiLoop;
   private final DialogueLoop dialogueLoop;

@@ -7,7 +7,6 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
 import com.hindsight.king_of_castrop_rauxel.world.Chunk;
 import com.hindsight.king_of_castrop_rauxel.world.World;
@@ -26,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DebugActionFactory {
 
-  private final Graph<AbstractLocation> map;
+  private final Graph map;
   private final World world;
   private final ChunkHandler chunkHandler;
   private final AppProperties appProperties;
@@ -101,7 +100,7 @@ public class DebugActionFactory {
     printPlane(world, map);
   }
 
-  public void printPlane(World world, Graph<AbstractLocation> map) {
+  public void printPlane(World world, Graph map) {
     var chunk = world.getChunk(CardinalDirection.THIS);
     var plane = chunk.getPlane();
     var scale = 10;
