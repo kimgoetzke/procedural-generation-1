@@ -16,8 +16,6 @@ public interface Location extends Visitable, Generatable {
 
   Size getSize();
 
-  String getDescription();
-
   List<Action> getAvailableActions();
 
   List<PointOfInterest> getPointsOfInterest();

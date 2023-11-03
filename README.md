@@ -12,8 +12,7 @@ interact with non-player characters, and engage in combat.
 - The core object is `World` which holds `Chunk[][]`, with the player starting in the centre chunk
 - Each `Chunk` holds an `int[][]`:
     - Based on `int density`, a number of `Location`s are placed in the `Chunk`
-    - `Location`s are connected using various, configurable strategies which result in the `WorldHandler`
-      s `Graph<Location>`
+    - `Location`s are connected using various, configurable strategies which result in the `WorldHandler`s `Graph`
 - A `Location` (interface) contains reference to neighbouring locations, points of interest inside it, and its location
   within the chunk and world
     - The only `Location` available at this stage is a `Settlement`
@@ -26,7 +25,7 @@ interact with non-player characters, and engage in combat.
     - At a POI, the player can engage in dialogues with non-player characters (**NPC**) other events (e.g. "delivery"
       or "kill" quests), engage in combat, or take other actions
 - Each object of each layer (i.e. `World`, `Chunk`, `Location` and `PointOfInterest`) can be located using `Coordinate`
-- The web of connections and the distance between each (both of which stored in the `WorldHandler`s `Graph<Location>`)
+- The web of connections and the distance between each (both of which stored in the `WorldHandler`s `Graph`)
   play an important role e.g. where a player can travel to and how long it takes
 
 #### Player loop

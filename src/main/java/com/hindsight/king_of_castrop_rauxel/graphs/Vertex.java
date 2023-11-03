@@ -15,7 +15,7 @@ public class Vertex {
 
   @EqualsAndHashCode.Include private final String id;
   private final Set<Edge> edges;
-  private final com.hindsight.king_of_castrop_rauxel.location.Location location;
+  private final Location location;
 
   public Vertex(Location location) {
     this.id =
