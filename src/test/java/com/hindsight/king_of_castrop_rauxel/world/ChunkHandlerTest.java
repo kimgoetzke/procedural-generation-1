@@ -7,11 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-
-import java.util.List;
-
-import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -165,7 +162,7 @@ class ChunkHandlerTest extends BaseWorldTest {
     assertThat(connectivity.visitedVertices()).hasSize(7);
   }
 
-  private List<Vertex<? extends Location>> chunkWithSettlementsExists() {
+  private List<Vertex> chunkWithSettlementsExists() {
     var v1 = map.addVertex(createSettlement(Pair.of(0, 0)));
     var v2 = map.addVertex(createSettlement(Pair.of(20, 20)));
     var v3 = map.addVertex(createSettlement(Pair.of(100, 100)));

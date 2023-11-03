@@ -213,5 +213,5 @@ public class World {
     }
   }
 
-  private record LogStats(long startT, int prevSetCount, List<? extends Location> prevSet) {}
+  private record LogStats(long startT, int prevSetCount, List<Location> prevSet) {}
 }

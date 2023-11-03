@@ -5,13 +5,10 @@ import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-
-import java.util.*;
-
-import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
+import java.util.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -131,11 +128,7 @@ public class ChunkHandler {
     }
   }
 
-  protected void addConnections(
-      Graph map,
-      Vertex<? extends Location> vertex1,
-      Vertex<? extends Location> vertex2,
-      int distance) {
+  protected void addConnections(Graph map, Vertex vertex1, Vertex vertex2, int distance) {
     map.addEdge(vertex1, vertex2, distance);
     var v1Location = vertex1.getLocation();
     var v2Location = vertex2.getLocation();
@@ -148,9 +141,8 @@ public class ChunkHandler {
         distance);
   }
 
-  private Vertex<? extends Location> closestNeighbourTo(
-      Vertex<? extends Location> reference, List<Vertex<? extends Location>> vertices) {
-    Vertex<? extends Location> closestNeighbor = null;
+  private Vertex closestNeighbourTo(Vertex reference, List<Vertex> vertices) {
+    Vertex closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var other : vertices) {
       if (reference.equals(other)) {
@@ -172,9 +164,8 @@ public class ChunkHandler {
     return closestNeighbor;
   }
 
-  public Vertex<? extends Location> closestLocationTo(
-      Pair<Integer, Integer> globalCoords, List<Vertex<? extends Location>> vertices) {
-    Vertex<? extends Location> closestNeighbor = null;
+  public Vertex closestLocationTo(Pair<Integer, Integer> globalCoords, List<Vertex> vertices) {
+    Vertex closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var vertex : vertices) {
       var distance = vertex.getLocation().getCoordinates().distanceTo(globalCoords);
@@ -213,7 +204,7 @@ public class ChunkHandler {
   }
 
   protected ConnectivityResult evaluateConnectivity(Graph graph) {
-    var visitedVertices = new LinkedHashSet<Vertex<? extends Location>>();
+    var visitedVertices = new LinkedHashSet<Vertex>();
     var unvisitedVertices = new LinkedHashSet<>(graph.getVertices());
     if (!unvisitedVertices.isEmpty()) {
       var startVertex = unvisitedVertices.iterator().next();
@@ -230,7 +221,5 @@ public class ChunkHandler {
     result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
   }
 
-  protected record ConnectivityResult(
-      Set<Vertex<? extends Location>> visitedVertices,
-      Set<Vertex<? extends Location>> unvisitedVertices) {}
+  protected record ConnectivityResult(Set<Vertex> visitedVertices, Set<Vertex> unvisitedVertices) {}
 }

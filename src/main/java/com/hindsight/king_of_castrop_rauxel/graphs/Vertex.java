@@ -1,8 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
-import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,13 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Vertex<T extends Location> {
+public class Vertex {
 
   @EqualsAndHashCode.Include private final String id;
   private final Set<Edge> edges;
-  private final Location location;
+  private final com.hindsight.king_of_castrop_rauxel.location.Location location;
 
-  public Vertex(T location) {
+  public Vertex(Location location) {
     this.id =
         "VER~"
             + location.getName().substring(0, 3).toUpperCase()
@@ -26,11 +27,11 @@ public class Vertex<T extends Location> {
     this.edges = new LinkedHashSet<>();
   }
 
-  public void addEdge(Vertex<? extends Location> endVertex, Integer weight) {
+  public void addEdge(Vertex endVertex, Integer weight) {
     this.edges.add(new Edge(this, endVertex, weight));
   }
 
-  public void removeEdge(Vertex<? extends Location> endVertex) {
+  public void removeEdge(Vertex endVertex) {
     this.edges.removeIf(edge -> edge.end().equals(endVertex));
   }
 

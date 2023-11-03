@@ -13,21 +13,20 @@ import org.springframework.data.util.Pair;
 @Getter
 public class Graph {
 
-  private final List<Vertex<? extends Location>> vertices = new ArrayList<>();
+  private final List<Vertex> vertices = new ArrayList<>();
   private final boolean isWeighted;
 
   public Graph(boolean isWeighted) {
     this.isWeighted = isWeighted;
   }
 
-  public Vertex<Location> addVertex(Location location) {
-    Vertex<Location> newVertex = new Vertex<>(location);
+  public Vertex addVertex(Location location) {
+    Vertex newVertex = new Vertex(location);
     this.vertices.add(newVertex);
     return newVertex;
   }
 
-  public void addEdge(
-      Vertex<? extends Location> vertex1, Vertex<? extends Location> vertex2, Integer weight) {
+  public void addEdge(Vertex vertex1, Vertex vertex2, Integer weight) {
     if (!this.isWeighted) {
       weight = null;
     }
@@ -35,16 +34,16 @@ public class Graph {
     vertex1.addEdge(vertex2, weight);
   }
 
-  public void removeEdge(Vertex<? extends Location> vertex1, Vertex<? extends Location> vertex2) {
+  public void removeEdge(Vertex vertex1, Vertex vertex2) {
     vertex1.removeEdge(vertex2);
     vertex2.removeEdge(vertex1);
   }
 
-  public void removeVertex(Vertex<? extends Location> vertex) {
+  public void removeVertex(Vertex vertex) {
     this.vertices.remove(vertex);
   }
 
-  public Vertex<? extends Location> getVertexByValue(Location location) {
+  public Vertex getVertexByValue(Location location) {
     for (var vertex : this.vertices) {
       if (vertex.getLocation().equals(location)) {
         return vertex;
@@ -53,8 +52,7 @@ public class Graph {
     return null;
   }
 
-  public Vertex<? extends Location> getVertexByValue(
-      Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
+  public Vertex getVertexByValue(Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
     var rX = (int) anyCoords.getFirst();
     var rY = (int) anyCoords.getSecond();
     for (var vertex : this.vertices) {
@@ -75,15 +73,13 @@ public class Graph {
 
   public void log() {
     log.info("Graph: ");
-    for (Vertex<? extends Location> vertex : this.vertices) {
+    for (Vertex vertex : this.vertices) {
       vertex.log(isWeighted);
     }
   }
 
   public static void traverseGraphDepthFirst(
-      Vertex<? extends Location> currentVertex,
-      Set<Vertex<? extends Location>> visitedVertices,
-      Set<Vertex<? extends Location>> unvisitedVertices) {
+      Vertex currentVertex, Set<Vertex> visitedVertices, Set<Vertex> unvisitedVertices) {
     if (visitedVertices.contains(currentVertex)) {
       return;
     }

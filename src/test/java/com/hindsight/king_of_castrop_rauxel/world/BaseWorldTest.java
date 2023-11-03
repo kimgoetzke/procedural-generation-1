@@ -6,7 +6,6 @@ import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.*;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
@@ -35,7 +34,7 @@ public abstract class BaseWorldTest {
     daf = null;
   }
 
-  protected void debug(List<Vertex<? extends Location>> vertices, Graph map) {
+  protected void debug(List<Vertex> vertices, Graph map) {
     chunkHandler.logDisconnectedVertices(map);
     var connectivityResult = chunkHandler.evaluateConnectivity(map);
     System.out.println("Unvisited vertices: " + connectivityResult.unvisitedVertices().size());
@@ -53,8 +52,7 @@ public abstract class BaseWorldTest {
     daf.printConnectivity();
   }
 
-  protected void debugSet(
-      List<Vertex<? extends Location>> vertices, Set<Vertex<? extends Location>> vertexSet) {
+  protected void debugSet(List<Vertex> vertices, Set<Vertex> vertexSet) {
     vertexSet.forEach(
         v -> {
           System.out.println(v.getLocation().getBriefSummary());
