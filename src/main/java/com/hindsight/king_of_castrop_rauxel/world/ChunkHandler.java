@@ -6,8 +6,12 @@ import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.location.LocationFactory;
+
 import java.util.*;
+
+import com.hindsight.king_of_castrop_rauxel.location.Settlement;
+import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
+import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -18,14 +22,19 @@ public class ChunkHandler {
   @Getter private final AppProperties appProperties;
   private final AppProperties.ChunkProperties chunkProperties;
   private final Graph<AbstractLocation> map;
-  private final LocationFactory locationFactory;
+  private final Generators generators;
+  private final DataServices dataServices;
 
   public ChunkHandler(
-      Graph<AbstractLocation> map, AppProperties appProperties, LocationFactory locationFactory) {
+      Graph<AbstractLocation> map,
+      AppProperties appProperties,
+      Generators generators,
+      DataServices dataServices) {
     this.map = map;
     this.appProperties = appProperties;
-    this.locationFactory = locationFactory;
     this.chunkProperties = appProperties.getChunkProperties();
+    this.generators = generators;
+    this.dataServices = dataServices;
   }
 
   public void populate(Chunk chunk, Strategy strategy) {
@@ -48,7 +57,8 @@ public class ChunkHandler {
   private void placeSettlement(
       Graph<AbstractLocation> map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
-    var settlement = locationFactory.createSettlement(worldCoords, chunkCoords);
+    var settlement =
+        new Settlement(worldCoords, chunkCoords, generators, dataServices, appProperties);
     map.addVertex(settlement);
     chunk.place(chunkCoords, LocationType.SETTLEMENT);
   }

@@ -54,8 +54,7 @@ public class CliGame {
     world.generateChunk(world.getCentreCoords(), map);
     world.setCurrentChunk(world.getCentreCoords());
     var startLocation = world.getCurrentChunk().getCentralLocation(world, map);
-    var worldCoordinates = world.getCurrentChunk().getCoordinates().getWorld();
-    player = new Player("Traveller", startLocation, worldCoordinates, appProperties);
+    player = new Player("Traveller", startLocation, appProperties);
     dialogueLoop.initialise(player);
     poiLoop.initialise(player);
     choosePoiLoop.initialise(player);

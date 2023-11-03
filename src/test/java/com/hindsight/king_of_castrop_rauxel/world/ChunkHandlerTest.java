@@ -9,6 +9,8 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import java.util.List;
+
+import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -163,10 +165,10 @@ class ChunkHandlerTest extends BaseWorldTest {
   }
 
   private List<Vertex<AbstractLocation>> chunkWithSettlementsExists() {
-    var v1 = map.addVertex(locationFactory.createSettlement(C_1_W_COORDS, Pair.of(0, 0)));
-    var v2 = map.addVertex(locationFactory.createSettlement(C_1_W_COORDS, Pair.of(20, 20)));
-    var v3 = map.addVertex(locationFactory.createSettlement(C_1_W_COORDS, Pair.of(100, 100)));
-    var v4 = map.addVertex(locationFactory.createSettlement(C_1_W_COORDS, Pair.of(500, 500)));
+    var v1 = map.addVertex(createSettlement(Pair.of(0, 0)));
+    var v2 = map.addVertex(createSettlement(Pair.of(20, 20)));
+    var v3 = map.addVertex(createSettlement(Pair.of(100, 100)));
+    var v4 = map.addVertex(createSettlement(Pair.of(500, 500)));
 
     chunk.place(v1.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
     chunk.place(v2.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
@@ -174,5 +176,10 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunk.place(v4.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
 
     return List.of(v1, v2, v3, v4);
+  }
+
+  private Settlement createSettlement(Pair<Integer, Integer> chunkCoords) {
+    return new Settlement(
+        ChunkHandlerTest.C_1_W_COORDS, chunkCoords, generators, dataServices, appProperties);
   }
 }

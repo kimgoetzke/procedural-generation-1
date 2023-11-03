@@ -13,15 +13,13 @@ public class DungeonHandler {
 
   private final AppProperties.DungeonProperties dungeonProperties;
   private final AppProperties.EnemyProperties enemyProperties;
-  private final int levelToTierDivider;
-  private final Map<Integer, List<DungeonDetails.Type>> dungeonTypesConfigs = new HashMap<>();
   private final Map<Integer, EnemyConfig> enemyConfigs = new HashMap<>();
+  private final int levelToTierDivider;
 
   public DungeonHandler(AppProperties appProperties) {
-    this.dungeonProperties = appProperties.getDungeonProperties();
     this.enemyProperties = appProperties.getEnemyProperties();
+    this.dungeonProperties = appProperties.getDungeonProperties();
     this.levelToTierDivider = dungeonProperties.levelToTierDivider();
-    configureDungeons();
     configureEnemies();
     log.debug(this.toString());
   }
@@ -31,7 +29,7 @@ public class DungeonHandler {
   }
 
   public DungeonDetails.Type getDungeonType(Random random, int tier) {
-    var types = dungeonTypesConfigs.get(tier);
+    var types = dungeonProperties.getType(tier);
     return DungeonDetails.Type.valueOf(types.get(random.nextInt(types.size())).name());
   }
 
@@ -76,30 +74,12 @@ public class DungeonHandler {
         .build();
   }
 
-  private void configureDungeons() {
-    dungeonTypesConfigs.put(1, dungeonProperties.t1Types());
-    dungeonTypesConfigs.put(2, dungeonProperties.t2Types());
-    dungeonTypesConfigs.put(3, dungeonProperties.t3Types());
-    dungeonTypesConfigs.put(4, dungeonProperties.t4Types());
-    dungeonTypesConfigs.put(5, dungeonProperties.t5Types());
-  }
-
   private void configureEnemies() {
     enemyConfigs.put(1, enemyProperties.t1());
     enemyConfigs.put(2, enemyProperties.t2());
     enemyConfigs.put(3, enemyProperties.t3());
     enemyConfigs.put(4, enemyProperties.t4());
     enemyConfigs.put(5, enemyProperties.t5());
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Available dungeon types by tier:%n".formatted());
-    for (var entry : dungeonTypesConfigs.entrySet()) {
-      sb.append("- Tier %s=%s%n".formatted(entry.getKey(), entry.getValue()));
-    }
-    return sb.toString();
   }
 
   @Getter

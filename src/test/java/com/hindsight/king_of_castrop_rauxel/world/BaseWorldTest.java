@@ -19,7 +19,6 @@ public abstract class BaseWorldTest {
 
   @Autowired protected Generators generators;
   @Autowired protected AppProperties appProperties;
-  @Autowired protected LocationFactory locationFactory;
   @Autowired protected ChunkHandler chunkHandler;
   @Autowired protected DataServices dataServices;
 

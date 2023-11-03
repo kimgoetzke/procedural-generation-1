@@ -3,7 +3,6 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
@@ -26,7 +25,6 @@ public abstract class AbstractSettlement extends AbstractLocation {
   @Getter protected final Generators generators;
   @Getter protected final DataServices dataServices;
   @Getter protected Size size;
-  protected Player loyalTo;
   protected int area;
   protected List<PointOfInterest> pointsOfInterests = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
@@ -38,9 +36,8 @@ public abstract class AbstractSettlement extends AbstractLocation {
       Pair<Integer, Integer> chunkCoords,
       Generators generators,
       DataServices dataServices,
-      AppProperties appProperties,
-      PoiFactory poiFactory) {
-    super(worldCoords, chunkCoords, appProperties, poiFactory);
+      AppProperties appProperties) {
+    super(worldCoords, chunkCoords, appProperties);
     this.generators = generators;
     this.dataServices = dataServices;
     generators.initialiseAll(random);
@@ -80,8 +77,6 @@ public abstract class AbstractSettlement extends AbstractLocation {
     return super.toString()
         + ", size="
         + size
-        + ", loyalTo="
-        + loyalTo
         + ", inhabitants="
         + inhabitants.size()
         + ", inhabitantCount="
@@ -100,7 +95,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   @Override
   public String getFullSummary() {
-    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Coordinates: %s | Connected to %s location(s) | Stance: %s ]"
+    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Coordinates: %s | Connected to %s location(s) ]"
         .formatted(
             name,
             size.getName(),
@@ -108,8 +103,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
             getPopulationDensity(),
             pointsOfInterests.size(),
             coordinates.globalToString(),
-            neighbours.size(),
-            loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
+            neighbours.size());
   }
 
   private String getPopulationDensity() {

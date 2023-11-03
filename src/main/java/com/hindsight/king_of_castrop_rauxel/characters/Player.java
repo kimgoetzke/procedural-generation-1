@@ -7,7 +7,6 @@ import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
-import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 
 import java.util.*;
@@ -54,11 +53,9 @@ public class Player implements Visitor, Combatant {
   public Player(
       @NonNull String name,
       @NonNull Location currentLocation,
-      @NonNull Pair<Integer, Integer> worldCoords,
       @NonNull AppProperties appProperties) {
-    var cf = new CoordinateFactory(appProperties);
-    this.coordinates = cf.create(worldCoords, currentLocation.getCoordinates().getChunk());
     this.name = name;
+    this.coordinates = Coordinates.of(currentLocation.getCoordinates());
     this.startCoordinates = coordinates.getGlobal();
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.currentLocation = currentLocation;

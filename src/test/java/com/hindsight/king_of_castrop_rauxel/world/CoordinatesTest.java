@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.location.LocationFactory;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +22,13 @@ class CoordinatesTest {
   @Autowired Generators generators;
   @Autowired DataServices dataServices;
   @Autowired AppProperties appProperties;
-  @Autowired LocationFactory locationFactory;
   @Autowired CoordinateFactory cf;
   @Mock Graph<AbstractLocation> map;
   private int chunkSize;
 
   @BeforeEach
   void setUp() {
-    chunkHandler = new ChunkHandler(map, appProperties, locationFactory);
+    chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices);
     chunkSize = appProperties.getChunkProperties().size();
   }
 

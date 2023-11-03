@@ -3,8 +3,6 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.items.ConsumableService;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
-import com.hindsight.king_of_castrop_rauxel.location.LocationFactory;
-import com.hindsight.king_of_castrop_rauxel.location.PoiFactory;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
@@ -56,17 +54,7 @@ public class AppConfiguration {
 
   @Bean
   public ChunkHandler chunkHandler() {
-    return new ChunkHandler(map(), appProperties(), locationFactory());
-  }
-
-  @Bean
-  public LocationFactory locationFactory() {
-    return new LocationFactory(appProperties(), generators(), dataServices(), poiFactory());
-  }
-
-  @Bean
-  public PoiFactory poiFactory() {
-    return new PoiFactory(appProperties());
+    return new ChunkHandler(map(), appProperties(), generators(), dataServices());
   }
 
   @Bean

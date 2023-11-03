@@ -86,13 +86,6 @@ public class World {
     return Pair.of(worldSize / 2, worldSize / 2);
   }
 
-  /**
-   * Returns the world coordinates of the chunk in the given position relative to the current chunk.
-   */
-  public Pair<Integer, Integer> getCoordsFor(CardinalDirection where) {
-    return getCoordsFor(where, currentChunk);
-  }
-
   public void generateChunk(Pair<Integer, Integer> worldCoords, Graph<AbstractLocation> map) {
     throwErrorIfChunkExists(worldCoords);
     var stats = getStats(map);
@@ -102,7 +95,8 @@ public class World {
   }
 
   public void generateChunk(CardinalDirection where, Graph<AbstractLocation> map) {
-    throwErrorIfChunkExists(where);
+    var worldCoords = getCoordsFor(where);
+    throwErrorIfChunkExists(worldCoords);
     var stats = getStats(map);
     var nextChunk = new Chunk(getCoordsFor(where), chunkHandler);
     place(nextChunk, where);
@@ -120,7 +114,7 @@ public class World {
    * subsequently created chunks in an existing world.
    */
   private void place(Chunk chunk, CardinalDirection where) {
-    var newCoords = getCoordsFor(where, currentChunk);
+    var newCoords = getCoordsFor(where);
     if (where == CardinalDirection.THIS) {
       log.warn(
           "You are placing a chunk in the same position as the current chunk, if it exists - if this is intentional, you must setCurrentChunk first");
@@ -175,9 +169,12 @@ public class World {
     return x >= 0 && x < chunkSize && y >= 0 && y < chunkSize;
   }
 
-  private static Pair<Integer, Integer> getCoordsFor(CardinalDirection where, Chunk chunk) {
-    var x = (int) chunk.getCoordinates().getWorld().getFirst();
-    var y = (int) chunk.getCoordinates().getWorld().getSecond();
+  /**
+   * Returns the world coordinates of the chunk in the given position relative to the current chunk.
+   */
+  private Pair<Integer, Integer> getCoordsFor(CardinalDirection where) {
+    var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
+    var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
     return switch (where) {
       case THIS -> Pair.of(x, y);
       case NORTH -> Pair.of(x, y + 1);
@@ -191,14 +188,6 @@ public class World {
     };
   }
 
-  private void throwErrorIfChunkExists(CardinalDirection where) {
-    var chunk = getChunk(where);
-    if (chunk == null) {
-      return;
-    }
-    throwErrorIfChunkExists(chunk.getCoordinates().getWorld());
-  }
-
   private void throwErrorIfChunkExists(Pair<Integer, Integer> worldCoords) {
     if (hasChunk(worldCoords)) {
       throw new IllegalStateException(
@@ -210,20 +199,19 @@ public class World {
     }
   }
 
-  public LogStats getStats(Graph<AbstractLocation> map) {
+  private LogStats getStats(Graph<AbstractLocation> map) {
     return new LogStats(
         System.currentTimeMillis(),
         map.getVertices().size(),
         map.getVertices().stream().map(Vertex::getLocation).toList());
   }
 
-  // TODO: Make this a wrapper within which code can be executed
-  public <T> void logOutcome(LogStats stats, Graph<AbstractLocation> map, Class<T> clazz) {
+  private <T> void logOutcome(LogStats stats, Graph<AbstractLocation> map, Class<T> clazz) {
     log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startT) / 1000.0);
     if (clazz.equals(World.class)) {
       log.info("Generated {} settlements", map.getVertices().size() - stats.prevSetCount);
     }
   }
 
-  public record LogStats(long startT, int prevSetCount, List<AbstractLocation> prevSet) {}
+  private record LogStats(long startT, int prevSetCount, List<AbstractLocation> prevSet) {}
 }

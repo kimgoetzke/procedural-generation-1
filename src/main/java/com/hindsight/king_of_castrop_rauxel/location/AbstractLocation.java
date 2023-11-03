@@ -30,21 +30,17 @@ public abstract class AbstractLocation implements Location {
   protected Random random;
   @EqualsAndHashCode.Include @Getter protected final Coordinates coordinates;
   protected final AppProperties appProperties;
-  protected final PoiFactory poiFactory;
   @Getter @Setter private boolean isLoaded;
 
   protected AbstractLocation(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
-      AppProperties appProperties,
-      PoiFactory poiFactory) {
-    var cf = new CoordinateFactory(appProperties);
-    this.coordinates = cf.create(worldCoords, chunkCoords);
+      AppProperties appProperties) {
+    this.coordinates = new CoordinateFactory(appProperties).create(worldCoords, chunkCoords);
     this.seed = SeedBuilder.seedFrom(coordinates.getGlobal());
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.appProperties = appProperties;
-    this.poiFactory = poiFactory;
   }
 
   @Override

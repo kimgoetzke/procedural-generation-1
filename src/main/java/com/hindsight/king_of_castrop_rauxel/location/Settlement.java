@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
@@ -23,9 +24,8 @@ public class Settlement extends AbstractSettlement {
       Pair<Integer, Integer> chunkCoords,
       Generators generators,
       DataServices dataServices,
-      AppProperties appProperties,
-      PoiFactory poiFactory) {
-    super(worldCoords, chunkCoords, generators, dataServices, appProperties, poiFactory);
+      AppProperties appProperties) {
+    super(worldCoords, chunkCoords, generators, dataServices, appProperties);
     generateFoundation();
     logResult(true);
   }
@@ -62,14 +62,22 @@ public class Settlement extends AbstractSettlement {
 
   private void addPoi(Type type) {
     var npc = new Inhabitant(random, generators);
-    var amenity = poiFactory.createPoiInstance(this, npc, type);
-    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
-      pointsOfInterests.add(amenity);
+    var poi = createInstance(this, npc, type);
+    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(poi.getName()))) {
+      pointsOfInterests.add(poi);
       inhabitants.add(npc);
     } else {
-      revert(amenity);
+      revert(poi);
       addPoi(type);
     }
+  }
+
+  public PointOfInterest createInstance(Location parent, Npc npc, PointOfInterest.Type type) {
+    return switch (type) {
+      case DUNGEON -> new Dungeon(appProperties, type, npc, parent);
+      case SHOP -> new Shop(type, npc, parent);
+      default -> new Amenity(type, npc, parent);
+    };
   }
 
   private void revert(PointOfInterest poi) {

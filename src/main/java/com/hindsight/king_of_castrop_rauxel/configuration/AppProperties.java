@@ -97,13 +97,6 @@ public class AppProperties {
     }
   }
 
-  public record EnemyProperties(
-      DungeonHandler.EnemyConfig t1,
-      DungeonHandler.EnemyConfig t2,
-      DungeonHandler.EnemyConfig t3,
-      DungeonHandler.EnemyConfig t4,
-      DungeonHandler.EnemyConfig t5) {}
-
   public record DungeonProperties(
       Bounds encountersPerDungeon,
       Bounds enemiesPerEncounter,
@@ -112,7 +105,40 @@ public class AppProperties {
       List<DungeonDetails.Type> t2Types,
       List<DungeonDetails.Type> t3Types,
       List<DungeonDetails.Type> t4Types,
-      List<DungeonDetails.Type> t5Types) {}
+      List<DungeonDetails.Type> t5Types) {
+
+    @SuppressWarnings("DuplicatedCode")
+    public List<DungeonDetails.Type> getType(int tier) {
+      return switch (tier) {
+        case 1 -> t1Types;
+        case 2 -> t2Types;
+        case 3 -> t3Types;
+        case 4 -> t4Types;
+        case 5 -> t5Types;
+        default -> throw new IllegalArgumentException("Tier %s does not exist".formatted(tier));
+      };
+    }
+  }
+
+  public record EnemyProperties(
+      DungeonHandler.EnemyConfig t1,
+      DungeonHandler.EnemyConfig t2,
+      DungeonHandler.EnemyConfig t3,
+      DungeonHandler.EnemyConfig t4,
+      DungeonHandler.EnemyConfig t5) {
+
+    @SuppressWarnings("DuplicatedCode")
+    public DungeonHandler.EnemyConfig get(int tier) {
+      return switch (tier) {
+        case 1 -> t1;
+        case 2 -> t2;
+        case 3 -> t3;
+        case 4 -> t4;
+        case 5 -> t5;
+        default -> throw new IllegalArgumentException("Tier %s does not exist".formatted(tier));
+      };
+    }
+  }
 
   public record PlayerProperties(
       int startingGold, int startingMaxHealth, int experienceToLevelUp, Damage startingDamage) {}

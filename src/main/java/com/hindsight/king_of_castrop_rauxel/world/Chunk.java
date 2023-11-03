@@ -4,6 +4,8 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import java.util.Random;
+
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates.CoordType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +14,11 @@ import org.springframework.data.util.Pair;
 @Slf4j
 public class Chunk implements Generatable, Unloadable {
 
-  private final ChunkHandler chunkHandler;
-
   @Getter private final String id;
   @Getter private final int density;
   @Getter private final int[][] plane;
   @Getter private final Coordinates coordinates;
+  private final ChunkHandler chunkHandler;
   private final Random random;
   private final Strategy strategy;
   private final int chunkSize;
@@ -30,6 +31,10 @@ public class Chunk implements Generatable, Unloadable {
     SETTLEMENT
   }
 
+  /**
+   * Determines the strategy for populating the chunk with regard to connecting locations to the
+   * graph. NONE will not connect any locations to the graph.
+   */
   public enum Strategy {
     DEFAULT,
     NONE,
@@ -43,7 +48,7 @@ public class Chunk implements Generatable, Unloadable {
     var chunkProperties = chunkHandler.getAppProperties().getChunkProperties();
     var seed = SeedBuilder.seedFrom(worldCoords);
     var cf = new CoordinateFactory(chunkHandler.getAppProperties());
-    this.coordinates = cf.create(worldCoords, Coordinates.CoordType.WORLD);
+    this.coordinates = cf.create(worldCoords, CoordType.WORLD);
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.chunkHandler = chunkHandler;

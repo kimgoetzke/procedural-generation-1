@@ -68,6 +68,11 @@ public class Coordinates {
     }
   }
 
+  public static Coordinates of(Coordinates coordinates) {
+    return new Coordinates(
+        coordinates.getGlobal(), CoordType.GLOBAL, coordinates.worldSize, coordinates.chunkSize);
+  }
+
   public void setTo(Pair<Integer, Integer> globalCoords) {
     verify(globalCoords, CoordType.GLOBAL);
     this.global = globalCoords;
