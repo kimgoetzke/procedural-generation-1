@@ -67,12 +67,12 @@ class AutoUnloadingTest extends BaseWorldTest {
     // When moving outside the retention zone
     world.generateChunk(initialCoords, map);
     world.setCurrentChunk(initialCoords);
-    var expected = map.getVertices().stream().map(Vertex::getLocation).toList();
+    var initial = map.getVertices().stream().map(Vertex::getLocation).toList();
     for (var i = 0; i < retentionZone + 1; i++) {
       world.generateChunk(CardinalDirection.EAST, map);
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
-    var intermediateResult = map.getVertices().stream().map(Vertex::getLocation).toList();
+    var intermediate = map.getVertices().stream().map(Vertex::getLocation).toList();
 
     // Then initial chunk is unloaded
     assertThat(world.hasLoadedChunk(initialCoords)).isFalse();
@@ -80,12 +80,9 @@ class AutoUnloadingTest extends BaseWorldTest {
     // When moving back to initial chunk
     world.setCurrentChunk(initialCoords);
     var result = map.getVertices().stream().map(Vertex::getLocation).toList();
-    debug(map.getVertices(), map);
 
     // Then initial chunk is loaded again
-    assertThat(result).containsAll(expected);
-    System.out.println("intermediateResult = " + intermediateResult);
-    System.out.println("intermediateResult.size = " + intermediateResult.size());
-    System.out.println("result.size = " + result.size());
+    assertThat(result).containsAll(initial).hasSizeGreaterThan(1);
+    assertThat(intermediate).hasSizeBetween(initial.size(), result.size());
   }
 }
