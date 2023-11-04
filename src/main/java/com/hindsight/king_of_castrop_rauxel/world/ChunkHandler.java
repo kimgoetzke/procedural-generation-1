@@ -9,6 +9,8 @@ import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
+
+import com.hindsight.king_of_castrop_rauxel.utils.TerrainGenerator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -21,14 +23,24 @@ public class ChunkHandler {
   private final Graph map;
   private final Generators generators;
   private final DataServices dataServices;
+  private final TerrainGenerator terrainGenerator;
 
   public ChunkHandler(
-      Graph map, AppProperties appProperties, Generators generators, DataServices dataServices) {
+      Graph map,
+      AppProperties appProperties,
+      Generators generators,
+      DataServices dataServices,
+      TerrainGenerator terrainGenerator) {
     this.map = map;
     this.appProperties = appProperties;
     this.chunkProperties = appProperties.getChunkProperties();
     this.generators = generators;
     this.dataServices = dataServices;
+    this.terrainGenerator = terrainGenerator;
+  }
+
+  public int getDifficulty(Coordinates coordinates) {
+    return terrainGenerator.getTargetLevel(coordinates);
   }
 
   public void populate(Chunk chunk, Strategy strategy) {
