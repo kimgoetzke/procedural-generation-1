@@ -17,7 +17,6 @@ import java.util.List;
 public class World {
 
   private final ApplicationContext ctx;
-  private final ChunkHandler chunkHandler;
   private final Chunk[][] plane;
   private final int worldSize;
   private final int chunkSize;
@@ -26,14 +25,13 @@ public class World {
 
   @Getter private Chunk currentChunk;
 
-  public World(ApplicationContext ctx, AppProperties appProperties, ChunkHandler chunkHandler) {
-    this.chunkHandler = chunkHandler;
+  public World(ApplicationContext ctx, AppProperties appProperties) {
+    this.ctx = ctx;
     this.worldSize = appProperties.getWorldProperties().size();
     this.chunkSize = appProperties.getChunkProperties().size();
     this.autoUnload = appProperties.getGeneralProperties().autoUnload();
     this.retentionZone = appProperties.getWorldProperties().retentionZone();
     this.plane = new Chunk[worldSize][worldSize];
-    this.ctx = ctx;
   }
 
   public boolean hasChunk(CardinalDirection where) {
@@ -91,46 +89,21 @@ public class World {
     return Pair.of(worldSize / 2, worldSize / 2);
   }
 
+  public void generateChunk(CardinalDirection where, Graph map) {
+    var worldCoords = getCoordsFor(where);
+    generateChunk(worldCoords, map);
+  }
+
   public void generateChunk(Pair<Integer, Integer> worldCoords, Graph map) {
     throwErrorIfChunkExists(worldCoords);
     var stats = getStats(map);
+    var chunkHandler = ctx.getBean(ChunkHandler.class, map);
     var chunk = ctx.getBean(Chunk.class, worldCoords, chunkHandler);
-    place(chunk);
+    place(chunk, worldCoords);
     logOutcome(stats, map, this.getClass());
   }
 
-  public void generateChunk(CardinalDirection where, Graph map) {
-    var worldCoords = getCoordsFor(where);
-    throwErrorIfChunkExists(worldCoords);
-    var stats = getStats(map);
-    var nextChunk = ctx.getBean(Chunk.class, getCoordsFor(where), chunkHandler);
-    place(nextChunk, where);
-    logOutcome(stats, map, this.getClass());
-  }
-
-  /** Places a chunk in the center of the world. Used to place the first chunk in a new world. */
-  private void place(Chunk chunk) {
-    var center = getCentreCoords();
-    plane[center.getFirst()][center.getSecond()] = chunk;
-  }
-
-  /**
-   * Places a chunk in the given position relative to the current chunk. Used to place any
-   * subsequently created chunks in an existing world.
-   */
-  private void place(Chunk chunk, CardinalDirection where) {
-    var newCoords = getCoordsFor(where);
-    if (where == CardinalDirection.THIS) {
-      log.warn(
-          "You are placing a chunk in the same position as the current chunk, if it exists - if this is intentional, you must setCurrentChunk first");
-    }
-    plane[newCoords.getFirst()][newCoords.getSecond()] = chunk;
-  }
-
-  /**
-   * Places a chunk in the specified position. Mostly used when testing but would be used more
-   * frequently if more than one player was supported.
-   */
+  /** Places a chunk in the specified position on the plane. */
   public void place(Chunk chunk, Pair<Integer, Integer> worldCoords) {
     plane[worldCoords.getFirst()][worldCoords.getSecond()] = chunk;
   }

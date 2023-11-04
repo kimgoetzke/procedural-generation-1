@@ -2,10 +2,10 @@ package com.hindsight.king_of_castrop_rauxel.world;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
-import java.util.Random;
-
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates.CoordType;
+import java.util.Random;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -13,20 +13,22 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Slf4j
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@RequiredArgsConstructor
 public class Chunk implements Generatable, Unloadable {
 
-  @Getter private final String id;
-  @Getter private final int density;
-  @Getter private final int[][] plane;
-  @Getter private final Coordinates coordinates;
   private final ChunkHandler chunkHandler;
   private final Random random;
   private final Strategy strategy;
   private final int chunkSize;
   private final int minPlacementDistance;
+  @Getter private final String id;
+  @Getter private final int density;
+  @Getter private final int[][] plane;
+  @Getter private final Coordinates coordinates;
 
   @Getter @Setter private boolean isLoaded;
 
