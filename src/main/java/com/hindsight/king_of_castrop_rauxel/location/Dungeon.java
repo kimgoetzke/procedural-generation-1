@@ -5,15 +5,12 @@ import com.hindsight.king_of_castrop_rauxel.action.CombatAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.encounter.EncounterSequence;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonHandler;
+import com.hindsight.king_of_castrop_rauxel.encounter.EncounterSequence;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import com.hindsight.king_of_castrop_rauxel.world.SeedBuilder;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -72,12 +69,12 @@ public class Dungeon extends AbstractAmenity {
 
   @Override
   public List<Action> getAvailableActions() {
-    var processedActions = new ArrayList<>(availableActions);
+    var processedActions = super.getAvailableActions();
     addEnterDungeonAction(processedActions);
     return processedActions;
   }
 
-  private void addEnterDungeonAction(ArrayList<Action> processedActions) {
+  private void addEnterDungeonAction(List<Action> processedActions) {
     if (sequence.isCompleted()) {
       return;
     }

@@ -1,12 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.BuyAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.items.Buyable;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
-
 import java.util.ArrayList;
 import java.util.List;
 import lombok.EqualsAndHashCode;
@@ -46,11 +44,6 @@ public class Shop extends AbstractAmenity {
 
   private void loadPlayerActions() {
     items.forEach(item -> availableActions.add(new BuyAction(availableActions.size() + 1, item)));
-  }
-
-  @Override
-  public List<Action> getAvailableActions() {
-    return availableActions;
   }
 
   @Override

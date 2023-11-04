@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.EventAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
@@ -18,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 @ToString(includeFieldNames = false, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractAmenity implements PointOfInterest, Generatable {
+
+  public static final String ABOUT = " about ";
 
   @Getter(AccessLevel.NONE)
   protected final List<Action> availableActions = new ArrayList<>();
@@ -65,5 +68,37 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
             .npc(npc)
             .build();
     availableActions.add(action);
+  }
+
+  @Override
+  public List<Action> getAvailableActions() {
+    var processedActions = new ArrayList<Action>();
+    for (var action : availableActions) {
+      if (!(action instanceof EventAction eventAction)) {
+        processedActions.add(action);
+        continue;
+      }
+      if (eventAction.getEvent().isDisplayable(npc)) {
+        var processedAction = EventAction.from(eventAction);
+        processEventActionName(processedAction);
+        processedActions.add(processedAction);
+      }
+    }
+    return processedActions;
+  }
+
+  private void processEventActionName(EventAction action) {
+    var details = action.getEvent().getEventDetails();
+    if (details.getEventType() == Event.Type.DIALOGUE) {
+      action.setName(action.getName() + CliComponent.label(CliComponent.Type.DIALOGUE));
+    } else {
+      var isEventGiver = details.getEventGiver().equals(npc);
+      var aboutText = isEventGiver ? details.getAboutGiver() : details.getAboutTarget();
+      action.setName(getProcessedName(action, aboutText));
+    }
+  }
+
+  private static String getProcessedName(EventAction action, String text) {
+    return action.getName() + ABOUT + text + CliComponent.label(CliComponent.Type.QUEST);
   }
 }
