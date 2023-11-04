@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +27,7 @@ class CoordinatesTest {
 
   @BeforeEach
   void setUp() {
-    var terrainGenerator = new BasicTerrainGenerator(appProperties);
-    chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices, terrainGenerator);
+    chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices);
     chunkSize = appProperties.getChunkProperties().size();
   }
 

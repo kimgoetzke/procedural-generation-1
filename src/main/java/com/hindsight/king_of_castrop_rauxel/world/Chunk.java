@@ -58,13 +58,13 @@ public class Chunk implements Generatable, Unloadable {
     this.coordinates = cf.create(worldCoords, CoordType.WORLD);
     this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
-    this.chunkHandler = chunkHandler;
+    this.chunkHandler = chunkHandler.initialise(random);
     this.density = randomDensity(chunkProperties.density());
     this.chunkSize = chunkProperties.size();
     this.minPlacementDistance = chunkProperties.minPlacementDistance();
     this.strategy = strategy;
     this.plane = new int[chunkSize][chunkSize];
-    this.difficulty = chunkHandler.getDifficulty(coordinates);
+    this.difficulty = this.chunkHandler.getDifficulty(coordinates);
     load();
   }
 

@@ -4,6 +4,9 @@ import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.*;
+
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -17,17 +20,21 @@ public class BasicEventGenerator implements EventGenerator {
   private final PlaceholderProcessor processor = new PlaceholderProcessor();
   private Random random;
 
+  @Getter @Setter private boolean isInitialised;
+
   public BasicEventGenerator(FolderReader folderReader) {
     this.folderReader = folderReader;
     this.txtReader = new TxtReader(folderReader.getSingleStepEventFolder());
   }
 
   public void initialise(Random parentRandom) {
-    random = parentRandom;
+    this.random = parentRandom;
+    setInitialised(true);
   }
 
   @Override
   public Event singleStepDialogue(Npc npc) {
+    throwIfNotInitialised();
     var text = readRandomLineFromFile(NPC_DISMISSIVE);
     var interactions = List.of(new Interaction(text, List.of()));
     var dialogues = List.of(new Dialogue(interactions));
@@ -47,6 +54,7 @@ public class BasicEventGenerator implements EventGenerator {
 
   @Override
   public Event multiStepDialogue(Npc npc) {
+    throwIfNotInitialised();
     var eventPath = folderReader.getRandomEventPath(Event.Type.DIALOGUE, random);
     var eventDto = yamlReader.read(eventPath);
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
@@ -59,6 +67,7 @@ public class BasicEventGenerator implements EventGenerator {
 
   @Override
   public Event deliveryEvent(Npc npc) {
+    throwIfNotInitialised();
     var eventPath = folderReader.getRandomEventPath(Event.Type.REACH, random);
     var eventDto = yamlReader.read(eventPath);
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);

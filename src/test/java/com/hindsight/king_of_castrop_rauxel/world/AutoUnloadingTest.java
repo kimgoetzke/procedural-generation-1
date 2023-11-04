@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +19,7 @@ class AutoUnloadingTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    var terrainGenerator = new BasicTerrainGenerator(appProperties);
-    chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices, terrainGenerator);
+    chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices);
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
     retentionZone = appProperties.getWorldProperties().retentionZone();
   }

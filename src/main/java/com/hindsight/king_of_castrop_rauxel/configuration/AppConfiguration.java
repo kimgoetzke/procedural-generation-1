@@ -47,8 +47,7 @@ public class AppConfiguration {
 
   @Bean
   public ChunkHandler chunkHandler() {
-    var terrainGenerator = new BasicTerrainGenerator(appProperties());
-    return new ChunkHandler(map(), appProperties(), generators(), dataServices(), terrainGenerator);
+    return new ChunkHandler(map(), appProperties(), generators(), dataServices());
   }
 
   @Bean
