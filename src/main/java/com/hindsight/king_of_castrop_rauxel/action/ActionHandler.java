@@ -81,11 +81,11 @@ public class ActionHandler {
     prepend(actions);
     var triggerZone = (Debuggable) () -> debug.logLocationsInsideTriggerZone(player);
     var visitedLocs = (Debuggable) () -> debug.logVisitedLocations(player);
-    var visitedLocsAction = debug.create(index(actions), "Log visited locations", visitedLocs);
     actions.add(new LocationAction(index(actions), "Resume game", player.getCurrentLocation()));
     actions.add(debug.create(index(actions), "Log memory usage", debug::logMemoryStats));
     actions.add(debug.create(index(actions), "Log all locations", debug::logVertices));
     actions.add(debug.create(index(actions), "Log locations inside trigger zone", triggerZone));
+    var visitedLocsAction = debug.create(index(actions), "Log visited locations", visitedLocs);
     actions.add(visitedLocsAction);
     actions.add(debug.create(index(actions), "Log graph connectivity", debug::printConnectivity));
     actions.add(debug.create(index(actions), "Log graph edges & distances", debug::logGraph));

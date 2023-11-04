@@ -18,7 +18,6 @@ public class Application {
     if (Boolean.TRUE.equals(AppProperties.getIsRunningAsJar())) {
       AnsiConsole.systemInstall();
     }
-    var newGame = context.getBean(CliGame.class);
-    newGame.play();
+    context.getBean(CliGame.class).play();
   }
 }
