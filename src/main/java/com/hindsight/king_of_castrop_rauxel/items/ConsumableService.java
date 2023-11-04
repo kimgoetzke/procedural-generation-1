@@ -31,4 +31,8 @@ public class ConsumableService {
   public List<Consumable> getConsumablesByType(Shop.Type type) {
     return consumablesRepository.findBySellerType(type);
   }
+
+  public List<Consumable> getConsumablesByTypeAndTier(Shop.Type type, int tier) {
+    return consumablesRepository.findBySellerTypeAndTier(type, tier);
+  }
 }

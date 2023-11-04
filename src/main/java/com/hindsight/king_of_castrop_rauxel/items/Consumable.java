@@ -21,7 +21,7 @@ public class Consumable implements Buyable {
   private long id;
 
   @Getter private String name;
-  private int tier;
+  @Getter private int tier;
 
   @Enumerated(EnumType.STRING)
   private Shop.Type sellerType;

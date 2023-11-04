@@ -9,9 +9,10 @@ import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
+import com.hindsight.king_of_castrop_rauxel.location.Shop;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,23 +38,45 @@ class ChunkHandlerTest extends BaseWorldTest {
   }
 
   @ParameterizedTest
-  @MethodSource("worldCoordsToDifficulty")
-  void whenGeneratingChunks_initialiseGeneratorAndSetDifficulty(
-      Pair<Integer, Integer> coords, int expectedDifficulty) {
+  @MethodSource("worldCoordsToTargetLevel")
+  void whenGeneratingChunks_initialiseGeneratorAndSetTargetLevel(
+      Pair<Integer, Integer> coords, int expectedTargetLevel) {
     // When
     world.generateChunk(coords, map);
 
     // Then
-    assertThat(world.getChunk(coords).getDifficulty()).isEqualTo(expectedDifficulty);
+    assertThat(world.getChunk(coords).getTargetLevel()).isEqualTo(expectedTargetLevel);
   }
 
-  private static Stream<Arguments> worldCoordsToDifficulty() {
+  private static Stream<Arguments> worldCoordsToTargetLevel() {
     return Stream.of(
         arguments(Pair.of(25, 25), 1),
         arguments(Pair.of(25, 27), 2),
         arguments(Pair.of(28, 25), 3),
         arguments(Pair.of(29, 25), 4),
         arguments(Pair.of(30, 30), 10));
+  }
+
+  @Test
+  void whenGeneratingChunk_initialiseShopsWithItemsOfCorrectTier() {
+    // Given
+    var vertices = chunkWithSettlementsExists();
+    var shops = new ArrayList<Shop>();
+
+    // When
+    for (var vert : vertices) {
+      vert.getLocation().load();
+      vert.getLocation().getPointsOfInterest().stream()
+          .filter(p -> p instanceof Shop)
+          .forEach(p -> shops.add((Shop) p));
+    }
+    var tier6Items = shops.get(0).getItems().stream().filter(i -> i.getTier() == 6).toList();
+    var prohibitedItems = shops.get(0).getItems().stream().filter(i -> i.getTier() != 6).toList();
+
+    // Then
+    assertThat(shops).isNotNull();
+    assertThat(tier6Items).isNotEmpty();
+    assertThat(prohibitedItems).isEmpty();
   }
 
   @Test

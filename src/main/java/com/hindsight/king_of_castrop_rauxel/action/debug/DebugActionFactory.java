@@ -177,11 +177,11 @@ public class DebugActionFactory {
     }
   }
 
-  public void logWorldDifficulty() {
-    logWorldDifficulty(world);
+  public void logWorldLevels() {
+    logWorldLevels(world);
   }
 
-  public void logWorldDifficulty(World world) {
+  public void logWorldLevels(World world) {
     var chunk = world.getCurrentChunk();
     var radius = 10;
     var startX = chunk.getCoordinates().wX() - radius;
@@ -190,7 +190,7 @@ public class DebugActionFactory {
     var endY = chunk.getCoordinates().wY() + radius;
 
     // Print column numbers
-    log.info("Visualising world difficulty values within radius of {} chunks: ", radius);
+    log.info("Visualising world target level values within radius of {} chunks: ", radius);
     var sb = new StringBuilder();
     sb.append("  ");
     for (var col = startX; col < endX; col++) {
@@ -203,17 +203,17 @@ public class DebugActionFactory {
       sb = new StringBuilder();
       sb.append("%2d|".formatted(row));
       for (var col = startY; col < endY; col++) {
-        var difficulty = getProcessedDifficultyString(row, col, world);
-        sb.append("%s%s%s".formatted(FMT.CYAN, difficulty, FMT.RESET));
+        var targetLevel = getProcessedTargetLevelString(row, col, world);
+        sb.append("%s%s%s".formatted(FMT.CYAN, targetLevel, FMT.RESET));
       }
       log.info(sb.toString());
     }
   }
 
-  private static String getProcessedDifficultyString(int i, int j, World world) {
+  private static String getProcessedTargetLevelString(int i, int j, World world) {
     var worldCoords = Pair.of(i, j);
     if (world.hasChunk(worldCoords)) {
-      var rawStr = String.valueOf(world.getChunk(worldCoords).getDifficulty());
+      var rawStr = String.valueOf(world.getChunk(worldCoords).getTargetLevel());
       return rawStr.length() == 1 ? " %s ".formatted(rawStr) : rawStr;
     } else {
       return " X ";

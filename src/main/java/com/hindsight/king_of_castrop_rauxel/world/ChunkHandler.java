@@ -36,7 +36,7 @@ public class ChunkHandler {
     return this;
   }
 
-  public int getDifficulty(Coordinates coordinates) {
+  public int getTargetLevel(Coordinates coordinates) {
     return generators.terrainGenerator().getTargetLevel(coordinates);
   }
 
@@ -59,9 +59,8 @@ public class ChunkHandler {
 
   private void placeSettlement(Graph map, Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
-    var settlement =
-        new Settlement(worldCoords, chunkCoords, generators, dataServices, appProperties);
-    map.addVertex(settlement);
+    var s = new Settlement(worldCoords, chunkCoords, generators, dataServices, appProperties);
+    map.addVertex(s);
     chunk.place(chunkCoords, LocationType.SETTLEMENT);
   }
 

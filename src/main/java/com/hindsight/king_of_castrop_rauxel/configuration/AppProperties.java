@@ -55,7 +55,7 @@ public class AppProperties {
 
   public record GeneralProperties(boolean autoUnload, boolean useConsoleUi, boolean clearConsole) {}
 
-  public record GameProperties(long delayInMs, float speedModifier) {}
+  public record GameProperties(long delayInMs, float speedModifier, int levelToTierDivider) {}
 
   public record WorldProperties(int size, int centre, int retentionZone) {}
 
@@ -100,12 +100,12 @@ public class AppProperties {
   public record DungeonProperties(
       Bounds encountersPerDungeon,
       Bounds enemiesPerEncounter,
-      int levelToTierDivider,
       List<DungeonDetails.Type> t1Types,
       List<DungeonDetails.Type> t2Types,
       List<DungeonDetails.Type> t3Types,
       List<DungeonDetails.Type> t4Types,
-      List<DungeonDetails.Type> t5Types) {
+      List<DungeonDetails.Type> t5Types,
+      List<DungeonDetails.Type> t6Types) {
 
     @SuppressWarnings("DuplicatedCode")
     public List<DungeonDetails.Type> getType(int tier) {
@@ -115,6 +115,7 @@ public class AppProperties {
         case 3 -> t3Types;
         case 4 -> t4Types;
         case 5 -> t5Types;
+        case 6 -> t6Types;
         default -> throw new IllegalArgumentException("Tier %s does not exist".formatted(tier));
       };
     }
@@ -125,7 +126,8 @@ public class AppProperties {
       DungeonHandler.EnemyConfig t2,
       DungeonHandler.EnemyConfig t3,
       DungeonHandler.EnemyConfig t4,
-      DungeonHandler.EnemyConfig t5) {
+      DungeonHandler.EnemyConfig t5,
+      DungeonHandler.EnemyConfig t6) {
 
     @SuppressWarnings("DuplicatedCode")
     public DungeonHandler.EnemyConfig get(int tier) {
@@ -135,6 +137,7 @@ public class AppProperties {
         case 3 -> t3;
         case 4 -> t4;
         case 5 -> t5;
+        case 6 -> t6;
         default -> throw new IllegalArgumentException("Tier %s does not exist".formatted(tier));
       };
     }

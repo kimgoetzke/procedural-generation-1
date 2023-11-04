@@ -24,11 +24,11 @@ public abstract class AbstractLocation implements Location {
   @EqualsAndHashCode.Include @Getter protected final String id;
   @EqualsAndHashCode.Include @Getter protected final long seed;
   @Getter @Setter protected String name;
+  @EqualsAndHashCode.Include @Getter protected final Coordinates coordinates;
+  protected final AppProperties appProperties;
   protected List<Action> availableActions = new ArrayList<>();
   protected Set<Visitor> visitors = new HashSet<>();
   protected Random random;
-  @EqualsAndHashCode.Include @Getter protected final Coordinates coordinates;
-  protected final AppProperties appProperties;
   @Getter @Setter private boolean isLoaded;
 
   protected AbstractLocation(

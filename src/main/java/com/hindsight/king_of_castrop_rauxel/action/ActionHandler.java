@@ -91,7 +91,7 @@ public class ActionHandler {
     actions.add(debug.create(index(actions), "Log graph edges & distances", debug::logGraph));
     actions.add(debug.create(index(actions), "Log close chunks", debug::logWorld));
     actions.add(debug.create(index(actions), "Log visualised plane", debug::logPlane));
-    actions.add(debug.create(index(actions), "Log chunk difficulties", debug::logWorldDifficulty));
+    actions.add(debug.create(index(actions), "Log chunk target levels", debug::logWorldLevels));
     append(actions);
   }
 

@@ -29,7 +29,7 @@ public class Chunk implements Generatable, Unloadable {
   @Getter private final int density;
   @Getter private final int[][] plane;
   @Getter private final Coordinates coordinates;
-  @Getter private final int difficulty;
+  @Getter private final int targetLevel;
 
   @Getter @Setter private boolean isLoaded;
 
@@ -64,7 +64,7 @@ public class Chunk implements Generatable, Unloadable {
     this.minPlacementDistance = chunkProperties.minPlacementDistance();
     this.strategy = strategy;
     this.plane = new int[chunkSize][chunkSize];
-    this.difficulty = this.chunkHandler.getDifficulty(coordinates);
+    this.targetLevel = this.chunkHandler.getTargetLevel(coordinates);
     load();
   }
 

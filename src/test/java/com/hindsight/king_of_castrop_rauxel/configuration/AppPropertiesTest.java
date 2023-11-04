@@ -30,7 +30,7 @@ class AppPropertiesTest {
     assertThat(appProperties.getGameProperties().delayInMs()).isEqualTo(175L);
     assertThat(appProperties.getGameProperties().speedModifier()).isEqualTo(0.1F);
     var t3 = appProperties.getEnemyProperties().t3();
-    assertThat(t3.getGold().getMultiplier()).isEqualTo(6);
+    assertThat(t3.getGold().getMultiplier()).isEqualTo(8);
     assertThat(t3.getHealth().getMinMod()).isEqualTo(0.8F);
     assertThat(t3.getExperience().getMaxMod()).isEqualTo(1.2F);
     var t5Damage = appProperties.getEnemyProperties().t5().getDamage();

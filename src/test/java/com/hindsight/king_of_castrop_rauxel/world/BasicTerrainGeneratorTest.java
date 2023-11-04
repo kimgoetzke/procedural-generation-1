@@ -30,7 +30,7 @@ class BasicTerrainGeneratorTest {
 
   @ParameterizedTest
   @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7})
-  void givenDifferentXWorldLocations_returnDifficultyAsExpected(int offset) {
+  void givenDifferentXWorldLocations_returnTargetLevelAsExpected(int offset) {
     var worldCoords = Pair.of(worldCentre + offset, worldCentre);
     var chunkCoords = Pair.of(250, 250);
     var result = terrainGenerator.getTargetLevel(cf.create(worldCoords, chunkCoords));
@@ -40,7 +40,7 @@ class BasicTerrainGeneratorTest {
 
   @ParameterizedTest
   @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7})
-  void givenDifferentYWorldLocations_returnDifficultyAsExpected(int offset) {
+  void givenDifferentYWorldLocations_returnTargetLevelAsExpected(int offset) {
     var worldCoords = Pair.of(worldCentre, worldCentre + offset);
     var chunkCoords = Pair.of(250, 250);
     var result = terrainGenerator.getTargetLevel(cf.create(worldCoords, chunkCoords));
@@ -50,7 +50,7 @@ class BasicTerrainGeneratorTest {
 
   @ParameterizedTest
   @ValueSource(ints = {0, 1, 2, 3, 4, 5, 6, 7})
-  void givenDifferentWorldLocations_returnDifficultyAsExpected(int offset) {
+  void givenDifferentWorldLocations_returnTargetLevelAsExpected(int offset) {
     var worldCoords = Pair.of(worldCentre + offset, worldCentre + offset);
     var chunkCoords = Pair.of(250, 250);
     var result = terrainGenerator.getTargetLevel(cf.create(worldCoords, chunkCoords));

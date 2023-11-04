@@ -19,7 +19,7 @@ public class DungeonHandler {
   public DungeonHandler(AppProperties appProperties) {
     this.enemyProperties = appProperties.getEnemyProperties();
     this.dungeonProperties = appProperties.getDungeonProperties();
-    this.levelToTierDivider = dungeonProperties.levelToTierDivider();
+    this.levelToTierDivider = appProperties.getGameProperties().levelToTierDivider();
     configureEnemies();
     log.debug(this.toString());
   }
@@ -80,6 +80,7 @@ public class DungeonHandler {
     enemyConfigs.put(3, enemyProperties.t3());
     enemyConfigs.put(4, enemyProperties.t4());
     enemyConfigs.put(5, enemyProperties.t5());
+    enemyConfigs.put(6, enemyProperties.t6());
   }
 
   @Getter

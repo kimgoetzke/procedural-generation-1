@@ -35,7 +35,7 @@ public class Range {
 
   private int toActual(
       int targetLevel, float upper, float lower, float offset, int levelToTierDivider) {
-    var modulus = targetLevel % levelToTierDivider;
+    var modulus = Math.max(targetLevel % levelToTierDivider, 1);
     var modifier = 1 - (1 / modulus);
     return (int) ((upper - lower) * modifier) + (int) (lower + offset);
   }

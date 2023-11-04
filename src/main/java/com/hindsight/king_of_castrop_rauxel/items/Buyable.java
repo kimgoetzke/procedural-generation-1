@@ -8,6 +8,8 @@ public interface Buyable {
 
   String getDescription();
 
+  int getTier();
+
   int getBasePrice();
 
   boolean isBoughtBy(Player player);

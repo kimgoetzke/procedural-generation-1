@@ -16,6 +16,8 @@ public interface Location extends Visitable, Generatable {
 
   Size getSize();
 
+  int getTier();
+
   List<Action> getAvailableActions();
 
   List<PointOfInterest> getPointsOfInterest();

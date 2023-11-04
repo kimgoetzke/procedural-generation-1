@@ -19,6 +19,8 @@ import org.springframework.data.util.Pair;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Settlement extends AbstractSettlement {
 
+  private int tier;
+
   public Settlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
@@ -48,6 +50,7 @@ public class Settlement extends AbstractSettlement {
     size = randomSize();
     area = randomArea(size);
     name = generators.nameGenerator().locationNameFrom(this.getClass());
+    tier = getTier();
   }
 
   private void loadPois() {
@@ -75,7 +78,7 @@ public class Settlement extends AbstractSettlement {
   public PointOfInterest createInstance(Location parent, Npc npc, PointOfInterest.Type type) {
     return switch (type) {
       case DUNGEON -> new Dungeon(appProperties, type, npc, parent);
-      case SHOP -> new Shop(type, npc, parent);
+      case SHOP -> new Shop(type, npc, parent, tier);
       default -> new Amenity(type, npc, parent);
     };
   }
@@ -128,6 +131,11 @@ public class Settlement extends AbstractSettlement {
         .formatted(
             pointsOfInterests.get(i).getName(),
             CliComponent.label(pointsOfInterests.get(i).getType()));
+  }
+
+  public int getTier() {
+    var targetLevel = generators.terrainGenerator().getTargetLevel(coordinates);
+    return (targetLevel / appProperties.getGameProperties().levelToTierDivider()) + 1;
   }
 
   @Override

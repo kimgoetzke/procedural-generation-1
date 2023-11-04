@@ -9,10 +9,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Currently only used to generate difficulty values for each chunk based on their distance to the
+ * Currently only used to generate target level values for each chunk based on their distance to the
  * centre of the world. Over time, this class should use Perlin noise to generate terrain properties
  * (such as temperature, continentalness, humidity) and translate them into biomes which affect
- * settlement and POI generation including enemy types and difficulty values (and possibly also to
+ * settlement and POI generation including enemy types and target level values (and possibly also to
  * generate an ASCII art visual map).
  */
 @Slf4j
@@ -45,8 +45,8 @@ public class BasicTerrainGenerator implements TerrainGenerator {
   }
 
   public int getTargetLevel(Coordinates coordinates) {
-    var chunkDifficulty = this.targetLevel[coordinates.wX()][coordinates.wY()];
-    log.debug("Generated difficulty {} for {}", chunkDifficulty, coordinates.globalToString());
-    return chunkDifficulty;
+    var chunkTargetLevel = this.targetLevel[coordinates.wX()][coordinates.wY()];
+    log.debug("Generated target level {} for {}", chunkTargetLevel, coordinates.globalToString());
+    return chunkTargetLevel;
   }
 }
