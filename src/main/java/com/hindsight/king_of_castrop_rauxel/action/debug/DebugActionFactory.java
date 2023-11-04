@@ -96,11 +96,11 @@ public class DebugActionFactory {
         settlements);
   }
 
-  public void printPlane() {
-    printPlane(world, map);
+  public void logPlane() {
+    logPlane(world, map);
   }
 
-  public void printPlane(World world, Graph map) {
+  public void logPlane(World world, Graph map) {
     var chunk = world.getChunk(CardinalDirection.THIS);
     var plane = chunk.getPlane();
     var scale = 10;
@@ -111,8 +111,8 @@ public class DebugActionFactory {
     var locationCount = 0;
 
     // Shrink data into the new array and convert to location names
-    for (int i = 0; i < chunkSize; i++) {
-      for (int j = 0; j < chunkSize; j++) {
+    for (var i = 0; i < chunkSize; i++) {
+      for (var j = 0; j < chunkSize; j++) {
         if (plane[i][j] > 0) {
           downscaledPlane[i / scale][j / scale] =
               map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocation().getName();
@@ -122,7 +122,7 @@ public class DebugActionFactory {
 
     // Print column numbers
     log.info("Visualising: {}", chunk.getSummary());
-    StringBuilder sb = new StringBuilder();
+    var sb = new StringBuilder();
     sb.append("   ");
     for (int col = 0; col < numCols; col++) {
       sb.append("%3d".formatted(col));
@@ -130,10 +130,10 @@ public class DebugActionFactory {
     log.info(sb.toString());
 
     // Print row numbers and array contents
-    for (int row = 0; row < numRows; row++) {
+    for (var row = 0; row < numRows; row++) {
       sb = new StringBuilder();
       sb.append("%2d|".formatted(row));
-      for (int col = 0; col < numCols; col++) {
+      for (var col = 0; col < numCols; col++) {
         if (downscaledPlane[row][col] == null) {
           sb.append("   ");
           continue;
@@ -174,6 +174,49 @@ public class DebugActionFactory {
           .filter(l -> l.getCoordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
           .filter(l -> chunkHandler.isInsideTriggerZone(l.getCoordinates().getChunk()))
           .forEach(l -> log.info("- " + l.getBriefSummary()));
+    }
+  }
+
+  public void logWorldDifficulty() {
+    logWorldDifficulty(world);
+  }
+
+  public void logWorldDifficulty(World world) {
+    var chunk = world.getCurrentChunk();
+    var radius = 10;
+    var startX = chunk.getCoordinates().wX() - radius;
+    var endX = chunk.getCoordinates().wY() + radius;
+    var startY = chunk.getCoordinates().wX() - radius;
+    var endY = chunk.getCoordinates().wY() + radius;
+
+    // Print column numbers
+    log.info("Visualising world difficulty values within radius of {} chunks: ", radius);
+    var sb = new StringBuilder();
+    sb.append("  ");
+    for (var col = startX; col < endX; col++) {
+      sb.append("%3d".formatted(col));
+    }
+    log.info(sb.toString());
+
+    // Print row numbers and array contents
+    for (var row = startX; row < endX; row++) {
+      sb = new StringBuilder();
+      sb.append("%2d|".formatted(row));
+      for (var col = startY; col < endY; col++) {
+        var difficulty = getProcessedDifficultyString(row, col, world);
+        sb.append("%s%s%s".formatted(FMT.CYAN, difficulty, FMT.RESET));
+      }
+      log.info(sb.toString());
+    }
+  }
+
+  private static String getProcessedDifficultyString(int i, int j, World world) {
+    var worldCoords = Pair.of(i, j);
+    if (world.hasChunk(worldCoords)) {
+      var rawStr = String.valueOf(world.getChunk(worldCoords).getDifficulty());
+      return rawStr.length() == 1 ? " %s ".formatted(rawStr) : rawStr;
+    } else {
+      return " X ";
     }
   }
 }

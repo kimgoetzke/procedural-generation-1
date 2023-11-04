@@ -23,11 +23,14 @@ public class BasicTerrainGenerator implements TerrainGenerator {
     this.worldSize = appProperties.getWorldProperties().size();
     this.worldCentre = appProperties.getWorldProperties().centre();
     targetLevel = new int[worldSize][worldSize];
+    createTargetLevelMatrix();
   }
 
   @Override
-  public void initialise(Random random) {
-    createTargetLevelMatrix();
+  public void initialise(Random ignored) {
+    // Not needed for this implementation yet. However, when it is needed, it should be possible to
+    // use a non-initialised version of this class OR Random will have to be injected via the
+    // ChunkHandler class.
   }
 
   private void createTargetLevelMatrix() {

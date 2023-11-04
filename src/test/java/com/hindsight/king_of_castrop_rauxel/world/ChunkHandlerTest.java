@@ -3,14 +3,20 @@ package com.hindsight.king_of_castrop_rauxel.world;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import java.util.List;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 
@@ -28,6 +34,26 @@ class ChunkHandlerTest extends BaseWorldTest {
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
     chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.NONE);
     world.place(chunk, C_1_W_COORDS);
+  }
+
+  @ParameterizedTest
+  @MethodSource("worldCoordsToDifficulty")
+  void whenGeneratingChunks_initialiseGeneratorAndSetDifficulty(
+      Pair<Integer, Integer> coords, int expectedDifficulty) {
+    // When
+    world.generateChunk(coords, map);
+
+    // Then
+    assertThat(world.getChunk(coords).getDifficulty()).isEqualTo(expectedDifficulty);
+  }
+
+  private static Stream<Arguments> worldCoordsToDifficulty() {
+    return Stream.of(
+        arguments(Pair.of(25, 25), 1),
+        arguments(Pair.of(25, 27), 2),
+        arguments(Pair.of(28, 25), 3),
+        arguments(Pair.of(29, 25), 4),
+        arguments(Pair.of(30, 30), 10));
   }
 
   @Test

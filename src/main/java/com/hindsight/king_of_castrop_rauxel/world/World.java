@@ -80,7 +80,7 @@ public class World {
     };
   }
 
-  private Chunk getChunk(Pair<Integer, Integer> worldCoords) {
+  public Chunk getChunk(Pair<Integer, Integer> worldCoords) {
     return plane[worldCoords.getFirst()][worldCoords.getSecond()];
   }
 
