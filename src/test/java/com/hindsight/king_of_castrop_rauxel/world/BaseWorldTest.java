@@ -12,6 +12,7 @@ import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootTest
 public abstract class BaseWorldTest {
@@ -20,10 +21,9 @@ public abstract class BaseWorldTest {
   @Autowired protected AppProperties appProperties;
   @Autowired protected ChunkHandler chunkHandler;
   @Autowired protected DataServices dataServices;
-
-  protected Chunk chunk;
-  protected World world;
-  protected Graph map;
+  @Autowired protected ApplicationContext ctx;
+  @Autowired protected World world;
+  @Autowired protected Graph map;
   protected DebugActionFactory daf;
 
   @AfterEach

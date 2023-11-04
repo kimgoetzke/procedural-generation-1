@@ -6,13 +6,17 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Slf4j
+@Component
 public class World {
 
+  private final ApplicationContext ctx;
   private final ChunkHandler chunkHandler;
   private final Chunk[][] plane;
   private final int worldSize;
@@ -22,13 +26,14 @@ public class World {
 
   @Getter private Chunk currentChunk;
 
-  public World(AppProperties appProperties, ChunkHandler chunkHandler) {
+  public World(ApplicationContext ctx, AppProperties appProperties, ChunkHandler chunkHandler) {
     this.chunkHandler = chunkHandler;
     this.worldSize = appProperties.getWorldProperties().size();
     this.chunkSize = appProperties.getChunkProperties().size();
     this.autoUnload = appProperties.getGeneralProperties().autoUnload();
     this.retentionZone = appProperties.getWorldProperties().retentionZone();
     this.plane = new Chunk[worldSize][worldSize];
+    this.ctx = ctx;
   }
 
   public boolean hasChunk(CardinalDirection where) {
@@ -89,7 +94,7 @@ public class World {
   public void generateChunk(Pair<Integer, Integer> worldCoords, Graph map) {
     throwErrorIfChunkExists(worldCoords);
     var stats = getStats(map);
-    var chunk = new Chunk(worldCoords, chunkHandler);
+    var chunk = ctx.getBean(Chunk.class, worldCoords, chunkHandler);
     place(chunk);
     logOutcome(stats, map, this.getClass());
   }
@@ -98,7 +103,7 @@ public class World {
     var worldCoords = getCoordsFor(where);
     throwErrorIfChunkExists(worldCoords);
     var stats = getStats(map);
-    var nextChunk = new Chunk(getCoordsFor(where), chunkHandler);
+    var nextChunk = ctx.getBean(Chunk.class, getCoordsFor(where), chunkHandler);
     place(nextChunk, where);
     logOutcome(stats, map, this.getClass());
   }

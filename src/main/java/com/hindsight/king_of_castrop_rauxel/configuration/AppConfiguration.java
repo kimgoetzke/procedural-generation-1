@@ -4,9 +4,8 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.items.ConsumableService;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
-import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
-import com.hindsight.king_of_castrop_rauxel.world.World;
 import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
+import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
 import java.util.Scanner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -44,11 +43,6 @@ public class AppConfiguration {
   @Bean
   public Graph map() {
     return new Graph(true);
-  }
-
-  @Bean
-  public World world() {
-    return new World(appProperties(), chunkHandler());
   }
 
   @Bean

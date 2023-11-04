@@ -8,9 +8,14 @@ import com.hindsight.king_of_castrop_rauxel.world.Coordinates.CoordType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Chunk implements Generatable, Unloadable {
 
   @Getter private final String id;
@@ -72,22 +77,6 @@ public class Chunk implements Generatable, Unloadable {
     logResult();
   }
 
-  @Override
-  public void logResult() {
-    var action = isLoaded ? "Generated" : "Unloaded";
-    log.info(
-        "{}: Chunk '{}' at {} with density {} using seed {}",
-        action,
-        id,
-        coordinates,
-        density,
-        SeedBuilder.seedFrom(coordinates.getGlobal()));
-  }
-
-  public String getSummary() {
-    return String.format("Chunk '%s' at %s with density %d", id, coordinates, density);
-  }
-
   public Pair<Integer, Integer> getCentreCoords() {
     return Pair.of(chunkSize / 2, chunkSize / 2);
   }
@@ -142,5 +131,21 @@ public class Chunk implements Generatable, Unloadable {
 
   public int randomDensity(Bounds density) {
     return random.nextInt(density.getUpper() - density.getLower() + 1) + density.getLower();
+  }
+
+  @Override
+  public void logResult() {
+    var action = isLoaded ? "Generated" : "Unloaded";
+    log.info(
+        "{}: Chunk '{}' at {} with density {} using seed {}",
+        action,
+        id,
+        coordinates,
+        density,
+        SeedBuilder.seedFrom(coordinates.getGlobal()));
+  }
+
+  public String getSummary() {
+    return String.format("Chunk '%s' at %s with density %d", id, coordinates, density);
   }
 }

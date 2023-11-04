@@ -3,14 +3,15 @@ package com.hindsight.king_of_castrop_rauxel.world;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
+import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class AutoUnloadingTest extends BaseWorldTest {
 
   private int retentionZone;
@@ -18,9 +19,7 @@ class AutoUnloadingTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    map = new Graph(true);
     chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices);
-    world = new World(appProperties, chunkHandler);
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
     retentionZone = appProperties.getWorldProperties().retentionZone();
   }

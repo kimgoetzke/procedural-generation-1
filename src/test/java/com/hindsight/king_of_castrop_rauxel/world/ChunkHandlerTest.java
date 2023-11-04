@@ -19,13 +19,14 @@ class ChunkHandlerTest extends BaseWorldTest {
 
   protected static final Pair<Integer, Integer> C_1_W_COORDS = Pair.of(0, 0);
 
+  private Chunk chunk;
+
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    world = new World(appProperties, chunkHandler);
     map = new Graph(true);
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
-    chunk = new Chunk(C_1_W_COORDS, chunkHandler, Chunk.Strategy.NONE);
+    chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.NONE);
     world.place(chunk, C_1_W_COORDS);
   }
 
@@ -177,7 +178,6 @@ class ChunkHandlerTest extends BaseWorldTest {
   }
 
   private Settlement createSettlement(Pair<Integer, Integer> chunkCoords) {
-    return new Settlement(
-        ChunkHandlerTest.C_1_W_COORDS, chunkCoords, generators, dataServices, appProperties);
+    return new Settlement(C_1_W_COORDS, chunkCoords, generators, dataServices, appProperties);
   }
 }
