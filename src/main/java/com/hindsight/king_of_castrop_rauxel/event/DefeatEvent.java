@@ -24,13 +24,13 @@ public class DefeatEvent implements Event {
   @Setter private boolean isRepeatable;
 
   // DefeatEvent specific fields
-  private final Type taskType;
-  private final PointOfInterest where;
-  private final Enemy.Type what;
+  private final TaskType taskType;
+  private final PointOfInterest poi;
+  private final Enemy.Type enemyType;
   private final int toDefeat;
   private int defeated;
 
-  public enum Type {
+  public enum TaskType {
     KILL_ALL_AT_POI,
     KILL_TYPE_ANYWHERE,
   }
@@ -39,8 +39,8 @@ public class DefeatEvent implements Event {
       EventDetails eventDetails, DefeatEventDetails defeatDetails, List<Participant> participants) {
     this.eventDetails = eventDetails;
     this.taskType = defeatDetails.getTaskType();
-    this.where = defeatDetails.getPoi();
-    this.what = defeatDetails.getEnemyType();
+    this.poi = defeatDetails.getPoi();
+    this.enemyType = defeatDetails.getEnemyType();
     this.toDefeat = defeatDetails.getToDefeat();
     this.participants = participants;
     this.eventState = State.AVAILABLE;
@@ -54,20 +54,20 @@ public class DefeatEvent implements Event {
   }
 
   public void setEventStateToReady(PointOfInterest poi) {
-    if (where.equals(poi)) {
+    if (this.poi.equals(poi)) {
       eventState = State.READY;
-      log.info("{} event at {} is now {}", taskType, where.getName(), eventState);
+      log.info("{} event at {} is now {}", taskType, this.poi.getName(), eventState);
     }
   }
 
   public void incrementDefeated(Enemy.Type defeatedEnemyType) {
-    if (!defeatedEnemyType.equals(what)) {
+    if (!defeatedEnemyType.equals(enemyType)) {
       return;
     }
     defeated++;
     if (toDefeat > 0 && defeated >= toDefeat) {
       eventState = State.READY;
     }
-    log.info("Defeated {} of {} {} (state: {})", defeated, toDefeat, what, eventState);
+    log.info("Defeated {} of {} {} (state: {})", defeated, toDefeat, enemyType, eventState);
   }
 }

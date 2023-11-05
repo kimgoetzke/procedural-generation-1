@@ -41,8 +41,10 @@ public class BasicEventGenerator implements EventGenerator {
           case 1 -> multiStepDialogue(npc);
           case 2 -> deliveryEvent(npc);
           case 3 -> defeatEvent(npc);
-          default -> throw new IllegalStateException(
-              "You forgot to implement every event type in the Inhabitant class: " + randomInt);
+          default -> {
+            log.error("You did not implement all event types: {} is missing ", randomInt);
+            yield null;
+          }
         };
     return eventCandidate == null ? singleStepDialogue(npc) : eventCandidate;
   }
@@ -98,15 +100,31 @@ public class BasicEventGenerator implements EventGenerator {
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var participants = List.of(new Participant(npc, dialogues));
     var eventDetails = eventDto.eventDetails;
-    var dungeon = tryToFindDungeon(npc); // TODO: Only do this if no enemyType and count is set
-    if (dungeon != null) {
-      setEventGiver(eventDto.eventDetails, npc);
-      setDungeon(eventDto.defeatDetails, dungeon);
-      initialiseRewards(eventDetails);
-      processPlaceholders(eventDto, participants);
-      return new DefeatEvent(eventDetails, eventDto.defeatDetails, participants);
+    var defeatDetails = eventDto.defeatDetails;
+    setEventGiver(eventDto.eventDetails, npc);
+    initialiseRewards(eventDetails);
+    return defeatEventOrNull(npc, defeatDetails, eventDto, participants, eventDetails);
+  }
+
+  private DefeatEvent defeatEventOrNull(
+      Npc npc,
+      DefeatEventDetails defeatDetails,
+      EventDto eventDto,
+      List<Participant> participants,
+      EventDetails eventDetails) {
+    if (defeatDetails.getTaskType() != DefeatEvent.TaskType.KILL_ALL_AT_POI) {
+      var dungeon = tryToFindDungeon(npc);
+      if (dungeon != null) {
+        setDungeon(defeatDetails, dungeon);
+        processPlaceholders(eventDto, participants);
+        return new DefeatEvent(eventDetails, defeatDetails, participants);
+      }
     }
-    log.warn("Cannot generate DefeatEvent - no dungeon available for {}", npc);
+    if (defeatDetails.getEnemyType() != null || defeatDetails.getToDefeat() > 0) {
+      processPlaceholders(eventDto, participants);
+      return new DefeatEvent(eventDetails, defeatDetails, participants);
+    }
+    log.debug("Cannot generate DefeatEvent - no dungeon available for {}", npc);
     return null;
   }
 
@@ -126,7 +144,12 @@ public class BasicEventGenerator implements EventGenerator {
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
     var giverParticipant = new Participant(npc, giverNpcDialogues);
     var targetNpcDialogues = eventDto.participantData.get(Role.EVENT_TARGET);
-    var targetPoi = tryToFindAPoi(npc);
+    return reachEventOrNull(npc, targetNpcDialogues, giverParticipant, eventDto);
+  }
+
+  private ReachEvent reachEventOrNull(
+      Npc npc, List<Dialogue> targetNpcDialogues, Participant giverParticipant, EventDto eventDto) {
+    var targetPoi = tryToFindPoi(npc);
     if (targetPoi != null) {
       var targetNpc = targetPoi.getNpc();
       var targetParticipant = new Participant(targetNpc, Role.EVENT_TARGET, targetNpcDialogues);
@@ -136,10 +159,11 @@ public class BasicEventGenerator implements EventGenerator {
       processPlaceholders(eventDto, participants);
       return new ReachEvent(eventDto.eventDetails, participants);
     }
+    log.warn("Cannot generate DeliveryEvent - no POI available for {}", npc);
     return null;
   }
 
-  private PointOfInterest tryToFindAPoi(Npc npc) {
+  private PointOfInterest tryToFindPoi(Npc npc) {
     var availablePois = npc.getHome().getParent().getPointsOfInterest();
     for (int i = 0; i < availablePois.size(); i++) {
       var poi = findPoiInSameLocation(npc, availablePois);
@@ -147,7 +171,6 @@ public class BasicEventGenerator implements EventGenerator {
         return poi;
       }
     }
-    log.warn("Cannot generate DeliveryEvent - no POI available for {}", npc);
     return null;
   }
 

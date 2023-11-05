@@ -11,7 +11,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 public final class DefeatEventDetails {
 
-  private DefeatEvent.Type taskType;
+  private DefeatEvent.TaskType taskType;
   private PointOfInterest poi;
   private Enemy.Type enemyType;
   private int toDefeat;

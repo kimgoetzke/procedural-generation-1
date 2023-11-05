@@ -50,7 +50,7 @@ class YamlReaderTest extends YamlReader {
     assertThat(data.eventDetails.getRewards().get(0).getType()).isEqualTo(Reward.Type.GOLD);
     assertThat(data.eventDetails.getRewards().get(0).getMinValue()).isEqualTo(10);
     assertThat(data.eventDetails.getRewards().get(0).getMaxValue()).isEqualTo(15);
-    assertThat(data.defeatDetails.getTaskType()).isEqualTo(DefeatEvent.Type.KILL_ALL_AT_POI);
+    assertThat(data.defeatDetails.getTaskType()).isEqualTo(DefeatEvent.TaskType.KILL_ALL_AT_POI);
     assertThat(data.defeatDetails.getEnemyType()).isEqualTo(BasicEnemy.Type.GOBLIN);
     assertThat(data.defeatDetails.getToDefeat()).isEqualTo(9);
     assertThat(data.participantData).isNotNull();

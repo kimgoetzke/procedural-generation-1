@@ -56,6 +56,7 @@ public class Inhabitant implements Npc {
   @Override
   public void loadPrimaryEvent() {
     primaryEvent = generators.eventGenerator().generate(this);
+    log.info("Loaded primary event for '{}': {}", this.fullName, primaryEvent.getEventDetails());
   }
 
   @Override
