@@ -1,14 +1,13 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
-import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonHandler;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
 import java.util.List;
 import java.util.Map;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -100,15 +99,15 @@ public class AppProperties {
   public record DungeonProperties(
       Bounds encountersPerDungeon,
       Bounds enemiesPerEncounter,
-      List<DungeonDetails.Type> t1Types,
-      List<DungeonDetails.Type> t2Types,
-      List<DungeonDetails.Type> t3Types,
-      List<DungeonDetails.Type> t4Types,
-      List<DungeonDetails.Type> t5Types,
-      List<DungeonDetails.Type> t6Types) {
+      List<Enemy.Type> t1Types,
+      List<Enemy.Type> t2Types,
+      List<Enemy.Type> t3Types,
+      List<Enemy.Type> t4Types,
+      List<Enemy.Type> t5Types,
+      List<Enemy.Type> t6Types) {
 
     @SuppressWarnings("DuplicatedCode")
-    public List<DungeonDetails.Type> getType(int tier) {
+    public List<Enemy.Type> getType(int tier) {
       return switch (tier) {
         case 1 -> t1Types;
         case 2 -> t2Types;

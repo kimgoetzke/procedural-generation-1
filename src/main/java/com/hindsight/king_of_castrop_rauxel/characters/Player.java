@@ -8,10 +8,8 @@ import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
-
-import java.util.*;
-
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
+import java.util.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -22,6 +20,7 @@ public class Player implements Visitor, Combatant {
 
   private final String id;
   private final String name;
+  private final Enemy.Type type = Enemy.Type.PLAYER;
   private final Set<Location> visitedLocations = new LinkedHashSet<>();
   private final List<Event> events = new ArrayList<>();
   private final Coordinates coordinates;

@@ -55,7 +55,8 @@ public interface Event {
   /**
    * This method is only called by DialogueAction when changing the event state. Current interaction
    * is set to -1 because it'll be incremented by 1 during the DialogLoop's post-processing which is
-   * before any interaction is displayed.
+   * before any interaction is displayed. Making this more fool-proof is would be critical if this
+   * project had * a bigger scope.
    */
   default void progressEvent(State state) {
     setEventState(state);
@@ -64,9 +65,10 @@ public interface Event {
   }
 
   /**
-   * This method is only called by DialogueAction when completing a quest. Current interaction is
-   * set to -1 because it'll be incremented by 1 during the DialogLoop's post-processing which is
-   * before any interaction is displayed.
+   * At this point, only by DialogueAction when completing a quest. Current interaction is set to -1
+   * because it'll be incremented by 1 during the DialogLoop's post-processing which is before any
+   * interaction is displayed. Making this more fool-proof is would be critical if this project had
+   * a bigger scope.
    */
   default void completeEvent(Player player) {
     if (isRepeatable()) {
@@ -135,6 +137,12 @@ public interface Event {
     return getCurrentDialogue().isFirstInteraction();
   }
 
+  /**
+   * Used to filter out events that not primary events or have no action associated at this point
+   * before displaying them to the player. Note that events require dialogues for all stages, even
+   * stages that should be filtered out with this method which makes calling this method optional.
+   * However, it is recommended to use this method to improve the game experience.
+   */
   default boolean isDisplayable(Npc npc) {
     var primaryEvent = npc.getPrimaryEvent();
     if (primaryEvent == null) {

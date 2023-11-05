@@ -1,15 +1,16 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.event.DefeatEventDetails;
 import com.hindsight.king_of_castrop_rauxel.event.EventDetails;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * The purpose of this class is to process placeholders in strings at runtime. The order in which
- * they are processed is important: Most specific placeholders must be processed before more generic
- * ones e.g. &OF must be processed before &O.
+ * Processes placeholders in strings at runtime. Note that the order in which they are processed is
+ * important: More specific placeholders must be processed before more generic ones e.g. &OF must be
+ * processed before &O.
  */
 @Slf4j
 public class PlaceholderProcessor {
@@ -24,17 +25,16 @@ public class PlaceholderProcessor {
   private static final String PLACEHOLDER_TARGET_NPC = "&TO";
   private static final String PLACEHOLDER_TARGET_POI = "&TI";
   private static final String PLACEHOLDER_TARGET_LOCATION = "&TL";
+  private static final String PLACEHOLDER_ENEMY_TYPE = "&E";
   private static final String PLACEHOLDER_REWARD = "&R";
 
   /** Used to process events, in particular actions, interactions, and eventDetails. */
   public String process(String toProcess, Npc owner, Npc targetNpc) {
-    toProcess = processOwnerPlaceholders(toProcess, owner);
-    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName());
-    toProcess = toProcess.replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName());
-    toProcess = toProcess.replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName());
-    toProcess =
-        toProcess.replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
-    return toProcess;
+    return processOwnerPlaceholders(toProcess, owner)
+        .replace(PLACEHOLDER_TARGET_NPC_FIRST_NAME, targetNpc.getFirstName())
+        .replace(PLACEHOLDER_TARGET_NPC, targetNpc.getName())
+        .replace(PLACEHOLDER_TARGET_POI, targetNpc.getHome().getName())
+        .replace(PLACEHOLDER_TARGET_LOCATION, targetNpc.getHome().getParent().getName());
   }
 
   /** Used to process events, in particular actions and interactions. */
@@ -43,12 +43,12 @@ public class PlaceholderProcessor {
   }
 
   private String processOwnerPlaceholders(String toProcess, Npc owner) {
-    toProcess = toProcess.replace(PLACEHOLDER_PARENT, owner.getHome().getName());
-    toProcess = toProcess.replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName());
-    toProcess = toProcess.replace(PLACEHOLDER_POI_NAME, owner.getName());
-    toProcess = toProcess.replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName());
-    toProcess = toProcess.replace(PLACEHOLDER_OWNER, owner.getName());
-    return toProcess;
+    return toProcess
+        .replace(PLACEHOLDER_PARENT, owner.getHome().getName())
+        .replace(PLACEHOLDER_LOCATION, owner.getHome().getParent().getName())
+        .replace(PLACEHOLDER_POI_NAME, owner.getName())
+        .replace(PLACEHOLDER_OWNER_FIRST_NAME, owner.getFirstName())
+        .replace(PLACEHOLDER_OWNER, owner.getName());
   }
 
   /** Used to process events, in particular interactions. */
@@ -63,6 +63,17 @@ public class PlaceholderProcessor {
     }
     rewardsString.setLength(rewardsString.length() - 2);
     return toProcess.replace(PLACEHOLDER_REWARD, rewardsString);
+  }
+
+  /** Used to process defeat events, in particular interactions. */
+  public String process(String toProcess, DefeatEventDetails eventDetails) {
+    var poi = eventDetails.getPoi();
+    var poiName = poi == null ? "" : poi.getName();
+    var enemyType = eventDetails.getEnemyType();
+    var enemyName = enemyType == null ? "" : enemyType.toString().toLowerCase();
+    return toProcess
+        .replace(PLACEHOLDER_ENEMY_TYPE, enemyName)
+        .replace(PLACEHOLDER_TARGET_POI, poiName);
   }
 
   /** Used to process Location and PointOfInterest names. */

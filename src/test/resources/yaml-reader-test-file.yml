@@ -6,6 +6,10 @@ eventDetails:
     - type: GOLD
       minValue: 10
       maxValue: 15
+defeatDetails:
+  taskType: KILL_ALL_AT_POI
+  enemyType: GOBLIN
+  toDefeat: 9
 participantData:
   EVENT_GIVER:
     - !dialogue

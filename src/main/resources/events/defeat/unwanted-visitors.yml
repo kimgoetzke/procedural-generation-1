@@ -1,0 +1,73 @@
+eventDetails:
+  eventType: DEFEAT
+  aboutGiver: unwanted visitors
+  rewards:
+    - type: GOLD
+      minValue: 50
+      maxValue: 100
+defeatDetails:
+  taskType: KILL_ALL_AT_POI
+participantData:
+  EVENT_GIVER:
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Hey traveller, are you looking for work? We have a problem here in &L. Some unwanted visitors have been causing trouble for us. They have occupied &TI. We need someone to get rid of them. Can you go to &TI and take care of all of them? I'll pay you &R for your trouble.
+          i: 0
+          actions:
+            - !action
+              name: (Accept) Alright, I'll do it
+              eventState: NONE
+              nextInteraction: 1
+            - !action
+              name: (Decline) I'm sorry, I can't
+              eventState: NONE
+              nextInteraction: 2
+        - text: You are amazing - thank you and good luck! Don't forget to come back to collect your reward when you're done.
+          i: 1
+          actions:
+            - !action
+              name: Thanks, see you shortly!
+              eventState: ACTIVE
+              nextInteraction: 0
+        - text: Ah, alright. You look strong enough but maybe you're not ready for this yet. Come back when you're ready.
+          i: 2
+          actions:
+            - !action
+              name: Goodbye!
+              eventState: DECLINED
+              playerState: AT_POI
+              nextInteraction: 0
+    - !dialogue
+      state: ACTIVE
+      interactions:
+        - text: Really appreciate you doing this for the people of &L. Good luck!
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: READY
+      interactions:
+        - text: On behalf of the people of &L I thank you, my friend! (&R)
+          actions:
+            - !action
+              name: No worries, any time.
+              eventState: COMPLETED
+              playerState: AT_POI
+    - !dialogue
+      state: COMPLETED
+      interactions:
+        - text: I can't thank you enough, my friend.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: Come back when you change you mind, will you?
+          actions:
+            - !action
+              name: I will.
+              playerState: AT_POI

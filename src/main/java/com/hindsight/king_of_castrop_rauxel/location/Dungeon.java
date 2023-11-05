@@ -42,7 +42,7 @@ public class Dungeon extends AbstractAmenity {
     this.dungeonDetails = createDungeonDetails();
     this.name = dungeonDetails.name();
     this.description = dungeonDetails.description();
-    this.sequence = new EncounterSequence(appProperties, parent.getGenerators(), dungeonDetails);
+    this.sequence = new EncounterSequence(appProperties, this, dungeonDetails);
     setLoaded(true);
   }
 
@@ -78,7 +78,7 @@ public class Dungeon extends AbstractAmenity {
     if (sequence.isCompleted()) {
       return;
     }
-    var labelText = "Combat, level " + dungeonDetails.level() + "+";
+    var labelText = "Combat, level " + dungeonDetails.level();
     var label = CliComponent.label(labelText, CliComponent.FMT.RED);
     var actionName = "Storm the " + name + (sequence.isInProgress() ? " again" : "") + label;
     processedActions.add(

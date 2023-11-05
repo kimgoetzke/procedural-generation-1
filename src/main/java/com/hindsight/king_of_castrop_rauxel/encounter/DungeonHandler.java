@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.encounter;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.world.Range;
@@ -28,13 +29,13 @@ public class DungeonHandler {
     return (targetLevel / levelToTierDivider) + 1;
   }
 
-  public DungeonDetails.Type getDungeonType(Random random, int tier) {
+  public Enemy.Type getDungeonType(Random random, int tier) {
     var types = dungeonProperties.getType(tier);
-    return DungeonDetails.Type.valueOf(types.get(random.nextInt(types.size())).name());
+    return Enemy.Type.valueOf(types.get(random.nextInt(types.size())).name());
   }
 
   public List<List<EnemyDetails>> getEncounterDetails(
-      Random random, int targetLevel, DungeonDetails.Type type) {
+      Random random, int targetLevel, Enemy.Type type) {
     var encounterDetails = new ArrayList<List<EnemyDetails>>();
     var encountersArray = getEncounters(random);
     for (int encounter : encountersArray) {
@@ -57,7 +58,7 @@ public class DungeonHandler {
     return encounters;
   }
 
-  private EnemyDetails getEnemyDetails(int targetLevel, DungeonDetails.Type type, Random random) {
+  private EnemyDetails getEnemyDetails(int targetLevel, Enemy.Type type, Random random) {
     var tier = getDungeonTier(targetLevel);
     var config = enemyConfigs.get(tier);
     var damageBounds = config.getDamage().toBounds(targetLevel);

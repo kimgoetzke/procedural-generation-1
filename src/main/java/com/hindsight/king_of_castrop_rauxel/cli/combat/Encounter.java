@@ -1,16 +1,17 @@
 package com.hindsight.king_of_castrop_rauxel.cli.combat;
 
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+import static java.lang.System.out;
+
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-import static java.lang.System.out;
 
 public class Encounter {
 
@@ -87,14 +88,27 @@ public class Encounter {
     if (target.isAlive()) {
       return;
     }
-    var droppedLoot = target.getLoot();
-    loot.add(droppedLoot);
+    var droppedLoot = lootTarget(target);
     printDeath(target, droppedLoot);
+    incrementKillCountOfMatchingActiveEvents(target);
     if (isPlayer(target)) {
       isOver = true;
       return;
     }
     defendingGroup.remove(target);
+  }
+
+  private Loot lootTarget(Combatant target) {
+    var droppedLoot = target.getLoot();
+    loot.add(droppedLoot);
+    return droppedLoot;
+  }
+
+  private void incrementKillCountOfMatchingActiveEvents(Combatant target) {
+    player.getActiveEvents().stream()
+        .filter(DefeatEvent.class::isInstance)
+        .map(e -> (DefeatEvent) e)
+        .forEach(e -> e.incrementDefeated(target.getType()));
   }
 
   private void getTarget(Combatant combatant, List<Combatant> opposingCombatants) {

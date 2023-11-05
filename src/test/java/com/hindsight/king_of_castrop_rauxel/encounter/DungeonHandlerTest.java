@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.encounter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,7 @@ class DungeonHandlerTest {
   @CsvSource({"1,IMP", "14,SKELETON"})
   void getEncounterDetails(int level, String type) {
     var random = new Random(1L);
-    var dungeonType = DungeonDetails.Type.from(type);
+    var dungeonType = Enemy.Type.from(type);
     var result = underTest.getEncounterDetails(random, level, dungeonType);
     var encountersPerDungeon = appProperties.getDungeonProperties().encountersPerDungeon();
     var enemiesPerEncounter = appProperties.getDungeonProperties().enemiesPerEncounter();

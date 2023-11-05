@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
-import static com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class AppPropertiesTest {
     assertThat(t5Damage.getMultiplier()).isEqualTo(1);
     assertThat(t5Damage.getMinMod()).isEqualTo(1.2F);
     assertThat(t5Damage.getMaxMod()).isEqualTo(2F);
-    var expectedList = List.of(Type.SKELETON, Type.UNDEAD, Type.DEMON);
+    var expectedList = List.of(Enemy.Type.SKELETON, Enemy.Type.UNDEAD, Enemy.Type.DEMON);
     assertThat(appProperties.getDungeonProperties().t2Types()).containsAll(expectedList);
     var xsSettlement = appProperties.getSettlementProperties().xs();
     assertThat(xsSettlement.getArea().getLower()).isEqualTo(1);

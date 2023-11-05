@@ -2,16 +2,15 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.location.Amenity;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -123,7 +122,7 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type) {
+  public String enemyNameFrom(Class<?> clazz, Enemy.Type type) {
     throwIfNotInitialised();
     var className = clazz.getSimpleName().toLowerCase();
     var pathName = className + BASIC_ENEMY_SUFFIX;
@@ -135,7 +134,7 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String dungeonNameFrom(Class<?> clazz, DungeonDetails.Type type) {
+  public String dungeonNameFrom(Class<?> clazz, Enemy.Type type) {
     throwIfNotInitialised();
     var className = clazz.getSimpleName().toLowerCase();
     var pathNameWithType = className + HYPHEN + type.name().toLowerCase();
@@ -149,7 +148,7 @@ public class BasicNameGenerator implements NameGenerator {
 
   // TODO: Think about what descriptions would make sense for different types of dungeons
   @Override
-  public String dungeonDescriptionFrom(Class<?> ignoredClass, DungeonDetails.Type ignoredType) {
+  public String dungeonDescriptionFrom(Class<?> ignoredClass, Enemy.Type ignoredType) {
     return "A dark and foreboding place";
   }
 

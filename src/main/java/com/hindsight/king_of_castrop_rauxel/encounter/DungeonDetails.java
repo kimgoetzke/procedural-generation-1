@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.encounter;
 
-import lombok.Builder;
-
+import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import java.util.Arrays;
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record DungeonDetails(
@@ -14,37 +14,7 @@ public record DungeonDetails(
     int tier,
     int level,
     List<List<EnemyDetails>> encounterDetails,
-    Type type) {
-
-  public enum Type {
-    GOBLIN,
-    IMP,
-    CYNOCEPHALY,
-    SKELETON,
-    UNDEAD,
-    DEMON,
-    ORC,
-    TROLL,
-    ONOCENTAUR,
-    CENTICORE,
-    POOKA,
-    MAPUCHE,
-    SPHINX,
-    MINOTAUR,
-    CHIMERA,
-    CYCLOPS,
-    HYDRA,
-    PHOENIX,
-    DRAGON;
-
-    public static Type from(int ordinal) {
-      return Type.values()[ordinal];
-    }
-
-    public static Type from(String name) {
-      return Type.valueOf(name);
-    }
-  }
+    Enemy.Type type) {
 
   @Override
   public String toString() {

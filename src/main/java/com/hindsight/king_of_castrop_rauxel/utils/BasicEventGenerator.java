@@ -2,9 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.event.*;
+import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.*;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +32,27 @@ public class BasicEventGenerator implements EventGenerator {
     setInitialised(true);
   }
 
-  @Override
-  public Event singleStepDialogue(Npc npc) {
+  public Event generate(Npc npc) {
     throwIfNotInitialised();
+    var randomInt = random.nextInt(Event.Type.values().length);
+    var eventCandidate =
+        switch (randomInt) {
+          case 0 -> singleStepDialogue(npc);
+          case 1 -> multiStepDialogue(npc);
+          case 2 -> deliveryEvent(npc);
+          case 3 -> defeatEvent(npc);
+          default -> throw new IllegalStateException(
+              "You forgot to implement every event type in the Inhabitant class: " + randomInt);
+        };
+    return eventCandidate == null ? singleStepDialogue(npc) : eventCandidate;
+  }
+
+  /**
+   * Returns an Event that only has a single interaction in the dialogue and no response from the
+   * player is possible/permitted. The NPC will dismiss the player with a random one-liner. However,
+   * sentiment can be customised in the future e.g. to integrate factions or the concept of loyalty.
+   */
+  private Event singleStepDialogue(Npc npc) {
     var text = readRandomLineFromFile(NPC_DISMISSIVE);
     var interactions = List.of(new Interaction(text, List.of()));
     var dialogues = List.of(new Dialogue(interactions));
@@ -52,9 +70,12 @@ public class BasicEventGenerator implements EventGenerator {
     return FALLBACK_ONE_LINER;
   }
 
-  @Override
-  public Event multiStepDialogue(Npc npc) {
-    throwIfNotInitialised();
+  /**
+   * Returns an Event that has multiple interactions in the dialogue, involves player actions that
+   * affect the state and content of the dialogue (branching). However, it is limited to a single
+   * NPC.
+   */
+  private Event multiStepDialogue(Npc npc) {
     var eventPath = folderReader.getRandomEventPath(Event.Type.DIALOGUE, random);
     var eventDto = yamlReader.read(eventPath);
     var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
@@ -65,9 +86,41 @@ public class BasicEventGenerator implements EventGenerator {
     return new DialogueEvent(eventDetails, participants, true);
   }
 
-  @Override
-  public Event deliveryEvent(Npc npc) {
-    throwIfNotInitialised();
+  /**
+   * Returns an event that involves one NPC, allows branching dialogues with actions for the player,
+   * and must involve defeating 1) a specified number of a specified enemy type (anywhere in the
+   * world) or 2) all enemies at a specified POI. This event type must involve a single reward for
+   * the player at some point in the event.
+   */
+  private Event defeatEvent(Npc npc) {
+    var eventPath = folderReader.getRandomEventPath(Event.Type.DEFEAT, random);
+    var eventDto = yamlReader.read(eventPath);
+    var dialogues = eventDto.participantData.get(Role.EVENT_GIVER);
+    var participants = List.of(new Participant(npc, dialogues));
+    var eventDetails = eventDto.eventDetails;
+    var dungeon = tryToFindDungeon(npc); // TODO: Only do this if no enemyType and count is set
+    if (dungeon != null) {
+      setEventGiver(eventDto.eventDetails, npc);
+      setDungeon(eventDto.defeatDetails, dungeon);
+      initialiseRewards(eventDetails);
+      processPlaceholders(eventDto, participants);
+      return new DefeatEvent(eventDetails, eventDto.defeatDetails, participants);
+    }
+    log.warn("Cannot generate DefeatEvent - no dungeon available for {}", npc);
+    return null;
+  }
+
+  private Dungeon tryToFindDungeon(Npc npc) {
+    var pois = npc.getHome().getParent().getPointsOfInterest();
+    var dungeons = pois.stream().filter(Dungeon.class::isInstance).toList();
+    return dungeons.isEmpty() ? null : (Dungeon) dungeons.get(random.nextInt(dungeons.size()));
+  }
+
+  /**
+   * Returns an Event that involves two NPCs and branching dialogues with actions for each NPC. This
+   * type of event must involve a single reward for the player at some point in the event.
+   */
+  private Event deliveryEvent(Npc npc) {
     var eventPath = folderReader.getRandomEventPath(Event.Type.REACH, random);
     var eventDto = yamlReader.read(eventPath);
     var giverNpcDialogues = eventDto.participantData.get(Role.EVENT_GIVER);
@@ -114,6 +167,10 @@ public class BasicEventGenerator implements EventGenerator {
     eventDetails.setEventGiver(npc);
   }
 
+  private void setDungeon(DefeatEventDetails defeatDetails, Dungeon dungeon) {
+    defeatDetails.setPoi(dungeon);
+  }
+
   private void initialiseRewards(EventDetails eventDetails) {
     for (var reward : eventDetails.getRewards()) {
       reward.load(random);
@@ -127,6 +184,7 @@ public class BasicEventGenerator implements EventGenerator {
     var gDialogue = eventDto.participantData.get(Role.EVENT_GIVER);
     var tDialogue = eventDto.participantData.get(Role.EVENT_TARGET);
     process(eventDto, giverNpc, targetNpc);
+    process(gDialogue, eventDto.defeatDetails);
     process(gDialogue, giverNpc, targetNpc);
     process(tDialogue, giverNpc, targetNpc);
     var dialoguesList = tDialogue == null ? List.of(gDialogue) : List.of(gDialogue, tDialogue);
@@ -167,6 +225,17 @@ public class BasicEventGenerator implements EventGenerator {
         for (var interaction : dialogue.getInteractions()) {
           interaction.setText(processor.process(interaction.getText(), eventDto.eventDetails));
         }
+      }
+    }
+  }
+
+  private void process(List<Dialogue> toProcess, DefeatEventDetails defeatDetails) {
+    if (toProcess == null || defeatDetails == null) {
+      return;
+    }
+    for (var dialogue : toProcess) {
+      for (var interaction : dialogue.getInteractions()) {
+        interaction.setText(processor.process(interaction.getText(), defeatDetails));
       }
     }
   }

@@ -133,7 +133,7 @@ public abstract class AbstractLoop {
       var errorMessage = "Invalid choice, try again...%n";
       out.printf(CliComponent.error(errorMessage));
       CliComponent.awaitEnterKeyPress();
-      recoverInvalidAction();
+      recoverFromInvalidAction();
     }
     out.println();
   }
@@ -145,7 +145,7 @@ public abstract class AbstractLoop {
         .orElseThrow(() -> new NumberFormatException("Couldn't find input in actions"));
   }
 
-  protected void recoverInvalidAction() {
+  protected void recoverFromInvalidAction() {
     // Empty by default but can be overridden, e.g. to reset any quest progression
   }
 }
