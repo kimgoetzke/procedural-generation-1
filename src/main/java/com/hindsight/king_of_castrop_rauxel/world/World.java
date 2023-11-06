@@ -170,7 +170,7 @@ public class World {
     if (hasChunk(worldCoords)) {
       throw new IllegalStateException(
           String.format(
-              "Chunk %s of w(%d, %d) already exists",
+              "%s of w(%d, %d) already exists",
               getChunk(worldCoords).getSummary().toLowerCase(),
               worldCoords.getFirst(),
               worldCoords.getSecond()));

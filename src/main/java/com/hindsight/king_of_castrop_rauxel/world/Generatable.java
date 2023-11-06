@@ -1,5 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public interface Generatable {
 
   String getId();
@@ -11,10 +13,11 @@ public interface Generatable {
   void logResult();
 
   default void throwIfRepeatedRequest(boolean toBeLoaded) {
-    if (isLoaded() == toBeLoaded) {
-      throw new IllegalStateException(
-          "Request to %s settlement '%s' even though it already is, check your logic"
-              .formatted(toBeLoaded ? "loaded" : "unloaded", getId()));
-    }
+    var state = toBeLoaded ? "loaded" : "unloaded";
+    checkState(
+        isLoaded() != toBeLoaded,
+        "Requested to %s settlement '%s' but it already is",
+        state,
+        getId());
   }
 }

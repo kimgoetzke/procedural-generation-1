@@ -6,6 +6,8 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import static com.google.common.base.Preconditions.checkState;
+
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -54,11 +56,11 @@ public class IdBuilder {
   }
 
   private static String getThreeLetters(Class<?> clazz, int offset) {
-    if (clazz.getSimpleName().length() < offset) {
-      throw new IllegalStateException(
-          "Could not find unique abbreviation for class %s, failed at offset %s"
-              .formatted(clazz.getSimpleName(), offset));
-    }
+    checkState(
+        clazz.getSimpleName().length() >= offset,
+        "No unique abbreviation for class %s possible, failed at offset %s",
+        clazz.getSimpleName(),
+        offset);
     return clazz.getSimpleName().substring(offset, offset + 3).toUpperCase();
   }
 }
