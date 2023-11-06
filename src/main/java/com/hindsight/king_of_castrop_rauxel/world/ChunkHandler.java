@@ -5,6 +5,7 @@ import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
@@ -92,22 +93,36 @@ public class ChunkHandler {
     var vertices = map.getVertices();
     for (var reference : vertices) {
       var refLocation = reference.getLocation();
-      var hasNoEdges = map.getVertexByValue(refLocation).getEdges().isEmpty();
       var hasNoNeighbours = refLocation.getNeighbours().isEmpty();
-      if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
-        throw new IllegalStateException(
-            String.format(
-                "Vertex '%s' has %d edges and %d neighbours but both must have the same value",
-                refLocation.getName(),
-                refLocation.getNeighbours().size(),
-                map.getVertexByValue(refLocation).getEdges().size()));
-      }
-      if (hasNoNeighbours) {
-        var closestNeighbour = closestNeighbourTo(reference, vertices);
-        if (closestNeighbour != null) {
-          var distance = refLocation.distanceTo(closestNeighbour.getLocation());
-          addConnections(map, reference, closestNeighbour, distance);
-        }
+      throwIfMisconfigured(map, refLocation, hasNoNeighbours);
+      connectIfNoNeighbours(map, reference, hasNoNeighbours, vertices, refLocation);
+    }
+  }
+
+  private static void throwIfMisconfigured(
+      Graph map, Location refLocation, boolean hasNoNeighbours) {
+    var hasNoEdges = map.getVertexByValue(refLocation).getEdges().isEmpty();
+    if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
+      throw new IllegalStateException(
+          String.format(
+              "Vertex '%s' has %d edges and %d neighbours but both must have the same value",
+              refLocation.getName(),
+              refLocation.getNeighbours().size(),
+              map.getVertexByValue(refLocation).getEdges().size()));
+    }
+  }
+
+  private void connectIfNoNeighbours(
+      Graph map,
+      Vertex vert,
+      boolean hasNoNeighbours,
+      List<Vertex> vertices,
+      Location refLocation) {
+    if (hasNoNeighbours) {
+      var closestNeighbour = closestNeighbourTo(vert, vertices);
+      if (closestNeighbour != null) {
+        var distance = refLocation.distanceTo(closestNeighbour.getLocation());
+        addConnections(map, vert, closestNeighbour, distance);
       }
     }
   }

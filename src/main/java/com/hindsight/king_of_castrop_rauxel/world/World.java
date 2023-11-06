@@ -1,16 +1,17 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
+import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Slf4j
 @Component
@@ -110,10 +111,7 @@ public class World {
 
   public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {
     var chunk = getChunk(worldCoords);
-    if (chunk == null) {
-      throw new IllegalStateException(
-          "%s cannot be the current chunk because it is null".formatted(worldCoords));
-    }
+    checkNotNull(chunk, "%s cannot be the current chunk because it is null", worldCoords);
     if (!chunk.isLoaded()) {
       chunk.load();
     }

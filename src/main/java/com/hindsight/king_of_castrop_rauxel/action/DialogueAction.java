@@ -1,5 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.*;
@@ -21,15 +23,13 @@ public class DialogueAction implements Action {
 
   @Override
   public void execute(Player player) {
-    if (playerState == null && eventState == null) {
-      throw new IllegalStateException("DialogueAction must have a playerState or eventState");
-    }
+    var areBothNull = playerState == null && eventState == null;
+    checkArgument(!areBothNull, "DialogueAction must have a playerState or eventState");
     if (playerState != null) {
       player.setState(playerState);
     }
-    if (eventState == Event.State.NONE && nextInteraction == null) {
-      throw new IllegalStateException("DialogueAction must have an eventState or nextInteraction");
-    }
+    var isMisconfigured = eventState == Event.State.NONE && nextInteraction == null;
+    checkArgument(!isMisconfigured, "DialogueAction with State.NONE must have nextInteraction");
     if (eventState != null) {
       switch (eventState) {
           // Subtract 1 because the dialogue will progress after this action is executed.

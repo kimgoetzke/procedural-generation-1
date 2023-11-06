@@ -88,13 +88,13 @@ class CoordinatesTest {
 
   @Test
   void givenValidGlobalCoords_updateCoords() {
+    // Creates Coords(g=(1250, 1250), w=(2, 2), c=(250, 250))
     var worldCoords = Pair.of(2, 2);
     var chunkCoords = Pair.of(250, 250);
     var coordinates = cf.create(worldCoords, chunkCoords);
-    // Creates Coords(g=(1250, 1250), w=(2, 2), c=(250, 250))
 
-    coordinates.setTo(Pair.of(1230, 1505));
     // Updates to Coords(g=(1230, 1505), w=(2, 3), c=(230, 5))
+    coordinates.setTo(Pair.of(1230, 1505));
 
     var expected = cf.create(Pair.of(1230, 1505), CoordType.GLOBAL);
     var x = expected.gX();

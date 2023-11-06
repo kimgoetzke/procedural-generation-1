@@ -1,5 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -93,11 +95,8 @@ public class Coordinates {
         };
     var x = (int) anyCoords.getFirst();
     var y = (int) anyCoords.getSecond();
-    if (x >= 0 && x <= max && y >= 0 && y <= max) {
-      return;
-    }
-    throw new IllegalArgumentException(
-        "%s coordinates %s are out of bounds (%s)".formatted(type, anyCoords, max));
+    var isWithinBounds = x >= 0 && x <= max && y >= 0 && y <= max;
+    checkArgument(isWithinBounds, "%s coordinates %s are out of bounds", type, anyCoords);
   }
 
   public boolean equalTo(Pair<Integer, Integer> anyCoords, CoordType type) {

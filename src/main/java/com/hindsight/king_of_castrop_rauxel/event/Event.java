@@ -1,5 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
@@ -161,9 +163,8 @@ public interface Event {
   }
 
   default void setCurrentInteraction(int i) {
-    if (i > getCurrentDialogue().getInteractions().size()) {
-      throw new IllegalArgumentException("The next interaction index is out of bounds: " + i);
-    }
+    var isOutOfBounds = i <= getCurrentDialogue().getInteractions().size();
+    checkArgument(!isOutOfBounds, "The next interaction index is out of bounds: ", i);
     getCurrentDialogue().setCurrentInteraction(i);
   }
 
