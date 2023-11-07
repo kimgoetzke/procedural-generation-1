@@ -80,7 +80,9 @@ public class ActionHandler {
   public void getMenuActions(Player player, List<Action> actions) {
     prepend(actions);
     actions.add(new StateAction(index(actions), "Resume game", player.getPreviousState()));
-    actions.add(new StateAction(index(actions), "View active quests", IN_MENU));
+    var header = "Currently active quests:";
+    var activeQuests = player.getActiveEvents();
+    actions.add(new PrintAction(index(actions), "View active quests", header, activeQuests));
     actions.add(new ExitAction(index(actions), "Exit game"));
   }
 
