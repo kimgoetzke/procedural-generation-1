@@ -29,6 +29,8 @@ public abstract class AbstractLoop {
 
   public abstract void execute(List<Action> actions);
 
+  protected abstract void prepareActions(List<Action> actions);
+
   protected void printHeaders(boolean showPoi) {
     if (getAppProperties().getGeneralProperties().clearConsole()) {
       clearConsole();

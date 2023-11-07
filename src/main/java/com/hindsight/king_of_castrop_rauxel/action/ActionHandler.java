@@ -33,7 +33,7 @@ public class ActionHandler {
       actions.add(new StateAction(index(actions), "Show debug menu", DEBUGGING));
     }
     if (environmentResolver.isCli()) {
-      actions.add(new ExitAction(index(actions), "Exit game"));
+      actions.add(new StateAction(index(actions), "Open menu", IN_MENU));
     }
   }
 
@@ -75,6 +75,13 @@ public class ActionHandler {
         actions.add(new StateAction(index(actions), "Return victoriously", AT_POI));
       }
     }
+  }
+
+  public void getMenuActions(Player player, List<Action> actions) {
+    prepend(actions);
+    actions.add(new StateAction(index(actions), "Resume game", player.getPreviousState()));
+    actions.add(new StateAction(index(actions), "View active quests", IN_MENU));
+    actions.add(new ExitAction(index(actions), "Exit game"));
   }
 
   public void getDebugActions(Player player, List<Action> actions) {

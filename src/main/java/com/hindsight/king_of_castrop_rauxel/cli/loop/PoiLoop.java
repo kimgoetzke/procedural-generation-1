@@ -30,7 +30,8 @@ public class PoiLoop extends AbstractLoop {
     postProcess();
   }
 
-  private void prepareActions(List<Action> actions) {
+  @Override
+  protected void prepareActions(List<Action> actions) {
     actionHandler.getThisPoiActions(player, actions);
   }
 

@@ -30,7 +30,8 @@ public class DebugLoop extends AbstractLoop {
     postProcess();
   }
 
-  private void prepareActions(List<Action> actions) {
+  @Override
+  protected void prepareActions(List<Action> actions) {
     actionHandler.getDebugActions(player, actions);
   }
 

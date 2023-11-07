@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
 public class CliGame {
 
+  private final AppProperties appProperties;
   private final EnvironmentResolver environmentResolver;
   private final World world;
   private final Graph map;
@@ -27,7 +28,7 @@ public class CliGame {
   private final DialogueLoop dialogueLoop;
   private final CombatLoop combatLoop;
   private final DebugLoop debugLoop;
-  private final AppProperties appProperties;
+  private final MenuLoop menuLoop;
   private Player player;
 
   @SuppressWarnings("InfiniteLoopStatement")
@@ -44,6 +45,7 @@ public class CliGame {
         case AT_POI -> poiLoop.execute(actions);
         case IN_DIALOGUE -> dialogueLoop.execute(actions);
         case IN_COMBAT -> combatLoop.execute(actions);
+        case IN_MENU -> menuLoop.execute(actions);
         case DEBUGGING -> debugLoop.execute(actions);
       }
     }
@@ -59,5 +61,6 @@ public class CliGame {
     choosePoiLoop.initialise(player);
     debugLoop.initialise(player);
     combatLoop.initialise(player);
+    menuLoop.initialise(player);
   }
 }

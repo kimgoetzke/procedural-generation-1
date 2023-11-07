@@ -50,7 +50,8 @@ public class DialogueLoop extends AbstractLoop {
     }
   }
 
-  private void prepareActions(List<Action> actions) {
+  @Override
+  protected void prepareActions(List<Action> actions) {
     if (player.getCurrentEvent().getCurrentActions().isEmpty()) {
       actionHandler.getNone(actions);
       CliComponent.awaitEnterKeyPress();

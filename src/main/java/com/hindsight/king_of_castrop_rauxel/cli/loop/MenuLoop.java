@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CombatLoop extends AbstractLoop {
+public class MenuLoop extends AbstractLoop {
 
   private final ActionHandler actionHandler;
   @Getter private final Scanner scanner;
@@ -28,6 +28,6 @@ public class CombatLoop extends AbstractLoop {
 
   @Override
   protected void prepareActions(List<Action> actions) {
-    actionHandler.getCombatActions(player, actions);
+    actionHandler.getMenuActions(player, actions);
   }
 }

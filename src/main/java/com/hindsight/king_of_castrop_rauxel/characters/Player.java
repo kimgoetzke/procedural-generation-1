@@ -46,6 +46,7 @@ public class Player implements Visitor, Combatant {
     AT_POI,
     IN_DIALOGUE,
     IN_COMBAT,
+    IN_MENU,
     DEBUGGING
   }
 
