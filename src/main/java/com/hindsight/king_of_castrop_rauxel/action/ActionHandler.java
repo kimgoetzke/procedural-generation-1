@@ -3,7 +3,6 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
-import com.hindsight.king_of_castrop_rauxel.action.debug.Debuggable;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
@@ -77,19 +76,20 @@ public class ActionHandler {
     }
   }
 
+  // TODO: Make sure that Event has a good toString() method
   public void getMenuActions(Player player, List<Action> actions) {
     prepend(actions);
-    actions.add(new StateAction(index(actions), "Resume game", player.getPreviousState()));
+    actions.add(new StateAction(index(actions), "Resume game", AT_POI));
     var header = "Currently active quests:";
     var activeQuests = player.getActiveEvents();
-    actions.add(new PrintAction(index(actions), "View active quests", header, activeQuests));
+    actions.add(new PrintAction<>(index(actions), "View active quests", header, activeQuests));
     actions.add(new ExitAction(index(actions), "Exit game"));
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
     prepend(actions);
-    var triggerZone = (Debuggable) () -> debug.logLocationsInsideTriggerZone(player);
-    var visitedLocs = (Debuggable) () -> debug.logVisitedLocations(player);
+    var triggerZone = (Runnable) () -> debug.logLocationsInsideTriggerZone(player);
+    var visitedLocs = (Runnable) () -> debug.logVisitedLocations(player);
     actions.add(new LocationAction(index(actions), "Resume game", player.getCurrentLocation()));
     actions.add(debug.create(index(actions), "Log memory usage", debug::logMemoryStats));
     actions.add(debug.create(index(actions), "Log all locations", debug::logVertices));

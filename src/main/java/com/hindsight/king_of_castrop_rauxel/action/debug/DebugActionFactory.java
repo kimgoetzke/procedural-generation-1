@@ -30,11 +30,11 @@ public class DebugActionFactory {
   private final ChunkHandler chunkHandler;
   private final AppProperties appProperties;
 
-  public DebugAction create(int index, String name, Debuggable debuggable) {
+  public DebugAction create(int index, String name, Runnable runnable) {
     return DebugAction.builder()
         .index(index)
         .name(name)
-        .debuggable(debuggable)
+        .runnable(runnable)
         .map(map)
         .world(world)
         .build();

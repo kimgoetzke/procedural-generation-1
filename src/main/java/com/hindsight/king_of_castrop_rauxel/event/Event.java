@@ -163,7 +163,7 @@ public interface Event {
   }
 
   default void setCurrentInteraction(int i) {
-    var isOutOfBounds = i <= getCurrentDialogue().getInteractions().size();
+    var isOutOfBounds = i > getCurrentDialogue().getInteractions().size();
     checkArgument(!isOutOfBounds, "The next interaction index is out of bounds: ", i);
     getCurrentDialogue().setCurrentInteraction(i);
   }

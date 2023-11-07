@@ -16,14 +16,14 @@ public class DebugAction implements Action {
 
   @Setter private int index;
   @Setter private String name;
-  private Debuggable debuggable;
+  private Runnable runnable;
   private Graph map;
   private World world;
 
   @Override
   public void execute(Player player) {
     nextState(player);
-    debuggable.execute();
+    runnable.run();
   }
 
   public State getNextState() {
