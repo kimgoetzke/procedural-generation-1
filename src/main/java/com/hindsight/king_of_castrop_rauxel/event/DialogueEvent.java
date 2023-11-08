@@ -4,6 +4,8 @@ import static com.hindsight.king_of_castrop_rauxel.event.Role.EVENT_GIVER;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import java.util.List;
+
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,12 +37,12 @@ public class DialogueEvent implements Event {
   public String toString() {
     var currentNpcHome = currentNpc.getHome();
     return "Dialogue with "
-        + currentNpc.getName()
+        + CliComponent.npc(currentNpc)
         + " at "
-        + currentNpcHome.getName()
+        + CliComponent.poi(currentNpcHome)
         + " of "
-        + currentNpcHome.getParent().getName()
-        + " - Status: "
-        + eventState;
+        + CliComponent.location(currentNpcHome.getParent())
+        + " | Status: "
+        + CliComponent.status(eventState);
   }
 }

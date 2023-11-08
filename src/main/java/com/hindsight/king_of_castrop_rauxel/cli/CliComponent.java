@@ -2,9 +2,12 @@ package com.hindsight.king_of_castrop_rauxel.cli;
 
 import static java.lang.System.out;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.items.Buyable;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -135,21 +138,21 @@ public class CliComponent {
 
   public static String label(PointOfInterest.Type type) {
     return switch (type) {
-      case MAIN_SQUARE -> label("Main Square", toColour(type));
-      case SHOP -> LABEL_FORMAT.formatted(toColour(type), "Shop", FMT.RESET);
-      case DUNGEON -> LABEL_FORMAT.formatted(toColour(type), "Dungeon", FMT.RESET);
+      case MAIN_SQUARE -> label("Main Square", colourFrom(type));
+      case SHOP -> LABEL_FORMAT.formatted(colourFrom(type), "Shop", FMT.RESET);
+      case DUNGEON -> LABEL_FORMAT.formatted(colourFrom(type), "Dungeon", FMT.RESET);
       default -> "";
     };
   }
 
-  public static FMT toColour(Reward.Type type) {
+  public static FMT colourFrom(Reward.Type type) {
     return switch (type) {
       case GOLD -> FMT.YELLOW_BOLD;
       case EXPERIENCE -> FMT.BLUE_BOLD;
     };
   }
 
-  private static FMT toColour(PointOfInterest.Type type) {
+  private static FMT colourFrom(PointOfInterest.Type type) {
     return switch (type) {
       case MAIN_SQUARE, DUNGEON, SHOP -> FMT.BLUE;
       default -> FMT.WHITE_BOLD;
@@ -168,8 +171,38 @@ public class CliComponent {
     return FMT.YELLOW + String.valueOf(gold) + FMT.RESET;
   }
 
+  public static String location(Location location) {
+    return FMT.BLUE + String.valueOf(location.getName()) + FMT.RESET;
+  }
+
+  public static String poi(PointOfInterest poi) {
+    return FMT.BLUE + String.valueOf(poi.getName()) + FMT.RESET;
+  }
+
+  public static String npc(Npc npc) {
+    return FMT.WHITE + String.valueOf(npc.getFirstName()) + FMT.RESET;
+  }
+
+  public static String npc(Npc npc, boolean onlyFirstName) {
+    var name = onlyFirstName ? npc.getFirstName() : npc.getName();
+    return FMT.WHITE + String.valueOf(name) + FMT.RESET;
+  }
+
+  public static String task(String task) {
+    return FMT.CYAN + task + FMT.RESET;
+  }
+
   public static String buyable(Buyable b) {
     return BUYABLE_ACTION_FORMAT.formatted(b.getName(), b.getDescription(), gold(b.getBasePrice()));
+  }
+
+  public static String status(Event.State state) {
+    return switch (state) {
+      case NONE, AVAILABLE -> FMT.WHITE + String.valueOf(state) + FMT.RESET;
+      case ACTIVE -> FMT.MAGENTA + String.valueOf(state) + FMT.RESET;
+      case READY -> FMT.GREEN + String.valueOf(state) + FMT.RESET;
+      case COMPLETED, DECLINED -> FMT.RED + String.valueOf(state) + FMT.RESET;
+    };
   }
 
   public static String bold(String text) {

@@ -4,6 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.event.Role.EVENT_GIVER;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.List;
 import lombok.EqualsAndHashCode;
@@ -74,32 +75,30 @@ public class DefeatEvent implements Event {
   public String toString() {
     var eventGiverHome = eventDetails.getEventGiver().getHome();
     return switch (taskType) {
-      case KILL_TYPE_ANYWHERE -> "From: "
-          + eventDetails.getEventGiver().getName()
+      case KILL_TYPE_ANYWHERE -> {
+        var d = Math.min(toDefeat, defeated);
+        yield CliComponent.task(
+                "Find and kill: %s (%d of %d)"
+                    .formatted(enemyType.toString().toLowerCase(), d, toDefeat))
+            + " | From: "
+            + CliComponent.npc(eventDetails.getEventGiver())
+            + ", "
+            + CliComponent.poi(eventGiverHome)
+            + " of "
+            + CliComponent.location(eventGiverHome.getParent())
+            + " | Status: "
+            + CliComponent.status(eventState);
+      }
+      case KILL_ALL_AT_POI -> CliComponent.task(
+              "Clear all enemies at %s of %s".formatted(poi.getName(), poi.getParent().getName()))
+          + " | From: "
+          + CliComponent.npc(eventDetails.getEventGiver())
           + ", "
-          + eventGiverHome.getName()
+          + CliComponent.poi(eventGiverHome)
           + " of "
-          + eventGiverHome.getParent().getName()
-          + ": Find and kill "
-          + enemyType.toString().toLowerCase()
-          + "(s) ("
-          + defeated
-          + "/"
-          + toDefeat
-          + ") - Status: "
-          + eventState;
-      case KILL_ALL_AT_POI -> "Quest from "
-          + eventDetails.getEventGiver().getName()
-          + ", "
-          + eventGiverHome.getName()
-          + " of "
-          + eventGiverHome.getParent().getName()
-          + ": Clear all enemies at "
-          + poi.getName()
-          + " of "
-          + poi.getParent().getName()
-          + " - Status: "
-          + eventState;
+          + CliComponent.location(eventGiverHome.getParent())
+          + " | Status: "
+          + CliComponent.status(eventState);
     };
   }
 }

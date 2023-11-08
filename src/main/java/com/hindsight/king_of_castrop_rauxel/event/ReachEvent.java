@@ -4,6 +4,8 @@ import static com.hindsight.king_of_castrop_rauxel.event.Role.EVENT_GIVER;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import java.util.List;
+
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,19 +37,19 @@ public class ReachEvent implements Event {
     var eventGiverHome = eventDetails.getEventGiver().getHome();
     var eventTarget = participants.get(1).npc();
     var eventTargetHome = eventTarget.getHome();
-    return "From "
-        + eventDetails.getEventGiver().getName()
+    return CliComponent.task(
+            "Speak with %s, %s of %s"
+                .formatted(
+                    eventTarget.getName(),
+                    eventTargetHome.getName(),
+                    eventTargetHome.getParent().getName()))
+        + " | From: "
+        + CliComponent.npc(eventDetails.getEventGiver())
         + ", "
-        + eventGiverHome.getName()
+        + CliComponent.poi(eventGiverHome)
         + " of "
-        + eventGiverHome.getParent().getName()
-        + ": Speak with "
-        + eventTarget.getName()
-        + ", "
-        + eventTargetHome.getName()
-        + " of "
-        + eventTargetHome.getParent().getName()
-        + " - Status: "
-        + eventState;
+        + CliComponent.location(eventGiverHome.getParent())
+        + " | Status: "
+        + CliComponent.status(eventState);
   }
 }
