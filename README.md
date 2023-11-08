@@ -102,7 +102,8 @@ it up and use it.
 
 ```shell
 cd build\libs 
-java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.1.jar
+java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.2.jar
+   # Change version if necessary
 ```
 
 Alternatively, in IntelliJ create new run configuration with path to JAR and with VM

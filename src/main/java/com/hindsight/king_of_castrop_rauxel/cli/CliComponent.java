@@ -19,7 +19,7 @@ public class CliComponent {
 
   public static final boolean WINDOWS = System.getProperty("os.name").contains("Windows");
   public static final String LABEL_FORMAT = " %s(%s)%s";
-  public static final String BUYABLE_ACTION_FORMAT = "%s - %s (%s gold)";
+  public static final String BUYABLE_ACTION_FORMAT = "%s%s - %s (%s gold)";
 
   public enum FMT {
     RESET("\033[0m"),
@@ -193,7 +193,8 @@ public class CliComponent {
   }
 
   public static String buyable(Buyable b) {
-    return BUYABLE_ACTION_FORMAT.formatted(b.getName(), b.getDescription(), gold(b.getBasePrice()));
+    return BUYABLE_ACTION_FORMAT.formatted(
+        b.getName(), FMT.RESET, b.getDescription(), gold(b.getBasePrice()));
   }
 
   public static String status(Event.State state) {

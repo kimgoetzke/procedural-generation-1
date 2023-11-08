@@ -91,8 +91,8 @@ public class Dungeon extends AbstractAmenity {
 
   @Override
   public String getDescription() {
-    var done = ", devoid of any life. You have slain all creatures here already. ";
-    var toDo = ", rumored to be filled with treasure. ";
+    var done = ", devoid of any life. You have slain all creatures here already.";
+    var toDo = ", rumored to be filled with treasure.";
     return "%s%s".formatted(dungeonDetails.description(), sequence.isCompleted() ? done : toDo);
   }
 

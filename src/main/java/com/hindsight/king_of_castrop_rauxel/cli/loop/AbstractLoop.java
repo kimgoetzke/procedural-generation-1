@@ -34,6 +34,7 @@ public abstract class AbstractLoop {
   protected void printHeaders(boolean showPoi) {
     if (getAppProperties().getGeneralProperties().clearConsole()) {
       clearConsole();
+      out.println();
     }
     out.printf(
         "%sSTATS [ Gold: %s%s%s%s | Level: %s%s%s%s | Experience: %s%s%s%s | Health Points: %s%s%s%s ]%s%n",
@@ -61,7 +62,8 @@ public abstract class AbstractLoop {
         FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), FMT.RESET);
     if (showPoi) {
       out.printf(
-          "%sYou are at: %s.%s ", FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), FMT.RESET);
+          "%sYou are at: %s. %s%s",
+          FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), getDescription(), FMT.RESET);
     }
   }
 
@@ -79,7 +81,7 @@ public abstract class AbstractLoop {
   @SuppressWarnings("CallToPrintStackTrace")
   private void useConsoleUi(List<Action> actions, String message) {
     out.println();
-    message = message == null ? "Your response:" : getDescription() + message;
+    message = message == null ? "Your response:" : message;
     var prompt = new ConsolePrompt();
     var promptBuilder = prompt.getPromptBuilder();
     var listPrompt = promptBuilder.createListPrompt();
@@ -104,7 +106,7 @@ public abstract class AbstractLoop {
 
   private void useSystemOut(List<Action> actions, String message) {
     if (message != null) {
-      out.printf("%s%s%s%s%n", FMT.DEFAULT_BOLD, getDescription(), message, FMT.RESET);
+      out.printf("%s%s%s%n", FMT.DEFAULT_BOLD, message, FMT.RESET);
     }
     actions.forEach(a -> out.println(a.print()));
     out.printf("%n%s>%s ", FMT.WHITE_BOLD_BRIGHT, FMT.RESET);

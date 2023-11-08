@@ -176,7 +176,7 @@ public class Encounter {
       return;
     }
     out.printf(
-        "- %s%s%s attacks %s%s%s  %s-%d%s -> %s%d%s HP%n",
+        "- %s%s%s attacks %s%s%s         %s-%d%s -> %s%d%s HP%n",
         attackerColour,
         attacker.getName().toUpperCase(),
         FMT.RESET,

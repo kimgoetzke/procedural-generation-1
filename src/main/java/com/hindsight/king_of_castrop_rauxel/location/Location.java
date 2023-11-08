@@ -36,7 +36,7 @@ public interface Location extends Visitable, Generatable {
 
   DataServices getDataServices();
 
-  String getFullSummary(); // TODO: Replace with objects so that it can be used via API
+  String getFullSummary();
 
   String getBriefSummary();
 

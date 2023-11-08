@@ -6,13 +6,11 @@ import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -95,15 +93,8 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   @Override
   public String getFullSummary() {
-    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Coordinates: %s | Connected to %s location(s) ]"
-        .formatted(
-            name,
-            size.getName(),
-            inhabitantCount,
-            getPopulationDensity(),
-            pointsOfInterests.size(),
-            coordinates.globalToString(),
-            neighbours.size());
+    return "%s [ Size: %s | %d inhabitants | Population density: %s ]"
+        .formatted(name, size.getName(), inhabitantCount, getPopulationDensity());
   }
 
   private String getPopulationDensity() {

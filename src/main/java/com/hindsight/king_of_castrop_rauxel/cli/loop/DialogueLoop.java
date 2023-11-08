@@ -39,6 +39,7 @@ public class DialogueLoop extends AbstractLoop {
       // TODO: Fix dialogue.isBeginningOfDialogue() as it doesn't work when accepting reward
       if (dialogue.isBeginningOfDialogue() && appProperties.getGeneralProperties().clearConsole()) {
         CliComponent.clearConsole();
+        out.println();
       }
       out.printf(
           "%s%s%s%s: %s%n%n",

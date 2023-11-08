@@ -22,6 +22,7 @@ public class MenuLoop extends AbstractLoop {
 
   @Override
   public void execute(List<Action> actions) {
+    printHeaders(false);
     prepareActions(actions);
     promptPlayer(actions, "What now?");
   }

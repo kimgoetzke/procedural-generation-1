@@ -5,7 +5,6 @@ import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type
 import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import com.hindsight.king_of_castrop_rauxel.location.Amenity;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import java.util.ArrayList;
@@ -79,7 +78,7 @@ public class BasicNameGenerator implements NameGenerator {
       AbstractAmenity amenity, Shop.Type type, String parentName, Npc inhabitant) {
     throwIfNotInitialised();
     var className = amenity.getClass().getSimpleName().toLowerCase();
-    var basePath = Amenity.class.getSimpleName() + HYPHEN + className;
+    var basePath = "amenity" + HYPHEN + className;
     var pathName = basePath + HYPHEN + type.name().toLowerCase();
     var words = new ArrayList<String>();
     log.debug("Attempting to generate shop name for '{}'", pathName);
