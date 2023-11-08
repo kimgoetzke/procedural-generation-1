@@ -34,7 +34,7 @@ public class BasicEventGenerator implements EventGenerator {
 
   public Event generate(Npc npc) {
     throwIfNotInitialised();
-    var randomInt = random.nextInt(Event.Type.values().length);
+    var randomInt = random.nextInt(Event.Type.values().length + 1);
     var eventCandidate =
         switch (randomInt) {
           case 0 -> singleStepDialogue(npc);
@@ -165,7 +165,8 @@ public class BasicEventGenerator implements EventGenerator {
 
   private PointOfInterest tryToFindPoi(Npc npc) {
     var availablePois = npc.getHome().getParent().getPointsOfInterest();
-    for (int i = 0; i < availablePois.size(); i++) {
+    var maxAttempts = Math.max(3, availablePois.size());
+    for (int i = 0; i < maxAttempts; i++) {
       var poi = findPoiInSameLocation(npc, availablePois);
       if (poi != null) {
         return poi;

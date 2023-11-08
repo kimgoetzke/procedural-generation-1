@@ -31,4 +31,16 @@ public class DialogueEvent implements Event {
             .orElseThrow(() -> new IllegalStateException("NPC map must contain EVENT_GIVER role"));
     setActive(eventGiver.npc());
   }
+
+  public String toString() {
+    var currentNpcHome = currentNpc.getHome();
+    return "Dialogue with "
+        + currentNpc.getName()
+        + " at "
+        + currentNpcHome.getName()
+        + " of "
+        + currentNpcHome.getParent().getName()
+        + " - Status: "
+        + eventState;
+  }
 }

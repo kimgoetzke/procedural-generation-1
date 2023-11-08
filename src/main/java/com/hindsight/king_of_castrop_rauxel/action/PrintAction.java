@@ -32,7 +32,7 @@ public class PrintAction<T> implements Action {
     if (toPrint.isEmpty()) {
       System.out.println("None.");
     } else {
-      toPrint.forEach(System.out::println);
+      toPrint.forEach(element -> System.out.println(" - " + element));
     }
     System.out.println();
     CliComponent.awaitEnterKeyPress();

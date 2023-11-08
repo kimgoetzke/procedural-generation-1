@@ -70,4 +70,36 @@ public class DefeatEvent implements Event {
     }
     log.info("Defeated {} of {} {} (state: {})", defeated, toDefeat, enemyType, eventState);
   }
+
+  public String toString() {
+    var eventGiverHome = eventDetails.getEventGiver().getHome();
+    return switch (taskType) {
+      case KILL_TYPE_ANYWHERE -> "From: "
+          + eventDetails.getEventGiver().getName()
+          + ", "
+          + eventGiverHome.getName()
+          + " of "
+          + eventGiverHome.getParent().getName()
+          + ": Find and kill "
+          + enemyType.toString().toLowerCase()
+          + "(s) ("
+          + defeated
+          + "/"
+          + toDefeat
+          + ") - Status: "
+          + eventState;
+      case KILL_ALL_AT_POI -> "Quest from "
+          + eventDetails.getEventGiver().getName()
+          + ", "
+          + eventGiverHome.getName()
+          + " of "
+          + eventGiverHome.getParent().getName()
+          + ": Clear all enemies at "
+          + poi.getName()
+          + " of "
+          + poi.getParent().getName()
+          + " - Status: "
+          + eventState;
+    };
+  }
 }

@@ -10,6 +10,8 @@ import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import java.util.*;
+import java.util.function.Predicate;
+
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -134,6 +136,10 @@ public class Player implements Visitor, Combatant {
   }
 
   public List<Event> getActiveEvents() {
-    return events.stream().filter(e -> e.getEventState() == Event.State.ACTIVE).toList();
+    return events.stream().filter(isActiveOrReady()).toList();
+  }
+
+  private static Predicate<Event> isActiveOrReady() {
+    return e -> e.getEventState() == Event.State.ACTIVE || e.getEventState() == Event.State.READY;
   }
 }

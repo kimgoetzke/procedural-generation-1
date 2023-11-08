@@ -30,4 +30,24 @@ public class ReachEvent implements Event {
             .orElseThrow(() -> new IllegalStateException("NPC map must contain EVENT_GIVER role"));
     setActive(eventGiver.npc());
   }
+
+  public String toString() {
+    var eventGiverHome = eventDetails.getEventGiver().getHome();
+    var eventTarget = participants.get(1).npc();
+    var eventTargetHome = eventTarget.getHome();
+    return "From "
+        + eventDetails.getEventGiver().getName()
+        + ", "
+        + eventGiverHome.getName()
+        + " of "
+        + eventGiverHome.getParent().getName()
+        + ": Speak with "
+        + eventTarget.getName()
+        + ", "
+        + eventTargetHome.getName()
+        + " of "
+        + eventTargetHome.getParent().getName()
+        + " - Status: "
+        + eventState;
+  }
 }
