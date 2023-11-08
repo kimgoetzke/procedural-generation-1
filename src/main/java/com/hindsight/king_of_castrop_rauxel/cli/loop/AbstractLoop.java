@@ -118,7 +118,8 @@ public abstract class AbstractLoop {
       return "";
     }
     var poi = player.getCurrentPoi();
-    var hasNoActions = poi.getAvailableActions().isEmpty();
+    var hasNoActions =
+        poi.getAvailableActions().isEmpty() && poi.getParent().getAvailableActions().isEmpty();
     var text = hasNoActions ? "There is nothing to do here. " : " ";
     var description = poi.getDescription();
     return Strings.isNullOrEmpty(description) ? text : description + text;
