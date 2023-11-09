@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
@@ -42,7 +43,11 @@ public interface Location extends Visitable, Generatable {
 
   String getBriefSummary();
 
-  default int distanceTo(Location end) {
-    return getCoordinates().distanceTo(end.getCoordinates());
+  default int distanceTo(Location other) {
+    return getCoordinates().distanceTo(other.getCoordinates());
+  }
+
+  default int distanceTo(LocationDto other) {
+    return getCoordinates().distanceTo(other.coordinates());
   }
 }

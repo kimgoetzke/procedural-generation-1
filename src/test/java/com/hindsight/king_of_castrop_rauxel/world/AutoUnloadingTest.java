@@ -66,19 +66,19 @@ class AutoUnloadingTest extends BaseWorldTest {
     // When moving outside the retention zone
     world.generateChunk(initialCoords, map);
     world.setCurrentChunk(initialCoords);
-    var initial = map.getVertices().stream().map(Vertex::getLocation).toList();
+    var initial = map.getVertices().stream().map(Vertex::getLocDetails).toList();
     for (var i = 0; i < retentionZone + 1; i++) {
       world.generateChunk(CardinalDirection.EAST, map);
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
-    var intermediate = map.getVertices().stream().map(Vertex::getLocation).toList();
+    var intermediate = map.getVertices().stream().map(Vertex::getLocDetails).toList();
 
     // Then initial chunk is unloaded
     assertThat(world.hasLoadedChunk(initialCoords)).isFalse();
 
     // When moving back to initial chunk
     world.setCurrentChunk(initialCoords);
-    var result = map.getVertices().stream().map(Vertex::getLocation).toList();
+    var result = map.getVertices().stream().map(Vertex::getLocDetails).toList();
 
     // Then initial chunk is loaded again
     assertThat(result).containsAll(initial).hasSizeGreaterThan(1);

@@ -9,16 +9,15 @@ import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
 import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
 import com.hindsight.king_of_castrop_rauxel.world.Chunk;
-import com.hindsight.king_of_castrop_rauxel.world.World;
 import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
+import com.hindsight.king_of_castrop_rauxel.world.World;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Component
@@ -51,8 +50,8 @@ public class DebugActionFactory {
   public void logVertices() {
     log.info("All locations/vertices:");
     map.getVertices().stream()
-        .map(Vertex::getLocation)
-        .forEach(l -> log.info("- " + l.getFullSummary()));
+        .map(Vertex::getLocDetails)
+        .forEach(l -> log.info("- " + l.getSummary()));
   }
 
   public void logMemoryStats() {
@@ -115,7 +114,7 @@ public class DebugActionFactory {
       for (var j = 0; j < chunkSize; j++) {
         if (plane[i][j] > 0) {
           downscaledPlane[i / scale][j / scale] =
-              map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocation().getName();
+              map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocDetails().name();
         }
       }
     }
@@ -157,8 +156,8 @@ public class DebugActionFactory {
   public void logLocationsInsideTriggerZone(Player player) {
     var vertices =
         map.getVertices().stream()
-            .map(Vertex::getLocation)
-            .filter(l -> chunkHandler.isInsideTriggerZone((l.getCoordinates().getChunk())))
+            .map(Vertex::getLocDetails)
+            .filter(l -> chunkHandler.isInsideTriggerZone((l.coordinates().getChunk())))
             .toList();
     var allPlayerCords = player.getCoordinates();
     var whereNext = chunkHandler.nextChunkPosition(allPlayerCords.getChunk());
@@ -171,9 +170,9 @@ public class DebugActionFactory {
           whereNext.toString().toUpperCase(),
           allPlayerCords.worldToString());
       vertices.stream()
-          .filter(l -> l.getCoordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
-          .filter(l -> chunkHandler.isInsideTriggerZone(l.getCoordinates().getChunk()))
-          .forEach(l -> log.info("- " + l.getBriefSummary()));
+          .filter(l -> l.coordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
+          .filter(l -> chunkHandler.isInsideTriggerZone(l.coordinates().getChunk()))
+          .forEach(l -> log.info("- " + l.getSummary()));
     }
   }
 

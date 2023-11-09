@@ -17,6 +17,8 @@ import org.springframework.context.ApplicationContext;
 @SpringBootTest
 public abstract class BaseWorldTest {
 
+  public static final String NEIGHBOUR_OF = "- neighbour of: ";
+
   @Autowired protected Generators generators;
   @Autowired protected AppProperties appProperties;
   @Autowired protected ChunkHandler chunkHandler;
@@ -55,16 +57,15 @@ public abstract class BaseWorldTest {
   protected void debugSet(List<Vertex> vertices, Set<Vertex> vertexSet) {
     vertexSet.forEach(
         v -> {
-          System.out.println(v.getLocation().getBriefSummary());
-          v.getLocation()
-              .getNeighbours()
-              .forEach(n -> System.out.println("- neighbour of: " + n.getName()));
+          System.out.println(v.getLocDetails().getSummary());
+          v.getEdges()
+              .forEach(e -> System.out.println(NEIGHBOUR_OF + e.end().getLocDetails().name()));
           vertices.forEach(
               vOther ->
                   System.out.printf(
                       "- distance to %s: %s%n",
-                      vOther.getLocation().getName(),
-                      vOther.getLocation().distanceTo(v.getLocation())));
+                      vOther.getLocDetails().name(),
+                      vOther.getLocDetails().distanceTo(v.getLocDetails())));
         });
   }
 }

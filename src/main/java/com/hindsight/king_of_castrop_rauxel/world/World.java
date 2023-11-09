@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -179,7 +179,7 @@ public class World {
     return new LogStats(
         System.currentTimeMillis(),
         map.getVertices().size(),
-        map.getVertices().stream().map(Vertex::getLocation).toList());
+        map.getVertices().stream().map(Vertex::getLocDetails).toList());
   }
 
   private <T> void logOutcome(LogStats stats, Graph map, Class<T> clazz) {
@@ -189,5 +189,5 @@ public class World {
     }
   }
 
-  private record LogStats(long startT, int prevSetCount, List<Location> prevSet) {}
+  private record LogStats(long startT, int prevSetCount, List<LocationDto> prevSet) {}
 }

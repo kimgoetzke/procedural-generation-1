@@ -21,7 +21,7 @@ public class Graph {
   }
 
   public Vertex addVertex(Location location) {
-    Vertex newVertex = new Vertex(location);
+    var newVertex = new Vertex(location);
     this.vertices.add(newVertex);
     return newVertex;
   }
@@ -45,7 +45,7 @@ public class Graph {
 
   public Vertex getVertexByValue(Location location) {
     for (var vertex : this.vertices) {
-      if (vertex.getLocation().equals(location)) {
+      if (vertex.getLocDetails().id().equals(location.getId())) {
         return vertex;
       }
     }
@@ -58,9 +58,9 @@ public class Graph {
     for (var vertex : this.vertices) {
       var vCoords =
           switch (type) {
-            case WORLD -> vertex.getLocation().getCoordinates().getWorld();
-            case GLOBAL -> vertex.getLocation().getCoordinates().getGlobal();
-            case CHUNK -> vertex.getLocation().getCoordinates().getChunk();
+            case WORLD -> vertex.getLocDetails().coordinates().getWorld();
+            case GLOBAL -> vertex.getLocDetails().coordinates().getGlobal();
+            case CHUNK -> vertex.getLocDetails().coordinates().getChunk();
           };
       var vX = (int) vCoords.getFirst();
       var vY = (int) vCoords.getSecond();
@@ -73,7 +73,7 @@ public class Graph {
 
   public void log() {
     log.info("Graph: ");
-    for (Vertex vertex : this.vertices) {
+    for (var vertex : this.vertices) {
       vertex.log(isWeighted);
     }
   }

@@ -65,8 +65,8 @@ class ChunkHandlerTest extends BaseWorldTest {
 
     // When
     for (var vert : vertices) {
-      vert.getLocation().load();
-      vert.getLocation().getPointsOfInterest().stream()
+      vert.getLocDetails().load();
+      vert.getLocDetails().getPointsOfInterest().stream()
           .filter(p -> p instanceof Shop)
           .forEach(p -> shops.add((Shop) p));
     }
@@ -101,17 +101,17 @@ class ChunkHandlerTest extends BaseWorldTest {
     var v3 = vertices.get(2);
 
     // When
-    chunkHandler.addConnections(map, v1, v2, v1.getLocation().distanceTo(v2.getLocation()));
-    chunkHandler.addConnections(map, v2, v3, v2.getLocation().distanceTo(v3.getLocation()));
+    chunkHandler.addConnections(map, v1, v2, v1.getLocDetails().distanceTo(v2.getLocDetails()));
+    chunkHandler.addConnections(map, v2, v3, v2.getLocDetails().distanceTo(v3.getLocDetails()));
     var result = chunkHandler.evaluateConnectivity(map);
 
     // Then
     assertThat(result.unvisitedVertices()).hasSize(1);
     assertThat(result.unvisitedVertices()).contains(vertices.get(3));
     assertThat(result.visitedVertices()).hasSize(3);
-    assertThat(v1.getLocation().getNeighbours()).hasSize(1);
-    assertThat(v2.getLocation().getNeighbours()).hasSize(2);
-    assertThat(v3.getLocation().getNeighbours()).hasSize(1);
+    assertThat(v1.getLocDetails().getNeighbours()).hasSize(1);
+    assertThat(v2.getLocDetails().getNeighbours()).hasSize(2);
+    assertThat(v3.getLocDetails().getNeighbours()).hasSize(1);
   }
 
   @Test
@@ -129,10 +129,10 @@ class ChunkHandlerTest extends BaseWorldTest {
     // Then
     assertEquals(chunk.getDensity(), vertices.size());
     assertEquals(vertices.size() - 1, connectivity.unvisitedVertices().size());
-    assertThat(map.getVertexByValue(expected1, CoordType.GLOBAL).getLocation()).isNotNull();
-    assertThat(map.getVertexByValue(expected2, CoordType.GLOBAL).getLocation()).isNotNull();
-    assertThat(map.getVertexByValue(expected3, CoordType.GLOBAL).getLocation()).isNotNull();
-    vertices.forEach(v -> assertThat(v.getLocation().getNeighbours()).isEmpty());
+    assertThat(map.getVertexByValue(expected1, CoordType.GLOBAL).getLocDetails()).isNotNull();
+    assertThat(map.getVertexByValue(expected2, CoordType.GLOBAL).getLocDetails()).isNotNull();
+    assertThat(map.getVertexByValue(expected3, CoordType.GLOBAL).getLocDetails()).isNotNull();
+    vertices.forEach(v -> assertThat(v.getLocDetails().getNeighbours()).isEmpty());
   }
 
   @Test
@@ -140,13 +140,13 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.generateSettlements(map, chunk);
     chunkHandler.connectAnyWithinNeighbourDistance(map);
-    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL).getLocation();
-    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocation();
-    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocation();
-    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocation();
-    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocation();
-    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocation();
-    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocation();
+    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL).getLocDetails();
+    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocDetails();
+    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocDetails();
+    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocDetails();
+    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocDetails();
+    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocDetails();
+    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocDetails();
 
     // Then
     assertThat(map.getVertices()).hasSize(7);
@@ -165,16 +165,16 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkHandler.generateSettlements(map, chunk);
     chunkHandler.connectNeighbourlessToClosest(map);
     var result = chunkHandler.evaluateConnectivity(map);
-    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL).getLocation();
-    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocation();
-    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocation();
-    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocation();
-    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocation();
-    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocation();
-    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocation();
+    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL).getLocDetails();
+    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocDetails();
+    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocDetails();
+    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocDetails();
+    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocDetails();
+    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocDetails();
+    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocDetails();
 
     // Then
-    map.getVertices().forEach(v -> assertThat(v.getLocation().getNeighbours()).isNotEmpty());
+    map.getVertices().forEach(v -> assertThat(v.getLocDetails().getNeighbours()).isNotEmpty());
     assertThat(VAL.getNeighbours()).containsOnly(EBR);
     assertThat(MYS.getNeighbours()).containsOnly(EBR);
     assertThat(EBR.getNeighbours()).containsOnly(VAL, MYS);
@@ -192,13 +192,13 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkHandler.generateSettlements(map, chunk);
     chunkHandler.connectDisconnectedToClosestConnected(map);
     var connectivity = chunkHandler.evaluateConnectivity(map);
-    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL).getLocation();
-    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocation();
-    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocation();
-    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocation();
-    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocation();
-    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocation();
-    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocation();
+    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL).getLocDetails();
+    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL).getLocDetails();
+    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL).getLocDetails();
+    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL).getLocDetails();
+    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL).getLocDetails();
+    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL).getLocDetails();
+    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL).getLocDetails();
 
     // Then
     assertThat(map.getVertices()).hasSize(7);
@@ -218,10 +218,10 @@ class ChunkHandlerTest extends BaseWorldTest {
     var v3 = map.addVertex(createSettlement(Pair.of(100, 100)));
     var v4 = map.addVertex(createSettlement(Pair.of(500, 500)));
 
-    chunk.place(v1.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
-    chunk.place(v2.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
-    chunk.place(v3.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
-    chunk.place(v4.getLocation().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
+    chunk.place(v1.getLocDetails().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
+    chunk.place(v2.getLocDetails().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
+    chunk.place(v3.getLocDetails().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
+    chunk.place(v4.getLocDetails().getCoordinates().getChunk(), Chunk.LocationType.SETTLEMENT);
 
     return List.of(v1, v2, v3, v4);
   }

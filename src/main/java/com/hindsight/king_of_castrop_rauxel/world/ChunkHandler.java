@@ -73,7 +73,7 @@ public class ChunkHandler {
         if (reference.equals(other)) {
           continue;
         }
-        var distance = reference.getLocation().distanceTo(other.getLocation());
+        var distance = reference.getLocDetails().distanceTo(other.getLocDetails());
         if (distance < appProperties.getChunkProperties().maxGuaranteedNeighbourDistance()) {
           addConnections(map, reference, other, distance);
         }
@@ -92,7 +92,7 @@ public class ChunkHandler {
   protected void connectNeighbourlessToClosest(Graph map) {
     var vertices = map.getVertices();
     for (var reference : vertices) {
-      var refLocation = reference.getLocation();
+      var refLocation = reference.getLocDetails();
       var hasNoNeighbours = refLocation.getNeighbours().isEmpty();
       throwIfMisconfigured(map, refLocation, hasNoNeighbours);
       connectIfNoNeighbours(map, reference, hasNoNeighbours, vertices, refLocation);
@@ -121,7 +121,7 @@ public class ChunkHandler {
     if (hasNoNeighbours) {
       var closestNeighbour = closestNeighbourTo(vert, vertices);
       if (closestNeighbour != null) {
-        var distance = refLocation.distanceTo(closestNeighbour.getLocation());
+        var distance = refLocation.distanceTo(closestNeighbour.getLocDetails());
         addConnections(map, vert, closestNeighbour, distance);
       }
     }
@@ -141,10 +141,10 @@ public class ChunkHandler {
       return;
     }
     for (var unvisitedVertex : unvisitedVertices) {
-      var refLocation = unvisitedVertex.getLocation();
+      var refLocation = unvisitedVertex.getLocDetails();
       var closestNeighbour = closestNeighbourTo(unvisitedVertex, visitedVertices);
       if (closestNeighbour != null) {
-        var distance = refLocation.distanceTo(closestNeighbour.getLocation());
+        var distance = refLocation.distanceTo(closestNeighbour.getLocDetails());
         addConnections(map, unvisitedVertex, closestNeighbour, distance);
         visitedVertices.add(unvisitedVertex);
       }
@@ -153,14 +153,14 @@ public class ChunkHandler {
 
   protected void addConnections(Graph map, Vertex vertex1, Vertex vertex2, int distance) {
     map.addEdge(vertex1, vertex2, distance);
-    var v1Location = vertex1.getLocation();
-    var v2Location = vertex2.getLocation();
+    var v1Location = vertex1.getLocDetails();
+    var v2Location = vertex2.getLocDetails();
     v1Location.addNeighbour(v2Location);
     v2Location.addNeighbour(v1Location);
     log.debug(
         "Added {} and {} (distance: {} km) as neighbours of each other",
-        v2Location.getName(),
-        v1Location.getName(),
+        v2Location.name(),
+        v1Location.name(),
         distance);
   }
 
@@ -171,7 +171,7 @@ public class ChunkHandler {
       if (reference.equals(other)) {
         continue;
       }
-      var distance = reference.getLocation().distanceTo(other.getLocation());
+      var distance = reference.getLocDetails().distanceTo(other.getLocDetails());
       if (distance < minDistance) {
         minDistance = distance;
         closestNeighbor = other;
@@ -179,9 +179,9 @@ public class ChunkHandler {
     }
     log.debug(
         "Closest neighbour of {} is {} (distance: {} km)",
-        reference.getLocation().getName(),
-        closestNeighbor != null && closestNeighbor.getLocation() != null
-            ? closestNeighbor.getLocation().getName()
+        reference.getLocDetails().name(),
+        closestNeighbor != null && closestNeighbor.getLocDetails() != null
+            ? closestNeighbor.getLocDetails().name()
             : "'null'",
         minDistance);
     return closestNeighbor;
@@ -191,7 +191,7 @@ public class ChunkHandler {
     Vertex closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var vertex : vertices) {
-      var distance = vertex.getLocation().getCoordinates().distanceTo(globalCoords);
+      var distance = vertex.getLocDetails().coordinates().distanceTo(globalCoords);
       if (distance < minDistance) {
         minDistance = distance;
         closestNeighbor = vertex;
@@ -239,9 +239,9 @@ public class ChunkHandler {
   public void logDisconnectedVertices(Graph graph) {
     var result = evaluateConnectivity(graph);
     log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
-    result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
+    result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocDetails().getSummary()));
     log.info("Visited vertices: {}", result.visitedVertices().size());
-    result.visitedVertices().forEach(v -> log.info("- " + v.getLocation().getBriefSummary()));
+    result.visitedVertices().forEach(v -> log.info("- " + v.getLocDetails().getSummary()));
   }
 
   protected record ConnectivityResult(Set<Vertex> visitedVertices, Set<Vertex> unvisitedVertices) {}

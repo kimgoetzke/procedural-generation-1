@@ -1,9 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import com.hindsight.king_of_castrop_rauxel.location.Location;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,7 @@ public class Vertex {
 
   @EqualsAndHashCode.Include private final String id;
   private final Set<Edge> edges;
-  private final Location location;
+  private final LocationDto locDetails;
 
   public Vertex(Location location) {
     this.id =
@@ -23,7 +22,7 @@ public class Vertex {
             + location.getName().substring(0, 3).toUpperCase()
             + location.getCoordinates().getGlobal().getFirst()
             + location.getCoordinates().getGlobal().getSecond();
-    this.location = location;
+    this.locDetails = LocationDto.from(location);
     this.edges = new LinkedHashSet<>();
   }
 
@@ -37,23 +36,22 @@ public class Vertex {
 
   public void log(boolean showWeight) {
     if (edges.isEmpty()) {
-      log.info(
-          "- " + location.getName() + " " + location.getCoordinates().globalToString() + " -->");
+      log.info("- " + locDetails.name() + " " + locDetails.coordinates().globalToString() + " -->");
       return;
     }
-    StringBuilder message = new StringBuilder();
-    boolean first = true;
+    var message = new StringBuilder();
+    var first = true;
     for (var edge : edges) {
       if (first) {
         message
             .append("- ")
-            .append(edge.start().location.getName())
+            .append(edge.start().locDetails.name())
             .append(" ")
-            .append(edge.start().location.getCoordinates().globalToString())
+            .append(edge.start().locDetails.coordinates().globalToString())
             .append(" --> ");
         first = false;
       }
-      message.append(edge.end().location.getName());
+      message.append(edge.end().locDetails.name());
       if (showWeight) {
         message.append(" (").append(edge.weight()).append(")");
       }
@@ -68,9 +66,9 @@ public class Vertex {
     return "Vertex(id="
         + id
         + ", edges="
-        + edges.stream().map(e -> e.end().location.getName()).toList()
+        + edges.stream().map(e -> e.end().locDetails.name()).toList()
         + ", location="
-        + location
+        + locDetails
         + ')';
   }
 }
