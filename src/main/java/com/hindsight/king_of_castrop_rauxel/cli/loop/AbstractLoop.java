@@ -59,7 +59,7 @@ public abstract class AbstractLoop {
     var currentLocation = player.getCurrentLocation();
     out.printf(
         "%sCURRENT LOCATION: %s%s%n%n",
-        FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), FMT.RESET);
+        FMT.DEFAULT_BOLD, currentLocation.getPrintableSummary(), FMT.RESET);
     if (showPoi) {
       out.printf(
           "%sYou are at: %s. %s%s",

@@ -38,6 +38,8 @@ public interface Location extends Visitable, Generatable {
 
   String getFullSummary();
 
+  String getPrintableSummary();
+
   String getBriefSummary();
 
   default int distanceTo(Location end) {

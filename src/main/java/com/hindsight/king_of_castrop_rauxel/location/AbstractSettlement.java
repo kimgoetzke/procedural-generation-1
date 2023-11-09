@@ -26,7 +26,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
   protected int area;
   protected List<PointOfInterest> pointsOfInterests = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
-  @EqualsAndHashCode.Include @Getter protected int inhabitantCount;
+  @Getter protected int inhabitantCount;
   @Getter protected Set<Location> neighbours = new HashSet<>();
 
   protected AbstractSettlement(
@@ -87,12 +87,24 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   @Override
   public String getBriefSummary() {
-    return "%s [ Size: %s | %s | Neighbours: %s | Generated: %s ]"
+    return "%s: size: %s,  %s, neighbours: %s, generated: %s"
         .formatted(name, size, coordinates.toString(), neighbours.size(), isLoaded());
   }
 
   @Override
   public String getFullSummary() {
+    return "%s: size: %s, %d inhabitants, population density: %s, neighbours: %s, POIs: %s"
+        .formatted(
+            name,
+            size,
+            inhabitantCount,
+            getPopulationDensity(),
+            neighbours.size(),
+            pointsOfInterests.size());
+  }
+
+  @Override
+  public String getPrintableSummary() {
     return "%s [ Size: %s | %d inhabitants | Population density: %s ]"
         .formatted(name, size.getName(), inhabitantCount, getPopulationDensity());
   }
