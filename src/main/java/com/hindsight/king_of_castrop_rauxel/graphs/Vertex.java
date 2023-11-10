@@ -15,7 +15,7 @@ public class Vertex {
 
   @EqualsAndHashCode.Include private final String id;
   private final Set<Edge> edges;
-  private final LocationDto locDetails;
+  private final LocationDto dto;
 
   public Vertex(Location location) {
     this.id =
@@ -23,7 +23,7 @@ public class Vertex {
             + location.getName().substring(0, 3).toUpperCase()
             + location.getCoordinates().getGlobal().getFirst()
             + location.getCoordinates().getGlobal().getSecond();
-    this.locDetails = LocationDto.from(location);
+    this.dto = LocationDto.from(location);
     this.edges = new LinkedHashSet<>();
   }
 
@@ -36,12 +36,12 @@ public class Vertex {
   }
 
   public List<LocationDto> getNeighbours() {
-    return edges.stream().map(Edge::end).map(Vertex::getLocDetails).toList();
+    return edges.stream().map(Edge::end).map(Vertex::getDto).toList();
   }
 
   public void log(boolean showWeight) {
     if (edges.isEmpty()) {
-      log.info("- " + locDetails.name() + " " + locDetails.coordinates().globalToString() + " -->");
+      log.info("- " + dto.name() + " " + dto.coordinates().globalToString() + " -->");
       return;
     }
     var message = new StringBuilder();
@@ -50,13 +50,13 @@ public class Vertex {
       if (first) {
         message
             .append("- ")
-            .append(edge.start().locDetails.name())
+            .append(edge.start().dto.name())
             .append(" ")
-            .append(edge.start().locDetails.coordinates().globalToString())
+            .append(edge.start().dto.coordinates().globalToString())
             .append(" --> ");
         first = false;
       }
-      message.append(edge.end().locDetails.name());
+      message.append(edge.end().dto.name());
       if (showWeight) {
         message.append(" (").append(edge.weight()).append(")");
       }
@@ -71,9 +71,9 @@ public class Vertex {
     return "Vertex(id="
         + id
         + ", edges="
-        + edges.stream().map(e -> e.end().locDetails.name()).toList()
+        + edges.stream().map(e -> e.end().dto.name()).toList()
         + ", location="
-        + locDetails
+        + dto
         + ')';
   }
 }

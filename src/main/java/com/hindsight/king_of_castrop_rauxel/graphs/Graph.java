@@ -45,7 +45,7 @@ public class Graph {
 
   public Vertex getVertexByValue(Location location) {
     for (var vertex : this.vertices) {
-      if (vertex.getLocDetails().id().equals(location.getId())) {
+      if (vertex.getDto().id().equals(location.getId())) {
         return vertex;
       }
     }
@@ -58,9 +58,9 @@ public class Graph {
     for (var vertex : this.vertices) {
       var vCoords =
           switch (type) {
-            case WORLD -> vertex.getLocDetails().coordinates().getWorld();
-            case GLOBAL -> vertex.getLocDetails().coordinates().getGlobal();
-            case CHUNK -> vertex.getLocDetails().coordinates().getChunk();
+            case WORLD -> vertex.getDto().coordinates().getWorld();
+            case GLOBAL -> vertex.getDto().coordinates().getGlobal();
+            case CHUNK -> vertex.getDto().coordinates().getChunk();
           };
       var vX = (int) vCoords.getFirst();
       var vY = (int) vCoords.getSecond();

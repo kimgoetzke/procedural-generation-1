@@ -51,8 +51,8 @@ public class ChunkHandler {
     generateSettlements(chunk);
     if (Strategy.DEFAULT == strategy) {
       connectAnyWithinNeighbourDistance();
-      connectNeighbourlessToClosest(chunk);
-      connectDisconnectedToClosestConnected(chunk);
+      connectNeighbourlessToClosest();
+      connectDisconnectedToClosestConnected();
     }
   }
 
@@ -84,7 +84,7 @@ public class ChunkHandler {
         if (reference.equals(other)) {
           continue;
         }
-        var distance = reference.getLocDetails().distanceTo(other.getLocDetails());
+        var distance = reference.getDto().distanceTo(other.getDto());
         if (distance < appProperties.getChunkProperties().maxGuaranteedNeighbourDistance()) {
           addConnections(reference, other, distance);
         }
@@ -100,14 +100,14 @@ public class ChunkHandler {
    * C will be connected to D and D will be skipped because it now has a neighbour, despite D's
    * closest neighbour being A.
    */
-  protected void connectNeighbourlessToClosest(Chunk chunk) {
+  protected void connectNeighbourlessToClosest() {
     var vertices = map.getVertices();
     for (var reference : vertices) {
-      var correctChunk = world.getChunk(reference.getLocDetails().coordinates().getWorld());
-      var location = correctChunk.getLocation(reference.getLocDetails().coordinates());
+      var correctChunk = world.getChunk(reference.getDto().coordinates().getWorld());
+      var location = correctChunk.getLocation(reference.getDto().coordinates());
       var hasNoNeighbours = reference.getNeighbours().isEmpty();
       throwIfMisconfigured(map, location, hasNoNeighbours);
-      connectIfNoNeighbours(chunk, reference, hasNoNeighbours, vertices, location);
+      connectIfNoNeighbours(reference, hasNoNeighbours, vertices, location);
     }
   }
 
@@ -125,15 +125,11 @@ public class ChunkHandler {
   }
 
   private void connectIfNoNeighbours(
-      Chunk chunk,
-      Vertex vert,
-      boolean hasNoNeighbours,
-      List<Vertex> vertices,
-      Location refLocation) {
+      Vertex vert, boolean hasNoNeighbours, List<Vertex> vertices, Location refLocation) {
     if (hasNoNeighbours) {
       var closestNeighbour = closestNeighbourTo(vert, vertices);
       if (closestNeighbour != null) {
-        var distance = refLocation.distanceTo(closestNeighbour.getLocDetails());
+        var distance = refLocation.distanceTo(closestNeighbour.getDto());
         addConnections(vert, closestNeighbour, distance);
       }
     }
@@ -145,7 +141,7 @@ public class ChunkHandler {
    * close vertices if they have not been connected to the graph yet. Executing this method prior to
    * any other connection algorithm will provide odd results.
    */
-  protected void connectDisconnectedToClosestConnected(Chunk chunk) {
+  protected void connectDisconnectedToClosestConnected() {
     var connectivity = evaluateConnectivity(map);
     var visitedVertices = new ArrayList<>(connectivity.visitedVertices());
     var unvisitedVertices = connectivity.unvisitedVertices();
@@ -153,10 +149,10 @@ public class ChunkHandler {
       return;
     }
     for (var unvisitedVertex : unvisitedVertices) {
-      var refLocation = unvisitedVertex.getLocDetails();
+      var refLocation = unvisitedVertex.getDto();
       var closestNeighbour = closestNeighbourTo(unvisitedVertex, visitedVertices);
       if (closestNeighbour != null) {
-        var distance = refLocation.distanceTo(closestNeighbour.getLocDetails());
+        var distance = refLocation.distanceTo(closestNeighbour.getDto());
         addConnections(unvisitedVertex, closestNeighbour, distance);
         visitedVertices.add(unvisitedVertex);
       }
@@ -168,10 +164,10 @@ public class ChunkHandler {
   //  - Even if the above was fixed, connections may link to other chunks, not just this one
   protected void addConnections(Vertex vertex1, Vertex vertex2, int distance) {
     map.addEdge(vertex1, vertex2, distance);
-    var v1Chunk = world.getChunk(vertex1.getLocDetails().coordinates().getWorld());
-    var v2Chunk = world.getChunk(vertex2.getLocDetails().coordinates().getWorld());
-    var v1Location = v1Chunk.getLocation(vertex1.getLocDetails().coordinates());
-    var v2Location = v2Chunk.getLocation(vertex2.getLocDetails().coordinates());
+    var v1Chunk = world.getChunk(vertex1.getDto().coordinates().getWorld());
+    var v2Chunk = world.getChunk(vertex2.getDto().coordinates().getWorld());
+    var v1Location = v1Chunk.getLocation(vertex1.getDto().coordinates());
+    var v2Location = v2Chunk.getLocation(vertex2.getDto().coordinates());
     v1Location.addNeighbour(v2Location);
     v2Location.addNeighbour(v1Location);
     log.info(
@@ -188,7 +184,7 @@ public class ChunkHandler {
       if (reference.equals(other)) {
         continue;
       }
-      var distance = reference.getLocDetails().distanceTo(other.getLocDetails());
+      var distance = reference.getDto().distanceTo(other.getDto());
       if (distance < minDistance) {
         minDistance = distance;
         closestNeighbor = other;
@@ -196,9 +192,9 @@ public class ChunkHandler {
     }
     log.debug(
         "Closest neighbour of {} is {} (distance: {} km)",
-        reference.getLocDetails().name(),
-        closestNeighbor != null && closestNeighbor.getLocDetails() != null
-            ? closestNeighbor.getLocDetails().name()
+        reference.getDto().name(),
+        closestNeighbor != null && closestNeighbor.getDto() != null
+            ? closestNeighbor.getDto().name()
             : "'null'",
         minDistance);
     return closestNeighbor;
@@ -208,7 +204,7 @@ public class ChunkHandler {
     Vertex closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var vertex : vertices) {
-      var distance = vertex.getLocDetails().coordinates().distanceTo(globalCoords);
+      var distance = vertex.getDto().coordinates().distanceTo(globalCoords);
       if (distance < minDistance) {
         minDistance = distance;
         closestNeighbor = vertex;
@@ -256,9 +252,9 @@ public class ChunkHandler {
   public void logDisconnectedVertices(Graph graph) {
     var result = evaluateConnectivity(graph);
     log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
-    result.unvisitedVertices().forEach(v -> log.info("- " + v.getLocDetails().getSummary()));
+    result.unvisitedVertices().forEach(v -> log.info("- " + v.getDto().getSummary()));
     log.info("Visited vertices: {}", result.visitedVertices().size());
-    result.visitedVertices().forEach(v -> log.info("- " + v.getLocDetails().getSummary()));
+    result.visitedVertices().forEach(v -> log.info("- " + v.getDto().getSummary()));
   }
 
   protected record ConnectivityResult(Set<Vertex> visitedVertices, Set<Vertex> unvisitedVertices) {}

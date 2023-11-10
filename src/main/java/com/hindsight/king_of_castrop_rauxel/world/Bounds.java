@@ -19,4 +19,8 @@ public class Bounds {
   public String toString() {
     return lower + "-" + upper;
   }
+
+  public static Bounds of(int lower, int upper) {
+    return new Bounds(lower, upper);
+  }
 }

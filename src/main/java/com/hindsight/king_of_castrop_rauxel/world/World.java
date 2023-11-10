@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 public class World {
@@ -179,7 +178,7 @@ public class World {
     return new LogStats(
         System.currentTimeMillis(),
         map.getVertices().size(),
-        map.getVertices().stream().map(Vertex::getLocDetails).toList());
+        map.getVertices().stream().map(Vertex::getDto).toList());
   }
 
   private <T> void logOutcome(LogStats stats, Graph map, Class<T> clazz) {

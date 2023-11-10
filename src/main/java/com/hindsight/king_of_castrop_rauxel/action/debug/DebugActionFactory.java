@@ -49,9 +49,7 @@ public class DebugActionFactory {
 
   public void logVertices() {
     log.info("All locations/vertices:");
-    map.getVertices().stream()
-        .map(Vertex::getLocDetails)
-        .forEach(l -> log.info("- " + l.getSummary()));
+    map.getVertices().stream().map(Vertex::getDto).forEach(l -> log.info("- " + l.getSummary()));
   }
 
   public void logMemoryStats() {
@@ -114,7 +112,7 @@ public class DebugActionFactory {
       for (var j = 0; j < chunkSize; j++) {
         if (plane[i][j] != null) {
           downscaledPlane[i / scale][j / scale] =
-              map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocDetails().name();
+              map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getDto().name();
         }
       }
     }
@@ -156,7 +154,7 @@ public class DebugActionFactory {
   public void logLocationsInsideTriggerZone(Player player) {
     var vertices =
         map.getVertices().stream()
-            .map(Vertex::getLocDetails)
+            .map(Vertex::getDto)
             .filter(l -> chunkHandler.isInsideTriggerZone((l.coordinates().getChunk())))
             .toList();
     var allPlayerCords = player.getCoordinates();

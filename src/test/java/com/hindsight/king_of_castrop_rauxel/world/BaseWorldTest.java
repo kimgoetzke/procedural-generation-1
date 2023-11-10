@@ -57,15 +57,13 @@ public abstract class BaseWorldTest {
   protected void debugSet(List<Vertex> vertices, Set<Vertex> vertexSet) {
     vertexSet.forEach(
         v -> {
-          System.out.println(v.getLocDetails().getSummary());
-          v.getEdges()
-              .forEach(e -> System.out.println(NEIGHBOUR_OF + e.end().getLocDetails().name()));
+          System.out.println(v.getDto().getSummary());
+          v.getEdges().forEach(e -> System.out.println(NEIGHBOUR_OF + e.end().getDto().name()));
           vertices.forEach(
               vOther ->
                   System.out.printf(
                       "- distance to %s: %s%n",
-                      vOther.getLocDetails().name(),
-                      vOther.getLocDetails().distanceTo(v.getLocDetails())));
+                      vOther.getDto().name(), vOther.getDto().distanceTo(v.getDto())));
         });
   }
 }

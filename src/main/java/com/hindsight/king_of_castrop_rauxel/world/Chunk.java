@@ -96,7 +96,7 @@ public class Chunk implements Generatable, Unloadable {
   public Settlement getCentralLocation(World world, Graph map) {
     var globalCoords = world.getCurrentChunk().getCoordinates().getGlobal();
     var startVertex = chunkHandler.closestLocationTo(globalCoords, map.getVertices());
-    var locationCoords = startVertex.getLocDetails().coordinates();
+    var locationCoords = startVertex.getDto().coordinates();
     var centralLocation = getLoadedLocation(locationCoords);
     if (centralLocation != null) {
       log.info("Found central location: {}", centralLocation.getFullSummary());
