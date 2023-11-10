@@ -3,10 +3,11 @@ package com.hindsight.king_of_castrop_rauxel.graphs;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 
-public record LocationDto(String id, String name, Coordinates coordinates) {
+public record LocationDto(String id, String name, Coordinates coordinates, Class<?> clazz) {
 
   static LocationDto from(Location location) {
-    return new LocationDto(location.getId(), location.getName(), location.getCoordinates());
+    return new LocationDto(
+        location.getId(), location.getName(), location.getCoordinates(), location.getClass());
   }
 
   public String getSummary() {

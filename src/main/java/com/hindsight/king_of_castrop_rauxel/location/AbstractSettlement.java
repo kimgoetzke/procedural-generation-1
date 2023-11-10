@@ -87,20 +87,22 @@ public abstract class AbstractSettlement extends AbstractLocation {
 
   @Override
   public String getBriefSummary() {
-    return "%s: size: %s,  %s, neighbours: %s, generated: %s"
+    return "%s: %s, %s, neighbours: %s, generated: %s"
         .formatted(name, size, coordinates.toString(), neighbours.size(), isLoaded());
   }
 
   @Override
   public String getFullSummary() {
-    return "%s: size: %s, %d inhabitants, population density: %s, neighbours: %s, POIs: %s"
+    return "%s: %s, %s, neighbours: %s, POIs: %s, %d inhabitants, population density: %s, generated: %s"
         .formatted(
             name,
             size,
+            coordinates.globalToString(),
+            neighbours.size(),
+            pointsOfInterests.size(),
             inhabitantCount,
             getPopulationDensity(),
-            neighbours.size(),
-            pointsOfInterests.size());
+            isLoaded());
   }
 
   @Override

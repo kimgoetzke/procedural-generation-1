@@ -14,7 +14,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 public class World {
 
   private final ApplicationContext ctx;
@@ -101,6 +100,7 @@ public class World {
     var chunkHandler = ctx.getBean(ChunkHandler.class, map);
     var chunk = ctx.getBean(Chunk.class, worldCoords, chunkHandler);
     place(chunk, worldCoords);
+    chunk.load();
     logOutcome(stats, map, this.getClass());
   }
 

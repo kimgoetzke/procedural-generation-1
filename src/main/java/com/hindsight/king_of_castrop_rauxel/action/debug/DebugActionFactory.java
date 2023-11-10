@@ -82,7 +82,7 @@ public class DebugActionFactory {
         .forEach(
             row -> {
               for (var cell : row) {
-                if (cell > 0) {
+                if (cell != null) {
                   settlements.getAndIncrement();
                 }
               }
@@ -112,7 +112,7 @@ public class DebugActionFactory {
     // Shrink data into the new array and convert to location names
     for (var i = 0; i < chunkSize; i++) {
       for (var j = 0; j < chunkSize; j++) {
-        if (plane[i][j] > 0) {
+        if (plane[i][j] != null) {
           downscaledPlane[i / scale][j / scale] =
               map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocDetails().name();
         }

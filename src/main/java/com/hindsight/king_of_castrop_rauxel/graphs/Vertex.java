@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.graphs;
 
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,6 +33,10 @@ public class Vertex {
 
   public void removeEdge(Vertex endVertex) {
     this.edges.removeIf(edge -> edge.end().equals(endVertex));
+  }
+
+  public List<LocationDto> getNeighbours() {
+    return edges.stream().map(Edge::end).map(Vertex::getLocDetails).toList();
   }
 
   public void log(boolean showWeight) {

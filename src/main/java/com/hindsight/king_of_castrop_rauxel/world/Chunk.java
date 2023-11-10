@@ -1,6 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
+import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates.CoordType;
 import java.util.Random;
@@ -22,21 +24,17 @@ public class Chunk implements Generatable, Unloadable {
 
   private final ChunkHandler chunkHandler;
   private final Random random;
-  private final Strategy strategy;
   private final int chunkSize;
   private final int minPlacementDistance;
+  private final Strategy strategy;
   @Getter private final String id;
   @Getter private final int density;
-  @Getter private final int[][] plane;
   @Getter private final Coordinates coordinates;
   @Getter private final int targetLevel;
 
+  // Status-dependent fields (only set when chunk is loaded)
+  @Getter private Location[][] plane;
   @Getter @Setter private boolean isLoaded;
-
-  public enum LocationType {
-    EMPTY,
-    SETTLEMENT
-  }
 
   /**
    * Determines the strategy for populating the chunk with regard to connecting locations to the
@@ -63,13 +61,13 @@ public class Chunk implements Generatable, Unloadable {
     this.chunkSize = chunkProperties.size();
     this.minPlacementDistance = chunkProperties.minPlacementDistance();
     this.strategy = strategy;
-    this.plane = new int[chunkSize][chunkSize];
+    this.plane = new Location[chunkSize][chunkSize];
     this.targetLevel = this.chunkHandler.getTargetLevel(coordinates);
-    load();
   }
 
   @Override
   public void load() {
+    plane = new Location[chunkSize][chunkSize];
     chunkHandler.populate(this, strategy);
     setLoaded(true);
     logResult();
@@ -98,20 +96,48 @@ public class Chunk implements Generatable, Unloadable {
   public Settlement getCentralLocation(World world, Graph map) {
     var globalCoords = world.getCurrentChunk().getCoordinates().getGlobal();
     var startVertex = chunkHandler.closestLocationTo(globalCoords, map.getVertices());
-    var centralLocation = startVertex.getLocDetails();
+    var locationCoords = startVertex.getLocDetails().coordinates();
+    var centralLocation = getLoadedLocation(locationCoords);
     if (centralLocation != null) {
-      log.info("Found central location: {}", centralLocation.getBriefSummary());
-      centralLocation.load();
+      log.info("Found central location: {}", centralLocation.getFullSummary());
       return (Settlement) centralLocation;
     }
     throw new IllegalStateException("Could not find any central location");
   }
 
-  public void place(Pair<Integer, Integer> chunkCoords, LocationType type) {
-    var x = chunkCoords.getFirst();
-    var y = chunkCoords.getSecond();
+  /** Returns the specified location (or null), regardless of whether it is loaded or not. */
+  public Location getLocation(Coordinates coordinates) {
+    var x = coordinates.getChunk().getFirst();
+    var y = coordinates.getChunk().getSecond();
+    return plane[x][y];
+  }
+
+  public Location getLoadedLocation(Coordinates coordinates) {
+    var x = coordinates.getChunk().getFirst();
+    var y = coordinates.getChunk().getSecond();
+    var location = plane[x][y];
+    if (location != null) {
+      location.load();
+    }
+    return location;
+  }
+
+  /** Only used by ChunkHandlerTest */
+  public void place(LocationDto dto) {
+    var coords = dto.coordinates();
+    var location = chunkHandler.generateSettlement(this, coords.getChunk());
+    var x = coords.cX();
+    var y = coords.cY();
     if (isValidPosition(x, y)) {
-      plane[x][y] = type.ordinal();
+      plane[x][y] = location;
+    }
+  }
+
+  public void place(Location location) {
+    var x = location.getCoordinates().cX();
+    var y = location.getCoordinates().cY();
+    if (isValidPosition(x, y)) {
+      plane[x][y] = location;
     }
   }
 
@@ -124,8 +150,7 @@ public class Chunk implements Generatable, Unloadable {
       for (var dy = -distance; dy <= distance; dy++) {
         var neighborX = x + dx;
         var neighborY = y + dy;
-        if (isValidPosition(neighborX, neighborY)
-            && plane[neighborX][neighborY] > LocationType.EMPTY.ordinal()) {
+        if (isValidPosition(neighborX, neighborY) && plane[neighborX][neighborY] != null) {
           return true;
         }
       }

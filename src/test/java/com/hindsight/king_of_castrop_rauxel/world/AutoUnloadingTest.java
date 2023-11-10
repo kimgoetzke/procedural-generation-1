@@ -19,7 +19,7 @@ class AutoUnloadingTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    chunkHandler = new ChunkHandler(map, appProperties, generators, dataServices);
+    chunkHandler = new ChunkHandler(world, map, appProperties, generators, dataServices);
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
     retentionZone = appProperties.getWorldProperties().retentionZone();
   }
