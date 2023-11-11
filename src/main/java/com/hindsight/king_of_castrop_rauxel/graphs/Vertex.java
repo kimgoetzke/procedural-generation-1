@@ -31,10 +31,6 @@ public class Vertex {
     this.edges.add(new Edge(this, endVertex, weight));
   }
 
-  public void removeEdge(Vertex endVertex) {
-    this.edges.removeIf(edge -> edge.end().equals(endVertex));
-  }
-
   public List<LocationDto> getNeighbours() {
     return edges.stream().map(Edge::end).map(Vertex::getDto).toList();
   }

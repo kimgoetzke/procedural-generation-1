@@ -34,25 +34,20 @@ public class Graph {
     vertex1.addEdge(vertex2, weight);
   }
 
-  public void removeEdge(Vertex vertex1, Vertex vertex2) {
-    vertex1.removeEdge(vertex2);
-    vertex2.removeEdge(vertex1);
-  }
-
-  public void removeVertex(Vertex vertex) {
-    this.vertices.remove(vertex);
-  }
-
-  public Vertex getVertexByValue(Location location) {
+  public Vertex getVertex(Location location) {
     for (var vertex : this.vertices) {
       if (vertex.getDto().id().equals(location.getId())) {
+        log.debug("{} matches {} for:", vertex.getDto().id(), location.getId());
+        log.debug(" - {}", vertex.getDto());
+        log.debug(" - {}", location);
         return vertex;
       }
     }
     return null;
   }
 
-  public Vertex getVertexByValue(Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
+  // TODO: Only allow retrieving with global coordinates
+  public Vertex getVertex(Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
     var rX = (int) anyCoords.getFirst();
     var rY = (int) anyCoords.getSecond();
     for (var vertex : this.vertices) {

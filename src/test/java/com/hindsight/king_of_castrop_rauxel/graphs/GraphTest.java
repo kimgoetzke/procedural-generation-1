@@ -10,8 +10,8 @@ import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
 import com.hindsight.king_of_castrop_rauxel.world.Bounds;
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import java.util.Map;
-import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ class GraphTest {
   @Mock private NameGenerator nameGenerator;
   @Mock private TerrainGenerator terrainGenerator;
 
-  private final Random random = new Random();
+  private Graph underTest;
 
   @BeforeEach
   void setUp() {
@@ -38,23 +38,103 @@ class GraphTest {
     when(appProperties.getSettlementProperties()).then(returnMockSettlementProperties());
     when(appProperties.getGameProperties()).then(i -> new GameProperties(100, 0.1F, 10));
     when(generators.nameGenerator()).thenReturn(nameGenerator);
-    when(nameGenerator.locationNameFrom(any())).thenReturn("Settlement " + random.nextInt(1000));
+    when(nameGenerator.locationNameFrom(any())).thenReturn("Fake Settlement");
     when(generators.terrainGenerator()).thenReturn(terrainGenerator);
     when(terrainGenerator.getTargetLevel(any())).thenReturn(1);
+    underTest = new Graph(true);
   }
 
   @Test
-  void whenRetrievingExistingVertexByValue_returnVertex() {
+  void whenRetrievingExistingVertexByLocation_returnVertex() {
     // Given
-    var location = createSettlement(Pair.of(25, 25), Pair.of(250, 250));
-    var map = new Graph(true);
-    map.addVertex(location);
+    var l1 = createSettlement(Pair.of(25, 25), Pair.of(250, 250));
+    var l2 = createSettlement(Pair.of(25, 25), Pair.of(250, 450));
+    var l3 = createSettlement(Pair.of(25, 26), Pair.of(250, 50));
+    underTest = new Graph(true);
+    underTest.addVertex(l1);
+    underTest.addVertex(l2);
+    underTest.addVertex(l3);
 
     // When
-    var vertex = map.getVertexByValue(location);
+    var v1 = underTest.getVertex(l1);
+    var v2 = underTest.getVertex(l2);
+    var v3 = underTest.getVertex(l3);
 
     // Then
-    assertThat(vertex.getDto().id()).isEqualTo(location.getId());
+    assertThat(v1.getDto().id()).isEqualTo(l1.getId());
+    assertThat(v2.getDto().id()).isEqualTo(l2.getId());
+    assertThat(v3.getDto().id()).isEqualTo(l3.getId());
+  }
+
+  @Test
+  void whenRetrievingExistingVertexByCoords_returnVertex() {
+    // Given
+    var l1 = createSettlement(Pair.of(25, 25), Pair.of(250, 250));
+    var l2 = createSettlement(Pair.of(25, 25), Pair.of(250, 450));
+    var l3 = createSettlement(Pair.of(25, 26), Pair.of(250, 50));
+    var l4 = createSettlement(Pair.of(25, 27), Pair.of(0, 0));
+    var map = new Graph(true);
+    map.addVertex(l1);
+    map.addVertex(l2);
+    map.addVertex(l3);
+    map.addVertex(l4);
+
+    // When
+    var v1 = map.getVertex(l1.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
+    var v2 = map.getVertex(l2.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
+    var v3 = map.getVertex(l3.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
+    var v4 = map.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+
+    // Then
+    assertThat(v1.getDto().id()).isEqualTo(l1.getId());
+    assertThat(v2.getDto().id()).isEqualTo(l2.getId());
+    assertThat(v3.getDto().id()).isEqualTo(l3.getId());
+    assertThat(v4.getDto().id()).isEqualTo(l4.getId());
+  }
+
+  @Test
+  void givenLocationsWithSameChunkCoords_whenRetrievingByChunkCords_cannotDistinguish() {
+    // Given
+    var l1 = createSettlement(Pair.of(25, 25), Pair.of(250, 250));
+    var l2 = createSettlement(Pair.of(25, 26), Pair.of(250, 250));
+    var l3 = createSettlement(Pair.of(25, 24), Pair.of(250, 250));
+    underTest.addVertex(l1);
+    underTest.addVertex(l2);
+    underTest.addVertex(l3);
+
+    // When
+    var v1 = underTest.getVertex(l1.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
+    var v2 = underTest.getVertex(l2.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
+    var v3 = underTest.getVertex(l3.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
+
+    // Then
+    assertThat(v1.getDto().id()).isEqualTo(l1.getId());
+    assertThat(v2.getDto().id()).isEqualTo(l1.getId());
+    assertThat(v3.getDto().id()).isEqualTo(l1.getId());
+  }
+
+  @Test
+  void givenLocationsWithSameWorldCoords_whenRetrievingByWorldCords_cannotDistinguish() {
+    // Given
+    var l1 = createSettlement(Pair.of(25, 25), Pair.of(0, 0));
+    var l2 = createSettlement(Pair.of(24, 25), Pair.of(5, 5));
+    var l3 = createSettlement(Pair.of(24, 25), Pair.of(0, 0));
+    var l4 = createSettlement(Pair.of(24, 25), Pair.of(100, 100));
+    var map = new Graph(true);
+    map.addVertex(l1);
+    map.addVertex(l2);
+    map.addVertex(l3);
+    map.addVertex(l4);
+
+    // When
+    var v1 = map.getVertex(l1.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v3 = map.getVertex(l3.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v4 = map.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+
+    // Then
+    assertThat(v1.getDto().id()).isEqualTo(l1.getId());
+    assertThat(v3.getDto().id()).isEqualTo(l2.getId());
+    assertThat(v4.getDto().id()).isEqualTo(l2.getId());
   }
 
   private Settlement createSettlement(

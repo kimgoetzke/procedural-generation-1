@@ -42,6 +42,7 @@ class ChunkHandlerTest extends BaseWorldTest {
   @MethodSource("worldCoordsToTargetLevel")
   void whenGeneratingChunks_initialiseGeneratorAndSetTargetLevel(
       Pair<Integer, Integer> coords, int expectedTargetLevel) {
+    System.out.println("map.getVertices().size() = " + map.getVertices().size());
     // When
     world.generateChunk(coords, map);
 
@@ -131,9 +132,9 @@ class ChunkHandlerTest extends BaseWorldTest {
     // Then
     assertEquals(chunk.getDensity(), vertices.size());
     assertEquals(vertices.size() - 1, connectivity.unvisitedVertices().size());
-    assertThat(map.getVertexByValue(expected1, CoordType.GLOBAL).getDto()).isNotNull();
-    assertThat(map.getVertexByValue(expected2, CoordType.GLOBAL).getDto()).isNotNull();
-    assertThat(map.getVertexByValue(expected3, CoordType.GLOBAL).getDto()).isNotNull();
+    assertThat(map.getVertex(expected1, CoordType.GLOBAL).getDto()).isNotNull();
+    assertThat(map.getVertex(expected2, CoordType.GLOBAL).getDto()).isNotNull();
+    assertThat(map.getVertex(expected3, CoordType.GLOBAL).getDto()).isNotNull();
     vertices.forEach(v -> assertThat(v.getNeighbours()).isEmpty());
   }
 
@@ -142,13 +143,13 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectAnyWithinNeighbourDistance();
-    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL);
-    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL);
-    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL);
-    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL);
-    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL);
-    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL);
-    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL);
+    var BAE = map.getVertex(Pair.of(317, 45), CoordType.GLOBAL);
+    var VAL = map.getVertex(Pair.of(51, 338), CoordType.GLOBAL);
+    var AEL = map.getVertex(Pair.of(308, 101), CoordType.GLOBAL);
+    var AST = map.getVertex(Pair.of(356, 238), CoordType.GLOBAL);
+    var THE = map.getVertex(Pair.of(220, 61), CoordType.GLOBAL);
+    var MYS = map.getVertex(Pair.of(191, 399), CoordType.GLOBAL);
+    var EBR = map.getVertex(Pair.of(84, 468), CoordType.GLOBAL);
 
     // Then
     assertThat(map.getVertices()).hasSize(7);
@@ -167,13 +168,13 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectNeighbourlessToClosest();
     var result = chunkHandler.evaluateConnectivity(map);
-    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL);
-    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL);
-    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL);
-    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL);
-    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL);
-    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL);
-    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL);
+    var BAE = map.getVertex(Pair.of(317, 45), CoordType.GLOBAL);
+    var VAL = map.getVertex(Pair.of(51, 338), CoordType.GLOBAL);
+    var AEL = map.getVertex(Pair.of(308, 101), CoordType.GLOBAL);
+    var AST = map.getVertex(Pair.of(356, 238), CoordType.GLOBAL);
+    var THE = map.getVertex(Pair.of(220, 61), CoordType.GLOBAL);
+    var MYS = map.getVertex(Pair.of(191, 399), CoordType.GLOBAL);
+    var EBR = map.getVertex(Pair.of(84, 468), CoordType.GLOBAL);
     debug(map.getVertices(), map);
 
     // Then
@@ -195,13 +196,13 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectDisconnectedToClosestConnected();
     var connectivity = chunkHandler.evaluateConnectivity(map);
-    var BAE = map.getVertexByValue(Pair.of(317, 45), CoordType.GLOBAL);
-    var VAL = map.getVertexByValue(Pair.of(51, 338), CoordType.GLOBAL);
-    var AEL = map.getVertexByValue(Pair.of(308, 101), CoordType.GLOBAL);
-    var AST = map.getVertexByValue(Pair.of(356, 238), CoordType.GLOBAL);
-    var THE = map.getVertexByValue(Pair.of(220, 61), CoordType.GLOBAL);
-    var MYS = map.getVertexByValue(Pair.of(191, 399), CoordType.GLOBAL);
-    var EBR = map.getVertexByValue(Pair.of(84, 468), CoordType.GLOBAL);
+    var BAE = map.getVertex(Pair.of(317, 45), CoordType.GLOBAL);
+    var VAL = map.getVertex(Pair.of(51, 338), CoordType.GLOBAL);
+    var AEL = map.getVertex(Pair.of(308, 101), CoordType.GLOBAL);
+    var AST = map.getVertex(Pair.of(356, 238), CoordType.GLOBAL);
+    var THE = map.getVertex(Pair.of(220, 61), CoordType.GLOBAL);
+    var MYS = map.getVertex(Pair.of(191, 399), CoordType.GLOBAL);
+    var EBR = map.getVertex(Pair.of(84, 468), CoordType.GLOBAL);
 
     // Then
     assertThat(map.getVertices()).hasSize(7);

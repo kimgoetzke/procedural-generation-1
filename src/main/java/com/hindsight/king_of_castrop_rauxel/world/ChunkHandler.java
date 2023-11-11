@@ -113,14 +113,14 @@ public class ChunkHandler {
 
   private static void throwIfMisconfigured(
       Graph map, Location refLocation, boolean hasNoNeighbours) {
-    var hasNoEdges = map.getVertexByValue(refLocation).getEdges().isEmpty();
+    var hasNoEdges = map.getVertex(refLocation).getEdges().isEmpty();
     if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
       throw new IllegalStateException(
           String.format(
               "Vertex '%s' has %d edges and %d neighbours but both must have the same value",
               refLocation.getName(),
-              refLocation.getNeighbours().size(),
-              map.getVertexByValue(refLocation).getEdges().size()));
+              map.getVertex(refLocation).getEdges().size(),
+              refLocation.getNeighbours().size()));
     }
   }
 
@@ -170,7 +170,7 @@ public class ChunkHandler {
     var v2Location = v2Chunk.getLocation(vertex2.getDto().coordinates());
     v1Location.addNeighbour(v2Location);
     v2Location.addNeighbour(v1Location);
-    log.info(
+    log.debug(
         "Added {} and {} (distance: {} km) as neighbours of each other",
         v2Location.getName(),
         v1Location.getName(),

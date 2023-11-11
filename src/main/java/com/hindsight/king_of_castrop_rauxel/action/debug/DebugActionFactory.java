@@ -112,7 +112,7 @@ public class DebugActionFactory {
       for (var j = 0; j < chunkSize; j++) {
         if (plane[i][j] != null) {
           downscaledPlane[i / scale][j / scale] =
-              map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getDto().name();
+              map.getVertex(Pair.of(i, j), CoordType.CHUNK).getDto().name();
         }
       }
     }
