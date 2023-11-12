@@ -44,7 +44,7 @@ public abstract class BaseWorldTest {
     System.out.println("Visited vertices: " + connectivityResult.visitedVertices().size());
     debugSet(vertices, connectivityResult.visitedVertices());
     try {
-      daf.logPlane(world, map);
+      daf.logPlane(world);
     } catch (Exception e) {
       System.out.printf(
           FMT.RED_BRIGHT

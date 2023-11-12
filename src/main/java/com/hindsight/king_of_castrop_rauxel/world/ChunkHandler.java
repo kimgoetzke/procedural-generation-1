@@ -58,7 +58,29 @@ public class ChunkHandler {
     connectAnyWithinNeighbourDistance();
     connectNeighbourlessToClosest();
     connectDisconnectedToClosestConnected();
+    //    check(chunk);
   }
+
+  //
+  //
+  //  private void check() {
+  //    map.getVertices().forEach(this::throwIfMisConfigured);
+  //  }
+  //
+  //  private void throwIfMisConfigured(Vertex vertex) {
+  //    var hasNoEdges = vertex.getEdges().isEmpty();
+  //    vertex.getDto().coordinates();
+  //
+  //    var hasNoNeighbours = location.getNeighbours().isEmpty();
+  //    if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
+  //      throw new IllegalStateException(
+  //        String.format(
+  //          "Vertex '%s' has %d edges and %d neighbours but both must have the same value",
+  //          location.getName(),
+  //          map.getVertex(location).getEdges().size(),
+  //          location.getNeighbours().size()));
+  //    }
+  //  }
 
   protected void generateSettlements(Chunk chunk) {
     var settlementsCount = chunk.getDensity();
@@ -207,7 +229,7 @@ public class ChunkHandler {
         || chunkCoords.getSecond() < generationTriggerZone;
   }
 
-  // TODO: Expand to include all 8 directions
+  // TODO: Consider expanding to include all 8 directions
   public CardinalDirection nextChunkPosition(Pair<Integer, Integer> chunkCoords) {
     var chunkSize = chunkProperties.size();
     var generationTriggerZone = chunkProperties.generationTriggerZone();
@@ -236,9 +258,9 @@ public class ChunkHandler {
 
   public void logDisconnectedVertices(Graph graph) {
     var result = evaluateConnectivity(graph);
-    log.info("Unvisited vertices: {}", result.unvisitedVertices().size());
+    log.info("Not traversed vertices: {}", result.unvisitedVertices().size());
     result.unvisitedVertices().forEach(v -> log.info("- " + v.getDto().getSummary()));
-    log.info("Visited vertices: {}", result.visitedVertices().size());
+    log.info("Traversed vertices: {}", result.visitedVertices().size());
     result.visitedVertices().forEach(v -> log.info("- " + v.getDto().getSummary()));
   }
 

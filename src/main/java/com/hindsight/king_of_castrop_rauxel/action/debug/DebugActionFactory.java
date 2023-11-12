@@ -11,8 +11,6 @@ import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
 import com.hindsight.king_of_castrop_rauxel.world.Chunk;
 import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
 import com.hindsight.king_of_castrop_rauxel.world.World;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,31 +73,20 @@ public class DebugActionFactory {
       log.info("{} chunk does not exist yet", where);
       return;
     }
-    var settlements = new AtomicInteger();
-    Arrays.stream(chunk.getPlane())
-        .forEach(
-            row -> {
-              for (var cell : row) {
-                if (cell != null) {
-                  settlements.getAndIncrement();
-                }
-              }
-            });
     log.info(
         "{} chunk at {} has a density of {} and {} settlements",
         where,
         chunk.getCoordinates(),
         chunk.getDensity(),
-        settlements);
+        chunk.getLocations().size());
   }
 
   public void logPlane() {
-    logPlane(world, map);
+    logPlane(world);
   }
 
-  public void logPlane(World world, Graph map) {
+  public void logPlane(World world) {
     var chunk = world.getChunk(CardinalDirection.THIS);
-    var plane = chunk.getPlane();
     var scale = 10;
     var chunkSize = appProperties.getChunkProperties().size();
     var downscaledPlane = new String[chunkSize / scale][chunkSize / scale];
@@ -110,9 +97,9 @@ public class DebugActionFactory {
     // Shrink data into the new array and convert to location names
     for (var i = 0; i < chunkSize; i++) {
       for (var j = 0; j < chunkSize; j++) {
-        if (plane[i][j] != null) {
-          downscaledPlane[i / scale][j / scale] =
-              map.getVertex(Pair.of(i, j), CoordType.CHUNK).getDto().name();
+        var l = chunk.findLocation(Pair.of(i, j));
+        if (l != null) {
+          downscaledPlane[i / scale][j / scale] = l.getName();
         }
       }
     }
@@ -159,16 +146,16 @@ public class DebugActionFactory {
             .toList();
     var allPlayerCords = player.getCoordinates();
     var whereNext = chunkHandler.nextChunkPosition(allPlayerCords.getChunk());
-    var whereNextAllCoords = world.getChunk(whereNext).getCoordinates();
+    var whereNextCoords = world.getChunk(whereNext).getCoordinates();
     if (whereNext == CardinalDirection.THIS) {
-      log.info("Player is not inside any trigger zone of {}", whereNextAllCoords.worldToString());
+      log.info("Player is not inside any trigger zone of {}", whereNextCoords.worldToString());
     } else {
       log.info(
           "Player is inside trigger zone for chunk {} of {}:",
           whereNext.toString().toUpperCase(),
           allPlayerCords.worldToString());
       vertices.stream()
-          .filter(l -> l.coordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
+          .filter(l -> l.coordinates().equalTo(whereNextCoords.getWorld(), CoordType.WORLD))
           .filter(l -> chunkHandler.isInsideTriggerZone(l.coordinates().getChunk()))
           .forEach(l -> log.info("- " + l.getSummary()));
     }

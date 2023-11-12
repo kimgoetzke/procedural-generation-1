@@ -5,6 +5,8 @@ import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates.CoordType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +34,8 @@ public class Chunk implements Generatable, Unloadable {
   @Getter private final int targetLevel;
 
   // Status-dependent fields (only set when chunk is loaded)
-  @Getter private Location[][] plane;
+  private Location[][] plane;
+  @Getter private List<Location> locations;
   @Getter @Setter private boolean isLoaded;
   private ChunkHandler chunkHandler;
   private Random random;
@@ -70,6 +73,7 @@ public class Chunk implements Generatable, Unloadable {
   public void load() {
     throwIfRepeatedRequest(true);
     random = new Random(seed);
+    locations = new ArrayList<>();
     plane = new Location[chunkSize][chunkSize];
     chunkHandler = chunkHandler.initialise(random);
     chunkHandler.populate(this, strategy);
@@ -80,6 +84,7 @@ public class Chunk implements Generatable, Unloadable {
   @Override
   public void unload() {
     plane = null;
+    locations = null;
     random = null;
     chunkHandler.initialise(null);
     setLoaded(false);
@@ -100,8 +105,8 @@ public class Chunk implements Generatable, Unloadable {
     return Pair.of(x, y);
   }
 
-  public Settlement getCentralLocation(World world, Graph map) {
-    var globalCoords = world.getCurrentChunk().getCoordinates().getGlobal();
+  public Settlement getCentralLocation(Graph map) {
+    var globalCoords = Coordinates.toGlobal(this, getCentreCoords());
     var startVertex = chunkHandler.closestLocationTo(globalCoords, map.getVertices());
     var locationCoords = startVertex.getDto().coordinates();
     var centralLocation = getLoadedLocation(locationCoords);
@@ -117,6 +122,13 @@ public class Chunk implements Generatable, Unloadable {
     var x = coordinates.getChunk().getFirst();
     var y = coordinates.getChunk().getSecond();
     return plane[x][y];
+  }
+
+  public Location findLocation(Pair<Integer, Integer> chunkCoords) {
+    return locations.stream()
+        .filter(l -> l.getCoordinates().equalTo(chunkCoords, CoordType.CHUNK))
+        .findFirst()
+        .orElse(null);
   }
 
   public Location getLoadedLocation(Coordinates coordinates) {
@@ -137,6 +149,7 @@ public class Chunk implements Generatable, Unloadable {
     var y = coords.cY();
     if (isValidPosition(x, y)) {
       plane[x][y] = location;
+      locations.add(location);
     }
   }
 
@@ -145,6 +158,7 @@ public class Chunk implements Generatable, Unloadable {
     var y = location.getCoordinates().cY();
     if (isValidPosition(x, y)) {
       plane[x][y] = location;
+      locations.add(location);
     }
   }
 

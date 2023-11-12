@@ -82,6 +82,12 @@ public class Coordinates {
     this.chunk = toChunkCoords(globalCoords);
   }
 
+  public static Pair<Integer, Integer> toGlobal(Chunk chunk, Pair<Integer, Integer> chunkCoords) {
+    var x = chunk.getCoordinates().gX() + chunkCoords.getFirst();
+    var y = chunk.getCoordinates().gY() + chunkCoords.getSecond();
+    return Pair.of(x, y);
+  }
+
   /**
    * Returns true if the coordinates are within the relevant bounds i.e. CHUNK_SIZE for chunkCoords,
    * WORLD_SIZE for worldCoords and CHUNK_SIZE * WORLD_SIZE for globalCoords.
