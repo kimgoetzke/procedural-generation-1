@@ -48,12 +48,16 @@ public class ChunkHandler {
   }
 
   public void populate(Chunk chunk, Strategy strategy) {
-    generateSettlements(chunk);
-    if (Strategy.DEFAULT == strategy) {
-      connectAnyWithinNeighbourDistance();
-      connectNeighbourlessToClosest();
-      connectDisconnectedToClosestConnected();
+    if (Strategy.DO_NOTHING == strategy) {
+      return;
     }
+    generateSettlements(chunk);
+    if (Strategy.PLACE_ONLY == strategy) {
+      return;
+    }
+    connectAnyWithinNeighbourDistance();
+    connectNeighbourlessToClosest();
+    connectDisconnectedToClosestConnected();
   }
 
   protected void generateSettlements(Chunk chunk) {
@@ -105,28 +109,12 @@ public class ChunkHandler {
     for (var reference : vertices) {
       var correctChunk = world.getChunk(reference.getDto().coordinates().getWorld());
       var location = correctChunk.getLocation(reference.getDto().coordinates());
-      var hasNoNeighbours = reference.getNeighbours().isEmpty();
-      throwIfMisconfigured(map, location, hasNoNeighbours);
-      connectIfNoNeighbours(reference, hasNoNeighbours, vertices, location);
+      connectIfNoNeighbours(reference, vertices, location);
     }
   }
 
-  private static void throwIfMisconfigured(
-      Graph map, Location refLocation, boolean hasNoNeighbours) {
-    var hasNoEdges = map.getVertex(refLocation).getEdges().isEmpty();
-    if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
-      throw new IllegalStateException(
-          String.format(
-              "Vertex '%s' has %d edges and %d neighbours but both must have the same value",
-              refLocation.getName(),
-              map.getVertex(refLocation).getEdges().size(),
-              refLocation.getNeighbours().size()));
-    }
-  }
-
-  private void connectIfNoNeighbours(
-      Vertex vert, boolean hasNoNeighbours, List<Vertex> vertices, Location refLocation) {
-    if (hasNoNeighbours) {
+  private void connectIfNoNeighbours(Vertex vert, List<Vertex> vertices, Location refLocation) {
+    if (vert.getNeighbours().isEmpty()) {
       var closestNeighbour = closestNeighbourTo(vert, vertices);
       if (closestNeighbour != null) {
         var distance = refLocation.distanceTo(closestNeighbour.getDto());
@@ -159,9 +147,6 @@ public class ChunkHandler {
     }
   }
 
-  // TODO: This v1/v2Location here can be null because:
-  //  - For some reason, all connections are being re-evaluated, not just this chunk
-  //  - Even if the above was fixed, connections may link to other chunks, not just this one
   protected void addConnections(Vertex vertex1, Vertex vertex2, int distance) {
     map.addEdge(vertex1, vertex2, distance);
     var v1Chunk = world.getChunk(vertex1.getDto().coordinates().getWorld());

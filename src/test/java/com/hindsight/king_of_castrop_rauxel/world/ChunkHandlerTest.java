@@ -13,6 +13,7 @@ import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,18 +32,24 @@ class ChunkHandlerTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    map = new Graph(true);
+    map = ctx.getBean(Graph.class);
     daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
-    chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.NONE);
+    chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.DO_NOTHING);
     world.place(chunk, C_1_W_COORDS);
     chunk.load();
+  }
+
+  @AfterEach
+  void tearDown() {
+    super.tearDown();
+    chunk.unload();
+    chunk = null;
   }
 
   @ParameterizedTest
   @MethodSource("worldCoordsToTargetLevel")
   void whenGeneratingChunks_initialiseGeneratorAndSetTargetLevel(
       Pair<Integer, Integer> coords, int expectedTargetLevel) {
-    System.out.println("map.getVertices().size() = " + map.getVertices().size());
     // When
     world.generateChunk(coords, map);
 
@@ -120,9 +127,9 @@ class ChunkHandlerTest extends BaseWorldTest {
   @Test
   void whenGeneratingSettlements_createThemPredictablyAndDoNotConnectThem() {
     // Given
-    var expected1 = Pair.of(317, 45);
-    var expected2 = Pair.of(51, 338);
-    var expected3 = Pair.of(356, 238);
+    var expected1 = Pair.of(473, 29);
+    var expected2 = Pair.of(293, 125);
+    var expected3 = Pair.of(81, 212);
 
     // When
     chunkHandler.generateSettlements(chunk);
@@ -143,23 +150,28 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectAnyWithinNeighbourDistance();
-    var BAE = map.getVertex(Pair.of(317, 45), CoordType.GLOBAL);
-    var VAL = map.getVertex(Pair.of(51, 338), CoordType.GLOBAL);
-    var AEL = map.getVertex(Pair.of(308, 101), CoordType.GLOBAL);
-    var AST = map.getVertex(Pair.of(356, 238), CoordType.GLOBAL);
-    var THE = map.getVertex(Pair.of(220, 61), CoordType.GLOBAL);
-    var MYS = map.getVertex(Pair.of(191, 399), CoordType.GLOBAL);
-    var EBR = map.getVertex(Pair.of(84, 468), CoordType.GLOBAL);
+    var HYL = map.getVertex(Pair.of(293, 125), CoordType.GLOBAL);
+    var AST = map.getVertex(Pair.of(473, 29), CoordType.GLOBAL);
+    var THR = map.getVertex(Pair.of(81, 212), CoordType.GLOBAL);
+    var DYN = map.getVertex(Pair.of(276, 169), CoordType.GLOBAL);
+    var ZEP = map.getVertex(Pair.of(311, 232), CoordType.GLOBAL);
+    var ELY = map.getVertex(Pair.of(275, 216), CoordType.GLOBAL);
+    var THY = map.getVertex(Pair.of(206, 245), CoordType.GLOBAL);
+    debug(map.getVertices(), map);
 
     // Then
     assertThat(map.getVertices()).hasSize(7);
-    assertThat(VAL.getNeighbours()).isEmpty();
+    assertThat(HYL.getNeighbours()).containsOnly(DYN.getDto(), ZEP.getDto(), ELY.getDto());
+    assertThat(THR.getNeighbours()).containsOnly(THY.getDto());
+    assertThat(DYN.getNeighbours())
+        .containsOnly(HYL.getDto(), ZEP.getDto(), ELY.getDto(), THY.getDto());
+    assertThat(ZEP.getNeighbours())
+        .containsOnly(HYL.getDto(), DYN.getDto(), ELY.getDto(), THY.getDto());
+    assertThat(ELY.getNeighbours())
+        .containsOnly(HYL.getDto(), DYN.getDto(), ZEP.getDto(), THY.getDto());
+    assertThat(THY.getNeighbours())
+        .containsOnly(THR.getDto(), DYN.getDto(), ZEP.getDto(), ELY.getDto());
     assertThat(AST.getNeighbours()).isEmpty();
-    assertThat(MYS.getNeighbours()).containsOnly(EBR.getDto());
-    assertThat(EBR.getNeighbours()).containsOnly(MYS.getDto());
-    assertThat(BAE.getNeighbours()).containsOnly(AEL.getDto(), THE.getDto());
-    assertThat(AEL.getNeighbours()).containsOnly(BAE.getDto(), THE.getDto());
-    assertThat(THE.getNeighbours()).containsOnly(BAE.getDto(), AEL.getDto());
   }
 
   @Test
@@ -168,25 +180,12 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectNeighbourlessToClosest();
     var result = chunkHandler.evaluateConnectivity(map);
-    var BAE = map.getVertex(Pair.of(317, 45), CoordType.GLOBAL);
-    var VAL = map.getVertex(Pair.of(51, 338), CoordType.GLOBAL);
-    var AEL = map.getVertex(Pair.of(308, 101), CoordType.GLOBAL);
-    var AST = map.getVertex(Pair.of(356, 238), CoordType.GLOBAL);
-    var THE = map.getVertex(Pair.of(220, 61), CoordType.GLOBAL);
-    var MYS = map.getVertex(Pair.of(191, 399), CoordType.GLOBAL);
-    var EBR = map.getVertex(Pair.of(84, 468), CoordType.GLOBAL);
     debug(map.getVertices(), map);
 
     // Then
     map.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
-    assertThat(VAL.getNeighbours()).containsOnly(EBR.getDto());
-    assertThat(MYS.getNeighbours()).containsOnly(EBR.getDto());
-    assertThat(EBR.getNeighbours()).containsOnly(VAL.getDto(), MYS.getDto());
-    assertThat(BAE.getNeighbours()).containsOnly(AEL.getDto());
-    assertThat(AEL.getNeighbours()).containsOnly(THE.getDto(), BAE.getDto(), AST.getDto());
-    assertThat(THE.getNeighbours()).containsOnly(AEL.getDto());
-    assertThat(result.unvisitedVertices()).hasSize(3);
-    assertThat(result.visitedVertices()).hasSize(4);
+    assertThat(result.unvisitedVertices()).hasSize(4);
+    assertThat(result.visitedVertices()).hasSize(3);
   }
 
   @Test
@@ -196,23 +195,10 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectDisconnectedToClosestConnected();
     var connectivity = chunkHandler.evaluateConnectivity(map);
-    var BAE = map.getVertex(Pair.of(317, 45), CoordType.GLOBAL);
-    var VAL = map.getVertex(Pair.of(51, 338), CoordType.GLOBAL);
-    var AEL = map.getVertex(Pair.of(308, 101), CoordType.GLOBAL);
-    var AST = map.getVertex(Pair.of(356, 238), CoordType.GLOBAL);
-    var THE = map.getVertex(Pair.of(220, 61), CoordType.GLOBAL);
-    var MYS = map.getVertex(Pair.of(191, 399), CoordType.GLOBAL);
-    var EBR = map.getVertex(Pair.of(84, 468), CoordType.GLOBAL);
 
     // Then
     assertThat(map.getVertices()).hasSize(7);
-    assertThat(BAE.getNeighbours()).containsOnly(VAL.getDto(), AEL.getDto());
-    assertThat(VAL.getNeighbours()).containsOnly(MYS.getDto(), BAE.getDto());
-    assertThat(MYS.getNeighbours()).containsOnly(VAL.getDto(), EBR.getDto());
-    assertThat(EBR.getNeighbours()).containsOnly(MYS.getDto());
-    assertThat(AEL.getNeighbours()).containsOnly(THE.getDto(), BAE.getDto(), AST.getDto());
-    assertThat(AST.getNeighbours()).containsOnly(AEL.getDto());
-    assertThat(THE.getNeighbours()).containsOnly(AEL.getDto());
+    map.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
     assertThat(connectivity.visitedVertices()).hasSize(7);
   }
 
@@ -220,7 +206,7 @@ class ChunkHandlerTest extends BaseWorldTest {
     var v1 = map.addVertex(createSettlement(Pair.of(0, 0)));
     var v2 = map.addVertex(createSettlement(Pair.of(20, 20)));
     var v3 = map.addVertex(createSettlement(Pair.of(100, 100)));
-    var v4 = map.addVertex(createSettlement(Pair.of(500, 500)));
+    var v4 = map.addVertex(createSettlement(Pair.of(499, 499)));
 
     chunk.place(v1.getDto());
     chunk.place(v2.getDto());

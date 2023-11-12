@@ -30,7 +30,7 @@ public abstract class BaseWorldTest {
 
   @AfterEach
   void tearDown() {
-    map = null;
+    map.clear();
     chunkHandler = null;
     world = null;
     daf = null;

@@ -22,11 +22,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Chunk implements Generatable, Unloadable {
 
-  private final ChunkHandler chunkHandler;
-  private final Random random;
   private final int chunkSize;
   private final int minPlacementDistance;
   private final Strategy strategy;
+  private final long seed;
   @Getter private final String id;
   @Getter private final int density;
   @Getter private final Coordinates coordinates;
@@ -35,39 +34,44 @@ public class Chunk implements Generatable, Unloadable {
   // Status-dependent fields (only set when chunk is loaded)
   @Getter private Location[][] plane;
   @Getter @Setter private boolean isLoaded;
+  private ChunkHandler chunkHandler;
+  private Random random;
 
   /**
    * Determines the strategy for populating the chunk with regard to connecting locations to the
    * graph. NONE will not connect any locations to the graph.
    */
   public enum Strategy {
-    DEFAULT,
-    NONE,
+    PLACE_AND_CONNECT,
+    PLACE_ONLY,
+    DO_NOTHING,
   }
 
   public Chunk(Pair<Integer, Integer> worldCoords, ChunkHandler chunkHandler) {
-    this(worldCoords, chunkHandler, Strategy.DEFAULT);
+    this(worldCoords, chunkHandler, Strategy.PLACE_AND_CONNECT);
   }
 
   public Chunk(Pair<Integer, Integer> worldCoords, ChunkHandler chunkHandler, Strategy strategy) {
     var chunkProperties = chunkHandler.getAppProperties().getChunkProperties();
-    var seed = SeedBuilder.seedFrom(worldCoords);
     var cf = new CoordinateFactory(chunkHandler.getAppProperties());
+    this.seed = SeedBuilder.seedFrom(worldCoords);
     this.coordinates = cf.create(worldCoords, CoordType.WORLD);
-    this.random = new Random(seed);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
+    this.random = new Random(seed);
     this.chunkHandler = chunkHandler.initialise(random);
     this.density = randomDensity(chunkProperties.density());
     this.chunkSize = chunkProperties.size();
     this.minPlacementDistance = chunkProperties.minPlacementDistance();
     this.strategy = strategy;
-    this.plane = new Location[chunkSize][chunkSize];
     this.targetLevel = this.chunkHandler.getTargetLevel(coordinates);
   }
 
   @Override
   public void load() {
+    throwIfRepeatedRequest(true);
+    random = new Random(seed);
     plane = new Location[chunkSize][chunkSize];
+    chunkHandler = chunkHandler.initialise(random);
     chunkHandler.populate(this, strategy);
     setLoaded(true);
     logResult();
@@ -75,6 +79,9 @@ public class Chunk implements Generatable, Unloadable {
 
   @Override
   public void unload() {
+    plane = null;
+    random = null;
+    chunkHandler.initialise(null);
     setLoaded(false);
     logResult();
   }

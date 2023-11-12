@@ -66,6 +66,10 @@ public class Graph {
     return null;
   }
 
+  public void clear() {
+    this.vertices.clear();
+  }
+
   public void log() {
     log.info("Graph: ");
     for (var vertex : this.vertices) {
