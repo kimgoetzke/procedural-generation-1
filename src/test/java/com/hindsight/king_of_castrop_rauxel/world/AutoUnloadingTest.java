@@ -36,7 +36,6 @@ class AutoUnloadingTest extends BaseWorldTest {
     for (var i = 0; i < retentionZone + 1; i++) {
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
-    debug(graph.getVertices(), graph);
 
     // Then
     var currentWorldCoords = world.getCurrentChunk().getCoordinates();
@@ -61,8 +60,10 @@ class AutoUnloadingTest extends BaseWorldTest {
 
     // When moving outside the retention zone
     world.setCurrentChunk(initialCoords);
-    var firstVisit = world.getChunk(CardinalDirection.THIS).getLocations();
-    var initial = graph.getVertices().stream().map(Vertex::getDto).toList();
+    var initialChunk = world.getChunk(CardinalDirection.THIS);
+    var initialLocations = initialChunk.getLocations();
+    var initialDtos = graph.getVertices().stream().map(Vertex::getDto).toList();
+    var initialVerts = graph.getVertices(initialChunk);
     for (var i = 0; i < retentionZone + 1; i++) {
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
@@ -73,12 +74,14 @@ class AutoUnloadingTest extends BaseWorldTest {
 
     // When moving back to initial chunk
     world.setCurrentChunk(initialCoords);
-    var result = graph.getVertices().stream().map(Vertex::getDto).toList();
-    var secondVisit = world.getChunk(CardinalDirection.THIS).getLocations();
+    var finalDtos = graph.getVertices().stream().map(Vertex::getDto).toList();
+    var finalVerts = graph.getVertices(world.getChunk(CardinalDirection.THIS));
+    var finalLocations = world.getChunk(CardinalDirection.THIS).getLocations();
 
     // Then initial chunk is loaded again
-    assertThat(result).containsAll(initial).hasSizeGreaterThan(1);
-    assertThat(firstVisit).isEqualTo(secondVisit);
-    assertThat(intermediate).hasSizeBetween(initial.size(), result.size());
+    assertThat(finalDtos).containsAll(initialDtos).hasSizeGreaterThan(1);
+    assertThat(finalVerts).containsExactlyInAnyOrderElementsOf(initialVerts);
+    assertThat(finalLocations).isEqualTo(initialLocations);
+    assertThat(intermediate).hasSizeBetween(initialDtos.size(), finalDtos.size());
   }
 }

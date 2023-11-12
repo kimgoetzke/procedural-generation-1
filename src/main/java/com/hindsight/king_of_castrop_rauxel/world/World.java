@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
@@ -35,19 +34,8 @@ public class World {
   }
 
   public boolean hasChunk(CardinalDirection where) {
-    var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
-    var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
-    return switch (where) {
-      case THIS -> plane[x][y] != null;
-      case NORTH -> plane[x][y + 1] != null;
-      case NORTH_EAST -> plane[x + 1][y + 1] != null;
-      case EAST -> plane[x + 1][y] != null;
-      case SOUTH_EAST -> plane[x + 1][y - 1] != null;
-      case SOUTH -> plane[x][y - 1] != null;
-      case SOUTH_WEST -> plane[x - 1][y - 1] != null;
-      case WEST -> plane[x - 1][y] != null;
-      case NORTH_WEST -> plane[x - 1][y + 1] != null;
-    };
+    var coords = getCoordsFor(where);
+    return hasChunk(coords);
   }
 
   public boolean hasChunk(Pair<Integer, Integer> worldCoords) {
@@ -65,60 +53,45 @@ public class World {
   }
 
   public Chunk getChunk(CardinalDirection where) {
-    var x = (int) currentChunk.getCoordinates().getWorld().getFirst();
-    var y = (int) currentChunk.getCoordinates().getWorld().getSecond();
-    return switch (where) {
-      case THIS -> plane[x][y];
-      case NORTH -> plane[x][y + 1];
-      case NORTH_EAST -> plane[x + 1][y + 1];
-      case EAST -> plane[x + 1][y];
-      case SOUTH_EAST -> plane[x + 1][y - 1];
-      case SOUTH -> plane[x][y - 1];
-      case SOUTH_WEST -> plane[x - 1][y - 1];
-      case WEST -> plane[x - 1][y];
-      case NORTH_WEST -> plane[x - 1][y + 1];
-    };
+    var coords = getCoordsFor(where);
+    return getChunk(coords);
   }
 
   public Chunk getChunk(Pair<Integer, Integer> worldCoords) {
     var x = (int) worldCoords.getFirst();
     var y = (int) worldCoords.getSecond();
+    if (!isValidPosition(x, y)) {
+      return null;
+    }
     return plane[x][y];
   }
 
   public Chunk getOrGenerateChunk(Pair<Integer, Integer> worldCoords) {
     var chunk = plane[worldCoords.getFirst()][worldCoords.getSecond()];
     if (chunk == null) {
-      generateChunk(worldCoords, graph);
+      generateChunk(worldCoords);
     }
     return plane[worldCoords.getFirst()][worldCoords.getSecond()];
   }
 
   public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {
-    var chunk = getOrGenerateChunk(worldCoords);
-    currentChunk = chunk;
-    log.info("Set current chunk to: {}", chunk.getSummary());
+    if (!hasChunk(worldCoords)) {
+      generateChunk(worldCoords);
+    }
+    currentChunk = getChunk(worldCoords);
+    log.info("Set current chunk to: {}", currentChunk.getSummary());
     loadChunksInsideRetentionZone();
+    currentChunk.load();
     if (autoUnload) {
       unloadChunks();
     }
   }
 
-  /** Returns the world coordinates of the chunk in the center of the world. */
-  public Pair<Integer, Integer> getCentreCoords() {
-    return Pair.of(worldSize / 2, worldSize / 2);
-  }
-
-  private void generateChunk(CardinalDirection where, Graph graph) {
-    var worldCoords = getCoordsFor(where);
-    generateChunk(worldCoords, graph);
-  }
-
-  private void generateChunk(Pair<Integer, Integer> worldCoords, Graph graph) {
+  private void generateChunk(Pair<Integer, Integer> worldCoords) {
     var stats = getStats(graph);
     var chunkHandler = ctx.getBean(ChunkHandler.class, graph);
     var chunk = ctx.getBean(Chunk.class, worldCoords, chunkHandler);
-    place(chunk, worldCoords);
+    plane[worldCoords.getFirst()][worldCoords.getSecond()] = chunk;
     chunk.load();
     logOutcome(stats, graph, this.getClass());
   }
@@ -131,10 +104,18 @@ public class World {
   private void loadChunksInsideRetentionZone() {
     log.info("Loading chunks inside retention zone...");
     for (var direction : CardinalDirection.values()) {
-      if (!hasChunk(direction)) {
-        generateChunk(direction, graph);
+      if (direction.equals(CardinalDirection.THIS)) {
+        continue;
       }
-      getChunk(direction).load();
+      var coords = getCoordsFor(direction);
+      if (!hasChunk(coords) && isValidPosition(coords.getFirst(), coords.getSecond())) {
+        generateChunk(coords);
+      }
+      if (hasChunk(coords)) {
+        getChunk(coords).load();
+        continue;
+      }
+      log.info("No chunk can be generated at c({},{})", coords.getFirst(), coords.getSecond());
     }
   }
 
@@ -159,6 +140,11 @@ public class World {
 
   private boolean isValidPosition(int x, int y) {
     return x >= 0 && x < chunkSize && y >= 0 && y < chunkSize;
+  }
+
+  /** Returns the world coordinates of the chunk in the center of the world. */
+  public Pair<Integer, Integer> getCentreCoords() {
+    return Pair.of(worldSize / 2, worldSize / 2);
   }
 
   /**
