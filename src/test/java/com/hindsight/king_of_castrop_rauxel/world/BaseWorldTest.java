@@ -25,20 +25,20 @@ public abstract class BaseWorldTest {
   @Autowired protected DataServices dataServices;
   @Autowired protected ApplicationContext ctx;
   @Autowired protected World world;
-  @Autowired protected Graph map;
+  @Autowired protected Graph graph;
   protected DebugActionFactory daf;
 
   @AfterEach
   void tearDown() {
-    map.clear();
+    graph.clear();
     chunkHandler = null;
     world = null;
     daf = null;
   }
 
-  protected void debug(List<Vertex> vertices, Graph map) {
-    chunkHandler.logDisconnectedVertices(map);
-    var connectivityResult = chunkHandler.evaluateConnectivity(map);
+  protected void debug(List<Vertex> vertices, Graph graph) {
+    chunkHandler.logDisconnectedVertices(graph);
+    var connectivityResult = chunkHandler.evaluateConnectivity(graph);
     System.out.println("Unvisited vertices: " + connectivityResult.unvisitedVertices().size());
     debugSet(vertices, connectivityResult.unvisitedVertices());
     System.out.println("Visited vertices: " + connectivityResult.visitedVertices().size());

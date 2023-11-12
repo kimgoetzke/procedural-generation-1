@@ -1,8 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.game;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import lombok.extern.slf4j.Slf4j;
@@ -13,18 +11,13 @@ import org.springframework.stereotype.Component;
 public class GameHandler {
 
   private final World world;
-  private final Graph map;
-  private final ChunkHandler chunkHandler;
 
-  public GameHandler(World world, Graph map, ChunkHandler chunkHandler) {
+  public GameHandler(World world) {
     this.world = world;
-    this.map = map;
-    this.chunkHandler = chunkHandler;
   }
 
   public void updateWorld(Player player) {
     updateWorldCoords(player);
-    generateNextChunk(player);
   }
 
   private void updateWorldCoords(Player player) {
@@ -33,19 +26,6 @@ public class GameHandler {
       log.info(String.format("Player is leaving: %s%n", world.getCurrentChunk().getSummary()));
       world.setCurrentChunk(player.getCoordinates().getWorld());
       log.info(String.format("Player is entering: %s%n", world.getCurrentChunk().getSummary()));
-    }
-  }
-
-  private void generateNextChunk(Player player) {
-    var chunkCoords = player.getCurrentLocation().getCoordinates().getChunk();
-    if (chunkHandler.isInsideTriggerZone(chunkCoords)) {
-      var whereNext = chunkHandler.nextChunkPosition(chunkCoords);
-      log.info("Player is inside {}ern trigger zone", whereNext.getName().toLowerCase());
-      if (world.hasChunk(whereNext)) {
-        log.info("{} chunk already exists - skipping generation", whereNext.getName());
-        return;
-      }
-      world.generateChunk(whereNext, map);
     }
   }
 

@@ -18,7 +18,10 @@ public class Amenity extends AbstractAmenity {
 
   @Override
   public void load() {
-    throwIfRepeatedRequest(true);
+    if (isLoaded()) {
+      log.info("Requested to load '{}' but it already is", getId());
+      return;
+    }
     this.name =
         parent
             .getGenerators()

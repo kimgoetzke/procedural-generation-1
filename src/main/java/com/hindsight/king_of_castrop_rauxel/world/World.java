@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
@@ -16,6 +15,7 @@ import org.springframework.data.util.Pair;
 public class World {
 
   private final ApplicationContext ctx;
+  private final Graph graph;
   private final Chunk[][] plane;
   private final int worldSize;
   private final int chunkSize;
@@ -24,8 +24,9 @@ public class World {
 
   @Getter private Chunk currentChunk;
 
-  public World(ApplicationContext ctx, AppProperties appProperties) {
+  public World(ApplicationContext ctx, Graph graph, AppProperties appProperties) {
     this.ctx = ctx;
+    this.graph = graph;
     this.worldSize = appProperties.getWorldProperties().size();
     this.chunkSize = appProperties.getChunkProperties().size();
     this.autoUnload = appProperties.getGeneralProperties().autoUnload();
@@ -80,7 +81,27 @@ public class World {
   }
 
   public Chunk getChunk(Pair<Integer, Integer> worldCoords) {
+    var x = (int) worldCoords.getFirst();
+    var y = (int) worldCoords.getSecond();
+    return plane[x][y];
+  }
+
+  public Chunk getOrGenerateChunk(Pair<Integer, Integer> worldCoords) {
+    var chunk = plane[worldCoords.getFirst()][worldCoords.getSecond()];
+    if (chunk == null) {
+      generateChunk(worldCoords, graph);
+    }
     return plane[worldCoords.getFirst()][worldCoords.getSecond()];
+  }
+
+  public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {
+    var chunk = getOrGenerateChunk(worldCoords);
+    currentChunk = chunk;
+    log.info("Set current chunk to: {}", chunk.getSummary());
+    loadChunksInsideRetentionZone();
+    if (autoUnload) {
+      unloadChunks();
+    }
   }
 
   /** Returns the world coordinates of the chunk in the center of the world. */
@@ -88,19 +109,18 @@ public class World {
     return Pair.of(worldSize / 2, worldSize / 2);
   }
 
-  public void generateChunk(CardinalDirection where, Graph map) {
+  private void generateChunk(CardinalDirection where, Graph graph) {
     var worldCoords = getCoordsFor(where);
-    generateChunk(worldCoords, map);
+    generateChunk(worldCoords, graph);
   }
 
-  public void generateChunk(Pair<Integer, Integer> worldCoords, Graph map) {
-    throwErrorIfChunkExists(worldCoords);
-    var stats = getStats(map);
-    var chunkHandler = ctx.getBean(ChunkHandler.class, map);
+  private void generateChunk(Pair<Integer, Integer> worldCoords, Graph graph) {
+    var stats = getStats(graph);
+    var chunkHandler = ctx.getBean(ChunkHandler.class, graph);
     var chunk = ctx.getBean(Chunk.class, worldCoords, chunkHandler);
     place(chunk, worldCoords);
     chunk.load();
-    logOutcome(stats, map, this.getClass());
+    logOutcome(stats, graph, this.getClass());
   }
 
   /** Places a chunk in the specified position on the plane. */
@@ -108,16 +128,13 @@ public class World {
     plane[worldCoords.getFirst()][worldCoords.getSecond()] = chunk;
   }
 
-  public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {
-    var chunk = getChunk(worldCoords);
-    checkNotNull(chunk, "%s cannot be the current chunk because it is null", worldCoords);
-    if (!chunk.isLoaded()) {
-      chunk.load();
-    }
-    currentChunk = chunk;
-    log.info("Set current chunk to: {}", chunk.getSummary());
-    if (autoUnload) {
-      unloadChunks();
+  private void loadChunksInsideRetentionZone() {
+    log.info("Loading chunks inside retention zone...");
+    for (var direction : CardinalDirection.values()) {
+      if (!hasChunk(direction)) {
+        generateChunk(direction, graph);
+      }
+      getChunk(direction).load();
     }
   }
 
@@ -163,28 +180,17 @@ public class World {
     };
   }
 
-  private void throwErrorIfChunkExists(Pair<Integer, Integer> worldCoords) {
-    if (hasChunk(worldCoords)) {
-      throw new IllegalStateException(
-          String.format(
-              "%s of w(%d, %d) already exists",
-              getChunk(worldCoords).getSummary().toLowerCase(),
-              worldCoords.getFirst(),
-              worldCoords.getSecond()));
-    }
-  }
-
-  private LogStats getStats(Graph map) {
+  private LogStats getStats(Graph graph) {
     return new LogStats(
         System.currentTimeMillis(),
-        map.getVertices().size(),
-        map.getVertices().stream().map(Vertex::getDto).toList());
+        graph.getVertices().size(),
+        graph.getVertices().stream().map(Vertex::getDto).toList());
   }
 
-  private <T> void logOutcome(LogStats stats, Graph map, Class<T> clazz) {
+  private <T> void logOutcome(LogStats stats, Graph graph, Class<T> clazz) {
     log.info("Generation took {} seconds", (System.currentTimeMillis() - stats.startT) / 1000.0);
     if (clazz.equals(World.class)) {
-      log.info("Generated {} settlements", map.getVertices().size() - stats.prevSetCount);
+      log.info("Generated {} settlements", graph.getVertices().size() - stats.prevSetCount);
     }
   }
 

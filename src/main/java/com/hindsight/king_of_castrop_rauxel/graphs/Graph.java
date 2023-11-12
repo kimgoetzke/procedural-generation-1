@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.graphs;
 
 import com.hindsight.king_of_castrop_rauxel.location.Location;
+import com.hindsight.king_of_castrop_rauxel.world.Chunk;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +22,9 @@ public class Graph {
   }
 
   public Vertex addVertex(Location location) {
-    var newVertex = new Vertex(location);
-    this.vertices.add(newVertex);
-    return newVertex;
+    var vertex = new Vertex(location);
+    this.vertices.add(vertex);
+    return vertex;
   }
 
   public void addEdge(Vertex vertex1, Vertex vertex2, Integer weight) {
@@ -37,13 +38,22 @@ public class Graph {
   public Vertex getVertex(Location location) {
     for (var vertex : this.vertices) {
       if (vertex.getDto().id().equals(location.getId())) {
-        log.debug("{} matches {} for:", vertex.getDto().id(), location.getId());
-        log.debug(" - {}", vertex.getDto());
-        log.debug(" - {}", location);
         return vertex;
       }
     }
     return null;
+  }
+
+  /** Returns a list of vertices that are within the given chunk i.e. same world coords. */
+  public List<Vertex> getVertices(Chunk chunk) {
+    var worldCoords = chunk.getCoordinates().getWorld();
+    var list = new ArrayList<Vertex>();
+    for (var vertex : this.vertices) {
+      if (vertex.getDto().coordinates().equalTo(worldCoords, Coordinates.CoordType.WORLD)) {
+        list.add(vertex);
+      }
+    }
+    return list;
   }
 
   // TODO: Only allow retrieving with global coordinates

@@ -17,7 +17,7 @@ public class DebugAction implements Action {
   @Setter private int index;
   @Setter private String name;
   private Runnable runnable;
-  private Graph map;
+  private Graph graph;
   private World world;
 
   @Override

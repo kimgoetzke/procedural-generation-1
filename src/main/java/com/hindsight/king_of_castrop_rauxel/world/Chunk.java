@@ -71,7 +71,10 @@ public class Chunk implements Generatable, Unloadable {
 
   @Override
   public void load() {
-    throwIfRepeatedRequest(true);
+    if (isLoaded()) {
+      log.info("Requested to load '{}' but it already is", getId());
+      return;
+    }
     random = new Random(seed);
     locations = new ArrayList<>();
     plane = new Location[chunkSize][chunkSize];
@@ -105,9 +108,9 @@ public class Chunk implements Generatable, Unloadable {
     return Pair.of(x, y);
   }
 
-  public Settlement getCentralLocation(Graph map) {
+  public Settlement getCentralLocation(Graph graph) {
     var globalCoords = Coordinates.toGlobal(this, getCentreCoords());
-    var startVertex = chunkHandler.closestLocationTo(globalCoords, map.getVertices());
+    var startVertex = chunkHandler.closestLocationTo(globalCoords, graph.getVertices());
     var locationCoords = startVertex.getDto().coordinates();
     var centralLocation = getLoadedLocation(locationCoords);
     if (centralLocation != null) {
@@ -119,6 +122,10 @@ public class Chunk implements Generatable, Unloadable {
 
   /** Returns the specified location (or null), regardless of whether it is loaded or not. */
   public Location getLocation(Coordinates coordinates) {
+    if (plane == null) {
+      log.info("Requested {} but plane of '{}' is null", coordinates.chunkToString(), id);
+      return null;
+    }
     var x = coordinates.getChunk().getFirst();
     var y = coordinates.getChunk().getSecond();
     return plane[x][y];

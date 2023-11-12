@@ -80,7 +80,7 @@ public abstract class AbstractSettlement extends AbstractLocation {
         + ", inhabitantCount="
         + inhabitantCount
         + ", neighbours="
-        + neighbours.size()
+        + neighbours.stream().map(Location::getName).toList()
         + ", amenities="
         + pointsOfInterests.size();
   }

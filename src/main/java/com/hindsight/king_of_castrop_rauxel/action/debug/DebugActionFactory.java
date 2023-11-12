@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DebugActionFactory {
 
-  private final Graph map;
+  private final Graph graph;
   private final World world;
   private final ChunkHandler chunkHandler;
   private final AppProperties appProperties;
@@ -32,22 +32,22 @@ public class DebugActionFactory {
         .index(index)
         .name(name)
         .runnable(runnable)
-        .map(map)
+        .graph(graph)
         .world(world)
         .build();
   }
 
   public void logGraph() {
-    map.log();
+    graph.log();
   }
 
   public void printConnectivity() {
-    chunkHandler.logDisconnectedVertices(map);
+    chunkHandler.logDisconnectedVertices(graph);
   }
 
   public void logVertices() {
     log.info("All locations/vertices:");
-    map.getVertices().stream().map(Vertex::getDto).forEach(l -> log.info("- " + l.getSummary()));
+    graph.getVertices().stream().map(Vertex::getDto).forEach(l -> log.info("- " + l.getSummary()));
   }
 
   public void logMemoryStats() {
@@ -140,7 +140,7 @@ public class DebugActionFactory {
 
   public void logLocationsInsideTriggerZone(Player player) {
     var vertices =
-        map.getVertices().stream()
+        graph.getVertices().stream()
             .map(Vertex::getDto)
             .filter(l -> chunkHandler.isInsideTriggerZone((l.coordinates().getChunk())))
             .toList();

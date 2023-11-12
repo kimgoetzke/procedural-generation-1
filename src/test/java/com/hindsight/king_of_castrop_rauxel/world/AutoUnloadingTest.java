@@ -19,8 +19,8 @@ class AutoUnloadingTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    chunkHandler = new ChunkHandler(world, map, appProperties, generators, dataServices);
-    daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
+    chunkHandler = new ChunkHandler(world, graph, appProperties, generators, dataServices);
+    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties);
     retentionZone = appProperties.getWorldProperties().retentionZone();
   }
 
@@ -32,15 +32,11 @@ class AutoUnloadingTest extends BaseWorldTest {
     var removedSouthCoords = Pair.of(initialCoords.getFirst(), initialCoords.getSecond() - 1);
 
     // When
-    world.generateChunk(initialCoords, map);
     world.setCurrentChunk(initialCoords);
     for (var i = 0; i < retentionZone + 1; i++) {
-      world.generateChunk(CardinalDirection.NORTH, map);
-      world.generateChunk(CardinalDirection.EAST, map);
-      world.generateChunk(CardinalDirection.SOUTH, map);
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
-    debug(map.getVertices(), map);
+    debug(graph.getVertices(), graph);
 
     // Then
     var currentWorldCoords = world.getCurrentChunk().getCoordinates();
@@ -64,27 +60,25 @@ class AutoUnloadingTest extends BaseWorldTest {
     var initialCoords = world.getCentreCoords();
 
     // When moving outside the retention zone
-    world.generateChunk(initialCoords, map);
     world.setCurrentChunk(initialCoords);
     var firstVisit = world.getChunk(CardinalDirection.THIS).getLocations();
-    var initial = map.getVertices().stream().map(Vertex::getDto).toList();
+    var initial = graph.getVertices().stream().map(Vertex::getDto).toList();
     for (var i = 0; i < retentionZone + 1; i++) {
-      world.generateChunk(CardinalDirection.EAST, map);
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
-    var intermediate = map.getVertices().stream().map(Vertex::getDto).toList();
+    var intermediate = graph.getVertices().stream().map(Vertex::getDto).toList();
 
     // Then initial chunk is unloaded
     assertThat(world.hasLoadedChunk(initialCoords)).isFalse();
 
     // When moving back to initial chunk
     world.setCurrentChunk(initialCoords);
-    var result = map.getVertices().stream().map(Vertex::getDto).toList();
+    var result = graph.getVertices().stream().map(Vertex::getDto).toList();
     var secondVisit = world.getChunk(CardinalDirection.THIS).getLocations();
 
     // Then initial chunk is loaded again
     assertThat(result).containsAll(initial).hasSizeGreaterThan(1);
-//    assertThat(firstVisit).isEqualTo(secondVisit);
+    assertThat(firstVisit).isEqualTo(secondVisit);
     assertThat(intermediate).hasSizeBetween(initial.size(), result.size());
   }
 }

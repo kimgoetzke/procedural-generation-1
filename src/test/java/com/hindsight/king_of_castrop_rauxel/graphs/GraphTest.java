@@ -73,17 +73,17 @@ class GraphTest {
     var l2 = createSettlement(Pair.of(25, 25), Pair.of(250, 450));
     var l3 = createSettlement(Pair.of(25, 26), Pair.of(250, 50));
     var l4 = createSettlement(Pair.of(25, 27), Pair.of(0, 0));
-    var map = new Graph(true);
-    map.addVertex(l1);
-    map.addVertex(l2);
-    map.addVertex(l3);
-    map.addVertex(l4);
+    var graph = new Graph(true);
+    graph.addVertex(l1);
+    graph.addVertex(l2);
+    graph.addVertex(l3);
+    graph.addVertex(l4);
 
     // When
-    var v1 = map.getVertex(l1.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
-    var v2 = map.getVertex(l2.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
-    var v3 = map.getVertex(l3.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
-    var v4 = map.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v1 = graph.getVertex(l1.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
+    var v2 = graph.getVertex(l2.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
+    var v3 = graph.getVertex(l3.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
+    var v4 = graph.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
 
     // Then
     assertThat(v1.getDto().id()).isEqualTo(l1.getId());
@@ -120,16 +120,16 @@ class GraphTest {
     var l2 = createSettlement(Pair.of(24, 25), Pair.of(5, 5));
     var l3 = createSettlement(Pair.of(24, 25), Pair.of(0, 0));
     var l4 = createSettlement(Pair.of(24, 25), Pair.of(100, 100));
-    var map = new Graph(true);
-    map.addVertex(l1);
-    map.addVertex(l2);
-    map.addVertex(l3);
-    map.addVertex(l4);
+    var graph = new Graph(true);
+    graph.addVertex(l1);
+    graph.addVertex(l2);
+    graph.addVertex(l3);
+    graph.addVertex(l4);
 
     // When
-    var v1 = map.getVertex(l1.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
-    var v3 = map.getVertex(l3.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
-    var v4 = map.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v1 = graph.getVertex(l1.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v3 = graph.getVertex(l3.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v4 = graph.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
 
     // Then
     assertThat(v1.getDto().id()).isEqualTo(l1.getId());

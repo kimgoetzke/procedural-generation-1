@@ -22,7 +22,7 @@ public class CliGame {
   private final AppProperties appProperties;
   private final EnvironmentResolver environmentResolver;
   private final World world;
-  private final Graph map;
+  private final Graph graph;
   private final ChoosePoiLoop choosePoiLoop;
   private final PoiLoop poiLoop;
   private final DialogueLoop dialogueLoop;
@@ -52,9 +52,8 @@ public class CliGame {
   }
 
   private void initialise() {
-    world.generateChunk(world.getCentreCoords(), map);
     world.setCurrentChunk(world.getCentreCoords());
-    var startLocation = world.getCurrentChunk().getCentralLocation(map);
+    var startLocation = world.getCurrentChunk().getCentralLocation(graph);
     player = new Player("Traveller", startLocation, appProperties);
     dialogueLoop.initialise(player);
     poiLoop.initialise(player);

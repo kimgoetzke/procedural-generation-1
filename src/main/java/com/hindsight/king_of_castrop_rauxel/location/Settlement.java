@@ -34,9 +34,12 @@ public class Settlement extends AbstractSettlement {
 
   @Override
   public void load() {
+    if (isLoaded()) {
+      log.info("Requested to load '{}' but it already is", getId());
+      return;
+    }
     var startTime = System.currentTimeMillis();
     log.info("Generating full settlement '{}'...", id);
-    throwIfRepeatedRequest(true);
     loadPois();
     loadEvents();
     loadInhabitants();

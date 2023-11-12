@@ -20,18 +20,18 @@ public class ChunkHandler {
   @Getter private final AppProperties appProperties;
   private final AppProperties.ChunkProperties chunkProperties;
   private final World world;
-  private final Graph map;
+  private final Graph graph;
   private final Generators generators;
   private final DataServices dataServices;
 
   public ChunkHandler(
       World world,
-      Graph map,
+      Graph graph,
       AppProperties appProperties,
       Generators generators,
       DataServices dataServices) {
     this.world = world;
-    this.map = map;
+    this.graph = graph;
     this.appProperties = appProperties;
     this.chunkProperties = appProperties.getChunkProperties();
     this.generators = generators; // May require initialisation before use
@@ -58,29 +58,7 @@ public class ChunkHandler {
     connectAnyWithinNeighbourDistance();
     connectNeighbourlessToClosest();
     connectDisconnectedToClosestConnected();
-    //    check(chunk);
   }
-
-  //
-  //
-  //  private void check() {
-  //    map.getVertices().forEach(this::throwIfMisConfigured);
-  //  }
-  //
-  //  private void throwIfMisConfigured(Vertex vertex) {
-  //    var hasNoEdges = vertex.getEdges().isEmpty();
-  //    vertex.getDto().coordinates();
-  //
-  //    var hasNoNeighbours = location.getNeighbours().isEmpty();
-  //    if ((hasNoEdges && !hasNoNeighbours) || (!hasNoEdges && hasNoNeighbours)) {
-  //      throw new IllegalStateException(
-  //        String.format(
-  //          "Vertex '%s' has %d edges and %d neighbours but both must have the same value",
-  //          location.getName(),
-  //          map.getVertex(location).getEdges().size(),
-  //          location.getNeighbours().size()));
-  //    }
-  //  }
 
   protected void generateSettlements(Chunk chunk) {
     var settlementsCount = chunk.getDensity();
@@ -98,13 +76,13 @@ public class ChunkHandler {
   private void placeSettlement(Chunk chunk, Pair<Integer, Integer> chunkCoords) {
     var worldCoords = chunk.getCoordinates().getWorld();
     var s = new Settlement(worldCoords, chunkCoords, generators, dataServices, appProperties);
-    map.addVertex(s);
+    graph.addVertex(s);
     chunk.place(s);
   }
 
   /** Connects any vertices that are within a certain distance of each other. */
   protected void connectAnyWithinNeighbourDistance() {
-    var vertices = map.getVertices();
+    var vertices = graph.getVertices();
     for (var reference : vertices) {
       for (var other : vertices) {
         if (reference.equals(other)) {
@@ -127,7 +105,7 @@ public class ChunkHandler {
    * closest neighbour being A.
    */
   protected void connectNeighbourlessToClosest() {
-    var vertices = map.getVertices();
+    var vertices = graph.getVertices();
     for (var reference : vertices) {
       var correctChunk = world.getChunk(reference.getDto().coordinates().getWorld());
       var location = correctChunk.getLocation(reference.getDto().coordinates());
@@ -152,7 +130,7 @@ public class ChunkHandler {
    * any other connection algorithm will provide odd results.
    */
   protected void connectDisconnectedToClosestConnected() {
-    var connectivity = evaluateConnectivity(map);
+    var connectivity = evaluateConnectivity(graph);
     var visitedVertices = new ArrayList<>(connectivity.visitedVertices());
     var unvisitedVertices = connectivity.unvisitedVertices();
     if (unvisitedVertices.isEmpty()) {
@@ -170,18 +148,25 @@ public class ChunkHandler {
   }
 
   protected void addConnections(Vertex vertex1, Vertex vertex2, int distance) {
-    map.addEdge(vertex1, vertex2, distance);
+    graph.addEdge(vertex1, vertex2, distance);
     var v1Chunk = world.getChunk(vertex1.getDto().coordinates().getWorld());
     var v2Chunk = world.getChunk(vertex2.getDto().coordinates().getWorld());
     var v1Location = v1Chunk.getLocation(vertex1.getDto().coordinates());
     var v2Location = v2Chunk.getLocation(vertex2.getDto().coordinates());
-    v1Location.addNeighbour(v2Location);
-    v2Location.addNeighbour(v1Location);
+    addNeighbourIfNotNull(v1Location, v2Location);
+    addNeighbourIfNotNull(v2Location, v1Location);
     log.debug(
-        "Added {} and {} (distance: {} km) as neighbours of each other",
-        v2Location.getName(),
-        v1Location.getName(),
+        "Connected {} and {} (distance: {} km)",
+        vertex1.getDto().name(),
+        vertex2.getDto().name(),
         distance);
+  }
+
+  private static void addNeighbourIfNotNull(Location l1, Location l2) {
+    if (l1 == null || l2 == null) {
+      return;
+    }
+    l1.addNeighbour(l2);
   }
 
   private Vertex closestNeighbourTo(Vertex reference, List<Vertex> vertices) {

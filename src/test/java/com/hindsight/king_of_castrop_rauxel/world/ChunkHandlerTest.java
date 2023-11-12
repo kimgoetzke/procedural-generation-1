@@ -32,8 +32,8 @@ class ChunkHandlerTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     SeedBuilder.changeSeed(123L);
-    map = ctx.getBean(Graph.class);
-    daf = new DebugActionFactory(map, world, chunkHandler, appProperties);
+    graph = ctx.getBean(Graph.class);
+    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties);
     chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.DO_NOTHING);
     world.place(chunk, C_1_W_COORDS);
     chunk.load();
@@ -51,7 +51,7 @@ class ChunkHandlerTest extends BaseWorldTest {
   void whenGeneratingChunks_initialiseGeneratorAndSetTargetLevel(
       Pair<Integer, Integer> coords, int expectedTargetLevel) {
     // When
-    world.generateChunk(coords, map);
+    world.getOrGenerateChunk(coords);
 
     // Then
     assertThat(world.getChunk(coords).getTargetLevel()).isEqualTo(expectedTargetLevel);
@@ -95,7 +95,7 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkWithSettlementsExists();
 
     // When
-    var result = chunkHandler.evaluateConnectivity(map);
+    var result = chunkHandler.evaluateConnectivity(graph);
 
     // Then
     assertThat(result.unvisitedVertices()).hasSize(3);
@@ -113,7 +113,7 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.addConnections(v1, v2, v1.getDto().distanceTo(v2.getDto()));
     chunkHandler.addConnections(v2, v3, v2.getDto().distanceTo(v3.getDto()));
-    var result = chunkHandler.evaluateConnectivity(map);
+    var result = chunkHandler.evaluateConnectivity(graph);
 
     // Then
     assertThat(result.unvisitedVertices()).hasSize(1);
@@ -133,15 +133,15 @@ class ChunkHandlerTest extends BaseWorldTest {
 
     // When
     chunkHandler.generateSettlements(chunk);
-    var vertices = map.getVertices();
-    var connectivity = chunkHandler.evaluateConnectivity(map);
+    var vertices = graph.getVertices();
+    var connectivity = chunkHandler.evaluateConnectivity(graph);
 
     // Then
     assertEquals(chunk.getDensity(), vertices.size());
     assertEquals(vertices.size() - 1, connectivity.unvisitedVertices().size());
-    assertThat(map.getVertex(expected1, CoordType.GLOBAL).getDto()).isNotNull();
-    assertThat(map.getVertex(expected2, CoordType.GLOBAL).getDto()).isNotNull();
-    assertThat(map.getVertex(expected3, CoordType.GLOBAL).getDto()).isNotNull();
+    assertThat(graph.getVertex(expected1, CoordType.GLOBAL).getDto()).isNotNull();
+    assertThat(graph.getVertex(expected2, CoordType.GLOBAL).getDto()).isNotNull();
+    assertThat(graph.getVertex(expected3, CoordType.GLOBAL).getDto()).isNotNull();
     vertices.forEach(v -> assertThat(v.getNeighbours()).isEmpty());
   }
 
@@ -150,17 +150,17 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectAnyWithinNeighbourDistance();
-    var HYL = map.getVertex(Pair.of(293, 125), CoordType.GLOBAL);
-    var AST = map.getVertex(Pair.of(473, 29), CoordType.GLOBAL);
-    var THR = map.getVertex(Pair.of(81, 212), CoordType.GLOBAL);
-    var DYN = map.getVertex(Pair.of(276, 169), CoordType.GLOBAL);
-    var ZEP = map.getVertex(Pair.of(311, 232), CoordType.GLOBAL);
-    var ELY = map.getVertex(Pair.of(275, 216), CoordType.GLOBAL);
-    var THY = map.getVertex(Pair.of(206, 245), CoordType.GLOBAL);
-    debug(map.getVertices(), map);
+    var HYL = graph.getVertex(Pair.of(293, 125), CoordType.GLOBAL);
+    var AST = graph.getVertex(Pair.of(473, 29), CoordType.GLOBAL);
+    var THR = graph.getVertex(Pair.of(81, 212), CoordType.GLOBAL);
+    var DYN = graph.getVertex(Pair.of(276, 169), CoordType.GLOBAL);
+    var ZEP = graph.getVertex(Pair.of(311, 232), CoordType.GLOBAL);
+    var ELY = graph.getVertex(Pair.of(275, 216), CoordType.GLOBAL);
+    var THY = graph.getVertex(Pair.of(206, 245), CoordType.GLOBAL);
+    debug(graph.getVertices(), graph);
 
     // Then
-    assertThat(map.getVertices()).hasSize(7);
+    assertThat(graph.getVertices()).hasSize(7);
     assertThat(HYL.getNeighbours()).containsOnly(DYN.getDto(), ZEP.getDto(), ELY.getDto());
     assertThat(THR.getNeighbours()).containsOnly(THY.getDto());
     assertThat(DYN.getNeighbours())
@@ -179,11 +179,11 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectNeighbourlessToClosest();
-    var result = chunkHandler.evaluateConnectivity(map);
-    debug(map.getVertices(), map);
+    var result = chunkHandler.evaluateConnectivity(graph);
+    debug(graph.getVertices(), graph);
 
     // Then
-    map.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
+    graph.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
     assertThat(result.unvisitedVertices()).hasSize(4);
     assertThat(result.visitedVertices()).hasSize(3);
   }
@@ -194,19 +194,19 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectDisconnectedToClosestConnected();
-    var connectivity = chunkHandler.evaluateConnectivity(map);
+    var connectivity = chunkHandler.evaluateConnectivity(graph);
 
     // Then
-    assertThat(map.getVertices()).hasSize(7);
-    map.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
+    assertThat(graph.getVertices()).hasSize(7);
+    graph.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
     assertThat(connectivity.visitedVertices()).hasSize(7);
   }
 
   private List<Vertex> chunkWithSettlementsExists() {
-    var v1 = map.addVertex(createSettlement(Pair.of(0, 0)));
-    var v2 = map.addVertex(createSettlement(Pair.of(20, 20)));
-    var v3 = map.addVertex(createSettlement(Pair.of(100, 100)));
-    var v4 = map.addVertex(createSettlement(Pair.of(499, 499)));
+    var v1 = graph.addVertex(createSettlement(Pair.of(0, 0)));
+    var v2 = graph.addVertex(createSettlement(Pair.of(20, 20)));
+    var v3 = graph.addVertex(createSettlement(Pair.of(100, 100)));
+    var v4 = graph.addVertex(createSettlement(Pair.of(499, 499)));
 
     chunk.place(v1.getDto());
     chunk.place(v2.getDto());

@@ -23,12 +23,12 @@ class CoordinatesTest {
   @Autowired AppProperties appProperties;
   @Autowired CoordinateFactory cf;
   @Autowired World world;
-  @Mock Graph map;
+  @Mock Graph graph;
   private int chunkSize;
 
   @BeforeEach
   void setUp() {
-    chunkHandler = new ChunkHandler(world, map, appProperties, generators, dataServices);
+    chunkHandler = new ChunkHandler(world, graph, appProperties, generators, dataServices);
     chunkSize = appProperties.getChunkProperties().size();
   }
 
