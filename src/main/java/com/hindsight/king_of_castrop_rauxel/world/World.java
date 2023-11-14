@@ -33,11 +33,6 @@ public class World {
     this.plane = new Chunk[worldSize][worldSize];
   }
 
-  public boolean hasChunk(CardinalDirection where) {
-    var coords = getCoordsFor(where);
-    return hasChunk(coords);
-  }
-
   public boolean hasChunk(Pair<Integer, Integer> worldCoords) {
     return getChunk(worldCoords) != null;
   }
@@ -66,21 +61,13 @@ public class World {
     return plane[x][y];
   }
 
-  public Chunk getOrGenerateChunk(Pair<Integer, Integer> worldCoords) {
-    var chunk = plane[worldCoords.getFirst()][worldCoords.getSecond()];
-    if (chunk == null) {
-      generateChunk(worldCoords);
-    }
-    return plane[worldCoords.getFirst()][worldCoords.getSecond()];
-  }
-
   public void setCurrentChunk(Pair<Integer, Integer> worldCoords) {
     if (!hasChunk(worldCoords)) {
       generateChunk(worldCoords);
     }
     currentChunk = getChunk(worldCoords);
     log.info("Set current chunk to: {}", currentChunk.getSummary());
-    loadChunksInsideRetentionZone();
+    loadAllSurroundingChunks();
     currentChunk.load();
     if (autoUnload) {
       unloadChunks();
@@ -91,30 +78,41 @@ public class World {
     var stats = getStats(graph);
     var chunkHandler = ctx.getBean(ChunkHandler.class, graph);
     var chunk = ctx.getBean(Chunk.class, worldCoords, chunkHandler);
-    plane[worldCoords.getFirst()][worldCoords.getSecond()] = chunk;
-    chunk.load();
+    placeChunk(chunk, worldCoords);
     logOutcome(stats, graph, this.getClass());
   }
 
   /** Places a chunk in the specified position on the plane. */
-  public void place(Chunk chunk, Pair<Integer, Integer> worldCoords) {
+  public void placeChunk(Chunk chunk, Pair<Integer, Integer> worldCoords) {
     plane[worldCoords.getFirst()][worldCoords.getSecond()] = chunk;
   }
 
-  private void loadChunksInsideRetentionZone() {
+  /**
+   * Generates (if required) and loads (i.e. places unloaded locations) all chunks around the
+   * current chunk which is important to determine the connections between locations on the current
+   * chunk conclusively. Without this, connections of an already visited location could change upon
+   * loading a neighbouring chunk. Example: A location has one connection outside the neighbour
+   * distance but when generating the neighbouring chunk, a closer location is found and connected
+   * while the previous connection is dropped.
+   */
+  private void loadAllSurroundingChunks() {
     log.info("Loading chunks inside retention zone...");
     for (var direction : CardinalDirection.values()) {
       if (direction.equals(CardinalDirection.THIS)) {
         continue;
       }
       var coords = getCoordsFor(direction);
-      if (!hasChunk(coords) && isValidPosition(coords.getFirst(), coords.getSecond())) {
-        generateChunk(coords);
-      }
-      if (hasChunk(coords)) {
-        getChunk(coords).load();
-        continue;
-      }
+      attemptToGenerateAndLoadChunk(coords);
+    }
+  }
+
+  private void attemptToGenerateAndLoadChunk(Pair<Integer, Integer> coords) {
+    if (!hasChunk(coords) && isValidPosition(coords.getFirst(), coords.getSecond())) {
+      generateChunk(coords);
+    }
+    if (hasChunk(coords)) {
+      getChunk(coords).load();
+    } else {
       log.info("No chunk can be generated at c({},{})", coords.getFirst(), coords.getSecond());
     }
   }

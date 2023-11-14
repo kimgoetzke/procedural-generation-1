@@ -78,6 +78,9 @@ class AutoUnloadingTest extends BaseWorldTest {
     var finalVerts = graph.getVertices(world.getChunk(CardinalDirection.THIS));
     var finalLocations = world.getChunk(CardinalDirection.THIS).getLocations();
 
+    System.out.println("finalVerts.size() = " + finalVerts.size());
+    System.out.println("initialVerts.size() = " + initialVerts.size());
+
     // Then initial chunk is loaded again
     assertThat(finalDtos).containsAll(initialDtos).hasSizeGreaterThan(1);
     assertThat(finalVerts).containsExactlyInAnyOrderElementsOf(initialVerts);

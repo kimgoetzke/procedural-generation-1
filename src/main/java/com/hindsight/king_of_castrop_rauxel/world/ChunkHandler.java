@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
@@ -48,6 +49,7 @@ public class ChunkHandler {
   }
 
   public void populate(Chunk chunk, Strategy strategy) {
+    checkArgument(!chunk.isLoaded(), "Chunk must not be loaded");
     if (Strategy.DO_NOTHING == strategy) {
       return;
     }
@@ -68,7 +70,14 @@ public class ChunkHandler {
     }
   }
 
+  /**
+   * Only temporarily permitted to facilitate development and testing but should not be used in
+   * production because it allows generating locations in already loaded chunks, therefore
+   * increasing the density set this chunk (which does not have any side effects now but may do in
+   * the future).
+   */
   public Settlement generateSettlement(Chunk chunk, Pair<Integer, Integer> chunkCoords) {
+    log.warn("Generating settlement at {} manually - not permitted in production", chunkCoords);
     var worldCoords = chunk.getCoordinates().getWorld();
     return new Settlement(worldCoords, chunkCoords, generators, dataServices, appProperties);
   }

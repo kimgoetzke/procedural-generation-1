@@ -35,7 +35,7 @@ class ChunkHandlerTest extends BaseWorldTest {
     graph = ctx.getBean(Graph.class);
     daf = new DebugActionFactory(graph, world, chunkHandler, appProperties);
     chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.DO_NOTHING);
-    world.place(chunk, C_1_W_COORDS);
+    world.placeChunk(chunk, C_1_W_COORDS);
     chunk.load();
   }
 
@@ -51,7 +51,7 @@ class ChunkHandlerTest extends BaseWorldTest {
   void whenGeneratingChunks_initialiseGeneratorAndSetTargetLevel(
       Pair<Integer, Integer> coords, int expectedTargetLevel) {
     // When
-    world.getOrGenerateChunk(coords);
+    world.setCurrentChunk(coords);
 
     // Then
     assertThat(world.getChunk(coords).getTargetLevel()).isEqualTo(expectedTargetLevel);
