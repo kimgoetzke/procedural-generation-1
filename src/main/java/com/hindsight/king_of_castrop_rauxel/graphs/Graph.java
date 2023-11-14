@@ -7,36 +7,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class Graph {
 
   private final List<Vertex> vertices = new ArrayList<>();
-  private final boolean isWeighted;
-
-  public Graph(boolean isWeighted) {
-    this.isWeighted = isWeighted;
-  }
 
   public Vertex addVertex(Location location) {
     var vertex = new Vertex(location);
-    this.vertices.add(vertex);
+    vertices.add(vertex);
     return vertex;
   }
 
   public void addEdge(Vertex vertex1, Vertex vertex2, Integer weight) {
-    if (!this.isWeighted) {
-      weight = null;
-    }
     vertex2.addEdge(vertex1, weight);
     vertex1.addEdge(vertex2, weight);
   }
 
   public Vertex getVertex(Location location) {
-    for (var vertex : this.vertices) {
+    for (var vertex : vertices) {
       if (vertex.getDto().id().equals(location.getId())) {
         return vertex;
       }
@@ -48,7 +42,7 @@ public class Graph {
   public List<Vertex> getVertices(Chunk chunk) {
     var worldCoords = chunk.getCoordinates().getWorld();
     var list = new ArrayList<Vertex>();
-    for (var vertex : this.vertices) {
+    for (var vertex : vertices) {
       if (vertex.getDto().coordinates().equalTo(worldCoords, Coordinates.CoordType.WORLD)) {
         list.add(vertex);
       }
@@ -60,7 +54,7 @@ public class Graph {
   public Vertex getVertex(Pair<Integer, Integer> anyCoords, Coordinates.CoordType type) {
     var rX = (int) anyCoords.getFirst();
     var rY = (int) anyCoords.getSecond();
-    for (var vertex : this.vertices) {
+    for (var vertex : vertices) {
       var vCoords =
           switch (type) {
             case WORLD -> vertex.getDto().coordinates().getWorld();
@@ -77,13 +71,13 @@ public class Graph {
   }
 
   public void clear() {
-    this.vertices.clear();
+    vertices.clear();
   }
 
   public void log() {
     log.info("Graph: ");
-    for (var vertex : this.vertices) {
-      vertex.log(isWeighted);
+    for (var vertex : vertices) {
+      vertex.log(true);
     }
   }
 

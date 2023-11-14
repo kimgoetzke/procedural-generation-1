@@ -41,7 +41,7 @@ class GraphTest {
     when(nameGenerator.locationNameFrom(any())).thenReturn("Fake Settlement");
     when(generators.terrainGenerator()).thenReturn(terrainGenerator);
     when(terrainGenerator.getTargetLevel(any())).thenReturn(1);
-    underTest = new Graph(true);
+    underTest = new Graph();
   }
 
   @Test
@@ -50,7 +50,6 @@ class GraphTest {
     var l1 = createSettlement(Pair.of(25, 25), Pair.of(250, 250));
     var l2 = createSettlement(Pair.of(25, 25), Pair.of(250, 450));
     var l3 = createSettlement(Pair.of(25, 26), Pair.of(250, 50));
-    underTest = new Graph(true);
     underTest.addVertex(l1);
     underTest.addVertex(l2);
     underTest.addVertex(l3);
@@ -73,17 +72,16 @@ class GraphTest {
     var l2 = createSettlement(Pair.of(25, 25), Pair.of(250, 450));
     var l3 = createSettlement(Pair.of(25, 26), Pair.of(250, 50));
     var l4 = createSettlement(Pair.of(25, 27), Pair.of(0, 0));
-    var graph = new Graph(true);
-    graph.addVertex(l1);
-    graph.addVertex(l2);
-    graph.addVertex(l3);
-    graph.addVertex(l4);
+    underTest.addVertex(l1);
+    underTest.addVertex(l2);
+    underTest.addVertex(l3);
+    underTest.addVertex(l4);
 
     // When
-    var v1 = graph.getVertex(l1.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
-    var v2 = graph.getVertex(l2.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
-    var v3 = graph.getVertex(l3.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
-    var v4 = graph.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v1 = underTest.getVertex(l1.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
+    var v2 = underTest.getVertex(l2.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
+    var v3 = underTest.getVertex(l3.getCoordinates().getGlobal(), Coordinates.CoordType.GLOBAL);
+    var v4 = underTest.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
 
     // Then
     assertThat(v1.getDto().id()).isEqualTo(l1.getId());
@@ -120,16 +118,15 @@ class GraphTest {
     var l2 = createSettlement(Pair.of(24, 25), Pair.of(5, 5));
     var l3 = createSettlement(Pair.of(24, 25), Pair.of(0, 0));
     var l4 = createSettlement(Pair.of(24, 25), Pair.of(100, 100));
-    var graph = new Graph(true);
-    graph.addVertex(l1);
-    graph.addVertex(l2);
-    graph.addVertex(l3);
-    graph.addVertex(l4);
+    underTest.addVertex(l1);
+    underTest.addVertex(l2);
+    underTest.addVertex(l3);
+    underTest.addVertex(l4);
 
     // When
-    var v1 = graph.getVertex(l1.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
-    var v3 = graph.getVertex(l3.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
-    var v4 = graph.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v1 = underTest.getVertex(l1.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v3 = underTest.getVertex(l3.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
+    var v4 = underTest.getVertex(l4.getCoordinates().getWorld(), Coordinates.CoordType.WORLD);
 
     // Then
     assertThat(v1.getDto().id()).isEqualTo(l1.getId());

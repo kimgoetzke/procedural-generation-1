@@ -50,7 +50,7 @@ public class AppConfiguration {
 
   @Bean
   public Graph graph() {
-    return new Graph(true);
+    return new Graph();
   }
 
   @Bean
