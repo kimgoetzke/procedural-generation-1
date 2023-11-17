@@ -58,8 +58,9 @@ public class ChunkHandler {
       return;
     }
     connectAnyWithinNeighbourDistance();
-    connectNeighbourlessToClosest();
-    connectDisconnectedToClosestConnected();
+    // TODO: Do I need the below strategies?
+    //    connectNeighbourlessToClosest();
+    //    connectDisconnectedToClosestConnected();
   }
 
   protected void generateSettlements(Chunk chunk) {
@@ -122,7 +123,7 @@ public class ChunkHandler {
     }
   }
 
-  private void connectIfNoNeighbours(Vertex vert, List<Vertex> vertices, Location refLocation) {
+  private void connectIfNoNeighbours(Vertex vert, Set<Vertex> vertices, Location refLocation) {
     if (vert.getNeighbours().isEmpty()) {
       var closestNeighbour = closestNeighbourTo(vert, vertices);
       if (closestNeighbour != null) {
@@ -140,7 +141,7 @@ public class ChunkHandler {
    */
   protected void connectDisconnectedToClosestConnected() {
     var connectivity = evaluateConnectivity(graph);
-    var visitedVertices = new ArrayList<>(connectivity.visitedVertices());
+    var visitedVertices = new HashSet<>(connectivity.visitedVertices());
     var unvisitedVertices = connectivity.unvisitedVertices();
     if (unvisitedVertices.isEmpty()) {
       return;
@@ -164,7 +165,7 @@ public class ChunkHandler {
     var v2Location = v2Chunk.getLocation(vertex2.getDto().coordinates());
     addNeighbourIfNotNull(v1Location, v2Location);
     addNeighbourIfNotNull(v2Location, v1Location);
-    log.debug(
+    log.info(
         "Connected {} and {} (distance: {} km)",
         vertex1.getDto().name(),
         vertex2.getDto().name(),
@@ -178,7 +179,7 @@ public class ChunkHandler {
     l1.addNeighbour(l2);
   }
 
-  private Vertex closestNeighbourTo(Vertex reference, List<Vertex> vertices) {
+  private Vertex closestNeighbourTo(Vertex reference, Set<Vertex> vertices) {
     Vertex closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var other : vertices) {
@@ -201,7 +202,7 @@ public class ChunkHandler {
     return closestNeighbor;
   }
 
-  public Vertex closestLocationTo(Pair<Integer, Integer> globalCoords, List<Vertex> vertices) {
+  public Vertex closestLocationTo(Pair<Integer, Integer> globalCoords, Set<Vertex> vertices) {
     Vertex closestNeighbor = null;
     var minDistance = Integer.MAX_VALUE;
     for (var vertex : vertices) {

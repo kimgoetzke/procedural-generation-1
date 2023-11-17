@@ -6,10 +6,7 @@ import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +24,9 @@ public abstract class AbstractSettlement extends AbstractLocation {
   protected List<PointOfInterest> pointsOfInterests = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
   @Getter protected int inhabitantCount;
-  @Getter protected Set<Location> neighbours = new HashSet<>();
+
+  @Getter
+  protected Set<Location> neighbours = new TreeSet<>(Comparator.comparing(Location::getName));
 
   protected AbstractSettlement(
       Pair<Integer, Integer> worldCoords,

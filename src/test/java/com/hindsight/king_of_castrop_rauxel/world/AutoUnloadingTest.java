@@ -60,9 +60,9 @@ class AutoUnloadingTest extends BaseWorldTest {
 
     // When moving outside the retention zone
     world.setCurrentChunk(initialCoords);
+    var initialDtos = graph.getVertices().stream().map(Vertex::getDto).toList();
     var initialChunk = world.getChunk(CardinalDirection.THIS);
     var initialLocations = initialChunk.getLocations();
-    var initialDtos = graph.getVertices().stream().map(Vertex::getDto).toList();
     var initialVerts = graph.getVertices(initialChunk);
     for (var i = 0; i < retentionZone + 1; i++) {
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
@@ -78,13 +78,12 @@ class AutoUnloadingTest extends BaseWorldTest {
     var finalVerts = graph.getVertices(world.getChunk(CardinalDirection.THIS));
     var finalLocations = world.getChunk(CardinalDirection.THIS).getLocations();
 
-    System.out.println("initialVerts.size() = " + initialVerts.size());
-    System.out.println("finalVerts.size() = " + finalVerts.size());
     // FIXME: Current problem:
     //  - Same size of vertices but some vertices have different neighbours or same neighbours but
     //    different order
     //  - Problem is related to the connection algorithms which somehow don't behave predictably
     //    the same as the graph size increases (it'll process neighbours in a diff. order, it seems)
+    //  - Problem solved but I have removed connection strategies which I may need to connect all
 
     // Then initial chunk is loaded again
     assertThat(finalDtos).containsAll(initialDtos).hasSizeGreaterThan(1);

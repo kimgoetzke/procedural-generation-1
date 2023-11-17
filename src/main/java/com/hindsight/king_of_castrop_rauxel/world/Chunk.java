@@ -5,9 +5,7 @@ import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates.CoordType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -35,7 +33,7 @@ public class Chunk implements Generatable, Unloadable {
 
   // Status-dependent fields (only set when chunk is loaded)
   private Location[][] plane;
-  @Getter private List<Location> locations;
+  @Getter private Set<Location> locations;
   @Getter @Setter private boolean isLoaded;
   private ChunkHandler chunkHandler;
   private Random random;
@@ -45,13 +43,13 @@ public class Chunk implements Generatable, Unloadable {
    * graph. NONE will not connect any locations to the graph.
    */
   public enum Strategy {
-    PLACE_AND_CONNECT,
+    CONNECT_FULLY,
     PLACE_ONLY,
     DO_NOTHING,
   }
 
   public Chunk(Pair<Integer, Integer> worldCoords, ChunkHandler chunkHandler) {
-    this(worldCoords, chunkHandler, Strategy.PLACE_AND_CONNECT);
+    this(worldCoords, chunkHandler, Strategy.CONNECT_FULLY);
   }
 
   public Chunk(Pair<Integer, Integer> worldCoords, ChunkHandler chunkHandler, Strategy strategy) {
@@ -76,7 +74,7 @@ public class Chunk implements Generatable, Unloadable {
       return;
     }
     random = new Random(seed);
-    locations = new ArrayList<>();
+    locations = new TreeSet<>(Comparator.comparing(Location::getName));
     plane = new Location[chunkSize][chunkSize];
     chunkHandler = chunkHandler.initialise(random);
     chunkHandler.populate(this, strategy);

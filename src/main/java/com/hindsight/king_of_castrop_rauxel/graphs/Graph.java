@@ -3,9 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.graphs;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.world.Chunk;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +14,11 @@ import org.springframework.data.util.Pair;
 @NoArgsConstructor
 public class Graph {
 
-  private final List<Vertex> vertices = new ArrayList<>();
+  private final Set<Vertex> vertices = new TreeSet<>(Comparator.comparing(Vertex::getId));
 
   public void addVertex(Location location) {
     var vertex = new Vertex(location);
-    if (!vertices.contains(vertex)) {
-      vertices.add(vertex);
-    }
+    vertices.add(vertex);
   }
 
   public void addEdge(Vertex vertex1, Vertex vertex2, Integer weight) {

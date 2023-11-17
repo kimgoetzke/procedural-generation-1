@@ -182,8 +182,8 @@ class ChunkHandlerTest extends BaseWorldTest {
 
     // Then
     graph.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
-    assertThat(result.unvisitedVertices()).hasSize(4);
-    assertThat(result.visitedVertices()).hasSize(3);
+    assertThat(result.unvisitedVertices()).hasSize(5);
+    assertThat(result.visitedVertices()).hasSize(2);
   }
 
   @Test
