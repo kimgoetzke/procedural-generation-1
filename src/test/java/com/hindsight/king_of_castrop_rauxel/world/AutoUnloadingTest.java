@@ -78,8 +78,13 @@ class AutoUnloadingTest extends BaseWorldTest {
     var finalVerts = graph.getVertices(world.getChunk(CardinalDirection.THIS));
     var finalLocations = world.getChunk(CardinalDirection.THIS).getLocations();
 
-    System.out.println("finalVerts.size() = " + finalVerts.size());
     System.out.println("initialVerts.size() = " + initialVerts.size());
+    System.out.println("finalVerts.size() = " + finalVerts.size());
+    // FIXME: Current problem:
+    //  - Same size of vertices but some vertices have different neighbours or same neighbours but
+    //    different order
+    //  - Problem is related to the connection algorithms which somehow don't behave predictably
+    //    the same as the graph size increases (it'll process neighbours in a diff. order, it seems)
 
     // Then initial chunk is loaded again
     assertThat(finalDtos).containsAll(initialDtos).hasSizeGreaterThan(1);

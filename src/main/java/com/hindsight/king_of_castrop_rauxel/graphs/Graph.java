@@ -18,10 +18,11 @@ public class Graph {
 
   private final List<Vertex> vertices = new ArrayList<>();
 
-  public Vertex addVertex(Location location) {
+  public void addVertex(Location location) {
     var vertex = new Vertex(location);
-    vertices.add(vertex);
-    return vertex;
+    if (!vertices.contains(vertex)) {
+      vertices.add(vertex);
+    }
   }
 
   public void addEdge(Vertex vertex1, Vertex vertex2, Integer weight) {

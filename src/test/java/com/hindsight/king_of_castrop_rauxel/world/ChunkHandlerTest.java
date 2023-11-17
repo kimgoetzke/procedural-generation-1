@@ -25,7 +25,7 @@ import org.springframework.data.util.Pair;
 @SpringBootTest
 class ChunkHandlerTest extends BaseWorldTest {
 
-  protected static final Pair<Integer, Integer> C_1_W_COORDS = Pair.of(0, 0);
+  private static final Pair<Integer, Integer> C_1_W_COORDS = Pair.of(0, 0);
 
   private Chunk chunk;
 
@@ -157,7 +157,6 @@ class ChunkHandlerTest extends BaseWorldTest {
     var ZEP = graph.getVertex(Pair.of(311, 232), CoordType.GLOBAL);
     var ELY = graph.getVertex(Pair.of(275, 216), CoordType.GLOBAL);
     var THY = graph.getVertex(Pair.of(206, 245), CoordType.GLOBAL);
-    debug(graph.getVertices(), graph);
 
     // Then
     assertThat(graph.getVertices()).hasSize(7);
@@ -180,7 +179,6 @@ class ChunkHandlerTest extends BaseWorldTest {
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectNeighbourlessToClosest();
     var result = chunkHandler.evaluateConnectivity(graph);
-    debug(graph.getVertices(), graph);
 
     // Then
     graph.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
@@ -190,7 +188,6 @@ class ChunkHandlerTest extends BaseWorldTest {
 
   @Test
   void whenConnectingDisconnected_connectAllAsExpected() {
-
     // When
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectDisconnectedToClosestConnected();
@@ -203,17 +200,15 @@ class ChunkHandlerTest extends BaseWorldTest {
   }
 
   private List<Vertex> chunkWithSettlementsExists() {
-    var v1 = graph.addVertex(createSettlement(Pair.of(0, 0)));
-    var v2 = graph.addVertex(createSettlement(Pair.of(20, 20)));
-    var v3 = graph.addVertex(createSettlement(Pair.of(100, 100)));
-    var v4 = graph.addVertex(createSettlement(Pair.of(499, 499)));
-
-    chunk.place(v1.getDto());
-    chunk.place(v2.getDto());
-    chunk.place(v3.getDto());
-    chunk.place(v4.getDto());
-
-    return List.of(v1, v2, v3, v4);
+    var gCoordsList = List.of(Pair.of(0, 0), Pair.of(20, 20), Pair.of(100, 100), Pair.of(499, 499));
+    var vertices = new ArrayList<Vertex>();
+    for (var gCoords : gCoordsList) {
+      graph.addVertex(createSettlement(gCoords));
+      var vertex = graph.getVertex(gCoords, CoordType.GLOBAL);
+      chunk.place(vertex.getDto());
+      vertices.add(vertex);
+    }
+    return vertices;
   }
 
   private Settlement createSettlement(Pair<Integer, Integer> chunkCoords) {
