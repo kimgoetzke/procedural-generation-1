@@ -114,8 +114,33 @@ branching like this, make sure to use additional actions to change the event sta
               playerState: AT_POI # Set playerState to AT_POI
 ```
 
+## Placeholders
+
+A number of placeholders have been configured to allow for dynamic content. With placeholders, the dialogues involved in
+any type of event can be tailored to the places and characters that were generated.
+
+When loading an event at runtime, the `YamlReader` will use `PlaceholderProcessor` to replace these placeholders with
+the appropriate `String` values, allowing location names, NPC names, etc. to be referenced in dialogues.
+
+### List of available placeholders:
+
+- `&L` - Location name
+- `&I` - Point of interest name (i.e. name of a `Amenity`, `Shop` or `Dungeon`)
+- `&O` - Owner's name (full name) e.g. the NPC who starts the event
+- `&OF` - Owner's first name
+- `&TO` - Target owner's name (full name) e.g. the destination NPC in a `REACH` event
+- `&TOF` - Target owner's first name
+- `&TOL` - Target owner's last name
+- `&TI` - Target point of interest name e.g. the point of interest to which the player must travel in a `REACH` event
+- `&TL` - Target location name e.g. the location in which the target point of interest is located in a `REACH` event
+- `&E` - Enemy type in a `DEFEAT` event e.g. `Imp` or `Goblin`
+- `&R` - List of rewards provided by an event e.g. `5 gold, 40 XP`
+
 ## Other notes
 
 Due to the scope and purpose of this project, there is currently no pre-processing of the YAML files. This means that
 the YAML files are read when they are assigned to an NPC. This means that any errors in the YAML files will only be
 detected at that point.
+
+In addition, it is not possible to create Yaml events for a specific location or NPC. Instead, the system is designed
+to randomly assign events to NPCs and locations. This is done by the `EventGenerator` class.
