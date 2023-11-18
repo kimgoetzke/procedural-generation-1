@@ -19,8 +19,9 @@ import org.springframework.context.annotation.Scope;
 @RequiredArgsConstructor
 public class AppConfiguration {
 
-  private final ConsumableService consumableService;
   private final ApplicationContext ctx;
+  private final ConsumableService consumableService;
+  private final FolderReader folderReader;
 
   @Bean
   public Scanner scanner() {
@@ -35,8 +36,8 @@ public class AppConfiguration {
   @Bean
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public Generators generators() {
-    var nameGenerator = new BasicNameGenerator(new FolderReader());
-    var eventGenerator = new BasicEventGenerator(new FolderReader());
+    var nameGenerator = new BasicNameGenerator(folderReader);
+    var eventGenerator = new BasicEventGenerator(folderReader);
     var terrainGenerator = new BasicTerrainGenerator(appProperties());
     return new Generators(nameGenerator, eventGenerator, terrainGenerator);
   }
