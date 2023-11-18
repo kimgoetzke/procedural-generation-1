@@ -4,24 +4,30 @@ This project was my first attempt to procedurally generate, well, anything reall
 topic and, to keep things simple, I ended up creating an old-school text-based adventure game world where the player can
 travel between locations, interact with non-player characters, complete quests, and engage in combat.
 
-![WindowsTerminal_CD6QOmI0ST](https://github.com/kimgoetzke/procedural-generation-1/assets/120580433/ea97b37f-5597-45d6-8e03-c43885833e9c)
+![WindowsTerminal_CD6QOmI0ST](https://github.com/kimgoetzke/procedural-generation-1/assets/120580433/6c5f9829-5e3e-468c-8150-4c2be18d3c3b)
 
-_While this is a playable game, this project is only about basic procedural generation. It is simplistic and does not have a game loop 
-or enough content to be fun. For an actual game, check out [this project](https://github.com/kimgoetzke/game-no-mans-gun). Note that the 
-technologies used here were chosen to allow building a web-based application in the future._
+_While this is a playable game, this project is only about basic procedural generation. It is simplistic and does not
+have a game loop or enough content to be fun. For an actual game, check
+out [this project](https://github.com/kimgoetzke/game-no-mans-gun). Note that the technologies used here were chosen to
+allow building a web-based application in the future._
 
 ## Features
 
 ### Summary
 
-- Procedurally generated world with over 12,500 settlements of various sizes
-- Each containing between 1 and 34 shops, quest locations, and dungeons, as well as non-player characters (**NPCs**)
-- Thousands of (bad) names are generated at runtime for the above 
-- A handful of quest and dialogue templates are randomly assigned to NPCs and tailored to the generated locations/characters
-- By completing events, the player gains experience and levels up, and gains gold which can be used to buy items in
+- Procedurally generated world with over 12,500 unique settlements of various sizes
+- Each containing between 1 and 34 visitable points of interest (shops, quest locations, and dungeons), as well as
+  interactable non-player characters (**NPCs**)
+- Thousands of (reasonably bad) names are generated at runtime for the above
+- A handful of quest and dialogue templates are randomly assigned to NPCs and then tailored to the generated
+  locations/characters
+- By completing quests, the player gains experience, levels up, and gains gold which can be used to buy items in
   shops
-- The further the player travels away from the centre of the world, enemies change and become strong enemies (up to tier 6
-  for which the player requires level 60+ to stand a chance)
+- The further away the player travels from the centre of the world, enemies change and become stronger (up to tier
+  6 for which the player requires level 60+ to stand a chance)
+- Even after visiting thousands of locations, the game's memory utilisation should remain well below 400 MB at all times
+
+![explorer_tlGxDPVSs2_cropped](https://github.com/kimgoetzke/procedural-generation-1/assets/120580433/d4e57b2c-5805-43a8-a1d4-edbf33c184bb)
 
 ### Procedural generation
 
@@ -31,8 +37,9 @@ technologies used here were chosen to allow building a web-based application in 
     - Based on `int density`, a number of `Location`s are placed in the `Chunk`
     - `Location`s are connected using configurable strategies which result in the world's `Graph`
 - The `Graph` contains the network of connections between locations and their distances
-    - Each `Vertex` in the `Graph` holds a set of `Edge`s and a `LocationDto`   
-    - The `LocationDto` stores the `Coordinates` of the `Location` it represents, its neighbours, ID, name, and class name
+    - Each `Vertex` in the `Graph` holds a set of `Edge`s and a `LocationDto`
+    - The `LocationDto` stores the `Coordinates` of the `Location` it represents, its neighbours, ID, name, and class
+      name
     - This is why a `Location` itself can be unloaded and garbage collected and re-generated when required
 - A `Location` (interface) contains reference to neighbouring locations, points of interest inside it, and its location
   within the chunk and world
@@ -109,7 +116,7 @@ java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.2.jar
 
 #### IDE
 
-Clone project and run `Application.main` with `-Dspring.profiles.active=cli-prod`. During development, use 
+Clone project and run `Application.main` with `-Dspring.profiles.active=cli-prod`. During development, use
 `-Dspring.profiles.active=cli-dev` to see logs.
 
 ## Other notes
@@ -156,4 +163,3 @@ following:
     - Implement player equipment, inventory, and item drops
 - **Multiplayer**:
     - Allow multiple players to play in the same world and interact with each other
-
