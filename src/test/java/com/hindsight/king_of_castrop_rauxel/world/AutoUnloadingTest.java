@@ -55,40 +55,33 @@ class AutoUnloadingTest extends BaseWorldTest {
 
   @Test
   void whenReturningToPrevChunk_generateTheSameChunkAgain() {
-    // Given
+    // Given a chunk
     var initialCoords = world.getCentreCoords();
+    world.setCurrentChunk(initialCoords);
+    var dtosAfterFirstLoading = graph.getVertices().stream().map(Vertex::getDto).toList();
+    var initialChunk = world.getChunk(CardinalDirection.THIS);
+    var chunkLocationsVisit1 = initialChunk.getLocations();
+    var chunkVertsVisit1 = graph.getVertices(initialChunk);
 
     // When moving outside the retention zone
-    world.setCurrentChunk(initialCoords);
-    var initialDtos = graph.getVertices().stream().map(Vertex::getDto).toList();
-    var initialChunk = world.getChunk(CardinalDirection.THIS);
-    var initialLocations = initialChunk.getLocations();
-    var initialVerts = graph.getVertices(initialChunk);
     for (var i = 0; i < retentionZone + 1; i++) {
       world.setCurrentChunk(world.getChunk(CardinalDirection.EAST).getCoordinates().getWorld());
     }
-    var intermediate = graph.getVertices().stream().map(Vertex::getDto).toList();
+    var dtosBeforeReloadingChunk = graph.getVertices().stream().map(Vertex::getDto).toList();
 
     // Then initial chunk is unloaded
     assertThat(world.hasLoadedChunk(initialCoords)).isFalse();
 
-    // When moving back to initial chunk
+    // When reloading initial chunk
     world.setCurrentChunk(initialCoords);
-    var finalDtos = graph.getVertices().stream().map(Vertex::getDto).toList();
-    var finalVerts = graph.getVertices(world.getChunk(CardinalDirection.THIS));
-    var finalLocations = world.getChunk(CardinalDirection.THIS).getLocations();
+    var dtosAfterReloadingChunk = graph.getVertices().stream().map(Vertex::getDto).toList();
+    var chunkVertsVisit2 = graph.getVertices(world.getChunk(CardinalDirection.THIS));
+    var chunkLocationsVisit2 = world.getChunk(CardinalDirection.THIS).getLocations();
 
-    // FIXME: Current problem:
-    //  - Same size of vertices but some vertices have different neighbours or same neighbours but
-    //    different order
-    //  - Problem is related to the connection algorithms which somehow don't behave predictably
-    //    the same as the graph size increases (it'll process neighbours in a diff. order, it seems)
-    //  - Problem solved but I have removed connection strategies which I may need to connect all
-
-    // Then initial chunk is loaded again
-    assertThat(finalDtos).containsAll(initialDtos).hasSizeGreaterThan(1);
-    assertThat(finalVerts).containsExactlyInAnyOrderElementsOf(initialVerts);
-    assertThat(finalLocations).isEqualTo(initialLocations);
-    assertThat(intermediate).hasSizeBetween(initialDtos.size(), finalDtos.size());
+    // Then initial chunk is loaded as expected
+    assertThat(dtosAfterReloadingChunk).containsAll(dtosAfterFirstLoading).hasSizeGreaterThan(1);
+    assertThat(chunkVertsVisit2).containsExactlyInAnyOrderElementsOf(chunkVertsVisit1);
+    assertThat(chunkLocationsVisit2).isEqualTo(chunkLocationsVisit1).hasSizeGreaterThan(1);
+    assertThat(dtosBeforeReloadingChunk).hasSize(dtosAfterReloadingChunk.size());
   }
 }

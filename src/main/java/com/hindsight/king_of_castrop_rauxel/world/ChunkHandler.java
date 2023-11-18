@@ -58,9 +58,6 @@ public class ChunkHandler {
       return;
     }
     connectAnyWithinNeighbourDistance();
-    // TODO: Do I need the below strategies?
-    //    connectNeighbourlessToClosest();
-    //    connectDisconnectedToClosestConnected();
   }
 
   protected void generateSettlements(Chunk chunk) {
@@ -165,7 +162,7 @@ public class ChunkHandler {
     var v2Location = v2Chunk.getLocation(vertex2.getDto().coordinates());
     addNeighbourIfNotNull(v1Location, v2Location);
     addNeighbourIfNotNull(v2Location, v1Location);
-    log.info(
+    log.debug(
         "Connected {} and {} (distance: {} km)",
         vertex1.getDto().name(),
         vertex2.getDto().name(),

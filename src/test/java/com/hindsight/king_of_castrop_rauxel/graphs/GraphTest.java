@@ -90,6 +90,10 @@ class GraphTest {
     assertThat(v4.getDto().id()).isEqualTo(l4.getId());
   }
 
+  /**
+   * Note that the Graph is sorted by vertex ID so that ID, meaning that the most south-western
+   * vertex will be picked up first. In this case, w(25,24) is the most south-western chunk.
+   */
   @Test
   void givenLocationsWithSameChunkCoords_whenRetrievingByChunkCords_cannotDistinguish() {
     // Given
@@ -106,11 +110,16 @@ class GraphTest {
     var v3 = underTest.getVertex(l3.getCoordinates().getChunk(), Coordinates.CoordType.CHUNK);
 
     // Then
-    assertThat(v1.getDto().id()).isEqualTo(l1.getId());
-    assertThat(v2.getDto().id()).isEqualTo(l1.getId());
-    assertThat(v3.getDto().id()).isEqualTo(l1.getId());
+    assertThat(v1.getDto().id()).isEqualTo(l3.getId());
+    assertThat(v2.getDto().id()).isEqualTo(l3.getId());
+    assertThat(v3.getDto().id()).isEqualTo(l3.getId());
   }
 
+  /**
+   * Note that the Graph is sorted by vertex ID so that ID, meaning that the most south-western
+   * vertex will be picked up first. In this case, c(0,0) is the most south-western settlement in
+   * the chunk at w(24,25).
+   */
   @Test
   void givenLocationsWithSameWorldCoords_whenRetrievingByWorldCords_cannotDistinguish() {
     // Given
@@ -130,8 +139,8 @@ class GraphTest {
 
     // Then
     assertThat(v1.getDto().id()).isEqualTo(l1.getId());
-    assertThat(v3.getDto().id()).isEqualTo(l2.getId());
-    assertThat(v4.getDto().id()).isEqualTo(l2.getId());
+    assertThat(v3.getDto().id()).isEqualTo(l3.getId());
+    assertThat(v4.getDto().id()).isEqualTo(l3.getId());
   }
 
   private Settlement createSettlement(
