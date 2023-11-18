@@ -59,7 +59,7 @@ public class Chunk implements Generatable, Unloadable {
     this.coordinates = cf.create(worldCoords, CoordType.WORLD);
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.random = new Random(seed);
-    this.chunkHandler = chunkHandler.initialise(random);
+    this.chunkHandler = chunkHandler.initialise(random, this);
     this.density = randomDensity(chunkProperties.density());
     this.chunkSize = chunkProperties.size();
     this.minPlacementDistance = chunkProperties.minPlacementDistance();
@@ -76,7 +76,7 @@ public class Chunk implements Generatable, Unloadable {
     random = new Random(seed);
     locations = new TreeSet<>(Comparator.comparing(Location::getName));
     plane = new Location[chunkSize][chunkSize];
-    chunkHandler = chunkHandler.initialise(random);
+    chunkHandler = chunkHandler.initialise(random, this);
     chunkHandler.populate(this, strategy);
     setLoaded(true);
     logResult();
@@ -87,7 +87,7 @@ public class Chunk implements Generatable, Unloadable {
     plane = null;
     locations = null;
     random = null;
-    chunkHandler.initialise(null);
+    chunkHandler.initialise(null, this);
     setLoaded(false);
     logResult();
   }

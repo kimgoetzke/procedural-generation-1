@@ -31,7 +31,6 @@ class ChunkHandlerTest extends BaseWorldTest {
 
   @BeforeEach
   void setUp() {
-    SeedBuilder.changeSeed(123L);
     graph = ctx.getBean(Graph.class);
     daf = new DebugActionFactory(graph, world, chunkHandler, appProperties);
     chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.DO_NOTHING);
@@ -64,6 +63,24 @@ class ChunkHandlerTest extends BaseWorldTest {
         arguments(Pair.of(28, 25), 3),
         arguments(Pair.of(29, 25), 4),
         arguments(Pair.of(30, 30), 10));
+  }
+
+  @ParameterizedTest
+  @MethodSource("worldCoords")
+  void whenSettingCurrentChunk_ensureAllLocationsAreConnected(Pair<Integer, Integer> coords) {
+    // When
+    world.setCurrentChunk(coords);
+    var locationsWithoutNeighbours =
+        world.getChunk(coords).getLocations().stream()
+            .filter(l -> l.getNeighbours().isEmpty())
+            .toList();
+
+    // Then
+    assertThat(locationsWithoutNeighbours).isEmpty();
+  }
+
+  private static Stream<Pair<Integer, Integer>> worldCoords() {
+    return Stream.of(Pair.of(25, 25), Pair.of(1, 1), Pair.of(49, 49));
   }
 
   @Test
@@ -106,9 +123,9 @@ class ChunkHandlerTest extends BaseWorldTest {
   void givenSomeConnections_whenEvaluatingConnectivity_findThemAsExpected() {
     // Given
     var vertices = chunkWithSettlementsExists();
-    var v1 = vertices.get(0);
-    var v2 = vertices.get(1);
-    var v3 = vertices.get(2);
+    var v1 = vertices.get(1);
+    var v2 = vertices.get(2);
+    var v3 = vertices.get(3);
 
     // When
     chunkHandler.addConnections(v1, v2, v1.getDto().distanceTo(v2.getDto()));
@@ -117,7 +134,7 @@ class ChunkHandlerTest extends BaseWorldTest {
 
     // Then
     assertThat(result.unvisitedVertices()).hasSize(1);
-    assertThat(result.unvisitedVertices()).contains(vertices.get(3));
+    assertThat(result.unvisitedVertices()).contains(vertices.get(0));
     assertThat(result.visitedVertices()).hasSize(3);
     assertThat(v1.getNeighbours()).hasSize(1);
     assertThat(v2.getNeighbours()).hasSize(2);
@@ -127,9 +144,9 @@ class ChunkHandlerTest extends BaseWorldTest {
   @Test
   void whenGeneratingSettlements_createThemPredictablyAndDoNotConnectThem() {
     // Given
-    var expected1 = Pair.of(473, 29);
-    var expected2 = Pair.of(293, 125);
-    var expected3 = Pair.of(81, 212);
+    var expected1 = Pair.of(144, 64);
+    var expected2 = Pair.of(496, 413);
+    var expected3 = Pair.of(293, 341);
 
     // When
     chunkHandler.generateSettlements(chunk);
@@ -150,53 +167,32 @@ class ChunkHandlerTest extends BaseWorldTest {
     // When
     chunkHandler.generateSettlements(chunk);
     chunkHandler.connectAnyWithinNeighbourDistance();
-    var HYL = graph.getVertex(Pair.of(293, 125), CoordType.GLOBAL);
-    var AST = graph.getVertex(Pair.of(473, 29), CoordType.GLOBAL);
-    var THR = graph.getVertex(Pair.of(81, 212), CoordType.GLOBAL);
-    var DYN = graph.getVertex(Pair.of(276, 169), CoordType.GLOBAL);
-    var ZEP = graph.getVertex(Pair.of(311, 232), CoordType.GLOBAL);
-    var ELY = graph.getVertex(Pair.of(275, 216), CoordType.GLOBAL);
-    var THY = graph.getVertex(Pair.of(206, 245), CoordType.GLOBAL);
+    var HEL = graph.getVertex(Pair.of(144, 64), CoordType.GLOBAL);
+    var THY = graph.getVertex(Pair.of(496, 413), CoordType.GLOBAL);
+    var BRY = graph.getVertex(Pair.of(293, 341), CoordType.GLOBAL);
+    var PYR = graph.getVertex(Pair.of(101, 225), CoordType.GLOBAL);
+    var TYR = graph.getVertex(Pair.of(405, 389), CoordType.GLOBAL);
 
     // Then
-    assertThat(graph.getVertices()).hasSize(7);
-    assertThat(HYL.getNeighbours()).containsOnly(DYN.getDto(), ZEP.getDto(), ELY.getDto());
-    assertThat(THR.getNeighbours()).containsOnly(THY.getDto());
-    assertThat(DYN.getNeighbours())
-        .containsOnly(HYL.getDto(), ZEP.getDto(), ELY.getDto(), THY.getDto());
-    assertThat(ZEP.getNeighbours())
-        .containsOnly(HYL.getDto(), DYN.getDto(), ELY.getDto(), THY.getDto());
-    assertThat(ELY.getNeighbours())
-        .containsOnly(HYL.getDto(), DYN.getDto(), ZEP.getDto(), THY.getDto());
-    assertThat(THY.getNeighbours())
-        .containsOnly(THR.getDto(), DYN.getDto(), ZEP.getDto(), ELY.getDto());
-    assertThat(AST.getNeighbours()).isEmpty();
+    assertThat(graph.getVertices()).hasSize(5);
+    assertThat(HEL.getNeighbours()).isEmpty();
+    assertThat(THY.getNeighbours()).containsOnly(TYR.getDto());
+    assertThat(BRY.getNeighbours()).containsOnly(TYR.getDto());
+    assertThat(PYR.getNeighbours()).isEmpty();
+    assertThat(TYR.getNeighbours()).containsOnly(THY.getDto(), BRY.getDto());
   }
 
   @Test
   void whenConnectingNeighbourless_addNeighboursButDoNotConnectAll() {
     // When
     chunkHandler.generateSettlements(chunk);
-    chunkHandler.connectNeighbourlessToClosest();
+    chunkHandler.connectNeighbourlessInChunkToClosest();
     var result = chunkHandler.evaluateConnectivity(graph);
 
     // Then
     graph.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
-    assertThat(result.unvisitedVertices()).hasSize(5);
-    assertThat(result.visitedVertices()).hasSize(2);
-  }
-
-  @Test
-  void whenConnectingDisconnected_connectAllAsExpected() {
-    // When
-    chunkHandler.generateSettlements(chunk);
-    chunkHandler.connectDisconnectedToClosestConnected();
-    var connectivity = chunkHandler.evaluateConnectivity(graph);
-
-    // Then
-    assertThat(graph.getVertices()).hasSize(7);
-    graph.getVertices().forEach(v -> assertThat(v.getNeighbours()).isNotEmpty());
-    assertThat(connectivity.visitedVertices()).hasSize(7);
+    assertThat(result.unvisitedVertices()).hasSize(2);
+    assertThat(result.visitedVertices()).hasSize(3);
   }
 
   private List<Vertex> chunkWithSettlementsExists() {

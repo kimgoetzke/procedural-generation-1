@@ -36,15 +36,15 @@ public class Graph {
   }
 
   /** Returns a list of vertices that are within the given chunk i.e. same world coords. */
-  public List<Vertex> getVertices(Chunk chunk) {
+  public Set<Vertex> getVertices(Chunk chunk) {
     var worldCoords = chunk.getCoordinates().getWorld();
-    var list = new ArrayList<Vertex>();
+    var chunkVertices = new TreeSet<>(Comparator.comparing(Vertex::getId));
     for (var vertex : vertices) {
       if (vertex.getDto().coordinates().equalTo(worldCoords, Coordinates.CoordType.WORLD)) {
-        list.add(vertex);
+        chunkVertices.add(vertex);
       }
     }
-    return list;
+    return chunkVertices;
   }
 
   // TODO: Only allow retrieving with global coordinates

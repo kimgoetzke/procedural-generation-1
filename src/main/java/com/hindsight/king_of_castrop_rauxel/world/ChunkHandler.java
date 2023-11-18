@@ -24,6 +24,7 @@ public class ChunkHandler {
   private final Graph graph;
   private final Generators generators;
   private final DataServices dataServices;
+  private Chunk chunk;
 
   public ChunkHandler(
       World world,
@@ -39,8 +40,9 @@ public class ChunkHandler {
     this.dataServices = dataServices;
   }
 
-  public ChunkHandler initialise(Random random) {
+  public ChunkHandler initialise(Random random, Chunk chunk) {
     generators.initialiseAll(random);
+    this.chunk = chunk;
     return this;
   }
 
@@ -58,6 +60,7 @@ public class ChunkHandler {
       return;
     }
     connectAnyWithinNeighbourDistance();
+    connectNeighbourlessInChunkToClosest();
   }
 
   protected void generateSettlements(Chunk chunk) {
@@ -104,52 +107,31 @@ public class ChunkHandler {
   }
 
   /**
-   * Connects any vertices that have no neighbours to the closest vertex. Does NOT guarantee that
-   * all vertices will be connected to the graph. This method will skip any vertex that has been
-   * connected while running the algorithm even if this vertex has an even closer neighbour.
-   * Example: A and B are already connected. C's closed neighbour, D, is 100km away. D to A is 10km.
-   * C will be connected to D and D will be skipped because it now has a neighbour, despite D's
-   * closest neighbour being A.
+   * Connects any vertices of this chunk that have no neighbours to the closest vertex (of any
+   * chunk). Guarantees that all vertices of this chunk will be connected to the graph. This method
+   * will skip any vertex that has been connected while running the algorithm even if this vertex
+   * has an even closer neighbour. Example: A and B are already connected. C's closed neighbour, D,
+   * is 100km away. D to A is 10km. C will be connected to D and D will be skipped because it now
+   * has a neighbour, despite D's closest neighbour being A.
    */
-  protected void connectNeighbourlessToClosest() {
-    var vertices = graph.getVertices();
-    for (var reference : vertices) {
-      var correctChunk = world.getChunk(reference.getDto().coordinates().getWorld());
-      var location = correctChunk.getLocation(reference.getDto().coordinates());
-      connectIfNoNeighbours(reference, vertices, location);
+  protected void connectNeighbourlessInChunkToClosest() {
+    var chunkVertices = graph.getVertices(chunk);
+    var allVertices = graph.getVertices();
+    for (var refVertex : chunkVertices) {
+      var refLocation = chunk.getLocation(refVertex.getDto().coordinates());
+      connectIfNoNeighbours(refVertex, refLocation, allVertices);
     }
   }
 
-  private void connectIfNoNeighbours(Vertex vert, Set<Vertex> vertices, Location refLocation) {
-    if (vert.getNeighbours().isEmpty()) {
-      var closestNeighbour = closestNeighbourTo(vert, vertices);
+  private void connectIfNoNeighbours(
+      Vertex refVertex, Location refLocation, Set<Vertex> allVertices) {
+    if (refVertex.getNeighbours().isEmpty()) {
+      var closestNeighbour = closestNeighbourTo(refVertex, allVertices);
       if (closestNeighbour != null) {
         var distance = refLocation.distanceTo(closestNeighbour.getDto());
-        addConnections(vert, closestNeighbour, distance);
-      }
-    }
-  }
-
-  /**
-   * Connects any vertices that are not connected to the closest vertex that is connected. This
-   * method guarantees that all vertices will be connected to the graph. However, it will ignore
-   * close vertices if they have not been connected to the graph yet. Executing this method prior to
-   * any other connection algorithm will provide odd results.
-   */
-  protected void connectDisconnectedToClosestConnected() {
-    var connectivity = evaluateConnectivity(graph);
-    var visitedVertices = new HashSet<>(connectivity.visitedVertices());
-    var unvisitedVertices = connectivity.unvisitedVertices();
-    if (unvisitedVertices.isEmpty()) {
-      return;
-    }
-    for (var unvisitedVertex : unvisitedVertices) {
-      var refLocation = unvisitedVertex.getDto();
-      var closestNeighbour = closestNeighbourTo(unvisitedVertex, visitedVertices);
-      if (closestNeighbour != null) {
-        var distance = refLocation.distanceTo(closestNeighbour.getDto());
-        addConnections(unvisitedVertex, closestNeighbour, distance);
-        visitedVertices.add(unvisitedVertex);
+        addConnections(refVertex, closestNeighbour, distance);
+      } else {
+        log.error("No closest neighbour found for {}", refVertex.getDto().getSummary());
       }
     }
   }
@@ -162,7 +144,7 @@ public class ChunkHandler {
     var v2Location = v2Chunk.getLocation(vertex2.getDto().coordinates());
     addNeighbourIfNotNull(v1Location, v2Location);
     addNeighbourIfNotNull(v2Location, v1Location);
-    log.debug(
+    log.info(
         "Connected {} and {} (distance: {} km)",
         vertex1.getDto().name(),
         vertex2.getDto().name(),

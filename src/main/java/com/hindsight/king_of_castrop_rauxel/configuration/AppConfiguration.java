@@ -9,9 +9,11 @@ import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.Scanner;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class AppConfiguration {
   }
 
   @Bean
+  @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public Generators generators() {
     var nameGenerator = new BasicNameGenerator(new FolderReader());
     var eventGenerator = new BasicEventGenerator(new FolderReader());
@@ -54,6 +57,7 @@ public class AppConfiguration {
   }
 
   @Bean
+  @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public ChunkHandler chunkHandler() {
     return new ChunkHandler(world(), graph(), appProperties(), generators(), dataServices());
   }

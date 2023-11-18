@@ -17,7 +17,6 @@ public class World {
   private final Graph graph;
   private final Chunk[][] plane;
   private final int worldSize;
-  private final int chunkSize;
   private final int retentionZone;
   private final boolean autoUnload;
 
@@ -27,7 +26,6 @@ public class World {
     this.ctx = ctx;
     this.graph = graph;
     this.worldSize = appProperties.getWorldProperties().size();
-    this.chunkSize = appProperties.getChunkProperties().size();
     this.autoUnload = appProperties.getGeneralProperties().autoUnload();
     this.retentionZone = appProperties.getWorldProperties().retentionZone();
     this.plane = new Chunk[worldSize][worldSize];
@@ -76,7 +74,7 @@ public class World {
 
   private void generateChunk(Pair<Integer, Integer> worldCoords) {
     var stats = getStats(graph);
-    var chunkHandler = ctx.getBean(ChunkHandler.class, graph);
+    var chunkHandler = ctx.getBean(ChunkHandler.class);
     var chunk = ctx.getBean(Chunk.class, worldCoords, chunkHandler);
     placeChunk(chunk, worldCoords);
     logOutcome(stats, graph, this.getClass());
@@ -101,19 +99,21 @@ public class World {
       if (direction.equals(CardinalDirection.THIS)) {
         continue;
       }
-      var coords = getCoordsFor(direction);
-      attemptToGenerateAndLoadChunk(coords);
+      var worldCoords = getCoordsFor(direction);
+      attemptToGenerateAndLoadChunk(worldCoords);
     }
   }
 
-  private void attemptToGenerateAndLoadChunk(Pair<Integer, Integer> coords) {
-    if (!hasChunk(coords) && isValidPosition(coords.getFirst(), coords.getSecond())) {
-      generateChunk(coords);
+  private void attemptToGenerateAndLoadChunk(Pair<Integer, Integer> worldCoords) {
+    var x = worldCoords.getFirst();
+    var y = worldCoords.getSecond();
+    if (!hasChunk(worldCoords) && isValidPosition(x, y)) {
+      generateChunk(worldCoords);
     }
-    if (hasChunk(coords)) {
-      getChunk(coords).load();
+    if (hasChunk(worldCoords)) {
+      getChunk(worldCoords).load();
     } else {
-      log.info("No chunk can be generated at c({},{})", coords.getFirst(), coords.getSecond());
+      log.info("No chunk can be generated at c({},{})", x, y);
     }
   }
 
@@ -137,7 +137,7 @@ public class World {
   }
 
   private boolean isValidPosition(int x, int y) {
-    return x >= 0 && x < chunkSize && y >= 0 && y < chunkSize;
+    return x >= 0 && x < worldSize && y >= 0 && y < worldSize;
   }
 
   /** Returns the world coordinates of the chunk in the center of the world. */

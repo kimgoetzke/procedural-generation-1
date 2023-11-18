@@ -36,7 +36,7 @@ public abstract class BaseWorldTest {
     daf = null;
   }
 
-  protected void debug(List<Vertex> vertices, Graph graph) {
+  protected void debug(Set<Vertex> vertices, Graph graph) {
     chunkHandler.logDisconnectedVertices(graph);
     var connectivityResult = chunkHandler.evaluateConnectivity(graph);
     System.out.println("Unvisited vertices: " + connectivityResult.unvisitedVertices().size());
@@ -54,7 +54,7 @@ public abstract class BaseWorldTest {
     daf.printConnectivity();
   }
 
-  protected void debugSet(List<Vertex> vertices, Set<Vertex> vertexSet) {
+  protected void debugSet(Set<Vertex> vertices, Set<Vertex> vertexSet) {
     vertexSet.forEach(
         v -> {
           System.out.println(v.getDto().getSummary());
