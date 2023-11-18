@@ -4,52 +4,49 @@ This project was my first attempt to procedurally generate, well, anything reall
 topic and, to keep things simple, I ended up creating an old-school text-based adventure game world where the player can
 travel between locations, interact with non-player characters, complete quests, and engage in combat.
 
-## How to play
+![WindowsTerminal_CD6QOmI0ST](https://github.com/kimgoetzke/procedural-generation-1/assets/120580433/ea97b37f-5597-45d6-8e03-c43885833e9c)
 
-#### JAR
-
-Clone and build project, and run JAR with `cli-prod` profile:
-
-```shell
-cd build\libs 
-java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.2.jar
-```
-
-#### IDE
-
-Clone project and run `Application.main` with `-Dspring.profiles.active=cli-prod`.
+_While this is a playable game, this project is only about basic procedural generation. It is simplistic and does not have a game loop 
+or enough content to be fun. For an actual game, check out [this project](https://github.com/kimgoetzke/game-no-mans-gun). Note that the 
+technologies used here were chosen to allow building a web-based application in the future._
 
 ## Features
 
 ### Summary
 
-- Procedurally generated world with settlements of various sizes, containing shops, quest locations,
-  and dungeons, and non-player characters (NPCs)
-- Quest and dialogue templates are randomly assigned to NPCs and tailored to the generated locations/characters
+- Procedurally generated world with over 12,500 settlements of various sizes
+- Each containing between 1 and 34 shops, quest locations, and dungeons, as well as non-player characters (**NPCs**)
+- Thousands of (bad) names are generated at runtime for the above 
+- A handful of quest and dialogue templates are randomly assigned to NPCs and tailored to the generated locations/characters
 - By completing events, the player gains experience and levels up, and gains gold which can be used to buy items in
   shops
-- The further the player travels away from the centre of the world, the more difficult enemies become
+- The further the player travels away from the centre of the world, enemies change and become strong enemies (up to tier 6
+  for which the player requires level 60+ to stand a chance)
 
 ### Procedural generation
 
 - All objects below are generated procedurally, using a seeded `Random` object and handled by a `WorldHandler` instance
 - The core object is `World` which holds `Chunk[][]`, with the player starting in the centre chunk
-- Each `Chunk` holds an `int[][]`:
+- Each `Chunk` holds a `Location[][]`:
     - Based on `int density`, a number of `Location`s are placed in the `Chunk`
-    - `Location`s are connected using various, configurable strategies which result in the `WorldHandler`s `Graph`
+    - `Location`s are connected using configurable strategies which result in the world's `Graph`
+- The `Graph` contains the network of connections between locations and their distances
+    - Each `Vertex` in the `Graph` holds a set of `Edge`s and a `LocationDto`   
+    - The `LocationDto` stores the `Coordinates` of the `Location` it represents, its neighbours, ID, name, and class name
+    - This is why a `Location` itself can be unloaded and garbage collected and re-generated when required
 - A `Location` (interface) contains reference to neighbouring locations, points of interest inside it, and its location
   within the chunk and world
     - The only `Location` available at this stage is a `Settlement`
     - For generation, the most important feature of a `Location` is its `Size` which determines the `PointOfInterest`
       count and, for a `Settlement`, also the `Inhabitant` count
     - Each `Location` holds a `List<PointOfInterest>` which the player can visit
-- The key object a player interacts with/within is a `PointOfInterest` (**POI**):
+- The key object a player interacts with is a `PointOfInterest` (**POI**):
     - A POIs features are determined by its `Type`
     - Currently implemented are the following `Type`s: `ENTRANCE`, `MAIN_SQUARE`, `SHOP`, `QUEST_LOCATION` and `DUNGEON`
-    - At a POI, the player can engage in dialogues with non-player characters (**NPC**) other events (e.g. "delivery"
+    - At a POI, the player can engage in dialogues with NPCs other events (e.g. "delivery"
       or "kill" quests), engage in combat, or take other actions
-- Each object of each layer (i.e. `World`, `Chunk`, `Location` and `PointOfInterest`) can be located using `Coordinate`
-- The web of connections and the distance between each (both of which stored in the `WorldHandler`s `Graph`)
+- Each object of each layer (i.e. `World`, `Chunk`, `Location` and `PointOfInterest`) can be located using `Coordinates`
+- The web of connections and the distance between each (both of which stored in the `Graph`)
   play an important role e.g. where a player can travel to and how long it takes
 
 ### Player loop
@@ -99,7 +96,44 @@ public class DialogueLoop extends AbstractLoop {
 This project uses `google-java-format`. See https://github.com/google/google-java-format for more details on how to set
 it up and use it.
 
+## How to play
+
+#### JAR
+
+Clone and build project, and run JAR with `cli-prod` profile:
+
+```shell
+cd build\libs 
+java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.2.jar
+```
+
+#### IDE
+
+Clone project and run `Application.main` with `-Dspring.profiles.active=cli-prod`. During development, use 
+`-Dspring.profiles.active=cli-dev` to see logs.
+
 ## Other notes
+
+### Configuration
+
+Much of the game can be configured in the `application-world.yml` file. This includes, but is not limited to, the
+following:
+
+- World properties
+    - World size (determining the number of chunks)
+    - Retention zone (i.e. distance from the current chunk beyond which chunks are automatically unloaded)
+- Chunk properties
+    - Chunk size (in km)
+    - Density range (i.e. number of locations per chunk)
+    - Minimum distance between chunks
+    - Maximum distance within which chunks are connected by default
+    - Distance to chunk border at which the next chunk is loaded (if not already loaded)
+- Settlement properties
+    - Sizes and their respective characteristics (e.g. range of inhabitants, range of points of interest)
+    - Dungeon properties
+        - Min vs max possible encounters per dungeon
+        - Min vs max possible enemies per encounter
+        - Types of enemies (per tier) and property ranges for each (health, damage, etc.)
 
 ### More documentation
 
