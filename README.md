@@ -94,7 +94,10 @@ public class DialogueLoop extends AbstractLoop {
 - Core: Java 19, Spring Boot 3 + Lombok, Gradle
 - `guava` for String manipulation
 - `snakeyaml` for Yaml processing
-- `google-java-format` for formatting
+- `consoleui` by Andreas Wegmann for CLI-based user interface (only in JAR): https://github.com/awegmann/consoleui
+
+This project uses `google-java-format`. See https://github.com/google/google-java-format for more details on how to set
+it up and use it.
 
 ## Other notes
 
@@ -119,9 +122,4 @@ public class DialogueLoop extends AbstractLoop {
     - Implement player equipment, inventory, and item drops
 - **Multiplayer**:
     - Allow multiple players to play in the same world and interact with each other
-
-### Formatter
-
-This project uses `google-java-format`. See https://github.com/google/google-java-format for more details on how to set
-it up and use it.
 
