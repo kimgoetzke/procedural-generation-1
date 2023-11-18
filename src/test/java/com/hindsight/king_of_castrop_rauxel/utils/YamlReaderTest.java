@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.DialogueAction;
+import com.hindsight.king_of_castrop_rauxel.characters.BasicEnemy;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import java.util.*;
-
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -20,7 +20,7 @@ class YamlReaderTest extends YamlReader {
   private static final String EXPECTED_ACTION =
       "DialogueAction(index=0, name=EXPECTED_TEXT, eventState=NONE, playerState=null, nextInteraction=2)";
 
-  /** This test is largely used to generate the expected structure for Yaml files. */
+  /** This test is used to generate the expected structure for Yaml files. */
   @Test
   void writeObjectToYaml() {
     var options = new LoaderOptions();
@@ -39,7 +39,7 @@ class YamlReaderTest extends YamlReader {
   }
 
   @Test
-  void whenValidYaml_readYamlToEventDto() {
+  void whenYamlIsValid_parseContentToEventDto() {
     var underTest = new YamlReader();
     var data = underTest.read("yaml-reader-test-file.yml");
     assertThat(data).isNotNull();
@@ -50,6 +50,9 @@ class YamlReaderTest extends YamlReader {
     assertThat(data.eventDetails.getRewards().get(0).getType()).isEqualTo(Reward.Type.GOLD);
     assertThat(data.eventDetails.getRewards().get(0).getMinValue()).isEqualTo(10);
     assertThat(data.eventDetails.getRewards().get(0).getMaxValue()).isEqualTo(15);
+    assertThat(data.defeatDetails.getTaskType()).isEqualTo(DefeatEvent.TaskType.KILL_ALL_AT_POI);
+    assertThat(data.defeatDetails.getEnemyType()).isEqualTo(BasicEnemy.Type.GOBLIN);
+    assertThat(data.defeatDetails.getToDefeat()).isEqualTo(9);
     assertThat(data.participantData).isNotNull();
     var giverDialogues = data.participantData.get(Role.EVENT_GIVER);
     assertThat(giverDialogues).hasSize(5);
@@ -64,10 +67,11 @@ class YamlReaderTest extends YamlReader {
 
   private EventDto getEventDto() {
     var eventDetails = new EventDetails();
+    var defeatDetails = new DefeatEventDetails();
     var participantsData = new EnumMap<Role, List<Dialogue>>(Role.class);
     participantsData.put(Role.EVENT_GIVER, getDialogues());
     participantsData.put(Role.EVENT_TARGET, getDialogues());
-    return new EventDto(eventDetails, participantsData);
+    return new EventDto(eventDetails, defeatDetails, participantsData);
   }
 
   private List<Dialogue> getDialogues() {

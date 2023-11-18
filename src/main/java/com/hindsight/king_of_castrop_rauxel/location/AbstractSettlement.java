@@ -3,16 +3,11 @@ package com.hindsight.king_of_castrop_rauxel.location;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,19 +20,21 @@ public abstract class AbstractSettlement extends AbstractLocation {
   @Getter protected final Generators generators;
   @Getter protected final DataServices dataServices;
   @Getter protected Size size;
-  protected Player loyalTo;
   protected int area;
   protected List<PointOfInterest> pointsOfInterests = new ArrayList<>();
   @Getter protected List<Npc> inhabitants = new ArrayList<>();
-  @EqualsAndHashCode.Include @Getter protected int inhabitantCount;
-  @Getter protected Set<Location> neighbours = new HashSet<>();
+  @Getter protected int inhabitantCount;
+
+  @Getter
+  protected Set<Location> neighbours = new TreeSet<>(Comparator.comparing(Location::getName));
 
   protected AbstractSettlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
       Generators generators,
-      DataServices dataServices) {
-    super(worldCoords, chunkCoords);
+      DataServices dataServices,
+      AppProperties appProperties) {
+    super(worldCoords, chunkCoords, appProperties);
     this.generators = generators;
     this.dataServices = dataServices;
     generators.initialiseAll(random);
@@ -77,36 +74,40 @@ public abstract class AbstractSettlement extends AbstractLocation {
     return super.toString()
         + ", size="
         + size
-        + ", loyalTo="
-        + loyalTo
         + ", inhabitants="
         + inhabitants.size()
         + ", inhabitantCount="
         + inhabitantCount
         + ", neighbours="
-        + neighbours.size()
+        + neighbours.stream().map(Location::getName).toList()
         + ", amenities="
         + pointsOfInterests.size();
   }
 
   @Override
   public String getBriefSummary() {
-    return "%s [ Size: %s | %s | Neighbours: %s | Generated: %s ]"
+    return "%s: %s, %s, neighbours: %s, generated: %s"
         .formatted(name, size, coordinates.toString(), neighbours.size(), isLoaded());
   }
 
   @Override
   public String getFullSummary() {
-    return "%s [ Size: %s | %d inhabitants | Population density: %s | %s points of interest | Coordinates: %s | Connected to %s location(s) | Stance: %s ]"
+    return "%s: %s, %s, neighbours: %s, POIs: %s, %d inhabitants, population density: %s, generated: %s"
         .formatted(
             name,
-            size.getName(),
-            inhabitantCount,
-            getPopulationDensity(),
-            pointsOfInterests.size(),
+            size,
             coordinates.globalToString(),
             neighbours.size(),
-            loyalTo == null ? "Neutral" : "Loyal to " + loyalTo.getName());
+            pointsOfInterests.size(),
+            inhabitantCount,
+            getPopulationDensity(),
+            isLoaded());
+  }
+
+  @Override
+  public String getPrintableSummary() {
+    return "%s [ Size: %s | %d inhabitants | Population density: %s ]"
+        .formatted(name, size.getName(), inhabitantCount, getPopulationDensity());
   }
 
   private String getPopulationDensity() {

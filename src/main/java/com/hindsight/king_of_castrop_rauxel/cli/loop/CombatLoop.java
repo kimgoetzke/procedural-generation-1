@@ -26,7 +26,8 @@ public class CombatLoop extends AbstractLoop {
     promptPlayer(actions, "What now?");
   }
 
-  private void prepareActions(List<Action> actions) {
+  @Override
+  protected void prepareActions(List<Action> actions) {
     actionHandler.getCombatActions(player, actions);
   }
 }

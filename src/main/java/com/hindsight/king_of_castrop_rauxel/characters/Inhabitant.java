@@ -3,11 +3,10 @@ package com.hindsight.king_of_castrop_rauxel.characters;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
+import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -56,17 +55,8 @@ public class Inhabitant implements Npc {
 
   @Override
   public void loadPrimaryEvent() {
-    var randomInt = random.nextInt(Event.Type.values().length);
-    var eventGen = generators.eventGenerator();
-    var eventCandidate =
-        switch (randomInt) {
-          case 0 -> eventGen.singleStepDialogue(this);
-          case 1 -> eventGen.multiStepDialogue(this);
-          case 2 -> eventGen.deliveryEvent(this);
-          default -> throw new IllegalStateException(
-              "You forgot to implement every event type in the Inhabitant class: " + randomInt);
-        };
-    primaryEvent = eventCandidate == null ? eventGen.singleStepDialogue(this) : eventCandidate;
+    primaryEvent = generators.eventGenerator().generate(this);
+    log.info("Loaded primary event for '{}': {}", this.fullName, primaryEvent.getEventDetails());
   }
 
   @Override

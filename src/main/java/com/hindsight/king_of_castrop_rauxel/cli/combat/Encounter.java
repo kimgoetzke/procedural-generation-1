@@ -1,16 +1,17 @@
 package com.hindsight.king_of_castrop_rauxel.cli.combat;
 
+import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+import static java.lang.System.out;
+
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DELAY_IN_MS;
-import static java.lang.System.out;
 
 public class Encounter {
 
@@ -20,11 +21,13 @@ public class Encounter {
   private final List<Combatant> attackers = new ArrayList<>();
   private final List<Combatant> defenders = new ArrayList<>();
   private final Loot loot = new Loot();
+  private final long delayInMs;
   private Player player;
   private boolean isOver;
   private boolean isAttacker;
 
-  public Encounter(List<Combatant> allies, List<Combatant> enemies) {
+  public Encounter(List<Combatant> allies, List<Combatant> enemies, AppProperties appProperties) {
+    this.delayInMs = appProperties.getGameProperties().delayInMs();
     this.initialAllies = allies;
     this.initialEnemies = enemies;
   }
@@ -67,7 +70,7 @@ public class Encounter {
   private void attackAndEvaluate(List<Combatant> attackingGroup, List<Combatant> defendingGroup) {
     for (var attacker : attackingGroup) {
       try {
-        Thread.sleep(DELAY_IN_MS);
+        Thread.sleep(delayInMs);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       }
@@ -85,14 +88,27 @@ public class Encounter {
     if (target.isAlive()) {
       return;
     }
-    var droppedLoot = target.getLoot();
-    loot.add(droppedLoot);
+    var droppedLoot = lootTarget(target);
     printDeath(target, droppedLoot);
+    incrementKillCountOfMatchingActiveEvents(target);
     if (isPlayer(target)) {
       isOver = true;
       return;
     }
     defendingGroup.remove(target);
+  }
+
+  private Loot lootTarget(Combatant target) {
+    var droppedLoot = target.getLoot();
+    loot.add(droppedLoot);
+    return droppedLoot;
+  }
+
+  private void incrementKillCountOfMatchingActiveEvents(Combatant target) {
+    player.getActiveEvents().stream()
+        .filter(DefeatEvent.class::isInstance)
+        .map(e -> (DefeatEvent) e)
+        .forEach(e -> e.incrementDefeated(target.getType()));
   }
 
   private void getTarget(Combatant combatant, List<Combatant> opposingCombatants) {
@@ -160,7 +176,7 @@ public class Encounter {
       return;
     }
     out.printf(
-        "- %s%s%s attacks %s%s%s  %s-%d%s -> %s%d%s HP%n",
+        "- %s%s%s attacks %s%s%s         %s-%d%s -> %s%d%s HP%n",
         attackerColour,
         attacker.getName().toUpperCase(),
         FMT.RESET,
@@ -209,7 +225,7 @@ public class Encounter {
           "You have gained: %s. You have %s HP left.%n",
           loot, CliComponent.health(player.getHealth()));
     } else {
-      out.print(CliComponent.bold("You have died!") + " Game over. Thanks for playing!");
+      out.printf("%n%s Game over. %nThanks for playing!%n%n", CliComponent.bold("You have died!"));
       System.exit(0);
     }
   }

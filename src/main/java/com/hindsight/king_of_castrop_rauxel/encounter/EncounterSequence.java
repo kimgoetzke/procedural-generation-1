@@ -4,8 +4,11 @@ import com.hindsight.king_of_castrop_rauxel.characters.BasicEnemy;
 import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.combat.Encounter;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
-import com.hindsight.king_of_castrop_rauxel.utils.Generators;
+import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
+import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.ToString;
@@ -16,18 +19,22 @@ import lombok.extern.slf4j.Slf4j;
 public class EncounterSequence {
 
   @ToString.Include private final List<Encounter> encounters = new ArrayList<>();
+  private final PointOfInterest parent;
   private int currentEncounter = 0;
   private Event.State state = Event.State.AVAILABLE;
 
-  public EncounterSequence(DungeonDetails dungeonDetails, Generators generators) {
+  public EncounterSequence(
+      AppProperties appProperties, Dungeon parent, DungeonDetails dungeonDetails) {
+    this.parent = parent;
     var seed = dungeonDetails.seed();
+    var nameGenerator = parent.getGenerators().nameGenerator();
     for (int i = 0; i < dungeonDetails.encounterDetails().size(); i++) {
       var enemies = new ArrayList<Combatant>();
       var encounter = dungeonDetails.encounterDetails().get(i);
       for (var enemyDetails : encounter) {
-        enemies.add(new BasicEnemy(enemyDetails, seed, generators.nameGenerator()));
+        enemies.add(new BasicEnemy(enemyDetails, seed, nameGenerator));
       }
-      encounters.add(new Encounter(null, enemies));
+      encounters.add(new Encounter(null, enemies, appProperties));
     }
   }
 
@@ -40,8 +47,16 @@ public class EncounterSequence {
     encounters.get(currentEncounter).execute(player, hasTheInitiative);
     currentEncounter++;
     if (currentEncounter >= encounters.size()) {
-      state = Event.State.COMPLETED;
+      setToCompleted(player);
     }
+  }
+
+  private void setToCompleted(Player player) {
+    state = Event.State.COMPLETED;
+    player.getActiveEvents().stream()
+        .filter(DefeatEvent.class::isInstance)
+        .map(e -> (DefeatEvent) e)
+        .forEach(e -> e.setEventStateToReady(parent));
   }
 
   public boolean isInProgress() {

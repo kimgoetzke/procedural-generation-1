@@ -30,7 +30,8 @@ public class ChoosePoiLoop extends AbstractLoop {
     postProcess();
   }
 
-  private void prepareActions(List<Action> actions) {
+  @Override
+  protected void prepareActions(List<Action> actions) {
     actionHandler.getChoosePoiActions(player, actions);
   }
 

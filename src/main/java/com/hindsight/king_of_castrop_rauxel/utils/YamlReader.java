@@ -23,10 +23,9 @@ public class YamlReader {
     var constructor = getConstructor(options);
     var yaml = new Yaml(constructor, representer);
     var data = (EventDto) yaml.load(inputStream);
-    if (data.eventDetails == null) {
-      return new EventDto(new EventDetails(), data.participantData);
-    }
-    return data;
+    var eventDetails = data.eventDetails == null ? new EventDetails() : data.eventDetails;
+    var defeatDetails = data.defeatDetails == null ? new DefeatEventDetails() : data.defeatDetails;
+    return new EventDto(eventDetails, defeatDetails, data.participantData);
   }
 
   /** Skip unknown parameters when parsing to a Java object */

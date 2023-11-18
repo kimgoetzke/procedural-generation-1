@@ -10,7 +10,9 @@ import java.util.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.stereotype.Component;
 
+@Component
 @Slf4j
 public class FolderReader {
 
@@ -18,7 +20,9 @@ public class FolderReader {
   private static final String SINGLE_STEP_FOLDER = "single-step";
   private static final String MULTI_STEP_FOLDER = "multi-step";
   private static final String REACH_FOLDER = "reach";
+  private static final String DEFEAT_FOLDER = "defeat";
   private static final String BASE_NAME_FOLDER = "names";
+  private static final String BASE_CONTENT_FOLDER = "content";
 
   @Getter public String fileSeparator;
   private Map<Event.Type, List<String>> eventFilePaths;
@@ -41,6 +45,10 @@ public class FolderReader {
     return BASE_NAME_FOLDER + fileSeparator;
   }
 
+  public String getContentFolder() {
+    return BASE_CONTENT_FOLDER + fileSeparator;
+  }
+
   public String getSingleStepEventFolder() {
     return BASE_EVENT_FOLDER + fileSeparator + SINGLE_STEP_FOLDER + fileSeparator;
   }
@@ -51,14 +59,14 @@ public class FolderReader {
     return paths.get(randomIndex);
   }
 
-  @SuppressWarnings("SwitchStatementWithTooFewBranches")
   private void loadEventFilesMap() {
     eventFilePaths = new EnumMap<>(Event.Type.class);
     for (var t : Event.Type.values()) {
       var subFolder =
           switch (t) {
             case REACH -> REACH_FOLDER + fileSeparator;
-            default -> MULTI_STEP_FOLDER + fileSeparator;
+            case DEFEAT -> DEFEAT_FOLDER + fileSeparator;
+            case DIALOGUE -> MULTI_STEP_FOLDER + fileSeparator;
           };
       var folder = BASE_EVENT_FOLDER + fileSeparator + subFolder;
       var result = getAllFileNamesInside(folder);

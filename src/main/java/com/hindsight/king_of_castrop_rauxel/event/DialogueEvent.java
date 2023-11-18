@@ -4,6 +4,8 @@ import static com.hindsight.king_of_castrop_rauxel.event.Role.EVENT_GIVER;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import java.util.List;
+
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,5 +32,17 @@ public class DialogueEvent implements Event {
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("NPC map must contain EVENT_GIVER role"));
     setActive(eventGiver.npc());
+  }
+
+  public String toString() {
+    var currentNpcHome = currentNpc.getHome();
+    return "Dialogue with "
+        + CliComponent.npc(currentNpc)
+        + " at "
+        + CliComponent.poi(currentNpcHome)
+        + " of "
+        + CliComponent.location(currentNpcHome.getParent())
+        + " | Status: "
+        + CliComponent.status(eventState);
   }
 }

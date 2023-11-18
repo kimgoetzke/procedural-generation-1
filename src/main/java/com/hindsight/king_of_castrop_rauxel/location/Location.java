@@ -1,10 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
-import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
-
 import com.hindsight.king_of_castrop_rauxel.action.Action;
+import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
+import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.Generatable;
 import java.util.List;
@@ -17,7 +17,7 @@ public interface Location extends Visitable, Generatable {
 
   Size getSize();
 
-  String getDescription();
+  int getTier();
 
   List<Action> getAvailableActions();
 
@@ -37,11 +37,17 @@ public interface Location extends Visitable, Generatable {
 
   DataServices getDataServices();
 
-  String getFullSummary(); // TODO: Replace with objects so that it can be used via API
+  String getFullSummary();
+
+  String getPrintableSummary();
 
   String getBriefSummary();
 
-  default int distanceTo(Location end) {
-    return getCoordinates().distanceTo(end.getCoordinates());
+  default int distanceTo(Location other) {
+    return getCoordinates().distanceTo(other.getCoordinates());
+  }
+
+  default int distanceTo(LocationDto other) {
+    return getCoordinates().distanceTo(other.coordinates());
   }
 }

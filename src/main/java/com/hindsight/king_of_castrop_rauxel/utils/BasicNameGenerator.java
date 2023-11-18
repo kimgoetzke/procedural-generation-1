@@ -2,15 +2,16 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
+import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
 import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
-import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
-import com.hindsight.king_of_castrop_rauxel.location.Amenity;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import com.hindsight.king_of_castrop_rauxel.location.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,6 +28,8 @@ public class BasicNameGenerator implements NameGenerator {
   private final PlaceholderProcessor processor;
   private Random random;
 
+  @Getter @Setter private boolean isInitialised;
+
   public BasicNameGenerator(FolderReader folderReader) {
     this.txtReader = new TxtReader(folderReader.getNamesFolder());
     processor = new PlaceholderProcessor();
@@ -34,6 +37,7 @@ public class BasicNameGenerator implements NameGenerator {
 
   public void initialise(Random parentRandom) {
     this.random = parentRandom;
+    setInitialised(true);
   }
 
   @Override
@@ -44,6 +48,7 @@ public class BasicNameGenerator implements NameGenerator {
   @Override
   public String locationNameFrom(
       Class<?> clazz, AbstractAmenity amenity, Size parentSize, String parentName, Npc inhabitant) {
+    throwIfNotInitialised();
     var type = amenity == null ? null : amenity.getType();
     var withType = type == null ? "" : HYPHEN + type.name().toLowerCase();
     var withSize = parentSize == null ? "" : HYPHEN + parentSize.name().toLowerCase();
@@ -69,9 +74,11 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String shopNameFrom(AbstractAmenity amenity, Shop.Type type, String parentName, Npc inhabitant) {
+  public String shopNameFrom(
+      AbstractAmenity amenity, Shop.Type type, String parentName, Npc inhabitant) {
+    throwIfNotInitialised();
     var className = amenity.getClass().getSimpleName().toLowerCase();
-    var basePath = Amenity.class.getSimpleName() + HYPHEN + className;
+    var basePath = "amenity" + HYPHEN + className;
     var pathName = basePath + HYPHEN + type.name().toLowerCase();
     var words = new ArrayList<String>();
     log.debug("Attempting to generate shop name for '{}'", pathName);
@@ -92,6 +99,7 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   private String npcNameFrom(boolean firstName, boolean lastName, Class<?> clazz) {
+    throwIfNotInitialised();
     var className = clazz.getSimpleName().toLowerCase();
     var words = new ArrayList<String>();
     log.debug(
@@ -113,7 +121,8 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String enemyNameFrom(Class<?> clazz, DungeonDetails.Type type) {
+  public String enemyNameFrom(Class<?> clazz, Enemy.Type type) {
+    throwIfNotInitialised();
     var className = clazz.getSimpleName().toLowerCase();
     var pathName = className + BASIC_ENEMY_SUFFIX;
     var words = new ArrayList<String>();
@@ -124,7 +133,8 @@ public class BasicNameGenerator implements NameGenerator {
   }
 
   @Override
-  public String dungeonNameFrom(Class<?> clazz, DungeonDetails.Type type) {
+  public String dungeonNameFrom(Class<?> clazz, Enemy.Type type) {
+    throwIfNotInitialised();
     var className = clazz.getSimpleName().toLowerCase();
     var pathNameWithType = className + HYPHEN + type.name().toLowerCase();
     var words = new ArrayList<String>();
@@ -137,7 +147,7 @@ public class BasicNameGenerator implements NameGenerator {
 
   // TODO: Think about what descriptions would make sense for different types of dungeons
   @Override
-  public String dungeonDescriptionFrom(Class<?> ignoredClass, DungeonDetails.Type ignoredType) {
+  public String dungeonDescriptionFrom(Class<?> ignoredClass, Enemy.Type ignoredType) {
     return "A dark and foreboding place";
   }
 

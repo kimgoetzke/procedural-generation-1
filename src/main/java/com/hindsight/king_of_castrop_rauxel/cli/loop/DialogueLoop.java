@@ -37,8 +37,9 @@ public class DialogueLoop extends AbstractLoop {
     var dialogue = player.getCurrentEvent();
     if (dialogue.hasCurrentInteraction()) {
       // TODO: Fix dialogue.isBeginningOfDialogue() as it doesn't work when accepting reward
-      if (dialogue.isBeginningOfDialogue() && appProperties.getEnvironment().clearConsole()) {
+      if (dialogue.isBeginningOfDialogue() && appProperties.getGeneralProperties().clearConsole()) {
         CliComponent.clearConsole();
+        out.println();
       }
       out.printf(
           "%s%s%s%s: %s%n%n",
@@ -50,7 +51,8 @@ public class DialogueLoop extends AbstractLoop {
     }
   }
 
-  private void prepareActions(List<Action> actions) {
+  @Override
+  protected void prepareActions(List<Action> actions) {
     if (player.getCurrentEvent().getCurrentActions().isEmpty()) {
       actionHandler.getNone(actions);
       CliComponent.awaitEnterKeyPress();
@@ -60,8 +62,8 @@ public class DialogueLoop extends AbstractLoop {
   }
 
   @Override
-  protected void recoverInvalidAction() {
-    log.info("Invalid action - recovering");
+  protected void recoverFromInvalidAction() {
+    log.info("Invalid action - trying to recover...");
     player.getCurrentEvent().rewindBy(1);
   }
 

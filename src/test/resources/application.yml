@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: cli-dev
+    include: worldtest
+logging:
+  level:
+    root: INFO
+settings:
+  general-properties:
+    auto-unload: true
+    clear-console: false
+    use-console-ui: false

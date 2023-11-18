@@ -26,7 +26,8 @@ public class LocationAction implements Action {
   @Override
   public void execute(Player player) {
     var thread = loadLocation();
-    ProgressBar.displayProgress(player.getCurrentLocation(), location);
+    var speedModifier = player.getGameProperties().speedModifier();
+    ProgressBar.displayProgress(player.getCurrentLocation(), location, speedModifier);
     try {
       thread.join();
     } catch (InterruptedException e) {

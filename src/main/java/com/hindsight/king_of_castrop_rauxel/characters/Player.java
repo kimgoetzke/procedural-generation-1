@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.characters;
 
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
@@ -7,15 +8,13 @@ import com.hindsight.king_of_castrop_rauxel.event.Reward;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
-
-import java.util.*;
-
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
+import java.util.*;
+import java.util.function.Predicate;
+
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
-
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
 
 @Slf4j
 @Getter
@@ -23,17 +22,20 @@ public class Player implements Visitor, Combatant {
 
   private final String id;
   private final String name;
+  private final Enemy.Type type = Enemy.Type.PLAYER;
   private final Set<Location> visitedLocations = new LinkedHashSet<>();
   private final List<Event> events = new ArrayList<>();
   private final Coordinates coordinates;
   private final Pair<Integer, Integer> startCoordinates;
   private final Random random = new Random();
-  private int gold = PLAYER_STARTING_GOLD;
-  private int health = PLAYER_STARTING_MAX_HEALTH;
-  private int maxHealth = PLAYER_STARTING_MAX_HEALTH;
+  private final AppProperties.PlayerProperties playerProperties;
+  private final AppProperties.GameProperties gameProperties;
+  private int gold;
+  private int health;
+  private int maxHealth;
   private int experience = 0;
   private int level = 1;
-  private Damage damage = PLAYER_STARTING_DAMAGE;
+  private Damage damage;
   private State previousState = State.AT_POI;
   private State state = State.AT_POI;
   private Location currentLocation;
@@ -46,17 +48,26 @@ public class Player implements Visitor, Combatant {
     AT_POI,
     IN_DIALOGUE,
     IN_COMBAT,
+    IN_MENU,
     DEBUGGING
   }
 
   public Player(
-      String name, @NonNull Location currentLocation, Pair<Integer, Integer> worldCoords) {
+      @NonNull String name,
+      @NonNull Location currentLocation,
+      @NonNull AppProperties appProperties) {
     this.name = name;
-    this.coordinates = new Coordinates(worldCoords, currentLocation.getCoordinates().getChunk());
+    this.coordinates = Coordinates.of(currentLocation.getCoordinates());
     this.startCoordinates = coordinates.getGlobal();
     this.id = IdBuilder.idFrom(this.getClass(), coordinates);
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
+    this.gameProperties = appProperties.getGameProperties();
+    this.playerProperties = appProperties.getPlayerProperties();
+    this.gold = playerProperties.startingGold();
+    this.health = playerProperties.startingMaxHealth();
+    this.maxHealth = playerProperties.startingMaxHealth();
+    this.damage = playerProperties.startingDamage();
     visitedLocations.add(currentLocation);
     currentLocation.addVisitor(this);
   }
@@ -76,9 +87,9 @@ public class Player implements Visitor, Combatant {
 
   public void addExperience(int amount) {
     this.experience += amount;
-    if (experience >= PLAYER_EXPERIENCE_TO_LEVEL_UP) {
+    if (experience >= playerProperties.experienceToLevelUp()) {
       level++;
-      experience = experience % PLAYER_EXPERIENCE_TO_LEVEL_UP;
+      experience = experience % playerProperties.experienceToLevelUp();
     }
   }
 
@@ -95,7 +106,7 @@ public class Player implements Visitor, Combatant {
   }
 
   public void changeMaxHealthBy(int maxHealth) {
-    this.maxHealth = Math.max(PLAYER_STARTING_MAX_HEALTH, this.maxHealth + maxHealth);
+    this.maxHealth += maxHealth;
   }
 
   @Override
@@ -125,6 +136,10 @@ public class Player implements Visitor, Combatant {
   }
 
   public List<Event> getActiveEvents() {
-    return events.stream().filter(e -> e.getEventState() == Event.State.ACTIVE).toList();
+    return events.stream().filter(isActiveOrReady()).toList();
+  }
+
+  private static Predicate<Event> isActiveOrReady() {
+    return e -> e.getEventState() == Event.State.ACTIVE || e.getEventState() == Event.State.READY;
   }
 }

@@ -6,11 +6,13 @@ import com.hindsight.king_of_castrop_rauxel.world.Randomisable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,10 +36,12 @@ public class Reward implements Randomisable {
   @Override
   public void load(Random random) {
     this.value = random.nextInt(maxValue - minValue + 1) + minValue;
+    isLoaded = true;
   }
 
   public void give(Player player) {
     if (!isLoaded) {
+      log.warn("Reward has not been loaded. Loading now using unseeded Random()...");
       load(new Random());
     }
     switch (type) {
@@ -53,7 +57,7 @@ public class Reward implements Randomisable {
 
   @Override
   public String toString() {
-    var colour = CliComponent.toColour(type).toString();
+    var colour = CliComponent.colourFrom(type).toString();
     return colour + value + FMT.RESET + " " + type.toString().toLowerCase();
   }
 }

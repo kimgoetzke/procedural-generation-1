@@ -4,14 +4,13 @@ import com.hindsight.king_of_castrop_rauxel.characters.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(name = "ITEMS_CONSUMABLES")
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
@@ -22,7 +21,7 @@ public class Consumable implements Buyable {
   private long id;
 
   @Getter private String name;
-  private int tier;
+  @Getter private int tier;
 
   @Enumerated(EnumType.STRING)
   private Shop.Type sellerType;
@@ -33,13 +32,14 @@ public class Consumable implements Buyable {
 
   @Override
   public String getDescription() {
-    var stringBuilder = new StringBuilder();
+    var description = new StringBuilder();
+    description.append(CliComponent.FMT.RESET);
     var restoresHealth = "restores " + CliComponent.health(effectHealth) + " HP, ";
-    stringBuilder.append(effectHealth > 0 ? restoresHealth : "");
+    description.append(effectHealth > 0 ? restoresHealth : "");
     var increasesMaxHealth = "increases max HP by " + CliComponent.health(effectMaxHealth) + ", ";
-    stringBuilder.append(effectMaxHealth > 0 ? increasesMaxHealth : "");
-    stringBuilder.setLength(stringBuilder.length() - 2);
-    return stringBuilder.toString();
+    description.append(effectMaxHealth > 0 ? increasesMaxHealth : "");
+    description.setLength(description.length() - 2);
+    return description.toString();
   }
 
   @Override

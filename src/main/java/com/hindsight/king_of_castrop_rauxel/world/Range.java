@@ -1,7 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.DUNGEON_TIER_DIVIDER;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,15 +26,16 @@ public class Range {
     return new Bounds((int) lower, (int) upper);
   }
 
-  public int toRandomActual(Random random, int targetLevel) {
+  public int toRandomActual(Random random, int targetLevel, int levelToTierDivider) {
     var upper = targetLevel * multiplier * maxMod;
     var lower = targetLevel * multiplier * minMod;
     var randomOffset = random.nextFloat(upper - lower);
-    return toActual(targetLevel, upper, lower, randomOffset);
+    return toActual(targetLevel, upper, lower, randomOffset, levelToTierDivider);
   }
 
-  private int toActual(int targetLevel, float upper, float lower, float offset) {
-    var modulus = targetLevel % DUNGEON_TIER_DIVIDER;
+  private int toActual(
+      int targetLevel, float upper, float lower, float offset, int levelToTierDivider) {
+    var modulus = Math.max(targetLevel % levelToTierDivider, 1);
     var modifier = 1 - (1 / modulus);
     return (int) ((upper - lower) * modifier) + (int) (lower + offset);
   }

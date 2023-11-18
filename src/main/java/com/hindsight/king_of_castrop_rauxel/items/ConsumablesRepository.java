@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ConsumablesRepository extends CrudRepository<Consumable, Long> {
   List<Consumable> findBySellerType(Shop.Type type);
+  List<Consumable> findBySellerTypeAndTier(Shop.Type type, int tier);
 }

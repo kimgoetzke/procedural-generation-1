@@ -2,7 +2,9 @@ package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
 import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
+import com.hindsight.king_of_castrop_rauxel.characters.Npc;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
@@ -17,21 +19,27 @@ import org.springframework.data.util.Pair;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Settlement extends AbstractSettlement {
 
+  private int tier;
+
   public Settlement(
       Pair<Integer, Integer> worldCoords,
       Pair<Integer, Integer> chunkCoords,
       Generators generators,
-      DataServices dataServices) {
-    super(worldCoords, chunkCoords, generators, dataServices);
+      DataServices dataServices,
+      AppProperties appProperties) {
+    super(worldCoords, chunkCoords, generators, dataServices, appProperties);
     generateFoundation();
     logResult(true);
   }
 
   @Override
   public void load() {
+    if (isLoaded()) {
+      log.info("Requested to load '{}' but it already is", getId());
+      return;
+    }
     var startTime = System.currentTimeMillis();
     log.info("Generating full settlement '{}'...", id);
-    LocationBuilder.throwIfRepeatedRequest(this, true);
     loadPois();
     loadEvents();
     loadInhabitants();
@@ -42,13 +50,14 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void generateFoundation() {
-    size = LocationBuilder.randomSize(random);
-    area = LocationBuilder.randomArea(random, size);
+    size = randomSize();
+    area = randomArea(size);
     name = generators.nameGenerator().locationNameFrom(this.getClass());
+    tier = getTier();
   }
 
   private void loadPois() {
-    var amenities = LocationBuilder.getSettlementConfig(size).getAmenities();
+    var amenities = appProperties.getSettlementProperties().get(size).getAmenities();
     for (var amenity : amenities.entrySet()) {
       var bounds = amenity.getValue();
       var count = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
@@ -59,14 +68,22 @@ public class Settlement extends AbstractSettlement {
 
   private void addPoi(Type type) {
     var npc = new Inhabitant(random, generators);
-    var amenity = LocationBuilder.createInstance(this, npc, type);
-    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(amenity.getName()))) {
-      pointsOfInterests.add(amenity);
+    var poi = createInstance(this, npc, type);
+    if (pointsOfInterests.stream().noneMatch(a -> a.getName().equals(poi.getName()))) {
+      pointsOfInterests.add(poi);
       inhabitants.add(npc);
     } else {
-      revert(amenity);
+      revert(poi);
       addPoi(type);
     }
+  }
+
+  public PointOfInterest createInstance(Location parent, Npc npc, PointOfInterest.Type type) {
+    return switch (type) {
+      case DUNGEON -> new Dungeon(appProperties, type, npc, parent);
+      case SHOP -> new Shop(type, npc, parent, tier);
+      default -> new Amenity(type, npc, parent);
+    };
   }
 
   private void revert(PointOfInterest poi) {
@@ -96,7 +113,7 @@ public class Settlement extends AbstractSettlement {
   }
 
   private void loadInhabitants() {
-    var bounds = LocationBuilder.getSettlementConfig(size).getInhabitants();
+    var bounds = appProperties.getSettlementProperties().get(size).getInhabitants();
     var i = random.nextInt(bounds.getUpper() - bounds.getLower() + 1) + bounds.getLower();
     inhabitantCount = Math.max(i, inhabitants.size());
   }
@@ -117,6 +134,11 @@ public class Settlement extends AbstractSettlement {
         .formatted(
             pointsOfInterests.get(i).getName(),
             CliComponent.label(pointsOfInterests.get(i).getType()));
+  }
+
+  public int getTier() {
+    var targetLevel = generators.terrainGenerator().getTargetLevel(coordinates);
+    return (targetLevel / appProperties.getGameProperties().levelToTierDivider()) + 1;
   }
 
   @Override

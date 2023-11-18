@@ -2,56 +2,30 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.items.ConsumableService;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
-import com.hindsight.king_of_castrop_rauxel.utils.TerrainGenerator;
+import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
+import com.hindsight.king_of_castrop_rauxel.world.CoordinateFactory;
 import com.hindsight.king_of_castrop_rauxel.world.World;
-import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import java.util.Scanner;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 @RequiredArgsConstructor
 public class AppConfiguration {
 
+  private final ApplicationContext ctx;
   private final ConsumableService consumableService;
+  private final FolderReader folderReader;
 
   @Bean
   public Scanner scanner() {
     return new Scanner(System.in);
-  }
-
-  @Bean
-  public NameGenerator nameGenerator() {
-    return new BasicNameGenerator(folderReader());
-  }
-
-  @Bean
-  public EventGenerator eventGenerator() {
-    return new BasicEventGenerator(folderReader());
-  }
-
-  @Bean
-  public TerrainGenerator terrainGenerator() {
-    return new BasicTerrainGenerator();
-  }
-
-  @Bean
-  public Generators generators() {
-    return new Generators(nameGenerator(), eventGenerator(), terrainGenerator());
-  }
-
-  @Bean
-  public DataServices dataServices() {
-    return new DataServices(consumableService);
-  }
-
-  @Bean
-  public FolderReader folderReader() {
-    return new FolderReader();
   }
 
   @Bean
@@ -60,17 +34,37 @@ public class AppConfiguration {
   }
 
   @Bean
+  @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+  public Generators generators() {
+    var nameGenerator = new BasicNameGenerator(folderReader);
+    var eventGenerator = new BasicEventGenerator(folderReader);
+    var terrainGenerator = new BasicTerrainGenerator(appProperties());
+    return new Generators(nameGenerator, eventGenerator, terrainGenerator);
+  }
+
+  @Bean
+  public DataServices dataServices() {
+    return new DataServices(consumableService);
+  }
+
+  @Bean
   public World world() {
-    return new World(appProperties(), worldBuilder());
+    return new World(ctx, graph(), appProperties());
   }
 
   @Bean
-  public Graph<AbstractLocation> map() {
-    return new Graph<>(true);
+  public Graph graph() {
+    return new Graph();
   }
 
   @Bean
-  public WorldHandler worldBuilder() {
-    return new WorldHandler(map(), generators(), dataServices());
+  @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+  public ChunkHandler chunkHandler() {
+    return new ChunkHandler(world(), graph(), appProperties(), generators(), dataServices());
+  }
+
+  @Bean
+  public CoordinateFactory coordinateFactory() {
+    return new CoordinateFactory(appProperties());
   }
 }

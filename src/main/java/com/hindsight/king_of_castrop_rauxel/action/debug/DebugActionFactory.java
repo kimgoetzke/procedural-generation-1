@@ -1,17 +1,16 @@
 package com.hindsight.king_of_castrop_rauxel.action.debug;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-import static com.hindsight.king_of_castrop_rauxel.configuration.AppConstants.*;
-import static com.hindsight.king_of_castrop_rauxel.world.ChunkBuilder.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
-import static com.hindsight.king_of_castrop_rauxel.world.WorldHandler.*;
 
 import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
 import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
-import com.hindsight.king_of_castrop_rauxel.location.AbstractLocation;
+import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
+import com.hindsight.king_of_castrop_rauxel.world.Chunk;
+import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
 import com.hindsight.king_of_castrop_rauxel.world.World;
-import com.hindsight.king_of_castrop_rauxel.world.WorldHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,33 +22,32 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DebugActionFactory {
 
-  private final Graph<AbstractLocation> map;
+  private final Graph graph;
   private final World world;
-  private final WorldHandler worldHandler;
+  private final ChunkHandler chunkHandler;
+  private final AppProperties appProperties;
 
-  public DebugAction create(int index, String name, Debuggable debuggable) {
+  public DebugAction create(int index, String name, Runnable runnable) {
     return DebugAction.builder()
         .index(index)
         .name(name)
-        .debuggable(debuggable)
-        .map(map)
+        .runnable(runnable)
+        .graph(graph)
         .world(world)
         .build();
   }
 
   public void logGraph() {
-    map.log();
+    graph.log();
   }
 
   public void printConnectivity() {
-    worldHandler.logDisconnectedVertices(map);
+    chunkHandler.logDisconnectedVertices(graph);
   }
 
   public void logVertices() {
     log.info("All locations/vertices:");
-    map.getVertices().stream()
-        .map(Vertex::getLocation)
-        .forEach(l -> log.info("- " + l.getFullSummary()));
+    graph.getVertices().stream().map(Vertex::getDto).forEach(l -> log.info("- " + l.getSummary()));
   }
 
   public void logMemoryStats() {
@@ -70,32 +68,45 @@ public class DebugActionFactory {
     log(world.getChunk(CardinalDirection.THIS), CardinalDirection.THIS);
   }
 
-  public void printPlane() {
-    printPlane(world, map);
+  public static void log(Chunk chunk, CardinalDirection where) {
+    if (chunk == null) {
+      log.info("{} chunk does not exist yet", where);
+      return;
+    }
+    log.info(
+        "{} chunk at {} has a density of {} and {} settlements",
+        where,
+        chunk.getCoordinates(),
+        chunk.getDensity(),
+        chunk.getLocations().size());
   }
 
-  public void printPlane(World world, Graph<AbstractLocation> map) {
+  public void logPlane() {
+    logPlane(world);
+  }
+
+  public void logPlane(World world) {
     var chunk = world.getChunk(CardinalDirection.THIS);
-    var plane = chunk.getPlane();
     var scale = 10;
-    var downscaledPlane = new String[CHUNK_SIZE / scale][CHUNK_SIZE / scale];
+    var chunkSize = appProperties.getChunkProperties().size();
+    var downscaledPlane = new String[chunkSize / scale][chunkSize / scale];
     var numRows = downscaledPlane.length;
     var numCols = downscaledPlane[0].length;
     var locationCount = 0;
 
     // Shrink data into the new array and convert to location names
-    for (int i = 0; i < CHUNK_SIZE; i++) {
-      for (int j = 0; j < CHUNK_SIZE; j++) {
-        if (plane[i][j] > 0) {
-          downscaledPlane[i / scale][j / scale] =
-              map.getVertexByValue(Pair.of(i, j), CoordType.CHUNK).getLocation().getName();
+    for (var i = 0; i < chunkSize; i++) {
+      for (var j = 0; j < chunkSize; j++) {
+        var l = chunk.findLocation(Pair.of(i, j));
+        if (l != null) {
+          downscaledPlane[i / scale][j / scale] = l.getName();
         }
       }
     }
 
     // Print column numbers
     log.info("Visualising: {}", chunk.getSummary());
-    StringBuilder sb = new StringBuilder();
+    var sb = new StringBuilder();
     sb.append("   ");
     for (int col = 0; col < numCols; col++) {
       sb.append("%3d".formatted(col));
@@ -103,10 +114,10 @@ public class DebugActionFactory {
     log.info(sb.toString());
 
     // Print row numbers and array contents
-    for (int row = 0; row < numRows; row++) {
+    for (var row = 0; row < numRows; row++) {
       sb = new StringBuilder();
       sb.append("%2d|".formatted(row));
-      for (int col = 0; col < numCols; col++) {
+      for (var col = 0; col < numCols; col++) {
         if (downscaledPlane[row][col] == null) {
           sb.append("   ");
           continue;
@@ -129,24 +140,67 @@ public class DebugActionFactory {
 
   public void logLocationsInsideTriggerZone(Player player) {
     var vertices =
-        map.getVertices().stream()
-            .map(Vertex::getLocation)
-            .filter(l -> isInsideTriggerZone(l.getCoordinates().getChunk()))
+        graph.getVertices().stream()
+            .map(Vertex::getDto)
+            .filter(l -> chunkHandler.isInsideTriggerZone((l.coordinates().getChunk())))
             .toList();
     var allPlayerCords = player.getCoordinates();
-    var whereNext = nextChunkPosition(allPlayerCords.getChunk());
-    var whereNextAllCoords = world.getChunk(whereNext).getCoordinates();
+    var whereNext = chunkHandler.nextChunkPosition(allPlayerCords.getChunk());
+    var whereNextCoords = world.getChunk(whereNext).getCoordinates();
     if (whereNext == CardinalDirection.THIS) {
-      log.info("Player is not inside any trigger zone of {}", whereNextAllCoords.worldToString());
+      log.info("Player is not inside any trigger zone of {}", whereNextCoords.worldToString());
     } else {
       log.info(
           "Player is inside trigger zone for chunk {} of {}:",
           whereNext.toString().toUpperCase(),
           allPlayerCords.worldToString());
       vertices.stream()
-          .filter(l -> l.getCoordinates().equalTo(whereNextAllCoords.getWorld(), CoordType.WORLD))
-          .filter(l -> isInsideTriggerZone(l.getCoordinates().getChunk()))
-          .forEach(l -> log.info("- " + l.getBriefSummary()));
+          .filter(l -> l.coordinates().equalTo(whereNextCoords.getWorld(), CoordType.WORLD))
+          .filter(l -> chunkHandler.isInsideTriggerZone(l.coordinates().getChunk()))
+          .forEach(l -> log.info("- " + l.getSummary()));
+    }
+  }
+
+  public void logWorldLevels() {
+    logWorldLevels(world);
+  }
+
+  public void logWorldLevels(World world) {
+    var chunk = world.getCurrentChunk();
+    var radius = 10;
+    var startX = chunk.getCoordinates().wX() - radius;
+    var endX = chunk.getCoordinates().wY() + radius;
+    var startY = chunk.getCoordinates().wX() - radius;
+    var endY = chunk.getCoordinates().wY() + radius;
+
+    // Print column numbers
+    log.info("Visualising world target level values within radius of {} chunks: ", radius);
+    var sb = new StringBuilder();
+    sb.append("  ");
+    for (var col = startX; col < endX; col++) {
+      sb.append("%3d".formatted(col));
+    }
+    log.info(sb.toString());
+
+    // Print row numbers and array contents
+    for (var row = startX; row < endX; row++) {
+      sb = new StringBuilder();
+      sb.append("%2d|".formatted(row));
+      for (var col = startY; col < endY; col++) {
+        var targetLevel = getProcessedTargetLevelString(row, col, world);
+        sb.append("%s%s%s".formatted(FMT.CYAN, targetLevel, FMT.RESET));
+      }
+      log.info(sb.toString());
+    }
+  }
+
+  private static String getProcessedTargetLevelString(int i, int j, World world) {
+    var worldCoords = Pair.of(i, j);
+    if (world.hasChunk(worldCoords)) {
+      var rawStr = String.valueOf(world.getChunk(worldCoords).getTargetLevel());
+      return rawStr.length() == 1 ? " %s ".formatted(rawStr) : rawStr;
+    } else {
+      return " X ";
     }
   }
 }

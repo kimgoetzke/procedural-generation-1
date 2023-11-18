@@ -1,0 +1,75 @@
+eventDetails:
+  eventType: DEFEAT
+  aboutGiver: a dangerous request
+  rewards:
+    - type: GOLD
+      minValue: 50
+      maxValue: 100
+defeatDetails:
+  taskType: KILL_TYPE_ANYWHERE
+  enemyType: IMP
+  toDefeat: 1
+participantData:
+  EVENT_GIVER:
+    - !dialogue
+      state: AVAILABLE
+      interactions:
+        - text: Good day! How are you doing? I have a request for you. I need you to kill an &E and bring me its leg. I have no idea where to find these creatures but I need one for my personal studies. No questions asked. I know it's a dangerous request but I'm willing to pay you &R for it. What do you say?
+          i: 0
+          actions:
+            - !action
+              name: (Accept) Alright, I'll do it
+              eventState: NONE
+              nextInteraction: 1
+            - !action
+              name: (Decline) I'm sorry, I can't
+              eventState: NONE
+              nextInteraction: 2
+        - text: Nice one, mate, and good luck!
+          i: 1
+          actions:
+            - !action
+              name: Thanks, see you shortly!
+              eventState: ACTIVE
+              nextInteraction: 0
+        - text: Well then... See you later or not.
+          i: 2
+          actions:
+            - !action
+              name: Goodbye!
+              eventState: DECLINED
+              playerState: AT_POI
+              nextInteraction: 0
+    - !dialogue
+      state: ACTIVE
+      interactions:
+        - text: Good luck! But please hurry.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: READY
+      interactions:
+        - text: (Inspects the bag containing the leg of the &E which you drop carelessly on the floor) Careful! But well done, I didn't think you'd make it. Here's &R, as promised.
+          actions:
+            - !action
+              name: No worries, any time.
+              eventState: COMPLETED
+              playerState: AT_POI
+    - !dialogue
+      state: COMPLETED
+      interactions:
+        - text: Great work. I'll be in touch if I need anything else.
+          actions:
+            - !action
+              name: All good, mate. Goodbye!
+              playerState: AT_POI
+    - !dialogue
+      state: DECLINED
+      interactions:
+        - text: Hum? What do you want?
+          actions:
+            - !action
+              name: Nothing. Goodbye!
+              playerState: AT_POI

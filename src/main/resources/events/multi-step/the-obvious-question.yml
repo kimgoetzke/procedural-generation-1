@@ -42,6 +42,7 @@ participantData:
           actions:
             - !action
               name: Sure, have a good day!
+              eventState: COMPLETED
               playerState: AT_POI
     - !dialogue
       state: READY

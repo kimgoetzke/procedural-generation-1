@@ -29,9 +29,12 @@ public abstract class AbstractLoop {
 
   public abstract void execute(List<Action> actions);
 
+  protected abstract void prepareActions(List<Action> actions);
+
   protected void printHeaders(boolean showPoi) {
-    if (getAppProperties().getEnvironment().clearConsole()) {
+    if (getAppProperties().getGeneralProperties().clearConsole()) {
       clearConsole();
+      out.println();
     }
     out.printf(
         "%sSTATS [ Gold: %s%s%s%s | Level: %s%s%s%s | Experience: %s%s%s%s | Health Points: %s%s%s%s ]%s%n",
@@ -56,10 +59,11 @@ public abstract class AbstractLoop {
     var currentLocation = player.getCurrentLocation();
     out.printf(
         "%sCURRENT LOCATION: %s%s%n%n",
-        FMT.DEFAULT_BOLD, currentLocation.getFullSummary(), FMT.RESET);
+        FMT.DEFAULT_BOLD, currentLocation.getPrintableSummary(), FMT.RESET);
     if (showPoi) {
       out.printf(
-          "%sYou are at: %s.%s ", FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), FMT.RESET);
+          "%sYou are at: %s. %s%s",
+          FMT.DEFAULT_BOLD, player.getCurrentPoi().getName(), getDescription(), FMT.RESET);
     }
   }
 
@@ -67,7 +71,7 @@ public abstract class AbstractLoop {
     if (actions.isEmpty()) {
       return;
     }
-    if (getAppProperties().getEnvironment().useConsoleUi()) {
+    if (getAppProperties().getGeneralProperties().useConsoleUi()) {
       useConsoleUi(actions, message);
       return;
     }
@@ -77,7 +81,7 @@ public abstract class AbstractLoop {
   @SuppressWarnings("CallToPrintStackTrace")
   private void useConsoleUi(List<Action> actions, String message) {
     out.println();
-    message = message == null ? "Your response:" : getDescription() + message;
+    message = message == null ? "Your response:" : message;
     var prompt = new ConsolePrompt();
     var promptBuilder = prompt.getPromptBuilder();
     var listPrompt = promptBuilder.createListPrompt();
@@ -102,7 +106,7 @@ public abstract class AbstractLoop {
 
   private void useSystemOut(List<Action> actions, String message) {
     if (message != null) {
-      out.printf("%s%s%s%s%n", FMT.DEFAULT_BOLD, getDescription(), message, FMT.RESET);
+      out.printf("%s%s%s%n", FMT.DEFAULT_BOLD, message, FMT.RESET);
     }
     actions.forEach(a -> out.println(a.print()));
     out.printf("%n%s>%s ", FMT.WHITE_BOLD_BRIGHT, FMT.RESET);
@@ -114,7 +118,8 @@ public abstract class AbstractLoop {
       return "";
     }
     var poi = player.getCurrentPoi();
-    var hasNoActions = poi.getAvailableActions().isEmpty();
+    var hasNoActions =
+        poi.getAvailableActions().isEmpty() && poi.getParent().getAvailableActions().isEmpty();
     var text = hasNoActions ? "There is nothing to do here. " : " ";
     var description = poi.getDescription();
     return Strings.isNullOrEmpty(description) ? text : description + text;
@@ -133,7 +138,7 @@ public abstract class AbstractLoop {
       var errorMessage = "Invalid choice, try again...%n";
       out.printf(CliComponent.error(errorMessage));
       CliComponent.awaitEnterKeyPress();
-      recoverInvalidAction();
+      recoverFromInvalidAction();
     }
     out.println();
   }
@@ -145,7 +150,7 @@ public abstract class AbstractLoop {
         .orElseThrow(() -> new NumberFormatException("Couldn't find input in actions"));
   }
 
-  protected void recoverInvalidAction() {
+  protected void recoverFromInvalidAction() {
     // Empty by default but can be overridden, e.g. to reset any quest progression
   }
 }

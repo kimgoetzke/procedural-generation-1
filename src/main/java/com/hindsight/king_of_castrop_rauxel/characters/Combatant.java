@@ -9,6 +9,8 @@ public interface Combatant {
 
   String getName();
 
+  Enemy.Type getType();
+
   default boolean isAlive() {
     return getHealth() > 0;
   }

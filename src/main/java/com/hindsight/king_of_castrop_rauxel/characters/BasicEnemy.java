@@ -3,12 +3,9 @@ package com.hindsight.king_of_castrop_rauxel.characters;
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.encounter.EnemyDetails;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
-import com.hindsight.king_of_castrop_rauxel.encounter.DungeonDetails;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
-
 import java.util.Random;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Getter
 @ToString(onlyExplicitlyIncluded = true)
-public class BasicEnemy implements Combatant {
+public class BasicEnemy implements Enemy, Combatant {
 
   private final Random random;
   @ToString.Include private final String id;
@@ -25,7 +22,7 @@ public class BasicEnemy implements Combatant {
   @ToString.Include private final Loot loot;
   @ToString.Include private final Damage damage;
   @ToString.Include private final String name;
-  @ToString.Include private final DungeonDetails.Type type;
+  @ToString.Include private final Enemy.Type type;
   @ToString.Include @Setter private int health;
   @Setter private Combatant target;
 
