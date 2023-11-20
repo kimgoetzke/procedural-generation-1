@@ -60,6 +60,7 @@ spring:
 logging:
   level:
     root: INFO
+    web: DEBUG
 settings:
   general-properties:
     auto-unload: true
