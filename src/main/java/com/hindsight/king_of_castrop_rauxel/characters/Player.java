@@ -11,7 +11,6 @@ import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.IdBuilder;
 import java.util.*;
 import java.util.function.Predicate;
-
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -59,7 +58,7 @@ public class Player implements Visitor, Combatant {
     this.name = name;
     this.coordinates = Coordinates.of(currentLocation.getCoordinates());
     this.startCoordinates = coordinates.getGlobal();
-    this.id = IdBuilder.idFrom(this.getClass(), coordinates);
+    this.id = IdBuilder.idFrom(this.getClass(), name, coordinates);
     this.currentLocation = currentLocation;
     this.currentPoi = currentLocation.getDefaultPoi();
     this.gameProperties = appProperties.getGameProperties();

@@ -38,19 +38,12 @@ public class SecurityConfiguration {
 
   @Bean
   @Order(2)
-  public SecurityFilterChain loginFilterChain(HttpSecurity http) throws Exception {
-    return http.securityMatcher("/login")
-        .authorizeHttpRequests(r -> r.anyRequest().authenticated())
-        .formLogin(withDefaults())
-        .build();
-  }
-
-  @Bean
-  @Order(3)
   public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
     return http.securityMatcher("/**")
         .authorizeHttpRequests(r -> r.anyRequest().authenticated())
         .httpBasic(withDefaults())
+        .csrf()
+        .disable()
         .build();
   }
 
@@ -62,6 +55,12 @@ public class SecurityConfiguration {
             .password(passwordEncoder().encode("password"))
             .roles("USER")
             .build();
-    return new InMemoryUserDetailsManager(testPlayer1);
+    var testPlayer2 =
+        User.builder()
+            .username("player2")
+            .password(passwordEncoder().encode("password"))
+            .roles("USER")
+            .build();
+    return new InMemoryUserDetailsManager(testPlayer1, testPlayer2);
   }
 }
