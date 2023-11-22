@@ -45,14 +45,28 @@ public class WebGame {
     return ActionResponsesDto.from(actions);
   }
 
-  public ActionResponsesDto processAction(int choice) {
+  public WebResponseDto processAction(int choice) {
     log.info("Processing choice '{}' for player: {}, {}", choice, player.getName(), player.getId());
     var actions = new ArrayList<Action>();
+    takeAction(choice, actions);
     getActions(player.getState(), actions);
-    actions.get(choice).execute(player);
+    var actionResponses = ActionResponsesDto.from(actions);
+    var playerDto = PlayerDto.from(player);
+    return new WebResponseDto(actionResponses, playerDto);
+  }
+
+  private void takeAction(int choice, ArrayList<Action> actions) {
     getActions(player.getState(), actions);
-    // Should also return player as stats may have changed now...
-    return ActionResponsesDto.from(actions);
+    executeActionOrThrow(choice, actions);
+  }
+
+  private void executeActionOrThrow(int choice, ArrayList<Action> actions) {
+    var action =
+        actions.stream()
+            .filter(a -> a.getIndex() == choice)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Action does not exist"));
+    action.execute(player);
   }
 
   private void getActions(Player.State state, ArrayList<Action> actions) {

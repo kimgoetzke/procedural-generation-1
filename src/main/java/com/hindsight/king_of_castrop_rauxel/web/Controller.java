@@ -41,7 +41,7 @@ public class Controller {
   }
 
   @PostMapping("/api/play")
-  public ResponseEntity<ActionResponsesDto> play(
+  public ResponseEntity<WebResponseDto> play(
       @Valid @RequestBody ActionRequestDto actionRequest, Authentication authentication) {
     log.info(
         "Request received for '{}' to process choice '{}'",
@@ -68,7 +68,7 @@ public class Controller {
 
   @GetMapping("/login")
   public String login() {
-    log.info("Request received");
+    log.info("Login request received");
     return "Success";
   }
 
