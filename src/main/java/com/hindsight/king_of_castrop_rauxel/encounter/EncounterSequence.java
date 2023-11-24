@@ -3,13 +3,14 @@ package com.hindsight.king_of_castrop_rauxel.encounter;
 import com.hindsight.king_of_castrop_rauxel.character.BasicEnemy;
 import com.hindsight.king_of_castrop_rauxel.character.Combatant;
 import com.hindsight.king_of_castrop_rauxel.character.Player;
-import com.hindsight.king_of_castrop_rauxel.cli.combat.Encounter;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.encounter.web.EncounterSummaryDto;
 import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
+import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.ToString;
@@ -55,6 +56,14 @@ public class EncounterSequence {
     if (currentEncounter >= encounters.size()) {
       setToCompleted(player);
     }
+  }
+
+  public EncounterSummaryDto getPreviousEncounterSummary() {
+    var i = currentEncounter - 1;
+    if (i < 0) {
+      throw new GenericWebException("No encounters have been executed yet");
+    }
+    return encounters.get(i).getSummaryData();
   }
 
   private void setToCompleted(Player player) {
