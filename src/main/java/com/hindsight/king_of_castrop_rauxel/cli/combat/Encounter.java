@@ -3,9 +3,8 @@ package com.hindsight.king_of_castrop_rauxel.cli.combat;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static java.lang.System.out;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.character.Combatant;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
@@ -152,7 +151,7 @@ public class Encounter {
     printCombatants(attackers, "Attacker(s)");
     printCombatants(defenders, "Defender(s)");
     out.printf("%nThe fight has started.%n%n");
-    CliComponent.awaitEnterKeyPress();
+    awaitEnterKeyPress();
   }
 
   private void printAttack(Combatant attacker, Combatant target, int damage) {
@@ -219,13 +218,11 @@ public class Encounter {
   private void printWrapUp() {
     out.printf("%nThe fight is over!%n%n");
     if (player.isAlive()) {
-      out.print(CliComponent.bold("You have won!") + " You have defeated: ");
+      out.print(bold("You have won!") + " You have defeated: ");
       printCombatants(initialEnemies);
-      out.printf(
-          "You have gained: %s. You have %s HP left.%n",
-          loot, CliComponent.health(player.getHealth()));
+      out.printf("You have gained: %s. You have %s HP left.%n", loot, health(player.getHealth()));
     } else {
-      out.printf("%n%s Game over. %nThanks for playing!%n%n", CliComponent.bold("You have died!"));
+      out.printf("%n%s Game over. %nThanks for playing!%n%n", bold("You have died!"));
       System.exit(0);
     }
   }

@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.graphs;
+package com.hindsight.king_of_castrop_rauxel.graph;
 
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import java.util.LinkedHashSet;

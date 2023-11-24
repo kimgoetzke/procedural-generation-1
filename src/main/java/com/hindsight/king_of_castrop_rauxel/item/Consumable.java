@@ -1,6 +1,6 @@
-package com.hindsight.king_of_castrop_rauxel.items;
+package com.hindsight.king_of_castrop_rauxel.item;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import jakarta.persistence.*;

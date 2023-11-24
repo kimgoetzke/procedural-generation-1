@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.encounter;
 
-import com.hindsight.king_of_castrop_rauxel.characters.BasicEnemy;
-import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.BasicEnemy;
+import com.hindsight.king_of_castrop_rauxel.character.Combatant;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.combat.Encounter;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;

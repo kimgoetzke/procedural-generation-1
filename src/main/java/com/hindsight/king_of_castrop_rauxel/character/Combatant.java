@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.characters;
+package com.hindsight.king_of_castrop_rauxel.character;
 
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;

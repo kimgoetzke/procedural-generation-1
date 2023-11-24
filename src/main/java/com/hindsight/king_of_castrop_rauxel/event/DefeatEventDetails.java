@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

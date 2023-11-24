@@ -1,10 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.action.debug;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
+import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

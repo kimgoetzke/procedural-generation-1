@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.characters;
+package com.hindsight.king_of_castrop_rauxel.character;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;

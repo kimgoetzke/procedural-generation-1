@@ -5,7 +5,7 @@ import static java.lang.System.out;
 
 import com.google.common.base.Strings;
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import de.codeshelf.consoleui.prompt.ConsolePrompt;

@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.encounter;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import com.hindsight.king_of_castrop_rauxel.world.Range;

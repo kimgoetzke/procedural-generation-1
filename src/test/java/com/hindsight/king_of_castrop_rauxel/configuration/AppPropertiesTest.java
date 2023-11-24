@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.List;
 import org.junit.jupiter.api.Test;

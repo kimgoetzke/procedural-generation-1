@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.game;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import lombok.extern.slf4j.Slf4j;

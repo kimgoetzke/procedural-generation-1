@@ -2,8 +2,8 @@ package com.hindsight.king_of_castrop_rauxel.utils;
 
 import static com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.AbstractAmenity;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import com.hindsight.king_of_castrop_rauxel.location.Size;

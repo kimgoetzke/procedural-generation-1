@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.web;
 
+import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

@@ -13,6 +13,11 @@ spring:
       path: /h2-console
   jpa:
     open-in-view: false
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: strict
 ---
 spring:
   config:

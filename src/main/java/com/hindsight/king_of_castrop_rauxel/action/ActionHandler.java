@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.State.*;
+import static com.hindsight.king_of_castrop_rauxel.character.Player.State.*;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;

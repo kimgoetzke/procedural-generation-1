@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.web;
+package com.hindsight.king_of_castrop_rauxel.web.configuration;
 
 import static org.springframework.security.config.Customizer.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;

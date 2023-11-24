@@ -2,9 +2,12 @@ package com.hindsight.king_of_castrop_rauxel.web;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.web.dto.ActionResponsesDto;
+import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
+import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponseDto;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.ArrayList;
 import lombok.AccessLevel;

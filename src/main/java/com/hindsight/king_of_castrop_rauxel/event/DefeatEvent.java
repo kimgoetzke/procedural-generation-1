@@ -2,8 +2,8 @@ package com.hindsight.king_of_castrop_rauxel.event;
 
 import static com.hindsight.king_of_castrop_rauxel.event.Role.EVENT_GIVER;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Npc;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import java.util.List;

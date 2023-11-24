@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.encounter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;

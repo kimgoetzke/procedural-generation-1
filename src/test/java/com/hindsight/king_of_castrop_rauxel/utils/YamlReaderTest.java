@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.DialogueAction;
-import com.hindsight.king_of_castrop_rauxel.characters.BasicEnemy;
+import com.hindsight.king_of_castrop_rauxel.character.BasicEnemy;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;

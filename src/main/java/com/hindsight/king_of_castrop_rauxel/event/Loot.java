@@ -1,8 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
-import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent.FMT;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;

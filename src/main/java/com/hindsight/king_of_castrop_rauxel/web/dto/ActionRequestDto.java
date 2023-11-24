@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.web;
+package com.hindsight.king_of_castrop_rauxel.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
+import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

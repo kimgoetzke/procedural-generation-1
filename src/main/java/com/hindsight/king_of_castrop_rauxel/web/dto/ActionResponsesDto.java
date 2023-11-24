@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.web;
+package com.hindsight.king_of_castrop_rauxel.web.dto;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 

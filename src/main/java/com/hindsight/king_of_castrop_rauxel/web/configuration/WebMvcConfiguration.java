@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.web;
+package com.hindsight.king_of_castrop_rauxel.web.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

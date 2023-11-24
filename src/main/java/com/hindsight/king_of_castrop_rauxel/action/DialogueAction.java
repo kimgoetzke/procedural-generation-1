@@ -2,7 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.*;
 
