@@ -68,11 +68,7 @@ public class Encounter {
 
   private void attackAndEvaluate(List<Combatant> attackingGroup, List<Combatant> defendingGroup) {
     for (var attacker : attackingGroup) {
-      try {
-        Thread.sleep(delayInMs);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
+      delay();
       getTarget(attacker, defendingGroup);
       if (isOver) {
         return;
@@ -80,6 +76,14 @@ public class Encounter {
       var damage = attacker.attack();
       printAttack(attacker, attacker.getTarget(), damage);
       evaluateAttack(attacker.getTarget(), defendingGroup);
+    }
+  }
+
+  private void delay() {
+    try {
+      Thread.sleep(delayInMs);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
   }
 

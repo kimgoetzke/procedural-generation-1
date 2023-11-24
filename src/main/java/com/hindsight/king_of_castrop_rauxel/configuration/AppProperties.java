@@ -19,6 +19,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "settings")
 public class AppProperties {
 
+  private EnvironmentResolver.Environment environment;
   private GeneralProperties generalProperties;
   private GameProperties gameProperties;
   private WorldProperties worldProperties;

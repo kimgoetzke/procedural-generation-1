@@ -1,5 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver.*;
+
 import com.hindsight.king_of_castrop_rauxel.action.BuyAction;
 import com.hindsight.king_of_castrop_rauxel.character.Npc;
 import com.hindsight.king_of_castrop_rauxel.item.Buyable;
@@ -20,14 +22,16 @@ public class Shop extends AbstractAmenity {
 
   private final Generators generators;
   private final DataServices dataServices;
+  private final Environment environment;
   private final Shop.Type shopType;
   private final int tier;
   private final List<Buyable> items = new ArrayList<>();
 
-  public Shop(PointOfInterest.Type type, Npc npc, Location parent, int tier) {
+  public Shop(PointOfInterest.Type type, Npc npc, Location parent, int tier, Environment env) {
     super(type, npc, parent);
     this.generators = parent.getGenerators();
     this.dataServices = parent.getDataServices();
+    this.environment = env;
     this.shopType = Shop.Type.from(random.nextInt(0, Shop.Type.values().length));
     this.tier = tier;
     load();
@@ -43,7 +47,9 @@ public class Shop extends AbstractAmenity {
   }
 
   private void loadPlayerActions() {
-    items.forEach(item -> availableActions.add(new BuyAction(availableActions.size() + 1, item)));
+    items.forEach(
+        item ->
+            availableActions.add(new BuyAction(availableActions.size() + 1, item, environment)));
   }
 
   @Override

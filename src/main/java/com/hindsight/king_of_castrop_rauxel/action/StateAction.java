@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver.*;
 
-import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Builder
 public class StateAction implements Action {
 
-  @Setter private EnvironmentResolver.Environment environment;
+  @Setter private Environment environment;
   private int index;
   private String name;
   private State nextState;

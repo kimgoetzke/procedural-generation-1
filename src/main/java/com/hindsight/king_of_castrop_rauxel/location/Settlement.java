@@ -81,7 +81,7 @@ public class Settlement extends AbstractSettlement {
   public PointOfInterest createInstance(Location parent, Npc npc, PointOfInterest.Type type) {
     return switch (type) {
       case DUNGEON -> new Dungeon(appProperties, type, npc, parent);
-      case SHOP -> new Shop(type, npc, parent, tier);
+      case SHOP -> new Shop(type, npc, parent, tier, appProperties.getEnvironment());
       default -> new Amenity(type, npc, parent);
     };
   }

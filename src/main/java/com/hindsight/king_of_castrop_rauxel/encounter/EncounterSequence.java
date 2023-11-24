@@ -9,6 +9,7 @@ import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
+import com.hindsight.king_of_castrop_rauxel.utils.NameGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.ToString;
@@ -28,13 +29,18 @@ public class EncounterSequence {
     this.parent = parent;
     var seed = dungeonDetails.seed();
     var nameGenerator = parent.getGenerators().nameGenerator();
-    for (int i = 0; i < dungeonDetails.encounterDetails().size(); i++) {
+    generateSequence(appProperties, dungeonDetails, seed, nameGenerator);
+  }
+
+  private void generateSequence(
+      AppProperties properties, DungeonDetails details, long seed, NameGenerator nameGenerator) {
+    for (int i = 0; i < details.encounterDetails().size(); i++) {
       var enemies = new ArrayList<Combatant>();
-      var encounter = dungeonDetails.encounterDetails().get(i);
+      var encounter = details.encounterDetails().get(i);
       for (var enemyDetails : encounter) {
         enemies.add(new BasicEnemy(enemyDetails, seed, nameGenerator));
       }
-      encounters.add(new Encounter(null, enemies, appProperties));
+      encounters.add(new Encounter(null, enemies, properties));
     }
   }
 

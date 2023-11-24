@@ -6,6 +6,7 @@ logging:
   level:
     root: INFO
 settings:
+  environment: CLI
   general-properties:
     auto-unload: true
     clear-console: false
