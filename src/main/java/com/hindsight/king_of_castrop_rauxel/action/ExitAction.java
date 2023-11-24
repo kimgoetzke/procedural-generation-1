@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
 
 import com.hindsight.king_of_castrop_rauxel.character.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Builder
 public class ExitAction implements Action {
 
+  @Setter private EnvironmentResolver.Environment environment;
   @Setter private int index;
   @Setter private String name;
   private static final State NEXT_STATE = State.AT_POI;

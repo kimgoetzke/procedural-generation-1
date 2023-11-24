@@ -4,6 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
 
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import java.util.List;
 @Builder
 public class PrintAction<T> implements Action {
 
+  @Setter private EnvironmentResolver.Environment environment;
   @Setter private int index;
   @Setter private String name;
   private static final State NEXT_STATE = State.IN_MENU;

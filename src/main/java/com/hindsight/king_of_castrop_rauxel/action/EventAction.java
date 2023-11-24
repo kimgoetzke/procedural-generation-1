@@ -2,6 +2,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 
 import com.hindsight.king_of_castrop_rauxel.character.Npc;
 import com.hindsight.king_of_castrop_rauxel.character.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Builder
 public class EventAction implements Action {
 
+  @Setter private EnvironmentResolver.Environment environment;
   @Setter private int index;
   @Setter private String name;
   private Event event;

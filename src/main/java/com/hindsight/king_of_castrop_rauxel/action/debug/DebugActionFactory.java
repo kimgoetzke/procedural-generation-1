@@ -5,6 +5,7 @@ import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
@@ -26,9 +27,11 @@ public class DebugActionFactory {
   private final World world;
   private final ChunkHandler chunkHandler;
   private final AppProperties appProperties;
+  private final EnvironmentResolver environmentResolver;
 
   public DebugAction create(int index, String name, Runnable runnable) {
     return DebugAction.builder()
+        .environment(environmentResolver.getEnvironment())
         .index(index)
         .name(name)
         .runnable(runnable)

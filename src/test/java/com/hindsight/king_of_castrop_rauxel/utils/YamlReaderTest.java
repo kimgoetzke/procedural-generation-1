@@ -18,7 +18,7 @@ class YamlReaderTest extends YamlReader {
   private static final int COUNT = 2;
   private static final String EXPECTED_TEXT = "EXPECTED_TEXT";
   private static final String EXPECTED_ACTION =
-      "DialogueAction(index=0, name=EXPECTED_TEXT, eventState=NONE, playerState=null, nextInteraction=2)";
+      "DialogueAction(environment=null, index=0, name=EXPECTED_TEXT, eventState=NONE, playerState=null, nextInteraction=2)";
 
   /** This test is used to generate the expected structure for Yaml files. */
   @Test

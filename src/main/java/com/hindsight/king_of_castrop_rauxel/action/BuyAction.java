@@ -4,6 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
 
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.item.Buyable;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Getter
 public class BuyAction implements Action {
 
+  @Setter private EnvironmentResolver.Environment environment;
   @Setter private int index;
   @Setter private String name;
   private final Buyable item;

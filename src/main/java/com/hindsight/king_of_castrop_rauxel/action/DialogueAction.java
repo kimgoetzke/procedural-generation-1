@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.action;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.hindsight.king_of_castrop_rauxel.character.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.*;
 
@@ -15,6 +16,7 @@ import lombok.*;
 @AllArgsConstructor
 public class DialogueAction implements Action {
 
+  @Setter private EnvironmentResolver.Environment environment;
   @EqualsAndHashCode.Exclude private int index;
   private String name;
   private Event.State eventState;

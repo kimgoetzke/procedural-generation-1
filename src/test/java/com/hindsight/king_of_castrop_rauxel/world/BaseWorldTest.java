@@ -3,6 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.world;
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
@@ -25,6 +26,7 @@ public abstract class BaseWorldTest {
   @Autowired protected ApplicationContext ctx;
   @Autowired protected World world;
   @Autowired protected Graph graph;
+  @Autowired protected EnvironmentResolver environmentResolver;
   protected DebugActionFactory daf;
 
   @AfterEach

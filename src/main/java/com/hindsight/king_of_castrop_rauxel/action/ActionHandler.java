@@ -21,7 +21,8 @@ import org.springframework.stereotype.Component;
 public class ActionHandler {
 
   private final EnvironmentResolver environmentResolver;
-  private final DebugActionFactory debug;
+  private final ActionFactory af;
+  private final DebugActionFactory daf;
 
   private void prepend(List<Action> actions) {
     actions.clear();
@@ -29,17 +30,17 @@ public class ActionHandler {
 
   private void append(List<Action> actions) {
     if (environmentResolver.isDev()) {
-      actions.add(new StateAction(index(actions), "Show debug menu", DEBUGGING));
+      actions.add(af.stateAction(index(actions), "Show debug menu", DEBUGGING));
     }
     if (environmentResolver.isCli()) {
-      actions.add(new StateAction(index(actions), "Open menu", IN_MENU));
+      actions.add(af.stateAction(index(actions), "Open menu", IN_MENU));
     }
   }
 
   public void getChoosePoiActions(Player player, List<Action> actions) {
     prepend(actions);
     var poi = player.getCurrentPoi();
-    var stayHereAction = new PoiAction(index(actions), "Stay at " + poi.getName(), poi);
+    var stayHereAction = af.poiAction(index(actions), "Stay at " + poi.getName(), poi);
     actions.add(stayHereAction);
     addAllActionsFrom(player.getCurrentLocation().getAvailableActions(), actions, stayHereAction);
     append(actions);
@@ -68,10 +69,10 @@ public class ActionHandler {
     if (player.getCurrentPoi() instanceof Dungeon dungeon) {
       var sequence = dungeon.getSequence();
       if (sequence.isInProgress()) {
-        actions.add(new CombatAction(index(actions), "Press on", sequence));
-        actions.add(new StateAction(index(actions), "Retreat (for now)", AT_POI));
+        actions.add(af.combatAction(index(actions), "Press on", sequence));
+        actions.add(af.stateAction(index(actions), "Retreat (for now)", AT_POI));
       } else {
-        actions.add(new StateAction(index(actions), "Return victoriously", AT_POI));
+        actions.add(af.stateAction(index(actions), "Return victoriously", AT_POI));
       }
     }
   }
@@ -79,28 +80,28 @@ public class ActionHandler {
   // TODO: Make sure that Event has a good toString() method
   public void getMenuActions(Player player, List<Action> actions) {
     prepend(actions);
-    actions.add(new StateAction(index(actions), "Resume game", AT_POI));
+    actions.add(af.stateAction(index(actions), "Resume game", AT_POI));
     var header = "Currently active quests:";
     var activeQuests = player.getActiveEvents();
-    actions.add(new PrintAction<>(index(actions), "View active quests", header, activeQuests));
-    actions.add(new ExitAction(index(actions), "Exit game"));
+    actions.add(af.printAction(index(actions), "View active quests", header, activeQuests));
+    actions.add(af.exitAction(index(actions), "Exit game"));
   }
 
   public void getDebugActions(Player player, List<Action> actions) {
     prepend(actions);
-    var triggerZone = (Runnable) () -> debug.logLocationsInsideTriggerZone(player);
-    var visitedLocs = (Runnable) () -> debug.logVisitedLocations(player);
-    actions.add(new LocationAction(index(actions), "Resume game", player.getCurrentLocation()));
-    actions.add(debug.create(index(actions), "Log memory usage", debug::logMemoryStats));
-    actions.add(debug.create(index(actions), "Log all locations", debug::logVertices));
-    actions.add(debug.create(index(actions), "Log locations inside trigger zone", triggerZone));
-    var visitedLocsAction = debug.create(index(actions), "Log visited locations", visitedLocs);
+    var triggerZone = (Runnable) () -> daf.logLocationsInsideTriggerZone(player);
+    var visitedLocs = (Runnable) () -> daf.logVisitedLocations(player);
+    actions.add(af.locationAction(index(actions), "Resume game", player.getCurrentLocation()));
+    actions.add(daf.create(index(actions), "Log memory usage", daf::logMemoryStats));
+    actions.add(daf.create(index(actions), "Log all locations", daf::logVertices));
+    actions.add(daf.create(index(actions), "Log locations inside trigger zone", triggerZone));
+    var visitedLocsAction = daf.create(index(actions), "Log visited locations", visitedLocs);
     actions.add(visitedLocsAction);
-    actions.add(debug.create(index(actions), "Log graph connectivity", debug::printConnectivity));
-    actions.add(debug.create(index(actions), "Log graph edges & distances", debug::logGraph));
-    actions.add(debug.create(index(actions), "Log close chunks", debug::logWorld));
-    actions.add(debug.create(index(actions), "Log visualised plane", debug::logPlane));
-    actions.add(debug.create(index(actions), "Log chunk target levels", debug::logWorldLevels));
+    actions.add(daf.create(index(actions), "Log graph connectivity", daf::printConnectivity));
+    actions.add(daf.create(index(actions), "Log graph edges & distances", daf::logGraph));
+    actions.add(daf.create(index(actions), "Log close chunks", daf::logWorld));
+    actions.add(daf.create(index(actions), "Log visualised plane", daf::logPlane));
+    actions.add(daf.create(index(actions), "Log chunk target levels", daf::logWorldLevels));
     append(actions);
   }
 
@@ -112,9 +113,9 @@ public class ActionHandler {
     return actions.size() + 1;
   }
 
-  private static void addGoToPoiAction(List<Action> actions, Location currentLocation) {
+  private void addGoToPoiAction(List<Action> actions, Location currentLocation) {
     var poisCount = currentLocation.getPointsOfInterest().size() - 1;
-    actions.add(new StateAction(index(actions), getGoToActionName(poisCount), CHOOSING_POI));
+    actions.add(af.stateAction(index(actions), getGoToActionName(poisCount), CHOOSING_POI));
   }
 
   private static String getGoToActionName(int poisCount) {
@@ -123,11 +124,11 @@ public class ActionHandler {
     return "Go to...%s".formatted(formattedLabel);
   }
 
-  private static void addLocationActions(List<Action> to, Location currentLocation, Player player) {
+  private void addLocationActions(List<Action> to, Location currentLocation, Player player) {
     var from = currentLocation.getNeighbours().stream().toList();
     for (var n : from) {
       var action =
-          new LocationAction(index(to), getLocationActionName(currentLocation, player, n), n);
+          af.locationAction(index(to), getLocationActionName(currentLocation, player, n), n);
       to.add(action);
     }
   }

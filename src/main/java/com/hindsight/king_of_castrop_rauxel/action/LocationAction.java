@@ -4,6 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
 
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.ProgressBar;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @Builder
 public class LocationAction implements Action {
 
+  @Setter private EnvironmentResolver.Environment environment;
   @Setter private int index;
   @Setter private String name;
   private Location location;

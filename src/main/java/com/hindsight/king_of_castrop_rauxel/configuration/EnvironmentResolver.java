@@ -20,4 +20,13 @@ public class EnvironmentResolver {
   public boolean isNotCli() {
     return !activeProfile.contains("cli");
   }
+
+  public Environment getEnvironment() {
+    return isCli() ? Environment.CLI : Environment.WEB;
+  }
+
+  public enum Environment {
+    CLI,
+    WEB
+  }
 }

@@ -32,7 +32,7 @@ class ChunkHandlerTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     graph = ctx.getBean(Graph.class);
-    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties);
+    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties, environmentResolver);
     chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.DO_NOTHING);
     world.placeChunk(chunk, C_1_W_COORDS);
     chunk.load();
