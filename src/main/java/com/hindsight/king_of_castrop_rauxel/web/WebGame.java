@@ -4,7 +4,9 @@ import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.encounter.web.EncounterSummaryDto;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.web.dto.ActionResponsesDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponseDto;
@@ -32,20 +34,21 @@ public class WebGame {
   private final ActionHandler actionHandler;
   @Getter private Player player;
 
-  public PlayerDto getPlayer(String userName) {
+  public WebResponseDto getPlayer(String userName) {
     world.setCurrentChunk(world.getCentreCoords());
     var startLocation = world.getCurrentChunk().getCentralLocation(graph);
     player = new Player(userName, startLocation, appProperties);
     var dto = PlayerDto.from(player);
     playerRepository.save(dto);
-    return dto;
+    return new WebResponseDto(dto);
   }
 
-  public ActionResponsesDto getInitialActions() {
+  public WebResponseDto getInitialActions() {
     log.info("Retrieving actions for player: {}, {}", player.getName(), player.getId());
     var actions = new ArrayList<Action>();
     actionHandler.getThisPoiActions(player, actions);
-    return ActionResponsesDto.from(actions);
+    var dto = ActionResponsesDto.from(actions);
+    return new WebResponseDto(dto);
   }
 
   public WebResponseDto processAction(int choice) {
@@ -53,9 +56,23 @@ public class WebGame {
     var actions = new ArrayList<Action>();
     takeAction(choice, actions);
     getActions(player.getState(), actions);
+    var encounterSummary = getEncounterSummary();
     var actionResponses = ActionResponsesDto.from(actions);
     var playerDto = PlayerDto.from(player);
+    if (encounterSummary != null) {
+      return new WebResponseDto(actionResponses, encounterSummary, playerDto);
+    }
     return new WebResponseDto(actionResponses, playerDto);
+  }
+
+  private EncounterSummaryDto getEncounterSummary() {
+    if (player.getState().equals(Player.State.IN_COMBAT)) {
+      var poi = player.getCurrentPoi();
+      if (poi instanceof Dungeon dungeon) {
+        return dungeon.getSequence().getPreviousEncounterSummary();
+      }
+    }
+    return null;
   }
 
   private void takeAction(int choice, ArrayList<Action> actions) {

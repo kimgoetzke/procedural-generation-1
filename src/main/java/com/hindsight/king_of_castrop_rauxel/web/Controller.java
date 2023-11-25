@@ -1,14 +1,12 @@
 package com.hindsight.king_of_castrop_rauxel.web;
 
+import com.hindsight.king_of_castrop_rauxel.web.dto.ActionRequestDto;
+import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponseDto;
+import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
-import com.hindsight.king_of_castrop_rauxel.web.dto.ActionRequestDto;
-import com.hindsight.king_of_castrop_rauxel.web.dto.ActionResponsesDto;
-import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
-import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponseDto;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +25,7 @@ public class Controller {
   private final List<WebGame> activeGames = new ArrayList<>();
 
   @GetMapping("/api/start")
-  public ResponseEntity<PlayerDto> start(Authentication authentication) {
+  public ResponseEntity<WebResponseDto> start(Authentication authentication) {
     log.info("Request received for: {}", authentication.getPrincipal());
     var webGame = ctx.getBean(WebGame.class);
     var player = webGame.getPlayer(authentication.getName());
@@ -36,7 +34,7 @@ public class Controller {
   }
 
   @GetMapping("/api/play/{playerId}")
-  public ResponseEntity<ActionResponsesDto> play(
+  public ResponseEntity<WebResponseDto> play(
       @PathVariable String playerId, Authentication authentication) {
     log.info("Request received for '{}' to get initial actions", playerId);
     var webGame = getGameOrThrow(playerId, authentication);
@@ -65,7 +63,7 @@ public class Controller {
             .orElseThrow(userNotFound(playerId));
     if (!game.getPlayer().getName().equals(user)) {
       log.info("User '{}' blocked from accessing game of player '{}'", user, playerId);
-      throw new IllegalStateException("This action is not permitted");
+      throw new GenericWebException("This action is not permitted");
     }
     return game;
   }
@@ -76,8 +74,8 @@ public class Controller {
     return "Success";
   }
 
-  private Supplier<IllegalArgumentException> userNotFound(String playerId) {
+  private Supplier<GenericWebException> userNotFound(String playerId) {
     log.info("User authenticated but player '{}' not found", playerId);
-    return () -> new IllegalArgumentException("Player '%s' does not exist".formatted(playerId));
+    return () -> new GenericWebException("Player '%s' does not exist".formatted(playerId));
   }
 }
