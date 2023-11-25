@@ -92,6 +92,7 @@ public class ActionHandler {
     var triggerZone = (Runnable) () -> daf.logLocationsInsideTriggerZone(player);
     var visitedLocs = (Runnable) () -> daf.logVisitedLocations(player);
     actions.add(af.locationAction(index(actions), "Resume game", player.getCurrentLocation()));
+    actions.add(daf.create(index(actions), "Add 1000 gold", () -> daf.addGold(player)));
     actions.add(daf.create(index(actions), "Log memory usage", daf::logMemoryStats));
     actions.add(daf.create(index(actions), "Log all locations", daf::logVertices));
     actions.add(daf.create(index(actions), "Log locations inside trigger zone", triggerZone));

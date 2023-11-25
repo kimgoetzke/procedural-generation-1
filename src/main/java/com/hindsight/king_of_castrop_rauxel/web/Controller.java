@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
@@ -25,45 +26,41 @@ public class Controller {
   private final List<WebGame> activeGames = new ArrayList<>();
 
   @GetMapping("/api/start")
-  public ResponseEntity<WebResponseDto> start(Authentication authentication) {
-    log.info("Request received for: {}", authentication.getPrincipal());
+  public ResponseEntity<WebResponseDto> start(Authentication auth) {
+    log.info("[GET /api/start] Start game for: {}", auth.getName());
     var webGame = ctx.getBean(WebGame.class);
-    var player = webGame.getPlayer(authentication.getName());
+    var res = webGame.getPlayer(auth.getName());
     activeGames.add(webGame);
-    return ResponseEntity.ok(player);
+    return ResponseEntity.ok(res);
   }
 
   @GetMapping("/api/play/{playerId}")
-  public ResponseEntity<WebResponseDto> play(
-      @PathVariable String playerId, Authentication authentication) {
-    log.info("Request received for '{}' to get initial actions", playerId);
-    var webGame = getGameOrThrow(playerId, authentication);
-    var actions = webGame.getInitialActions();
-    return ResponseEntity.ok(actions);
+  public ResponseEntity<WebResponseDto> play(@PathVariable String playerId, Authentication auth) {
+    log.info("[GET /api/play/{}] Get initial actions for: {}", playerId, auth.getName());
+    var webGame = getGameOrThrow(playerId, auth);
+    var res = webGame.getInitialActions();
+    return ResponseEntity.ok(res);
   }
 
   @PostMapping("/api/play")
   public ResponseEntity<WebResponseDto> play(
-      @Valid @RequestBody ActionRequestDto actionRequest, Authentication authentication) {
-    log.info(
-        "Request received for '{}' to process choice '{}'",
-        actionRequest.getPlayerId(),
-        actionRequest.getChoice());
-    var webGame = getGameOrThrow(actionRequest.getPlayerId(), authentication);
-    var actions = webGame.processAction(actionRequest.getChoice());
-    return ResponseEntity.ok(actions);
+      @Valid @RequestBody ActionRequestDto req, Authentication auth) {
+    log.info("[POST /api/play] Process choice '{}' for: {}", req.getChoice(), req.getPlayerId());
+    var webGame = getGameOrThrow(req.getPlayerId(), auth);
+    var res = webGame.processAction(req.getChoice());
+    return ResponseEntity.ok(res);
   }
 
-  private WebGame getGameOrThrow(String playerId, Authentication authentication) {
-    var user = authentication.getName();
+  private WebGame getGameOrThrow(String playerId, Authentication auth) {
+    var user = auth.getName();
     var game =
         activeGames.stream()
             .filter(g -> g.getPlayer().getId().equals(playerId))
             .findFirst()
             .orElseThrow(userNotFound(playerId));
     if (!game.getPlayer().getName().equals(user)) {
-      log.info("User '{}' blocked from accessing game of player '{}'", user, playerId);
-      throw new GenericWebException("This action is not permitted");
+      log.warn("User '{}' blocked from accessing game of player '{}'", user, playerId);
+      throw new GenericWebException("This action is not permitted", HttpStatus.FORBIDDEN);
     }
     return game;
   }
@@ -74,8 +71,8 @@ public class Controller {
     return "Success";
   }
 
+  /** User is authenticated but playerId not found. */
   private Supplier<GenericWebException> userNotFound(String playerId) {
-    log.info("User authenticated but player '{}' not found", playerId);
     return () -> new GenericWebException("Player '%s' does not exist".formatted(playerId));
   }
 }

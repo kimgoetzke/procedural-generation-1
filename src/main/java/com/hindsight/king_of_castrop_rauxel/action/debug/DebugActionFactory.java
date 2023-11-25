@@ -141,6 +141,11 @@ public class DebugActionFactory {
     player.getVisitedLocations().forEach(l -> log.info("- " + l.getName()));
   }
 
+  public void addGold(Player player) {
+    player.changeGoldBy(1000);
+    log.info("Gifted 1000 gold to player {}", player.getName());
+  }
+
   public void logLocationsInsideTriggerZone(Player player) {
     var vertices =
         graph.getVertices().stream()

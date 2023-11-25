@@ -44,7 +44,6 @@ public class WebGame {
   }
 
   public WebResponseDto getInitialActions() {
-    log.info("Retrieving actions for player: {}, {}", player.getName(), player.getId());
     var actions = new ArrayList<Action>();
     actionHandler.getThisPoiActions(player, actions);
     var dto = ActionResponsesDto.from(actions);
@@ -52,7 +51,6 @@ public class WebGame {
   }
 
   public WebResponseDto processAction(int choice) {
-    log.info("Processing choice '{}' for player: {}, {}", choice, player.getName(), player.getId());
     var actions = new ArrayList<Action>();
     takeAction(choice, actions);
     getActions(player.getState(), actions);
