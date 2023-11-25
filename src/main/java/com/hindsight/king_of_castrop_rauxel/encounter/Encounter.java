@@ -82,7 +82,6 @@ public class Encounter {
       }
       var damage = attacker.attack();
       recordOrPrintAttack(attacker, attacker.getTarget(), damage);
-      printAttack(attacker, attacker.getTarget(), damage);
       evaluateAttack(attacker.getTarget(), defendingGroup);
     }
   }

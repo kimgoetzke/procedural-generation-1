@@ -16,6 +16,8 @@ public class PlayerDto {
 
   @Id String id;
   private String name;
+  private String locationName;
+  private String poiName;
   private int x;
   private int y;
   private int gold;
@@ -35,6 +37,8 @@ public class PlayerDto {
   public static PlayerDto from(Player player) {
     var dto = new PlayerDto();
     dto.id = player.getId();
+    dto.locationName = player.getCurrentLocation().getName();
+    dto.poiName = player.getCurrentPoi().getName();
     dto.x = player.getCoordinates().gX();
     dto.y = player.getCoordinates().gY();
     dto.name = player.getName();
