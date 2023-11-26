@@ -10,6 +10,7 @@ public class QuestDto {
 
   private final String about;
   private final Event.Type eventType;
+  private final Event.State eventState;
   private final QuestParticipant questGiver;
   private final QuestParticipant questTarget;
 
@@ -17,6 +18,7 @@ public class QuestDto {
     var name = event.getEventDetails().getAboutGiver();
     this.about = name.isEmpty() ? "A dialogue" : name;
     this.eventType = event.getEventDetails().getEventType();
+    this.eventState = event.getEventState();
     this.questGiver =
         event.getParticipants().stream()
             .filter(p -> p.role().equals(Role.EVENT_GIVER))

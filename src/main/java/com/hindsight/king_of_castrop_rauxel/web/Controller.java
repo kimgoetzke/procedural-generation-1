@@ -43,8 +43,8 @@ public class Controller {
     return ResponseEntity.ok(res);
   }
 
-  @GetMapping("/api/play/quest-log")
-  public ResponseEntity<List<QuestDto>> play(@RequestParam String playerId, Authentication auth) {
+  @GetMapping("/api/play/{playerId}/quest-log")
+  public ResponseEntity<List<QuestDto>> play(@PathVariable String playerId, Authentication auth) {
     log.info("GET /api/play/quest-log >> Get quest log for: {}", playerId);
     var webGame = getGameOrThrow(playerId, auth);
     var res = webGame.getQuests();

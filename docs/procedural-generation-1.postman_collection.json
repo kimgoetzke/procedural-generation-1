@@ -97,6 +97,39 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Quest Log",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/play/{{player1Id}}/quest-log",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"play",
+						"{{player1Id}}",
+						"quest-log"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
@@ -135,6 +168,10 @@
 		}
 	],
 	"variable": [
+		{
+			"key": "playerId",
+			"value": ""
+		},
 		{
 			"key": "player1Id",
 			"value": ""
