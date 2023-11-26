@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActionRequestDto {
+public class WebRequest {
 
   @NotBlank(message = "playerId is a mandatory field")
   private String playerId;

@@ -83,7 +83,7 @@ public class DialogueLoop extends AbstractLoop {
 
 ### Web API
 
-- The entire game can also be played via a web API. See section "How to use" for details.
+- The entire game can also be played via a web API - see [How to use the API](docs/HOW_TO_API.md) for details
 
 ### Other technical features
 
@@ -125,39 +125,9 @@ java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.3.jar
 Clone project and run `Application.main` with `-Dspring.profiles.active=cli-prod`. During development, use
 `-Dspring.profiles.active=cli-dev` to see logs.
 
-### Web
+### Web API
 
-Endpoints require basic auth. Use `player1` / `password` or `player2` / `password`.
-
-`GET` `/api/play`
-
-- Requires basic auth
-- Returns a JSON `WebResponse` containing the `List<ActionResponseDto>` and `PlayerDto`
-- Example request:
-
-```
-curl -u player1:password http://localhost:8080/api/play
-```
-
-`POST` `/api/play`
-
-- Requires basic auth
-- Returns a JSON `WebResponse` containing the `viewType` to be rendered and the relevant DTO(s)
-- Requires JSON body containing the `playerId` and `choice`
-- Example request:
-
-```
-curl -u player1:password -X POST http://localhost:8080/api/play -H "Content-Type: application/json" -d '{"playerId": "PLA~PLAYER1@1277912753", "choice": "1"}'
-```
-
-- Example body:
-
-```json
-{
-  "playerId": "PLA~PLAYER1@1277912753",
-  "choice": "1"
-}
-```
+See [How to use the API](docs/HOW_TO_API.md). A Postman collection is available, too.
 
 ## Other notes
 
@@ -185,6 +155,7 @@ following:
 ### More documentation
 
 - [How to create event YAML files](docs/HOW_TO_YAML_EVENTS.md)
+- [How to use the API](docs/HOW_TO_API.md)
 
 ### Random ideas for further development
 

@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.web;
 
-import com.hindsight.king_of_castrop_rauxel.web.dto.ActionRequestDto;
+import com.hindsight.king_of_castrop_rauxel.web.dto.WebRequest;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
 import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
 import jakarta.validation.Valid;
@@ -35,8 +35,7 @@ public class Controller {
   }
 
   @PostMapping("/api/play")
-  public ResponseEntity<WebResponse> play(
-      @Valid @RequestBody ActionRequestDto req, Authentication auth) {
+  public ResponseEntity<WebResponse> play(@Valid @RequestBody WebRequest req, Authentication auth) {
     log.info("[POST /api/play] Process choice '{}' for: {}", req.getChoice(), req.getPlayerId());
     var webGame = getGameOrThrow(req.getPlayerId(), auth);
     var res = webGame.processAction(req.getChoice());
@@ -52,7 +51,7 @@ public class Controller {
             .orElseThrow(userNotFound(playerId));
     if (!game.getPlayer().getName().equals(user)) {
       log.warn("User '{}' blocked from accessing game of player '{}'", user, playerId);
-      throw new GenericWebException("This action is not permitted", HttpStatus.FORBIDDEN);
+      throw new GenericWebException("Action not permitted", HttpStatus.FORBIDDEN);
     }
     return game;
   }
