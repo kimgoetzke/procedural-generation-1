@@ -9,7 +9,9 @@ import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
+import com.hindsight.king_of_castrop_rauxel.web.dto.QuestDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
+import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -56,6 +59,11 @@ public class WebGame {
     var encounterSummary = getEncounterSummary();
     var playerDto = PlayerDto.from(player);
     return getWebResponse(encounterSummary, actions, playerDto, interactions);
+  }
+
+  public List<QuestDto> getQuests() {
+    var allEvents = player.getEvents();
+    return allEvents.stream().map(QuestDto::new).toList();
   }
 
   private static WebResponse getWebResponse(
@@ -123,8 +131,8 @@ public class WebGame {
       case AT_POI -> actionHandler.getThisPoiActions(player, actions);
       case IN_DIALOGUE -> actionHandler.getDialogueActions(player, actions);
       case IN_COMBAT -> actionHandler.getCombatActions(player, actions);
-      case IN_MENU -> actionHandler.getMenuActions(player, actions);
       case DEBUGGING -> actionHandler.getDebugActions(player, actions);
+      default -> throw new GenericWebException("Unexpected state: " + state, HttpStatus.FORBIDDEN);
     }
   }
 }

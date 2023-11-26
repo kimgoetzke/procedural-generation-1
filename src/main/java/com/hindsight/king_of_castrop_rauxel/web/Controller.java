@@ -1,5 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.web;
 
+import com.hindsight.king_of_castrop_rauxel.web.dto.QuestDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebRequest;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
 import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
@@ -27,7 +28,7 @@ public class Controller {
 
   @GetMapping("/api/play")
   public ResponseEntity<WebResponse> start(Authentication auth) {
-    log.info("[GET /api/start] Start game for: {}", auth.getName());
+    log.info("GET /api/start >> Start game for: {}", auth.getName());
     var webGame = ctx.getBean(WebGame.class);
     var res = webGame.startGame(auth.getName());
     activeGames.add(webGame);
@@ -36,9 +37,17 @@ public class Controller {
 
   @PostMapping("/api/play")
   public ResponseEntity<WebResponse> play(@Valid @RequestBody WebRequest req, Authentication auth) {
-    log.info("[POST /api/play] Process choice '{}' for: {}", req.getChoice(), req.getPlayerId());
+    log.info("POST /api/play >> Process choice '{}' for: {}", req.getChoice(), req.getPlayerId());
     var webGame = getGameOrThrow(req.getPlayerId(), auth);
     var res = webGame.playGame(req.getChoice());
+    return ResponseEntity.ok(res);
+  }
+
+  @GetMapping("/api/play/quest-log")
+  public ResponseEntity<List<QuestDto>> play(@RequestParam String playerId, Authentication auth) {
+    log.info("GET /api/play/quest-log >> Get quest log for: {}", playerId);
+    var webGame = getGameOrThrow(playerId, auth);
+    var res = webGame.getQuests();
     return ResponseEntity.ok(res);
   }
 

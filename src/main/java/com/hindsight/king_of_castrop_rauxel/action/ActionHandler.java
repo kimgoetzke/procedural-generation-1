@@ -78,7 +78,7 @@ public class ActionHandler {
   }
 
   // TODO: Make sure that Event has a good toString() method
-  public void getMenuActions(Player player, List<Action> actions) {
+  public void getCliMenuActions(Player player, List<Action> actions) {
     prepend(actions);
     actions.add(af.stateAction(index(actions), "Resume game", AT_POI));
     var header = "Currently active quests:";

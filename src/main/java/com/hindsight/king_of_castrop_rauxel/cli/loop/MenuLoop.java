@@ -29,6 +29,6 @@ public class MenuLoop extends AbstractLoop {
 
   @Override
   protected void prepareActions(List<Action> actions) {
-    actionHandler.getMenuActions(player, actions);
+    actionHandler.getCliMenuActions(player, actions);
   }
 }
