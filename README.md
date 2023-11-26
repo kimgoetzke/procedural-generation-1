@@ -6,10 +6,9 @@ travel between locations, interact with non-player characters, complete quests, 
 
 ![WindowsTerminal_CD6QOmI0ST](https://github.com/kimgoetzke/procedural-generation-1/assets/120580433/6c5f9829-5e3e-468c-8150-4c2be18d3c3b)
 
-_While this is a playable game, this project is only about basic procedural generation. It is simplistic and does not
-have a game loop or enough content to be fun. For an actual game, check
-out [this project](https://github.com/kimgoetzke/game-no-mans-gun). Note that the technologies used here were chosen to
-allow building a web-based application in the future._
+_While this is theoretically a playable game, this is a learning project and is mostly about basic procedural
+generation. It does not have a real game loop or enough content to be fun. For an actual game, check
+out [this project](https://github.com/kimgoetzke/game-no-mans-gun)._
 
 ## Features
 
@@ -56,7 +55,7 @@ allow building a web-based application in the future._
 - The web of connections and the distance between each (both of which stored in the `Graph`)
   play an important role e.g. where a player can travel to and how long it takes
 
-### Player loop
+### CLI player loop
 
 - When playing the game via a CLI, the `Player`'s `State` determines the player loop that is being executed
 - Each state (e.g. `PoiLoop` or `CombatLoop`) inherits from `AbstractLoop`
@@ -82,6 +81,10 @@ public class DialogueLoop extends AbstractLoop {
     - Start with an `EventAction`
     - Changing the `Player`s `State` using `StateAction`
 
+### Web API
+
+- The entire game can also be played via a web API. See section "How to use" for details.
+
 ### Other technical features
 
 - Folder scanning (`FolderReader`) to read available event file names by category (e.g. events) which works inside a JAR
@@ -103,21 +106,58 @@ public class DialogueLoop extends AbstractLoop {
 This project uses `google-java-format`. See https://github.com/google/google-java-format for more details on how to set
 it up and use it.
 
-## How to play
+## How to use
 
-#### JAR
+This project's primary mode of interaction is the CLI. It also exposes an API. However, due to the lack of a web
+interface, it is rather tedious to use.
+
+### CLI: Jar
 
 Clone and build project, and run JAR with `cli-prod` profile:
 
 ```shell
 cd build\libs 
-java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.2.jar
+java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.3.jar
 ```
 
-#### IDE
+### CLI: IDE
 
 Clone project and run `Application.main` with `-Dspring.profiles.active=cli-prod`. During development, use
 `-Dspring.profiles.active=cli-dev` to see logs.
+
+### Web
+
+Endpoints require basic auth. Use `player1` / `password` or `player2` / `password`.
+
+`GET` `/api/play`
+
+- Requires basic auth
+- Returns a JSON `WebResponse` containing the `List<ActionResponseDto>` and `PlayerDto`
+- Example request:
+
+```
+curl -u player1:password http://localhost:8080/api/play
+```
+
+`POST` `/api/play`
+
+- Requires basic auth
+- Returns a JSON `WebResponse` containing the `viewType` to be rendered and the relevant DTO(s)
+- Requires JSON body containing the `playerId` and `choice`
+- Example request:
+
+```
+curl -u player1:password -X POST http://localhost:8080/api/play -H "Content-Type: application/json" -d '{"playerId": "PLA~PLAYER1@1277912753", "choice": "1"}'
+```
+
+- Example body:
+
+```json
+{
+  "playerId": "PLA~PLAYER1@1277912753",
+  "choice": "1"
+}
+```
 
 ## Other notes
 
@@ -149,7 +189,7 @@ following:
 ### Random ideas for further development
 
 - **User interface**:
-    - Implement Restful API and a web interface as alternative for CLI-based player loop
+    - Implement a web interface to use the API
     - Add visual, ASCII art mini-map
 - **Procedural generation**:
     - Implement biomes which:

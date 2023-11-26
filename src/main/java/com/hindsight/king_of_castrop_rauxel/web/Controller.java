@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.web;
 
 import com.hindsight.king_of_castrop_rauxel.web.dto.ActionRequestDto;
-import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponseDto;
+import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
 import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -25,25 +25,17 @@ public class Controller {
   private final ApplicationContext ctx;
   private final List<WebGame> activeGames = new ArrayList<>();
 
-  @GetMapping("/api/start")
-  public ResponseEntity<WebResponseDto> start(Authentication auth) {
+  @GetMapping("/api/play")
+  public ResponseEntity<WebResponse> start(Authentication auth) {
     log.info("[GET /api/start] Start game for: {}", auth.getName());
     var webGame = ctx.getBean(WebGame.class);
-    var res = webGame.getPlayer(auth.getName());
+    var res = webGame.startGame(auth.getName());
     activeGames.add(webGame);
     return ResponseEntity.ok(res);
   }
 
-  @GetMapping("/api/play/{playerId}")
-  public ResponseEntity<WebResponseDto> play(@PathVariable String playerId, Authentication auth) {
-    log.info("[GET /api/play/{}] Get initial actions for: {}", playerId, auth.getName());
-    var webGame = getGameOrThrow(playerId, auth);
-    var res = webGame.getInitialActions();
-    return ResponseEntity.ok(res);
-  }
-
   @PostMapping("/api/play")
-  public ResponseEntity<WebResponseDto> play(
+  public ResponseEntity<WebResponse> play(
       @Valid @RequestBody ActionRequestDto req, Authentication auth) {
     log.info("[POST /api/play] Process choice '{}' for: {}", req.getChoice(), req.getPlayerId());
     var webGame = getGameOrThrow(req.getPlayerId(), auth);

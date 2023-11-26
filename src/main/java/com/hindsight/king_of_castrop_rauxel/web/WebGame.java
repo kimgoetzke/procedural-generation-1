@@ -7,9 +7,8 @@ import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.encounter.web.EncounterSummaryDto;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
-import com.hindsight.king_of_castrop_rauxel.web.dto.ActionResponsesDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
-import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponseDto;
+import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.ArrayList;
 import lombok.AccessLevel;
@@ -34,33 +33,27 @@ public class WebGame {
   private final ActionHandler actionHandler;
   @Getter private Player player;
 
-  public WebResponseDto getPlayer(String userName) {
+  public WebResponse startGame(String userName) {
     world.setCurrentChunk(world.getCentreCoords());
     var startLocation = world.getCurrentChunk().getCentralLocation(graph);
     player = new Player(userName, startLocation, appProperties);
-    var dto = PlayerDto.from(player);
-    playerRepository.save(dto);
-    return new WebResponseDto(dto);
-  }
-
-  public WebResponseDto getInitialActions() {
+    var playerDto = PlayerDto.from(player);
     var actions = new ArrayList<Action>();
-    actionHandler.getThisPoiActions(player, actions);
-    var dto = ActionResponsesDto.from(actions);
-    return new WebResponseDto(dto);
+    getActions(player.getState(), actions);
+    playerRepository.save(playerDto);
+    return new WebResponse(actions, playerDto);
   }
 
-  public WebResponseDto processAction(int choice) {
+  public WebResponse processAction(int choice) {
     var actions = new ArrayList<Action>();
     takeAction(choice, actions);
     getActions(player.getState(), actions);
     var encounterSummary = getEncounterSummary();
-    var actionResponses = ActionResponsesDto.from(actions);
     var playerDto = PlayerDto.from(player);
     if (encounterSummary != null) {
-      return new WebResponseDto(actionResponses, encounterSummary, playerDto);
+      return new WebResponse(actions, encounterSummary, playerDto);
     }
-    return new WebResponseDto(actionResponses, playerDto);
+    return new WebResponse(actions, playerDto);
   }
 
   private EncounterSummaryDto getEncounterSummary() {
