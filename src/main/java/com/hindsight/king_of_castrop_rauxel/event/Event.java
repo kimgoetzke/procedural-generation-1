@@ -45,8 +45,8 @@ public interface Event {
 
   /**
    * Ideally, this method is only be used inside this interface. The intended way of changing the
-   * event state is by using the {@link #progressEvent(State)} or {@link #completeEvent(Player)}
-   * methods.
+   * event state is by using the {@link #progressEvent(State, int)} or {@link #completeEvent(Player,
+   * int)} methods.
    */
   void setEventState(State state);
 
@@ -55,30 +55,34 @@ public interface Event {
   boolean isRepeatable();
 
   /**
-   * This method is only called by DialogueAction when changing the event state. Current interaction
-   * is set to -1 because it'll be incremented by 1 during the DialogLoop's post-processing which is
-   * before any interaction is displayed. Making this more fool-proof is would be critical if this
-   * project had * a bigger scope.
+   * This method is only called by DialogueAction when changing the event state. Because execution
+   * logic between CLI- and web-based games is slightly different, an environment modifier is used.
+   * If environment is CLI, current interaction is set to -1 because it'll be incremented by 1
+   * during the DialogLoop's post-processing which is before any interaction is displayed. A
+   * web-based game, does not use any game loops. Making this more fool-proof would be critical if
+   * this project had a bigger scope.
    */
-  default void progressEvent(State state) {
+  default void progressEvent(State state, int envModifier) {
     setEventState(state);
     setCurrentDialogue(getDialogue(state));
-    setCurrentInteraction(-1);
+    setCurrentInteraction(envModifier);
   }
 
   /**
-   * At this point, only by DialogueAction when completing a quest. Current interaction is set to -1
-   * because it'll be incremented by 1 during the DialogLoop's post-processing which is before any
-   * interaction is displayed. Making this more fool-proof is would be critical if this project had
+   * At this point, only by DialogueAction when completing a quest. Because execution logic between
+   * CLI- and web-based games is slightly different, an environment modifier is used. If environment
+   * is CLI, current interaction is set to -1 because it'll be incremented by 1 during the
+   * DialogLoop's post-processing which is before any interaction is displayed. A web-based game,
+   * does not use any game loops. Making this more fool-proof would be critical if this project had
    * a bigger scope.
    */
-  default void completeEvent(Player player) {
+  default void completeEvent(Player player, int envModifier) {
     if (isRepeatable()) {
       resetEvent();
     } else {
       setEventState(Event.State.COMPLETED);
       setCurrentDialogue(getDialogue(Event.State.COMPLETED));
-      setCurrentInteraction(-1);
+      setCurrentInteraction(envModifier);
     }
     if (getEventDetails().hasRewards()) {
       getEventDetails().getRewards().forEach(r -> r.give(player));

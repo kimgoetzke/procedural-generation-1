@@ -1,33 +1,44 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
+import static com.hindsight.king_of_castrop_rauxel.utils.YamlReader.ACTION_TAG;
+import static com.hindsight.king_of_castrop_rauxel.utils.YamlReader.DIALOGUE_TAG;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
 import com.hindsight.king_of_castrop_rauxel.action.DialogueAction;
 import com.hindsight.king_of_castrop_rauxel.character.BasicEnemy;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import java.util.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
 
-class YamlReaderTest extends YamlReader {
+class YamlReaderTest {
 
   private static final int COUNT = 2;
   private static final String EXPECTED_TEXT = "EXPECTED_TEXT";
   private static final String EXPECTED_ACTION =
-      "DialogueAction(environment=null, index=0, name=EXPECTED_TEXT, eventState=NONE, playerState=null, nextInteraction=2)";
+      "DialogueAction(environment=CLI, index=0, name=EXPECTED_TEXT, eventState=NONE, playerState=null, nextInteraction=2)";
+
+  private YamlReader underTest;
+
+  @BeforeEach
+  void setUp() {
+    underTest = new YamlReader(EnvironmentResolver.Environment.CLI);
+  }
 
   /** This test is used to generate the expected structure for Yaml files. */
   @Test
   void writeObjectToYaml() {
     var options = new LoaderOptions();
-    var representer = getRepresenter();
+    var representer = underTest.getRepresenter();
     representer.addClassTag(Dialogue.class, new Tag(DIALOGUE_TAG));
     representer.addClassTag(DialogueAction.class, new Tag(ACTION_TAG));
-    var constructor = getConstructor(options);
+    var constructor = underTest.getConstructor(options);
     var yaml = new Yaml(constructor, representer, new DumperOptions());
     var eventDto = getEventDto();
     var data = yaml.dumpAsMap(eventDto);
@@ -40,7 +51,6 @@ class YamlReaderTest extends YamlReader {
 
   @Test
   void whenYamlIsValid_parseContentToEventDto() {
-    var underTest = new YamlReader();
     var data = underTest.read("yaml-reader-test-file.yml");
     assertThat(data).isNotNull();
     assertThat(data.eventDetails).isNotNull();

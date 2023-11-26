@@ -5,12 +5,14 @@ import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.encounter.web.EncounterSummaryDto;
+import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class WebGame {
   private final Graph graph;
   private final PlayerRepository playerRepository;
   private final ActionHandler actionHandler;
+  private final GameHandler gameHandler;
   @Getter private Player player;
 
   public WebResponse startGame(String userName) {
@@ -44,16 +47,50 @@ public class WebGame {
     return new WebResponse(actions, playerDto);
   }
 
-  public WebResponse processAction(int choice) {
+  public WebResponse playGame(int choice) {
     var actions = new ArrayList<Action>();
     takeAction(choice, actions);
+    gameHandler.updateWorld(player);
+    var interactions = getInteractions();
     getActions(player.getState(), actions);
     var encounterSummary = getEncounterSummary();
     var playerDto = PlayerDto.from(player);
+    return getWebResponse(encounterSummary, actions, playerDto, interactions);
+  }
+
+  private static WebResponse getWebResponse(
+      EncounterSummaryDto encounterSummary,
+      ArrayList<Action> actions,
+      PlayerDto playerDto,
+      List<String> interactions) {
     if (encounterSummary != null) {
       return new WebResponse(actions, encounterSummary, playerDto);
     }
+    if (!interactions.isEmpty()) {
+      return new WebResponse(actions, interactions, playerDto);
+    }
     return new WebResponse(actions, playerDto);
+  }
+
+  private List<String> getInteractions() {
+    var isInDialogue = player.getState().equals(Player.State.IN_DIALOGUE);
+    var hasCurrentEvent = player.hasCurrentEvent();
+    if (!isInDialogue || !hasCurrentEvent) {
+      return List.of();
+    }
+    var interactions = new ArrayList<String>();
+    return getInteractions(interactions);
+  }
+
+  private List<String> getInteractions(List<String> interactions) {
+    while (player.getCurrentEvent().hasCurrentInteraction()) {
+      interactions.add(player.getCurrentEvent().getCurrentInteraction().getText());
+      if (!player.getCurrentEvent().getCurrentActions().isEmpty()) {
+        break;
+      }
+      player.getCurrentEvent().progressDialogue();
+    }
+    return interactions;
   }
 
   private EncounterSummaryDto getEncounterSummary() {

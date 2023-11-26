@@ -37,7 +37,7 @@ public class AppConfiguration {
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public Generators generators() {
     var nameGenerator = new BasicNameGenerator(folderReader);
-    var eventGenerator = new BasicEventGenerator(folderReader);
+    var eventGenerator = new BasicEventGenerator(folderReader, appProperties());
     var terrainGenerator = new BasicTerrainGenerator(appProperties());
     return new Generators(nameGenerator, eventGenerator, terrainGenerator);
   }

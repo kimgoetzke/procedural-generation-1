@@ -38,7 +38,7 @@ public class Controller {
   public ResponseEntity<WebResponse> play(@Valid @RequestBody WebRequest req, Authentication auth) {
     log.info("[POST /api/play] Process choice '{}' for: {}", req.getChoice(), req.getPlayerId());
     var webGame = getGameOrThrow(req.getPlayerId(), auth);
-    var res = webGame.processAction(req.getChoice());
+    var res = webGame.playGame(req.getChoice());
     return ResponseEntity.ok(res);
   }
 

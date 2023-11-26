@@ -8,10 +8,16 @@ public record WebResponse(
     WebViewType viewType,
     List<ActionResponseDto> actions,
     EncounterSummaryDto encounterSummary,
+    List<String> interactions,
     PlayerDto player) {
 
   public WebResponse(List<Action> actions, PlayerDto player) {
-    this(WebViewType.DEFAULT, actions.stream().map(ActionResponseDto::from).toList(), null, player);
+    this(
+        WebViewType.DEFAULT,
+        actions.stream().map(ActionResponseDto::from).toList(),
+        null,
+        null,
+        player);
   }
 
   public WebResponse(List<Action> actions, EncounterSummaryDto encounterSummary, PlayerDto player) {
@@ -19,12 +25,22 @@ public record WebResponse(
         WebViewType.ENCOUNTER_SUMMARY,
         actions.stream().map(ActionResponseDto::from).toList(),
         encounterSummary,
+        null,
+        player);
+  }
+
+  public WebResponse(List<Action> actions, List<String> interactions, PlayerDto player) {
+    this(
+        WebViewType.DIALOGUE,
+        actions.stream().map(ActionResponseDto::from).toList(),
+        null,
+        interactions,
         player);
   }
 
   public enum WebViewType {
-    START,
     DEFAULT,
-    ENCOUNTER_SUMMARY
+    ENCOUNTER_SUMMARY,
+    DIALOGUE
   }
 }
