@@ -155,11 +155,13 @@ public interface Event {
       return false;
     }
     if (primaryEvent.getEventDetails() == getEventDetails()) {
-      return true;
+      // Is primary event i.e. player is at event giver NPC
+      return getEventState() == Event.State.AVAILABLE
+          || getEventState() == Event.State.READY
+          || getEventState() == Event.State.NONE;
     }
-    return getEventState() == Event.State.ACTIVE
-        || getEventState() == Event.State.READY
-        || getEventState() == Event.State.NONE;
+    // Is secondary event i.e. player is at event target NPC
+    return getEventState() == Event.State.ACTIVE;
   }
 
   default boolean hasCurrentInteraction() {

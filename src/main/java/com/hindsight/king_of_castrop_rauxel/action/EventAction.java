@@ -25,6 +25,7 @@ public class EventAction implements Action {
 
   public static EventAction from(EventAction action) {
     return EventAction.builder()
+        .environment(action.getEnvironment())
         .index(action.getIndex())
         .name(action.getName())
         .event(action.getEvent())

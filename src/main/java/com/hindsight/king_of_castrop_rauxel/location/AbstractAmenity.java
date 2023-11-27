@@ -54,7 +54,7 @@ public abstract class AbstractAmenity implements PointOfInterest, Generatable {
 
   @Override
   public void addAvailableAction(Event event) {
-    if (type == Type.QUEST_LOCATION || type == Type.SHOP) {
+    if (type == Type.QUEST_LOCATION || type == Type.SHOP || type == Type.MAIN_SQUARE) {
       addEventAction(event);
     }
   }
