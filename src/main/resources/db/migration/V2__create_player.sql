@@ -1,7 +1,7 @@
 CREATE TABLE PLAYER
 (
     id             VARCHAR(50)  NOT NULL,
-    name           VARCHAR(200) NOT NULL,
+    name           VARCHAR(200) NOT NULL UNIQUE,
     location_name  VARCHAR(200) NOT NULL,
     poi_name       VARCHAR(200) NOT NULL,
     x              INT          NOT NULL,

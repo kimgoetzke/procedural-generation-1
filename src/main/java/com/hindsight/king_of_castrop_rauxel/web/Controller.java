@@ -65,12 +65,6 @@ public class Controller {
     return game;
   }
 
-  @GetMapping("/login")
-  public String login() {
-    log.info("Login request received");
-    return "Success";
-  }
-
   /** User is authenticated but playerId not found. */
   private Supplier<GenericWebException> userNotFound(String playerId) {
     return () -> new GenericWebException("Player '%s' does not exist".formatted(playerId));

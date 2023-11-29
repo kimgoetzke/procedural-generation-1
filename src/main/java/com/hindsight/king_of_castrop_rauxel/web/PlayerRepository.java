@@ -5,4 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PlayerRepository extends CrudRepository<PlayerDto, String> {}
+public interface PlayerRepository extends CrudRepository<PlayerDto, String> {
+
+  PlayerDto findByName(String name);
+}

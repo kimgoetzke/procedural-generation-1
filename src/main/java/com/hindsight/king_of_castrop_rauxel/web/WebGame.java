@@ -12,6 +12,7 @@ import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.QuestDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
 import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
+import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +52,21 @@ public class WebGame {
     return new WebResponse(actions, playerDto);
   }
 
+  /** Resumes a game from a saved state. Can be used once a persistent database is implemented. */
+  public WebResponse resumeGame(String userName) {
+    var playerDto = playerRepository.findByName(userName);
+    if (playerDto == null) {
+      throw new GenericWebException("User not found", HttpStatus.NOT_FOUND);
+    }
+    var coords = getCoordinates(playerDto);
+    world.setCurrentChunk(coords.getWorld());
+    var currentLocation = world.getCurrentChunk().getLocation(coords);
+    player = new Player(userName, currentLocation, appProperties);
+    var actions = new ArrayList<Action>();
+    getActions(player.getState(), actions);
+    return new WebResponse(actions, playerDto);
+  }
+
   public WebResponse playGame(int choice) {
     var actions = new ArrayList<Action>();
     takeAction(choice, actions);
@@ -58,6 +75,7 @@ public class WebGame {
     getActions(player.getState(), actions);
     var encounterSummary = getEncounterSummary();
     var playerDto = PlayerDto.from(player);
+    playerRepository.save(playerDto);
     return getWebResponse(encounterSummary, actions, playerDto, interactions);
   }
 
@@ -134,5 +152,12 @@ public class WebGame {
       case DEBUGGING -> actionHandler.getDebugActions(player, actions);
       default -> throw new GenericWebException("Unexpected state: " + state, HttpStatus.FORBIDDEN);
     }
+  }
+
+  private Coordinates getCoordinates(PlayerDto playerDto) {
+    var worldSize = appProperties.getWorldProperties().size();
+    var chunkSize = appProperties.getChunkProperties().size();
+    var globalCoords = Pair.of(playerDto.getX(), playerDto.getY());
+    return new Coordinates(globalCoords, Coordinates.CoordType.GLOBAL, worldSize, chunkSize);
   }
 }

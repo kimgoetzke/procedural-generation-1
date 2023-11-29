@@ -10,14 +10,14 @@ _While this is theoretically a playable game, this is a learning project and is 
 generation. It does not have a real game loop or enough content to be fun. For an actual game, check
 out [this project](https://github.com/kimgoetzke/game-no-mans-gun)._
 
-## Features
-
-### Summary
+## Summary
 
 - Procedurally generated world with over 12,500 unique settlements of various sizes
 - Each containing between 1 and 34 visitable points of interest (shops, quest locations, and dungeons), as well as
   interactable non-player characters (**NPCs**)
-- Thousands of (reasonably bad) names are generated at runtime for the above
+- Thousands of (reasonably bad) names are generated at runtime for the above objects using various strategies such as
+  constructing names from syllables for locations, or reading from specific files for points of interest (
+  e.g. `{class}-{type}-{size}`)
 - A handful of quest and dialogue templates are randomly assigned to NPCs and then tailored to the generated
   locations/characters
 - By completing quests, the player gains experience, levels up, and gains gold which can be used to buy items in
@@ -28,9 +28,14 @@ out [this project](https://github.com/kimgoetzke/game-no-mans-gun)._
 
 ![explorer_tlGxDPVSs2_cropped](https://github.com/kimgoetzke/procedural-generation-1/assets/120580433/d4e57b2c-5805-43a8-a1d4-edbf33c184bb)
 
+## Features
+
 ### Procedural generation
 
-- All objects below are generated procedurally, using a seeded `Random` object and handled by a `WorldHandler` instance
+- All objects below are generated procedurally, using a seeded `Random` object and handled by a `WorldHandler`
+  instance
+- The `seed` for each object is based on its global coordinates which allows (re-)generating objects when they are
+  required and disposing of them when they are not
 - The core object is `World` which holds `Chunk[][]`, with the player starting in the centre chunk
 - Each `Chunk` holds a `Location[][]`:
     - Based on `int density`, a number of `Location`s are placed in the `Chunk`
@@ -51,7 +56,8 @@ out [this project](https://github.com/kimgoetzke/game-no-mans-gun)._
     - Currently implemented are the following `Type`s: `ENTRANCE`, `MAIN_SQUARE`, `SHOP`, `QUEST_LOCATION` and `DUNGEON`
     - At a POI, the player can engage in dialogues with NPCs other events (e.g. "delivery"
       or "kill" quests), engage in combat, or take other actions
-- Each object of each layer (i.e. `World`, `Chunk`, `Location` and `PointOfInterest`) can be located using `Coordinates`
+- Each object of each layer (i.e. `World` -> `Chunk` -> `Location` -> `PointOfInterest`) can be located
+  using `Coordinates`
 - The web of connections and the distance between each (both of which stored in the `Graph`)
   play an important role e.g. where a player can travel to and how long it takes
 
@@ -161,15 +167,25 @@ following:
 
 - **User interface**:
     - Implement a web interface to use the API
-    - Add visual, ASCII art mini-map
+    - Add visual mini-map for both CLI (using ASCII art) and web
 - **Procedural generation**:
     - Implement biomes which:
         - Determine difficulty of events, attitude towards player, etc. based on environmental factors
         - Determine object characteristics such as names and types of events
     - Auto-generate items for shops by tier
     - Turn dungeons into generated mazes where the player can go from room to room
+- **Code**:
+    - Make all key classes Spring beans (e.g. `Settlement`, `Amenity` but also `CliComponent`)
+    - Add user management and authentication
+    - Allow saving and loading of games
+    - Allow for an infinite world and store `Graph` in database so that all objects can be placed in the same world
+      which is required for multiplayer
+    - Polish a number of little things like using either only `appProperties.getEnvironment()` or `EnvironmentResolver`
+      instead of both and creating `IoHandler` interface to handle all input/output (instead of `CliComponent`) and have
+      implementations for web and CLI, etc.
 - **Game design**:
     - Come up with a key objective for the player and an actual (i.e. fun) game loop
+    - Introduce the possibility for the player to be attacked while travelling
     - Add more content esp. more quests
     - Implement player equipment, inventory, and item drops
 - **Multiplayer**:
