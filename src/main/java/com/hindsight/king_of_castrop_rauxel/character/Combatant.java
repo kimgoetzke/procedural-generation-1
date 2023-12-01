@@ -1,6 +1,7 @@
-package com.hindsight.king_of_castrop_rauxel.characters;
+package com.hindsight.king_of_castrop_rauxel.character;
 
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.encounter.web.CombatantDto;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 
 public interface Combatant {
@@ -56,5 +57,9 @@ public interface Combatant {
         + CliComponent.level(getLevel())
         + health
         + ")";
+  }
+
+  default CombatantDto toDto() {
+    return new CombatantDto(getName(), getType().name(), getHealth(), getLevel());
   }
 }

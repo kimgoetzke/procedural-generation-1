@@ -13,6 +13,11 @@ spring:
       path: /h2-console
   jpa:
     open-in-view: false
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: strict
 ---
 spring:
   config:
@@ -22,6 +27,7 @@ logging:
   level:
     root: INFO
 settings:
+  environment: CLI
   general-properties:
     auto-unload: true
     clear-console: false
@@ -35,6 +41,7 @@ logging:
   level:
     root: DEBUG
 settings:
+  environment: CLI
   general-properties:
     auto-unload: false
     clear-console: true
@@ -48,6 +55,7 @@ logging:
   level:
     root: OFF
 settings:
+  environment: CLI
   general-properties:
     auto-unload: true
     clear-console: true
@@ -60,7 +68,9 @@ spring:
 logging:
   level:
     root: INFO
+    web: DEBUG
 settings:
+  environment: WEB
   general-properties:
     auto-unload: true
     clear-console: false
@@ -74,6 +84,7 @@ logging:
   level:
     root: INFO
 settings:
+  environment: WEB
   general-properties:
     auto-unload: true
     clear-console: true

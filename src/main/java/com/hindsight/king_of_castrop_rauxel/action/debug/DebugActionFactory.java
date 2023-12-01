@@ -3,10 +3,11 @@ package com.hindsight.king_of_castrop_rauxel.action.debug;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import com.hindsight.king_of_castrop_rauxel.world.CardinalDirection;
 import com.hindsight.king_of_castrop_rauxel.world.Chunk;
 import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
@@ -26,9 +27,11 @@ public class DebugActionFactory {
   private final World world;
   private final ChunkHandler chunkHandler;
   private final AppProperties appProperties;
+  private final EnvironmentResolver environmentResolver;
 
   public DebugAction create(int index, String name, Runnable runnable) {
     return DebugAction.builder()
+        .environment(environmentResolver.getEnvironment())
         .index(index)
         .name(name)
         .runnable(runnable)
@@ -136,6 +139,11 @@ public class DebugActionFactory {
   public void logVisitedLocations(Player player) {
     log.info("Visited locations:");
     player.getVisitedLocations().forEach(l -> log.info("- " + l.getName()));
+  }
+
+  public void addGold(Player player) {
+    player.changeGoldBy(1000);
+    log.info("Gifted 1000 gold to player {}", player.getName());
   }
 
   public void logLocationsInsideTriggerZone(Player player) {

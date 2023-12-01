@@ -1,8 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver.*;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.event.Event;
 import lombok.*;
 
@@ -15,6 +16,7 @@ import lombok.*;
 @AllArgsConstructor
 public class DialogueAction implements Action {
 
+  @Setter private Environment environment;
   @EqualsAndHashCode.Exclude private int index;
   private String name;
   private Event.State eventState;
@@ -32,12 +34,21 @@ public class DialogueAction implements Action {
     checkArgument(!isMisconfigured, "DialogueAction with State.NONE must have nextInteraction");
     if (eventState != null) {
       switch (eventState) {
-          // Subtract 1 because the dialogue will progress after this action is executed.
-        case NONE -> player.getCurrentEvent().setCurrentInteraction(nextInteraction - 1);
-        case COMPLETED -> player.getCurrentEvent().completeEvent(player);
-        default -> player.getCurrentEvent().progressEvent(eventState);
+        case NONE -> player.getCurrentEvent().setCurrentInteraction(getModifiedIndex());
+        case COMPLETED -> player.getCurrentEvent().completeEvent(player, getEnvModifier());
+        default -> player.getCurrentEvent().progressEvent(eventState, getEnvModifier());
       }
     }
+  }
+
+  private int getModifiedIndex() {
+    // Subtract 1 if CLI because the dialogue will progress after this action is executed.
+    return environment.equals(Environment.CLI) ? nextInteraction - 1 : nextInteraction;
+  }
+
+  private int getEnvModifier() {
+    // Subtract 1 if CLI because the dialogue will progress after this action is executed.
+    return environment.equals(Environment.CLI) ? -1 : 0;
   }
 
   @Override

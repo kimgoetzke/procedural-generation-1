@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Npc;
 import com.hindsight.king_of_castrop_rauxel.location.*;
 
 public interface NameGenerator extends Generator {

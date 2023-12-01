@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ class ChunkHandlerTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     graph = ctx.getBean(Graph.class);
-    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties);
+    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties, environmentResolver);
     chunk = ctx.getBean(Chunk.class, C_1_W_COORDS, chunkHandler, Chunk.Strategy.DO_NOTHING);
     world.placeChunk(chunk, C_1_W_COORDS);
     chunk.load();

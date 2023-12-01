@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.items.ConsumableService;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.item.ConsumableService;
 import com.hindsight.king_of_castrop_rauxel.utils.*;
 import com.hindsight.king_of_castrop_rauxel.utils.BasicTerrainGenerator;
 import com.hindsight.king_of_castrop_rauxel.world.ChunkHandler;
@@ -37,7 +37,7 @@ public class AppConfiguration {
   @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
   public Generators generators() {
     var nameGenerator = new BasicNameGenerator(folderReader);
-    var eventGenerator = new BasicEventGenerator(folderReader);
+    var eventGenerator = new BasicEventGenerator(folderReader, appProperties());
     var terrainGenerator = new BasicTerrainGenerator(appProperties());
     return new Generators(nameGenerator, eventGenerator, terrainGenerator);
   }

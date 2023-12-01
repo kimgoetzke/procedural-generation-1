@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.hindsight.king_of_castrop_rauxel.world.Chunk.*;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.Settlement;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;

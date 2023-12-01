@@ -1,8 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
+import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver.*;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.ProgressBar;
 import com.hindsight.king_of_castrop_rauxel.location.Location;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
@@ -19,12 +20,20 @@ import lombok.Setter;
 @Builder
 public class LocationAction implements Action {
 
+  @Setter private Environment environment;
   @Setter private int index;
   @Setter private String name;
   private Location location;
 
   @Override
   public void execute(Player player) {
+    switch (environment) {
+      case CLI -> executeCli(player);
+      case WEB -> executeWeb(player);
+    }
+  }
+
+  private void executeCli(Player player) {
     var thread = loadLocation();
     var speedModifier = player.getGameProperties().speedModifier();
     ProgressBar.displayProgress(player.getCurrentLocation(), location, speedModifier);
@@ -32,6 +41,14 @@ public class LocationAction implements Action {
       thread.join();
     } catch (InterruptedException e) {
       cancelAction(player, player.getCurrentPoi());
+    }
+    System.out.println();
+    executeAction(player, location.getDefaultPoi());
+  }
+
+  private void executeWeb(Player player) {
+    if (!location.isLoaded()) {
+      location.load();
     }
     executeAction(player, location.getDefaultPoi());
   }
@@ -56,7 +73,6 @@ public class LocationAction implements Action {
   }
 
   private void executeAction(Player player, PointOfInterest poiVisiting) {
-    System.out.println();
     nextState(player);
     player.setCurrentPoi(poiVisiting);
   }

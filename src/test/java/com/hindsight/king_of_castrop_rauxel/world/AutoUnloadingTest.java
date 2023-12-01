@@ -3,7 +3,7 @@ package com.hindsight.king_of_castrop_rauxel.world;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
-import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +19,7 @@ class AutoUnloadingTest extends BaseWorldTest {
   @BeforeEach
   void setUp() {
     chunkHandler = new ChunkHandler(world, graph, appProperties, generators, dataServices);
-    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties);
+    daf = new DebugActionFactory(graph, world, chunkHandler, appProperties, environmentResolver);
     retentionZone = appProperties.getWorldProperties().retentionZone();
   }
 

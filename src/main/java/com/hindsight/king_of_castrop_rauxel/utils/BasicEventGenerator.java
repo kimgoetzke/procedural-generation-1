@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.character.Npc;
+import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
@@ -16,14 +17,15 @@ public class BasicEventGenerator implements EventGenerator {
   private static final String FALLBACK_ONE_LINER = "Hum?";
   private final FolderReader folderReader;
   private final TxtReader txtReader;
-  private final YamlReader yamlReader = new YamlReader();
+  private final YamlReader yamlReader;
   private final PlaceholderProcessor processor = new PlaceholderProcessor();
   private Random random;
 
   @Getter @Setter private boolean isInitialised;
 
-  public BasicEventGenerator(FolderReader folderReader) {
+  public BasicEventGenerator(FolderReader folderReader, AppProperties appProperties) {
     this.folderReader = folderReader;
+    this.yamlReader = new YamlReader(appProperties.getEnvironment());
     this.txtReader = new TxtReader(folderReader.getSingleStepEventFolder());
   }
 
@@ -254,7 +256,7 @@ public class BasicEventGenerator implements EventGenerator {
   }
 
   private void process(List<Dialogue> toProcess, DefeatEventDetails defeatDetails) {
-    if (toProcess == null || defeatDetails == null) {
+    if (toProcess == null || defeatDetails == null || defeatDetails.getTaskType() == null) {
       return;
     }
     for (var dialogue : toProcess) {

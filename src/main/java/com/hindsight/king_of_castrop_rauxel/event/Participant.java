@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.character.Npc;
 
 import java.util.List;
 

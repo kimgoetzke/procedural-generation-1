@@ -1,8 +1,8 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.PoiAction;
-import com.hindsight.king_of_castrop_rauxel.characters.Inhabitant;
-import com.hindsight.king_of_castrop_rauxel.characters.Npc;
+import com.hindsight.king_of_castrop_rauxel.character.Inhabitant;
+import com.hindsight.king_of_castrop_rauxel.character.Npc;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest.Type;
@@ -81,7 +81,7 @@ public class Settlement extends AbstractSettlement {
   public PointOfInterest createInstance(Location parent, Npc npc, PointOfInterest.Type type) {
     return switch (type) {
       case DUNGEON -> new Dungeon(appProperties, type, npc, parent);
-      case SHOP -> new Shop(type, npc, parent, tier);
+      case SHOP -> new Shop(type, npc, parent, tier, appProperties.getEnvironment());
       default -> new Amenity(type, npc, parent);
     };
   }

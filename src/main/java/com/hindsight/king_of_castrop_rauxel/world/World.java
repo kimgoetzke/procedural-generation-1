@@ -1,9 +1,9 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.graphs.LocationDto;
-import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.graph.LocationDto;
+import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

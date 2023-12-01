@@ -1,6 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
 import com.hindsight.king_of_castrop_rauxel.action.DialogueAction;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 import com.hindsight.king_of_castrop_rauxel.event.*;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.DumperOptions;
@@ -13,8 +14,13 @@ import org.yaml.snakeyaml.representer.Representer;
 @Slf4j
 public class YamlReader {
 
-  protected static final String DIALOGUE_TAG = "!dialogue";
-  protected static final String ACTION_TAG = "!action";
+  public static final String DIALOGUE_TAG = "!dialogue";
+  public static final String ACTION_TAG = "!action";
+  private final EnvironmentResolver.Environment environment;
+
+  public YamlReader(EnvironmentResolver.Environment environment) {
+    this.environment = environment;
+  }
 
   public EventDto read(String fileName) {
     var inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -29,15 +35,15 @@ public class YamlReader {
   }
 
   /** Skip unknown parameters when parsing to a Java object */
-  protected Representer getRepresenter() {
+  public Representer getRepresenter() {
     var representer = new Representer(new DumperOptions());
     representer.getPropertyUtils().setSkipMissingProperties(true);
     return representer;
   }
 
   /** Set custom tags in the Yaml file that ensure parsing to the correct class */
-  protected Constructor getConstructor(LoaderOptions options) {
-    var constructor = new Constructor(EventDto.class, options);
+  public Constructor getConstructor(LoaderOptions options) {
+    var constructor = new YamlEventConstructor(EventDto.class, options, environment);
     constructor.addTypeDescription(new TypeDescription(Dialogue.class, DIALOGUE_TAG));
     constructor.addTypeDescription(new TypeDescription(DialogueAction.class, ACTION_TAG));
     return constructor;

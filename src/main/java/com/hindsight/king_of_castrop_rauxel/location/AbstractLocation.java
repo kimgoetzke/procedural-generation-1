@@ -1,7 +1,7 @@
 package com.hindsight.king_of_castrop_rauxel.location;
 
 import com.hindsight.king_of_castrop_rauxel.action.Action;
-import com.hindsight.king_of_castrop_rauxel.characters.Visitor;
+import com.hindsight.king_of_castrop_rauxel.character.Visitor;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.world.*;
 

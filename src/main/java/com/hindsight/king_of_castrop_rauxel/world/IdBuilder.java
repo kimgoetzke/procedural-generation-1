@@ -15,10 +15,16 @@ public class IdBuilder {
 
   private static final Map<Class<?>, String> abbreviations = new HashMap<>();
   private static final String SEPARATOR = "~";
+  private static final String AT = "@";
 
   public static String idFrom(Class<?> clazz, Coordinates coordinates) {
     var threeLetters = getAbbreviationFor(clazz);
     return threeLetters + SEPARATOR + coordinates.gX() + coordinates.gY();
+  }
+
+  public static String idFrom(Class<?> clazz, String name, Coordinates coordinates) {
+    var threeLetters = getAbbreviationFor(clazz);
+    return threeLetters + SEPARATOR + name.toUpperCase() + AT + coordinates.gX() + coordinates.gY();
   }
 
   public static String idFrom(Class<?> clazz) {

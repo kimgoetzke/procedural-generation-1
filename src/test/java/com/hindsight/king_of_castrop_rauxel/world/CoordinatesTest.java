@@ -4,7 +4,7 @@ import static com.hindsight.king_of_castrop_rauxel.world.Coordinates.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import org.junit.jupiter.api.BeforeEach;

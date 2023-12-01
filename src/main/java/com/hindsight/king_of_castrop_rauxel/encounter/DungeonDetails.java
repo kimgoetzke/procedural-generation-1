@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.encounter;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Builder;

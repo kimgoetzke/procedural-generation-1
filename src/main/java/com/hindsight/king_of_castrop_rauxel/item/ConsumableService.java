@@ -1,4 +1,4 @@
-package com.hindsight.king_of_castrop_rauxel.items;
+package com.hindsight.king_of_castrop_rauxel.item;
 
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import com.hindsight.king_of_castrop_rauxel.utils.CsvReader;

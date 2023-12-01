@@ -1,11 +1,16 @@
 package com.hindsight.king_of_castrop_rauxel.action;
 
-import static com.hindsight.king_of_castrop_rauxel.characters.Player.*;
+import static com.hindsight.king_of_castrop_rauxel.character.Player.*;
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
 
 public interface Action {
+
+  EnvironmentResolver.Environment getEnvironment();
+
+  void setEnvironment(EnvironmentResolver.Environment environment);
 
   int getIndex();
 

@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.utils;
 
-import com.hindsight.king_of_castrop_rauxel.items.Consumable;
+import com.hindsight.king_of_castrop_rauxel.item.Consumable;
 import com.hindsight.king_of_castrop_rauxel.location.Shop;
 import java.io.BufferedReader;
 import java.io.IOException;

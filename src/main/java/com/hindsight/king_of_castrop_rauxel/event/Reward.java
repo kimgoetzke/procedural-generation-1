@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.event;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.world.Randomisable;
 import lombok.Getter;
@@ -9,8 +9,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
-
-import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
 
 @Slf4j
 @Getter
@@ -58,6 +56,6 @@ public class Reward implements Randomisable {
   @Override
   public String toString() {
     var colour = CliComponent.colourFrom(type).toString();
-    return colour + value + FMT.RESET + " " + type.toString().toLowerCase();
+    return colour + value + CliComponent.FMT.RESET + " " + type.toString().toLowerCase();
   }
 }

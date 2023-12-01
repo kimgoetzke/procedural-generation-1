@@ -1,27 +1,32 @@
-package com.hindsight.king_of_castrop_rauxel.cli.combat;
+package com.hindsight.king_of_castrop_rauxel.encounter;
 
 import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
+import static com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver.*;
 import static java.lang.System.out;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Combatant;
-import com.hindsight.king_of_castrop_rauxel.characters.Player;
-import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
+import com.hindsight.king_of_castrop_rauxel.character.Combatant;
+import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
+import com.hindsight.king_of_castrop_rauxel.encounter.web.EncounterSummaryDto;
 import com.hindsight.king_of_castrop_rauxel.event.DefeatEvent;
 import com.hindsight.king_of_castrop_rauxel.event.Loot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import lombok.Getter;
 
 public class Encounter {
 
+  @Getter private final Loot loot = new Loot();
+  @Getter private final EncounterSummaryDto summaryData = new EncounterSummaryDto();
+  @Getter private final List<Combatant> attackers = new ArrayList<>();
+  @Getter private final List<Combatant> defenders = new ArrayList<>();
   private final Random random = new Random();
   private final List<Combatant> initialAllies;
   private final List<Combatant> initialEnemies;
-  private final List<Combatant> attackers = new ArrayList<>();
-  private final List<Combatant> defenders = new ArrayList<>();
-  private final Loot loot = new Loot();
   private final long delayInMs;
+  private final Environment environment;
   private Player player;
   private boolean isOver;
   private boolean isAttacker;
@@ -30,6 +35,7 @@ public class Encounter {
     this.delayInMs = appProperties.getGameProperties().delayInMs();
     this.initialAllies = allies;
     this.initialEnemies = enemies;
+    this.environment = appProperties.getEnvironment();
   }
 
   public void execute(Player player, boolean isAttacker) {
@@ -37,7 +43,7 @@ public class Encounter {
     this.isAttacker = isAttacker;
     initialise();
     complete();
-    printWrapUp();
+    recordOrPrintWrapUp();
     loot.give(player);
   }
 
@@ -51,7 +57,7 @@ public class Encounter {
       attackers.addAll(initialEnemies);
       addAlliesTo(defenders);
     }
-    printKickOff();
+    printOrRecordKickOff();
   }
 
   private void addAlliesTo(List<Combatant> combatants) {
@@ -69,18 +75,37 @@ public class Encounter {
 
   private void attackAndEvaluate(List<Combatant> attackingGroup, List<Combatant> defendingGroup) {
     for (var attacker : attackingGroup) {
-      try {
-        Thread.sleep(delayInMs);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
+      delayIfCli();
       getTarget(attacker, defendingGroup);
       if (isOver) {
         return;
       }
       var damage = attacker.attack();
-      printAttack(attacker, attacker.getTarget(), damage);
+      recordOrPrintAttack(attacker, attacker.getTarget(), damage);
       evaluateAttack(attacker.getTarget(), defendingGroup);
+    }
+  }
+
+  private void recordOrPrintAttack(Combatant attacker, Combatant target, int damage) {
+    switch (environment) {
+      case CLI -> printAttack(attacker, target, damage);
+      case WEB -> recordAttack(attacker, target, damage);
+    }
+  }
+
+  private void recordAttack(Combatant attacker, Combatant target, int damage) {
+    summaryData.addRecord(
+        attacker.getName(), damage, target.getName(), target.getHealth(), target.isAlive());
+  }
+
+  private void delayIfCli() {
+    if (environment.equals(EnvironmentResolver.Environment.WEB)) {
+      return;
+    }
+    try {
+      Thread.sleep(delayInMs);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
   }
 
@@ -89,7 +114,7 @@ public class Encounter {
       return;
     }
     var droppedLoot = lootTarget(target);
-    printDeath(target, droppedLoot);
+    printDeathIfCli(target, droppedLoot);
     incrementKillCountOfMatchingActiveEvents(target);
     if (isPlayer(target)) {
       isOver = true;
@@ -147,12 +172,25 @@ public class Encounter {
     return initialEnemies.contains(combatant);
   }
 
+  private void printOrRecordKickOff() {
+    switch (environment) {
+      case CLI -> printKickOff();
+      case WEB -> recordKickOff();
+    }
+  }
+
+  private void recordKickOff() {
+    summaryData.setPlayerHadInitiative(isAttacker);
+    summaryData.setAttackers(attackers.stream().map(Combatant::toDto).toList());
+    summaryData.setDefenders(defenders.stream().map(Combatant::toDto).toList());
+  }
+
   private void printKickOff() {
     out.printf("%nYou %s%n%n", isAttacker ? "have the initiative." : "are being surprised.");
     printCombatants(attackers, "Attacker(s)");
     printCombatants(defenders, "Defender(s)");
     out.printf("%nThe fight has started.%n%n");
-    CliComponent.awaitEnterKeyPress();
+    awaitEnterKeyPress();
   }
 
   private void printAttack(Combatant attacker, Combatant target, int damage) {
@@ -176,7 +214,7 @@ public class Encounter {
       return;
     }
     out.printf(
-        "- %s%s%s attacks %s%s%s         %s-%d%s -> %s%d%s HP%n",
+        "- %s%s%s attacks %s%s%s  %s-%d%s -> %s%d%s HP%n",
         attackerColour,
         attacker.getName().toUpperCase(),
         FMT.RESET,
@@ -209,23 +247,36 @@ public class Encounter {
     out.println(stringBuilder);
   }
 
-  private void printDeath(Combatant combatant, Loot loot) {
+  private void printDeathIfCli(Combatant combatant, Loot loot) {
+    if (environment.equals(EnvironmentResolver.Environment.WEB)) {
+      return;
+    }
     var colour = isPlayer(combatant) ? FMT.GREEN_BOLD : FMT.MAGENTA_BOLD;
     out.printf(
         "- %s%s%s has died, dropping %s%n",
         colour, combatant.getName().toUpperCase(), FMT.RESET, loot);
   }
 
+  private void recordOrPrintWrapUp() {
+    switch (environment) {
+      case CLI -> printWrapUp();
+      case WEB -> recordWrapUp();
+    }
+  }
+
+  private void recordWrapUp() {
+    summaryData.setPlayerHasWon(player.isAlive());
+    summaryData.setEnemiesDefeated(initialEnemies.stream().map(Combatant::toDto).toList());
+  }
+
   private void printWrapUp() {
     out.printf("%nThe fight is over!%n%n");
     if (player.isAlive()) {
-      out.print(CliComponent.bold("You have won!") + " You have defeated: ");
+      out.print(bold("You have won!") + " You have defeated: ");
       printCombatants(initialEnemies);
-      out.printf(
-          "You have gained: %s. You have %s HP left.%n",
-          loot, CliComponent.health(player.getHealth()));
+      out.printf("You have gained: %s. You have %s HP left.%n", loot, health(player.getHealth()));
     } else {
-      out.printf("%n%s Game over. %nThanks for playing!%n%n", CliComponent.bold("You have died!"));
+      out.printf("%n%s Game over. %nThanks for playing!%n%n", bold("You have died!"));
       System.exit(0);
     }
   }

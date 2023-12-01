@@ -1,11 +1,11 @@
 package com.hindsight.king_of_castrop_rauxel.world;
 
-import static com.hindsight.king_of_castrop_rauxel.cli.CliComponent.*;
-
 import com.hindsight.king_of_castrop_rauxel.action.debug.DebugActionFactory;
+import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
-import com.hindsight.king_of_castrop_rauxel.graphs.Graph;
-import com.hindsight.king_of_castrop_rauxel.graphs.Vertex;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
+import com.hindsight.king_of_castrop_rauxel.graph.Graph;
+import com.hindsight.king_of_castrop_rauxel.graph.Vertex;
 import com.hindsight.king_of_castrop_rauxel.utils.DataServices;
 import com.hindsight.king_of_castrop_rauxel.utils.Generators;
 import java.util.*;
@@ -26,6 +26,7 @@ public abstract class BaseWorldTest {
   @Autowired protected ApplicationContext ctx;
   @Autowired protected World world;
   @Autowired protected Graph graph;
+  @Autowired protected EnvironmentResolver environmentResolver;
   protected DebugActionFactory daf;
 
   @AfterEach
@@ -47,9 +48,9 @@ public abstract class BaseWorldTest {
       daf.logPlane(world);
     } catch (Exception e) {
       System.out.printf(
-          FMT.RED_BRIGHT
+          CliComponent.FMT.RED_BRIGHT
               + "Error: Could not print plane - this usually happens because 1) the setUp()/tearDown() does not reset all fields correctly or 2) you never call setCurrentChunk().%n"
-              + FMT.RESET);
+              + CliComponent.FMT.RESET);
     }
     daf.printConnectivity();
   }

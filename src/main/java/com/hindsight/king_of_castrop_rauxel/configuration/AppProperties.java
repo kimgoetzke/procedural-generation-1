@@ -1,6 +1,6 @@
 package com.hindsight.king_of_castrop_rauxel.configuration;
 
-import com.hindsight.king_of_castrop_rauxel.characters.Enemy;
+import com.hindsight.king_of_castrop_rauxel.character.Enemy;
 import com.hindsight.king_of_castrop_rauxel.encounter.Damage;
 import com.hindsight.king_of_castrop_rauxel.encounter.DungeonHandler;
 import com.hindsight.king_of_castrop_rauxel.location.PointOfInterest;
@@ -19,6 +19,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "settings")
 public class AppProperties {
 
+  private EnvironmentResolver.Environment environment;
   private GeneralProperties generalProperties;
   private GameProperties gameProperties;
   private WorldProperties worldProperties;
