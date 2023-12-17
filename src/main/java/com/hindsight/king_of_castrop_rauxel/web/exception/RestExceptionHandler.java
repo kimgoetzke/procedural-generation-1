@@ -16,7 +16,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
   protected ResponseEntity<Object> handleIllegalArgumentOrState(
       RuntimeException ex, WebRequest request) {
-    var bodyOfResponse = ex.getMessage();
+    var bodyOfResponse = new ErrorResponse(ex.getMessage());
     return handleExceptionInternal(
         ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
   }
@@ -27,4 +27,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     log.info("GenericWebException: " + ex.getMessage());
     return handleIllegalArgumentOrState(ex, request);
   }
+
+  public record ErrorResponse(String errorMessage) {}
 }
