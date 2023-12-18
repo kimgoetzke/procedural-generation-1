@@ -15,7 +15,8 @@
 						"exec": [
 							"let response = pm.response.json();\r",
 							"player = response.player;\r",
-							"pm.collectionVariables.set(\"player1Id\", player.id);"
+							"pm.collectionVariables.set(\"player1Id\", player.id);\r",
+							"pm.collectionVariables.set(\"player1Name\", player.name);"
 						],
 						"type": "text/javascript"
 					}
@@ -34,6 +35,40 @@
 					"path": [
 						"api",
 						"play"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Resume",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();\r",
+							"player = response.player;\r",
+							"pm.collectionVariables.set(\"player1Id\", player.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/play/{{player1Id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"play",
+						"{{player1Id}}"
 					]
 				}
 			},
@@ -140,6 +175,10 @@
 	"variable": [
 		{
 			"key": "player1Id",
+			"value": ""
+		},
+		{
+			"key": "player1Name",
 			"value": ""
 		}
 	]

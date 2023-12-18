@@ -2,9 +2,19 @@
 
 Endpoints require basic auth. Use `player1` / `password` or `player2` / `password`.
 
+Please see [Procedural Generation 1 Frontend](https://github.com/kimgoetzke/procedural-generation-1-front-end) for a
+sample web interface using this API.
+
+## Limitations
+
+1. Authentication has not been implemented yet. Currently, the game uses hardcoded credentials
+   for `player1` & `player2`.
+2. The API does not handle player deaths yet.
+3. There are no API-specific acceptance/integration tests yet.
+
 ## Endpoints
 
-### `GET` `/api/play`
+### Start new game with `GET` `/api/play`
 
 - Requires basic auth
 - Returns a JSON `WebResponse` containing the `List<ActionResponseDto>` and `PlayerDto`
@@ -14,7 +24,17 @@ Endpoints require basic auth. Use `player1` / `password` or `player2` / `passwor
 curl -u player1:password http://localhost:8080/api/play
 ```
 
-### `POST` `/api/play`
+### Resume active game with `GET` `/api/play/{playerId}`
+
+- Requires basic auth
+- Returns a JSON `WebResponse` containing the `viewType` to be rendered and the relevant DTO(s)
+- Example request:
+
+```
+curl -u player1:password http://localhost:8080/api/play/PLA~PLAYER1@1277912753
+```
+
+### Play active game with `POST` `/api/play`
 
 - Requires basic auth
 - Returns a JSON `WebResponse` containing the `viewType` to be rendered and the relevant DTO(s)
@@ -34,7 +54,7 @@ curl -u player1:password -X POST http://localhost:8080/api/play -H "Content-Type
 }
 ```
 
-### `GET` `/api/play/{playerId}/quest-log`
+### Get active quests with `GET` `/api/play/{playerId}/quest-log`
 
 - Requires basic auth
 - Returns a JSON `List<QuestDto>`
