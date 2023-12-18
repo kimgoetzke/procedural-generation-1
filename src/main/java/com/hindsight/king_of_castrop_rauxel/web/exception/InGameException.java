@@ -4,19 +4,14 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class GenericWebException extends RuntimeException {
+public class InGameException extends RuntimeException {
 
   private final HttpStatus status;
-  private static final WebErrorType errorType = WebErrorType.GENERIC;
+  private static final WebErrorType errorType = WebErrorType.IN_GAME;
 
-  public GenericWebException(String s) {
+  public InGameException(String s) {
     super(s);
     status = HttpStatus.BAD_REQUEST;
-  }
-
-  public GenericWebException(String s, HttpStatus status) {
-    super(s);
-    this.status = status;
   }
 
   public WebErrorType getErrorType() {

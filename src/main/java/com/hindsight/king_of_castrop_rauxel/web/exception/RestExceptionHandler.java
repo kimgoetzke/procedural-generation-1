@@ -16,17 +16,28 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(value = {IllegalArgumentException.class, IllegalStateException.class})
   protected ResponseEntity<Object> handleIllegalArgumentOrState(
       RuntimeException ex, WebRequest request) {
-    var bodyOfResponse = new ErrorResponse(ex.getMessage());
-    return handleExceptionInternal(
-        ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    var body = new ErrorResponse(ex.getMessage());
+    return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
   }
 
   @ExceptionHandler(value = {GenericWebException.class})
   protected ResponseEntity<Object> handleGenericWebException(
-      RuntimeException ex, WebRequest request) {
+      GenericWebException ex, WebRequest request) {
     log.info("GenericWebException: " + ex.getMessage());
-    return handleIllegalArgumentOrState(ex, request);
+    var body = new ErrorResponse(ex.getErrorType(), ex.getMessage());
+    return handleExceptionInternal(ex, body, new HttpHeaders(), ex.getStatus(), request);
   }
 
-  public record ErrorResponse(String errorMessage) {}
+  @ExceptionHandler(value = {InGameException.class})
+  protected ResponseEntity<Object> handleInGameException(InGameException ex, WebRequest request) {
+    log.debug("InGameException: " + ex.getMessage());
+    var body = new ErrorResponse(ex.getErrorType(), ex.getMessage());
+    return handleExceptionInternal(ex, body, new HttpHeaders(), ex.getStatus(), request);
+  }
+
+  public record ErrorResponse(WebErrorType errorType, String errorMessage) {
+    public ErrorResponse(String errorMessage) {
+      this(WebErrorType.UNHANDLED, errorMessage);
+    }
+  }
 }

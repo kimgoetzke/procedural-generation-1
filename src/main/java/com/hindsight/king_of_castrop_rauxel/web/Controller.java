@@ -1,6 +1,5 @@
 package com.hindsight.king_of_castrop_rauxel.web;
 
-import com.hindsight.king_of_castrop_rauxel.web.dto.PlayerDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.QuestDto;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebRequest;
 import com.hindsight.king_of_castrop_rauxel.web.dto.WebResponse;
@@ -30,20 +29,17 @@ public class Controller {
   @GetMapping("/api/play")
   public ResponseEntity<WebResponse> start(Authentication auth) {
     log.info("GET /api/start >> Start game for: {}", auth.getName());
-    if (playerRepository.findByName(auth.getName()) != null) {
-      throw new GenericWebException("User already has an active game", HttpStatus.CONFLICT);
-    }
+    throwIfAlreadyActive(auth);
     var webGame = ctx.getBean(WebGame.class);
     var res = webGame.startGame(auth.getName());
     activeGames.add(webGame);
     return ResponseEntity.ok(res);
   }
 
-  @GetMapping("/api/play/{userName}")
-  public ResponseEntity<WebResponse> resume(@PathVariable String userName, Authentication auth) {
+  @GetMapping("/api/play/{playerId}")
+  public ResponseEntity<WebResponse> resume(@PathVariable String playerId, Authentication auth) {
     log.info("GET /api/start >> Start game for: {}", auth.getName());
-    var player = playerRepository.findByName(userName);
-    throwIfPlayerNotFound(userName, player);
+    var player = playerRepository.findById(playerId).orElseThrow(() -> playerNotFound(playerId));
     var activeGame = getGame(player.getId(), auth);
     if (activeGame != null) {
       return ResponseEntity.ok(activeGame.getCurrentGame());
@@ -83,17 +79,21 @@ public class Controller {
     return game.orElse(null);
   }
 
-  private static void throwIfPlayerNotFound(String userName, PlayerDto player) {
-    if (player == null) {
-      throw new GenericWebException(
-          "User '%s' does not exist".formatted(userName), HttpStatus.NOT_FOUND);
+  private GenericWebException playerNotFound(String playerId) {
+    return new GenericWebException(
+        "Player '%s' does not exist".formatted(playerId), HttpStatus.NOT_FOUND);
+  }
+
+  private void throwIfAlreadyActive(Authentication auth) {
+    if (playerRepository.findByName(auth.getName()) != null) {
+      throw new GenericWebException("User already has an active game", HttpStatus.CONFLICT);
     }
   }
 
   private static void throwIfGameNotFound(String userName, WebGame game) {
     if (game == null) {
       throw new GenericWebException(
-          "User '%s' has no active game".formatted(userName), HttpStatus.CONFLICT);
+          "User '%s' has no active game".formatted(userName), HttpStatus.NOT_FOUND);
     }
   }
 
