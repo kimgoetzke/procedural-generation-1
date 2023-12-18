@@ -61,6 +61,9 @@ public class ActionHandler {
   public void getDialogueActions(Player player, List<Action> actions) {
     prepend(actions);
     var eventActions = player.getCurrentEvent().getCurrentActions();
+    if (eventActions.isEmpty() && environmentResolver.isNotCli()) {
+      actions.add(af.stateAction(index(actions), "End conversation", AT_POI));
+    }
     addAllActionsFrom(eventActions, actions);
   }
 

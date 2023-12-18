@@ -28,7 +28,7 @@ public class Controller {
 
   @GetMapping("/api/play")
   public ResponseEntity<WebResponse> start(Authentication auth) {
-    log.info("GET /api/start >> Start game for: {}", auth.getName());
+    log.info("GET /api/play >> Start game for: {}", auth.getName());
     throwIfAlreadyActive(auth);
     var webGame = ctx.getBean(WebGame.class);
     var res = webGame.startGame(auth.getName());
@@ -38,7 +38,7 @@ public class Controller {
 
   @GetMapping("/api/play/{playerId}")
   public ResponseEntity<WebResponse> resume(@PathVariable String playerId, Authentication auth) {
-    log.info("GET /api/start >> Start game for: {}", auth.getName());
+    log.info("GET /api/play/{} >> Resume game for: {}", playerId, auth.getName());
     var player = playerRepository.findById(playerId).orElseThrow(() -> playerNotFound(playerId));
     var activeGame = getGame(player.getId(), auth);
     if (activeGame != null) {

@@ -84,6 +84,7 @@ public class WebGame {
     takeAction(choice, actions);
     gameHandler.updateWorld(player);
     var interactions = getInteractions();
+    gameHandler.updateCurrentEventDialogue(player);
     getActions(player.getState(), actions);
     var encounterSummary = getEncounterSummary();
     var playerDto = PlayerDto.from(player);
@@ -152,7 +153,7 @@ public class WebGame {
         actions.stream()
             .filter(a -> a.getIndex() == choice)
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Action does not exist"));
+            .orElseThrow(() -> new GenericWebException("Action does not exist"));
     action.execute(player);
   }
 
