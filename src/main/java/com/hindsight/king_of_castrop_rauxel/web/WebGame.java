@@ -104,7 +104,11 @@ public class WebGame {
       PlayerDto playerDto,
       List<String> interactions) {
     if (encounterSummary != null) {
-      return new WebResponse(actions, encounterSummary, playerDto);
+      return encounterSummary.isPlayerHasWon()
+          ? new WebResponse(
+              actions, encounterSummary, playerDto, WebResponse.WebViewType.ENCOUNTER_SUMMARY)
+          : new WebResponse(
+              actions, encounterSummary, playerDto, WebResponse.WebViewType.GAME_OVER);
     }
     if (!interactions.isEmpty()) {
       return new WebResponse(actions, interactions, playerDto);

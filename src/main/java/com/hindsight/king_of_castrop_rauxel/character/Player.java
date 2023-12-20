@@ -30,7 +30,7 @@ public class Player implements Visitor, Combatant {
   private final AppProperties.PlayerProperties playerProperties;
   private final AppProperties.GameProperties gameProperties;
   private int gold;
-  private int health;
+  @Setter private int health;
   private int maxHealth;
   private int experience = 0;
   private int level = 1;
@@ -98,10 +98,6 @@ public class Player implements Visitor, Combatant {
 
   public void changeHealthBy(int health) {
     this.health = Math.max(0, Math.min(maxHealth, this.health + health));
-  }
-
-  public void setHealth(int health) {
-    this.health = health;
   }
 
   public void changeMaxHealthBy(int maxHealth) {

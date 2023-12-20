@@ -146,6 +146,11 @@ public class DebugActionFactory {
     log.info("Gifted 1000 gold to player {}", player.getName());
   }
 
+  public void setHealth(Player player) {
+    player.setHealth(1);
+    log.info("Set health of player {} to 1", player.getName());
+  }
+
   public void logLocationsInsideTriggerZone(Player player) {
     var vertices =
         graph.getVertices().stream()

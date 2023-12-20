@@ -7,10 +7,11 @@ sample web interface using this API.
 
 ## Limitations
 
-1. Authentication has not been implemented yet. Currently, the game uses hardcoded credentials
-   for `player1` & `player2`.
-2. The API does not handle player deaths yet.
-3. There are no API-specific acceptance/integration tests yet.
+1. Authentication has not been implemented yet. Currently, the game only allows for the hardcoded credentials
+   for `player1` & `player2` (see above).
+2. There are no API-specific tests yet. This is because the API was only created to have _something_ to use for a
+   frontend project (i.e. so that I have something I can use when creating a frontend application to improve my
+   frontend skills).
 
 ## Endpoints
 

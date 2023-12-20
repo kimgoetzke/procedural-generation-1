@@ -74,7 +74,7 @@ public class ActionHandler {
       if (sequence.isInProgress()) {
         actions.add(af.combatAction(index(actions), "Press on", sequence));
         actions.add(af.stateAction(index(actions), "Retreat (for now)", AT_POI));
-      } else {
+      } else if (player.getHealth() > 0) {
         actions.add(af.stateAction(index(actions), "Return victoriously", AT_POI));
       }
     }
@@ -96,6 +96,7 @@ public class ActionHandler {
     var visitedLocs = (Runnable) () -> daf.logVisitedLocations(player);
     actions.add(af.locationAction(index(actions), "Resume game", player.getCurrentLocation()));
     actions.add(daf.create(index(actions), "Add 1000 gold", () -> daf.addGold(player)));
+    actions.add(daf.create(index(actions), "Set health to 1 HP", () -> daf.setHealth(player)));
     actions.add(daf.create(index(actions), "Log memory usage", daf::logMemoryStats));
     actions.add(daf.create(index(actions), "Log all locations", daf::logVertices));
     actions.add(daf.create(index(actions), "Log locations inside trigger zone", triggerZone));

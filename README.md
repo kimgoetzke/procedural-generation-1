@@ -90,6 +90,7 @@ public class DialogueLoop extends AbstractLoop {
 ### Web API
 
 - The entire game can also be played via a web API - see [How to use the API](docs/HOW_TO_API.md) for details
+- You can also find a web interface here: [Procedural Generation 1 Frontend](https://github.com/kimgoetzke/procedural-generation-1-front-end)
 
 ### Other technical features
 

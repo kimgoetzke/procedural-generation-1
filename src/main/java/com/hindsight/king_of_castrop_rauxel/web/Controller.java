@@ -55,6 +55,12 @@ public class Controller {
     log.info("POST /api/play >> Process choice '{}' for: {}", req.getChoice(), req.getPlayerId());
     var webGame = getGameOrThrow(req.getPlayerId(), auth);
     var res = webGame.playGame(req.getChoice());
+    if (res.viewType() == WebResponse.WebViewType.GAME_OVER) {
+      var player = webGame.getPlayer();
+      log.info("Game over for '{}' - removing active game and player", player.getName());
+      playerRepository.deleteById(player.getId());
+      activeGames.remove(webGame);
+    }
     return ResponseEntity.ok(res);
   }
 

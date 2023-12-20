@@ -20,9 +20,13 @@ public record WebResponse(
         player);
   }
 
-  public WebResponse(List<Action> actions, EncounterSummaryDto encounterSummary, PlayerDto player) {
+  public WebResponse(
+      List<Action> actions,
+      EncounterSummaryDto encounterSummary,
+      PlayerDto player,
+      WebViewType viewType) {
     this(
-        WebViewType.ENCOUNTER_SUMMARY,
+        viewType,
         actions.stream().map(ActionResponseDto::from).toList(),
         encounterSummary,
         null,
@@ -41,6 +45,7 @@ public record WebResponse(
   public enum WebViewType {
     DEFAULT,
     ENCOUNTER_SUMMARY,
-    DIALOGUE
+    DIALOGUE,
+    GAME_OVER
   }
 }
