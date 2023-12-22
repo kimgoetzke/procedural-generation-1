@@ -79,9 +79,8 @@ public class Controller {
   }
 
   private WebGame getGame(String playerId, Authentication auth) {
-    var user = auth.getName();
     var game = activeGames.stream().filter(g -> g.getPlayer().getId().equals(playerId)).findFirst();
-    game.ifPresent(webGame -> throwIfForbiddenAccess(playerId, webGame, user));
+    game.ifPresent(webGame -> throwIfForbiddenAccess(playerId, webGame, auth.getName()));
     return game.orElse(null);
   }
 
@@ -92,14 +91,15 @@ public class Controller {
 
   private void throwIfAlreadyActive(Authentication auth) {
     if (playerRepository.findByName(auth.getName()) != null) {
-      throw new GenericWebException("User already has an active game", HttpStatus.CONFLICT);
+      throw new GenericWebException(
+          "User '%s' already has an active game".formatted(auth.getName()), HttpStatus.CONFLICT);
     }
   }
 
-  private static void throwIfGameNotFound(String userName, WebGame game) {
+  private static void throwIfGameNotFound(String playerId, WebGame game) {
     if (game == null) {
       throw new GenericWebException(
-          "User '%s' has no active game".formatted(userName), HttpStatus.NOT_FOUND);
+          "Player '%s' has no active game".formatted(playerId), HttpStatus.NOT_FOUND);
     }
   }
 
