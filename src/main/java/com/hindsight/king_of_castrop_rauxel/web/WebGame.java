@@ -5,6 +5,7 @@ import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.encounter.web.EncounterSummaryDto;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
@@ -95,7 +96,15 @@ public class WebGame {
   /** Returns the quest log for the current player without altering the state of the game. */
   public List<QuestDto> getQuests() {
     var allEvents = player.getEvents();
-    return allEvents.stream().map(QuestDto::new).toList();
+    return allEvents.stream()
+        .filter(
+            e -> {
+              var isDialogue = e.getEventDetails().getEventType().equals(Event.Type.DIALOGUE);
+              var isAvailable = e.getEventState() == Event.State.AVAILABLE;
+              return !(isDialogue && isAvailable);
+            })
+        .map(QuestDto::new)
+        .toList();
   }
 
   private static WebResponse getWebResponse(
