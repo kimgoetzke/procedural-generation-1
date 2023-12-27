@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
 public class WebGame {
 
+  public static final String ESCAPE_CHARS = "\u001B\\[[;\\d]*m";
   private final AppProperties appProperties;
   private final World world;
   private final Graph graph;
@@ -84,7 +85,6 @@ public class WebGame {
     takeAction(choice, actions);
     gameHandler.updateWorld(player);
     var interactions = getInteractions();
-    gameHandler.updateCurrentEventDialogue(player);
     getActions(player.getState(), actions);
     var encounterSummary = getEncounterSummary();
     var playerDto = PlayerDto.from(player);
@@ -128,7 +128,8 @@ public class WebGame {
 
   private List<String> getInteractions(List<String> interactions) {
     while (player.getCurrentEvent().hasCurrentInteraction()) {
-      interactions.add(player.getCurrentEvent().getCurrentInteraction().getText());
+      interactions.add(
+          player.getCurrentEvent().getCurrentInteraction().getText().replaceAll(ESCAPE_CHARS, ""));
       if (!player.getCurrentEvent().getCurrentActions().isEmpty()) {
         break;
       }
@@ -170,7 +171,7 @@ public class WebGame {
       case DEBUGGING -> actionHandler.getDebugActions(player, actions);
       default -> throw new GenericWebException("Unexpected state: " + state, HttpStatus.FORBIDDEN);
     }
-    actions.forEach(a -> a.setName(a.getName().replaceAll("\u001B\\[[;\\d]*m", "")));
+    actions.forEach(a -> a.setName(a.getName().replaceAll(ESCAPE_CHARS, "")));
   }
 
   private Coordinates getCoordinates(PlayerDto playerDto) {
