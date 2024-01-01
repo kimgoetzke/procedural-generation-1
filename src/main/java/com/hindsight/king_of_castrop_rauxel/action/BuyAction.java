@@ -6,7 +6,7 @@ import static com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentReso
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.cli.CliComponent;
 import com.hindsight.king_of_castrop_rauxel.item.Buyable;
-import com.hindsight.king_of_castrop_rauxel.web.exception.GenericWebException;
+import com.hindsight.king_of_castrop_rauxel.web.exception.InGameException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,7 +49,7 @@ public class BuyAction implements Action {
     var errorMessage = "Not enough gold to buy: '%s'.".formatted(item.getName());
     if (!isBought) {
       nextState(player);
-      throw new GenericWebException(errorMessage);
+      throw new InGameException(errorMessage);
     }
   }
 

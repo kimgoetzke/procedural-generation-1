@@ -90,6 +90,8 @@ public class DialogueLoop extends AbstractLoop {
 ### Web API
 
 - The entire game can also be played via a web API - see [How to use the API](docs/HOW_TO_API.md) for details
+- You can also find a web interface
+  here: [Procedural Generation 1 Frontend](https://github.com/kimgoetzke/procedural-generation-1-front-end)
 
 ### Other technical features
 
@@ -119,11 +121,11 @@ interface, it is rather tedious to use.
 
 ### CLI: Jar
 
-Clone and build project, and run JAR with `cli-prod` profile:
+Clone and build project. Then run JAR with `cli-prod` profile:
 
 ```shell
 cd build\libs 
-java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.3.jar
+java -jar -D"spring.profiles.active"=cli-prod procedural_generation_1-0.4.jar
 ```
 
 ### CLI: IDE
@@ -133,7 +135,8 @@ Clone project and run `Application.main` with `-Dspring.profiles.active=cli-prod
 
 ### Web API
 
-See [How to use the API](docs/HOW_TO_API.md). A Postman collection is available, too.
+See [How to use the API](docs/HOW_TO_API.md). A Postman collection is available in `/docs`. A web interface can be found
+in [this repository](https://github.com/kimgoetzke/procedural-generation-1-front-end).
 
 ## Other notes
 
@@ -163,11 +166,17 @@ following:
 - [How to create event YAML files](docs/HOW_TO_YAML_EVENTS.md)
 - [How to use the API](docs/HOW_TO_API.md)
 
-### Random ideas for further development
+### Limitations & some ideas for further development
 
+- **Before developing major new features**:
+    - Refactor the code related to how events work as it's too fiddly to build on it right now - considering:
+        - What kind of events should be shown (multiple vs only one at a time)?
+        - Should locations be visible if there's no event (or other activity) there?
+        - What should determine the kind of event generated for an NPC?
+    - Add chance to be attacked while travelling
 - **User interface**:
-    - Implement a web interface to use the API
     - Add visual mini-map for both CLI (using ASCII art) and web
+    - Use an LLM to auto-generate background images for each view in the web interface
 - **Procedural generation**:
     - Implement biomes which:
         - Determine difficulty of events, attitude towards player, etc. based on environmental factors

@@ -5,6 +5,7 @@ import com.hindsight.king_of_castrop_rauxel.action.ActionHandler;
 import com.hindsight.king_of_castrop_rauxel.character.Player;
 import com.hindsight.king_of_castrop_rauxel.configuration.AppProperties;
 import com.hindsight.king_of_castrop_rauxel.encounter.web.EncounterSummaryDto;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.game.GameHandler;
 import com.hindsight.king_of_castrop_rauxel.graph.Graph;
 import com.hindsight.king_of_castrop_rauxel.location.Dungeon;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired), access = AccessLevel.PRIVATE)
 public class WebGame {
 
+  public static final String ESCAPE_CHARS = "\u001B\\[[;\\d]*m";
   private final AppProperties appProperties;
   private final World world;
   private final Graph graph;
@@ -41,6 +43,7 @@ public class WebGame {
   private final GameHandler gameHandler;
   @Getter private Player player;
 
+  /** Starts a new game for a new player, then returns state as-is. */
   public WebResponse startGame(String userName) {
     world.setCurrentChunk(world.getCentreCoords());
     var startLocation = world.getCurrentChunk().getCentralLocation(graph);
@@ -52,21 +55,32 @@ public class WebGame {
     return new WebResponse(actions, playerDto);
   }
 
-  /** Resumes a game from a saved state. Can be used once a persistent database is implemented. */
-  public WebResponse resumeGame(String userName) {
-    var playerDto = playerRepository.findByName(userName);
-    if (playerDto == null) {
-      throw new GenericWebException("User not found", HttpStatus.NOT_FOUND);
-    }
+  /**
+   * Creates a game from a saved state, then returns that state as-is. Currently incomplete because
+   * this method only loads the player. It does not mark previously completed quests as completed or
+   * previously cleared dungeons as cleared, etc.
+   */
+  public WebResponse resumeGame(PlayerDto playerDto) {
     var coords = getCoordinates(playerDto);
     world.setCurrentChunk(coords.getWorld());
     var currentLocation = world.getCurrentChunk().getLocation(coords);
-    player = new Player(userName, currentLocation, appProperties);
+    player = new Player(playerDto.getName(), currentLocation, appProperties);
     var actions = new ArrayList<Action>();
     getActions(player.getState(), actions);
     return new WebResponse(actions, playerDto);
   }
 
+  /** Returns latest state of the game without processing any actions. */
+  public WebResponse getCurrentGame() {
+    var actions = new ArrayList<Action>();
+    var interactions = getInteractions();
+    getActions(player.getState(), actions);
+    var encounterSummary = getEncounterSummary();
+    var playerDto = PlayerDto.from(player);
+    return getWebResponse(encounterSummary, actions, playerDto, interactions);
+  }
+
+  /** Alters an existing game by processing actions. */
   public WebResponse playGame(int choice) {
     var actions = new ArrayList<Action>();
     takeAction(choice, actions);
@@ -79,9 +93,18 @@ public class WebGame {
     return getWebResponse(encounterSummary, actions, playerDto, interactions);
   }
 
+  /** Returns the quest log for the current player without altering the state of the game. */
   public List<QuestDto> getQuests() {
     var allEvents = player.getEvents();
-    return allEvents.stream().map(QuestDto::new).toList();
+    return allEvents.stream()
+        .filter(
+            e -> {
+              var isDialogue = e.getEventDetails().getEventType().equals(Event.Type.DIALOGUE);
+              var isAvailable = e.getEventState() == Event.State.AVAILABLE;
+              return !(isDialogue && isAvailable);
+            })
+        .map(QuestDto::new)
+        .toList();
   }
 
   private static WebResponse getWebResponse(
@@ -90,7 +113,11 @@ public class WebGame {
       PlayerDto playerDto,
       List<String> interactions) {
     if (encounterSummary != null) {
-      return new WebResponse(actions, encounterSummary, playerDto);
+      return encounterSummary.isPlayerHasWon()
+          ? new WebResponse(
+              actions, encounterSummary, playerDto, WebResponse.WebViewType.ENCOUNTER_SUMMARY)
+          : new WebResponse(
+              actions, encounterSummary, playerDto, WebResponse.WebViewType.GAME_OVER);
     }
     if (!interactions.isEmpty()) {
       return new WebResponse(actions, interactions, playerDto);
@@ -109,12 +136,16 @@ public class WebGame {
   }
 
   private List<String> getInteractions(List<String> interactions) {
-    while (player.getCurrentEvent().hasCurrentInteraction()) {
-      interactions.add(player.getCurrentEvent().getCurrentInteraction().getText());
-      if (!player.getCurrentEvent().getCurrentActions().isEmpty()) {
+    var currentEvent = player.getCurrentEvent();
+    while (currentEvent.hasCurrentInteraction()) {
+      interactions.add(currentEvent.getCurrentInteraction().getText().replaceAll(ESCAPE_CHARS, ""));
+      if (!currentEvent.getCurrentActions().isEmpty()) {
         break;
       }
-      player.getCurrentEvent().progressDialogue();
+      currentEvent.progressDialogue();
+    }
+    if (currentEvent.isRepeatable() && !currentEvent.hasCurrentInteraction()) {
+      currentEvent.resetDialogue();
     }
     return interactions;
   }
@@ -139,7 +170,7 @@ public class WebGame {
         actions.stream()
             .filter(a -> a.getIndex() == choice)
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Action does not exist"));
+            .orElseThrow(() -> new GenericWebException("Action does not exist"));
     action.execute(player);
   }
 
@@ -152,6 +183,7 @@ public class WebGame {
       case DEBUGGING -> actionHandler.getDebugActions(player, actions);
       default -> throw new GenericWebException("Unexpected state: " + state, HttpStatus.FORBIDDEN);
     }
+    actions.forEach(a -> a.setName(a.getName().replaceAll(ESCAPE_CHARS, "")));
   }
 
   private Coordinates getCoordinates(PlayerDto playerDto) {

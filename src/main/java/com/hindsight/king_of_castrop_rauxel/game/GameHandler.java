@@ -1,6 +1,10 @@
 package com.hindsight.king_of_castrop_rauxel.game;
 
+import static com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver.*;
+
 import com.hindsight.king_of_castrop_rauxel.character.Player;
+import com.hindsight.king_of_castrop_rauxel.configuration.EnvironmentResolver;
+import com.hindsight.king_of_castrop_rauxel.event.Event;
 import com.hindsight.king_of_castrop_rauxel.world.Coordinates;
 import com.hindsight.king_of_castrop_rauxel.world.World;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +15,11 @@ import org.springframework.stereotype.Component;
 public class GameHandler {
 
   private final World world;
+  private final Environment environment;
 
-  public GameHandler(World world) {
+  public GameHandler(World world, EnvironmentResolver environmentResolver) {
     this.world = world;
+    this.environment = environmentResolver.getEnvironment();
   }
 
   public void updateWorld(Player player) {
@@ -39,7 +45,11 @@ public class GameHandler {
       currentEvent.resetDialogue();
       return;
     }
-    if (!currentEvent.hasNextInteraction()) {
+    updatePlayerStateIfCli(player, currentEvent);
+  }
+
+  private void updatePlayerStateIfCli(Player player, Event currentEvent) {
+    if (environment.equals(Environment.CLI) && !currentEvent.hasNextInteraction()) {
       player.setState(player.getPreviousState());
     }
   }
