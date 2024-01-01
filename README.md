@@ -166,11 +166,17 @@ following:
 - [How to create event YAML files](docs/HOW_TO_YAML_EVENTS.md)
 - [How to use the API](docs/HOW_TO_API.md)
 
-### Random ideas for further development
+### Limitations & some ideas for further development
 
+- **Before developing major new features**:
+    - Refactor the code related to how events work as it's too fiddly to build on it right now - considering:
+        - What kind of events should be shown (multiple vs only one at a time)?
+        - Should locations be visible if there's no event (or other activity) there?
+        - What should determine the kind of event generated for an NPC?
+    - Add chance to be attacked while travelling
 - **User interface**:
-    - Implement a web interface to use the API
     - Add visual mini-map for both CLI (using ASCII art) and web
+    - Use an LLM to auto-generate background images for each view in the web interface
 - **Procedural generation**:
     - Implement biomes which:
         - Determine difficulty of events, attitude towards player, etc. based on environmental factors

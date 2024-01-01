@@ -136,13 +136,16 @@ public class WebGame {
   }
 
   private List<String> getInteractions(List<String> interactions) {
-    while (player.getCurrentEvent().hasCurrentInteraction()) {
-      interactions.add(
-          player.getCurrentEvent().getCurrentInteraction().getText().replaceAll(ESCAPE_CHARS, ""));
-      if (!player.getCurrentEvent().getCurrentActions().isEmpty()) {
+    var currentEvent = player.getCurrentEvent();
+    while (currentEvent.hasCurrentInteraction()) {
+      interactions.add(currentEvent.getCurrentInteraction().getText().replaceAll(ESCAPE_CHARS, ""));
+      if (!currentEvent.getCurrentActions().isEmpty()) {
         break;
       }
-      player.getCurrentEvent().progressDialogue();
+      currentEvent.progressDialogue();
+    }
+    if (currentEvent.isRepeatable() && !currentEvent.hasCurrentInteraction()) {
+      currentEvent.resetDialogue();
     }
     return interactions;
   }
